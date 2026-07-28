@@ -17,6 +17,50 @@ PlatformBehavior:
     - Layer 2: HOW facts are structured (time, provenance, evidence)
     - Layer 4: HOW data maps to ontology (physical bindings)
 
+  # ==================== Shared Parameter Definition ====================
+  CallableParameterDefinition:
+    definition: "a meta-classifier for parameters used by queries, functions, and actions"
+    purpose: "Shared parameter definition structure to avoid duplication across callable types"
+    note: "Replaces locally-scoped ParameterDefinition; used by QueryType, FunctionType, and ActionType"
+
+    requiredFields:
+      name:
+        type: string
+        required: true
+        description: "parameter name"
+        example: "asOf"
+
+      type:
+        type: string
+        required: true
+        description: "ValueType, ObjectType, or collection reference"
+        example: "instant"
+
+    optionalFields:
+      required:
+        type: boolean
+        default: true
+        description: "whether this parameter must be provided"
+
+      defaultValue:
+        type: any
+        description: "default value expression when not provided"
+        example: "now()"
+
+      description:
+        type: string
+        description: "human-readable parameter description"
+        example: "timestamp for Point-in-Time query"
+
+      constraints:
+        type: "list[ConstraintBinding]"
+        description: "validation rules for this parameter"
+
+      semanticRole:
+        type: enum
+        values: [Subject, Predicate, Object, Context, Temporal, Provenance, Idempotency]
+        description: "semantic role of this parameter in the operation"
+
   # ==================== Query Type ====================
   QueryType:
     definition: "a meta-classifier for read-only data access operations with typed parameters and return values"
@@ -41,7 +85,7 @@ PlatformBehavior:
         example: "fin:Instrument"
 
       parameters:
-        type: "list[ParameterDefinition]"
+        type: "list[CallableParameterDefinition]"
         description: "typed input parameters"
         example:
           - name: asOf
@@ -80,15 +124,12 @@ PlatformBehavior:
       examples:
         type: "list[QueryExample]"
 
-    structures:
-      ParameterDefinition:
-        name: {type: string, required: true}
-        type: {type: string, required: true, description: "ValueType or ObjectType IRI"}
-        required: {type: boolean, default: true}
-        default: {type: string, description: "default value expression"}
-        description: {type: string}
-        constraint: {type: string, description: "validation expression"}
+      applicableToTypes:
+        type: "list[uri]"
+        description: "ObjectType IRIs this query can operate on (replaces Layer 1 interfaces)"
+        example: ["fin:Instrument", "fin:Equity", "fin:Bond"]
 
+    structures:
       QueryExample:
         description: {type: string}
         parameters: {type: dict}
@@ -134,8 +175,8 @@ PlatformBehavior:
       definition: {type: string, required: true, iso704: true}
 
       parameters:
-        type: "list[ParameterDefinition]"
-        minSize: 0
+        type: "list[CallableParameterDefinition]"
+        minCount: 0
         description: "typed input parameters"
 
       returnType:
@@ -161,6 +202,11 @@ PlatformBehavior:
 
       testSuite:
         type: "list[FunctionTest]"
+
+      applicableToTypes:
+        type: "list[uri]"
+        description: "ObjectType IRIs this function can operate on (replaces Layer 1 interfaces)"
+        example: ["fin:Instrument", "fin:Portfolio"]
 
     structures:
       FunctionTest:
@@ -225,15 +271,41 @@ PlatformBehavior:
         description: "scope of action effects"
 
       parameters:
-        type: "list[ParameterDefinition]"
+        type: "list[CallableParameterDefinition]"
         description: "typed input parameters"
 
       effects:
         type: "list[EffectSpecification]"
-        minSize: 1
+        minCount: 1
         description: "declared state changes or external interactions"
 
+      commandReceipt:
+        type: CommandReceiptSchema
+        required: true
+        description: "structure of the execution receipt that must be returned"
+
     optionalFields:
+      irreversible:
+        type: boolean
+        default: false
+        description: "true = this action cannot be rolled back once executed (e.g., order partially filled)"
+
+      idempotencyKeyFieldRequired:
+        type: boolean
+        default: false
+        description: "whether an idempotency key field must be provided"
+
+      idempotencyWindow:
+        type: duration
+        description: "time window for idempotency key uniqueness enforcement"
+        example: "PT24H"
+
+      unknownResultReconciliation:
+        type: enum
+        values: [ManualReview, QueryExternal, AssumeSuccess, AssumeFailed, HoldAndAlert]
+        description: "strategy when action result is unknown (e.g., timeout)"
+        note: "For external actions, use QueryExternal or ManualReview; never AssumeSuccess for financial transactions"
+
       authorization:
         type: "list[AuthorizationRequirement]"
         description: "required permissions, roles, or policies"
@@ -258,14 +330,17 @@ PlatformBehavior:
           idempotent: safe to retry; duplicate calls have no additional effect
           conditionallyIdempotent: idempotent when using idempotency key
           nonIdempotent: each call has distinct effects
+        note: "For external actions, prefer conditionallyIdempotent with idempotencyKeyFieldRequired: true"
 
       idempotencyKeyField:
         type: string
-        description: "parameter name for idempotency key (when conditionallyIdempotent)"
+        description: "parameter name for idempotency key (required when conditionallyIdempotent and idempotencyKeyFieldRequired: true)"
+        example: "clientOrderId"
 
-      compensation:
-        type: CompensationSpec
-        description: "rollback or compensation action"
+      compensatingActions:
+        type: "list[CompensatingActionRef]"
+        description: "actions that can compensate for this action's effects (not rollback)"
+        note: "Use for best-effort compensation; not guaranteed to succeed (e.g., CancelOrder may fail if order already filled)"
 
       auditRequirements:
         captureInputs: {type: boolean, default: true}
@@ -289,6 +364,58 @@ PlatformBehavior:
         type: "list[ActionExample]"
 
     structures:
+      CommandReceiptSchema:
+        description: "structure of the execution receipt returned by an action"
+        fields:
+          commandId:
+            type: string
+            required: true
+            description: "platform-generated unique command identifier"
+          correlationId:
+            type: string
+            required: false
+            description: "cross-system correlation ID for distributed tracing"
+          executionStatus:
+            type: enum
+            required: true
+            values: [Accepted, Rejected, Pending, Completed, Failed, Unknown]
+            description: "execution status of the command"
+          externalReferenceId:
+            type: string
+            required: false
+            description: "external system's reference ID (e.g., broker order ID)"
+          timestamp:
+            type: instant
+            required: true
+            description: "when the command was executed"
+          errorDetails:
+            type: string
+            required: false
+            description: "error message if execution failed"
+
+      CompensatingActionRef:
+        description: "reference to a compensating action with applicability conditions"
+        fields:
+          actionRef:
+            type: uri
+            required: true
+            description: "IRI of the compensating ActionType"
+            example: "{BASE_IRI}/actions/CancelOrder"
+          applicableWhen:
+            type: enum
+            required: true
+            values: [PartiallyExecuted, FullyExecuted, Unknown, Failed]
+            description: "when this compensating action is applicable"
+          successGuarantee:
+            type: enum
+            required: true
+            values: [BestEffort, Guaranteed, RequiresManualIntervention]
+            description: "likelihood of compensation succeeding"
+          triggerCondition:
+            type: string
+            required: false
+            description: "condition expression for automatic triggering"
+
       EffectSpecification:
         type: {type: enum, values: [create, update, delete, send, receive, execute]}
         target: {type: uri, description: "affected ObjectType or external system"}
@@ -316,11 +443,6 @@ PlatformBehavior:
         id: {type: string}
         expression: {type: string}
         verificationStrategy: {type: enum, values: [immediate, eventual, manual]}
-
-      CompensationSpec:
-        strategy: {type: enum, values: [none, rollback, compensatingAction, manual]}
-        compensatingAction: {type: uri, description: "ActionType IRI for compensation"}
-        automaticTrigger: {type: boolean, default: false}
 
       RetryPolicy:
         maxAttempts: {type: integer, default: 3}
@@ -377,10 +499,25 @@ PlatformBehavior:
             verificationStrategy: eventual
         idempotency: conditionallyIdempotent
         idempotencyKeyField: idempotencyKey
-        compensation:
-          strategy: compensatingAction
-          compensatingAction: "fin:action:CancelOrder"
-          automaticTrigger: false
+        idempotencyKeyFieldRequired: true
+        idempotencyWindow: "PT24H"
+        irreversible: true
+        unknownResultReconciliation: QueryExternal
+        commandReceipt:
+          commandId: {type: string, required: true}
+          correlationId: {type: string, required: false}
+          executionStatus: {type: enum, values: [Accepted, Rejected, Pending, Completed, Failed, Unknown]}
+          externalReferenceId: {type: string, required: false, description: "broker order ID"}
+          timestamp: {type: instant, required: true}
+        compensatingActions:
+          - actionRef: "fin:action:CancelOrder"
+            applicableWhen: PartiallyExecuted
+            successGuarantee: BestEffort
+            triggerCondition: "manual_only"
+          - actionRef: "fin:action:RequestManualReview"
+            applicableWhen: Unknown
+            successGuarantee: RequiresManualIntervention
+            triggerCondition: "execution_status == Unknown AND elapsed_time > PT5M"
         auditRequirements:
           captureInputs: true
           captureOutputs: true

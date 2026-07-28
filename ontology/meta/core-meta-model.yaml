@@ -121,9 +121,9 @@ MetaModel:
         description: "governing standard"
         example: "ISO 6166"
 
-      validator:
-        type: ConstraintDefinition
-        description: "reference to validation rule"
+      validatorRef:
+        type: uri
+        description: "reference to ConstraintDefinition IRI"
 
     optionalFields:
       issuingAuthority:
@@ -138,8 +138,17 @@ MetaModel:
   MoneyType:
     definition: "a meta-classifier for monetary amounts with currency and scale"
     owlProjection:
-      kind: datatype
-    note: "MUST NOT use generic number or decimal for financial amounts"
+      kind: structuredValueClass
+      classIri: "{BASE_IRI}/values/MonetaryAmount"
+      properties:
+        - predicateIri: "{BASE_IRI}/properties/hasAmount"
+          range: "xsd:decimal"
+        - predicateIri: "{BASE_IRI}/properties/hasCurrency"
+          range: "xsd:string"
+          pattern: "^[A-Z]{3}$"
+        - predicateIri: "{BASE_IRI}/properties/hasScale"
+          range: "xsd:integer"
+    note: "MUST NOT use generic number or decimal for financial amounts. Projected as a structured value class (not a simple datatype) to preserve currency, amount, and scale independence."
 
     structure:
       amount:
@@ -148,9 +157,11 @@ MetaModel:
         description: "numeric value"
 
       currency:
-        type: CurrencyCode
+        type: string
         required: true
-        description: "ISO 4217 currency code"
+        description: "ISO 4217 currency code (3-letter code)"
+        pattern: "^[A-Z]{3}$"
+        example: "USD"
 
       scale:
         type: integer
@@ -161,7 +172,16 @@ MetaModel:
   QuantityType:
     definition: "a meta-classifier for measurements with units and precision"
     owlProjection:
-      kind: datatype
+      kind: structuredValueClass
+      classIri: "{BASE_IRI}/values/QuantityValue"
+      properties:
+        - predicateIri: "{BASE_IRI}/properties/hasNumericValue"
+          range: "xsd:decimal"
+        - predicateIri: "{BASE_IRI}/properties/hasUnit"
+          range: "xsd:string"
+        - predicateIri: "{BASE_IRI}/properties/hasPrecision"
+          range: "xsd:integer"
+    note: "Projected as a structured value class to preserve value, unit, precision, and rounding independently. Unit should be a URI reference to a unit ontology (e.g., QUDT) in production."
 
     structure:
       value:
@@ -171,8 +191,9 @@ MetaModel:
       unit:
         type: string
         required: true
-        description: "unit of measurement (shares, contracts, kg, m³)"
+        description: "unit of measurement (shares, contracts, kg, m³) - should be URI reference in production"
         example: "shares"
+        note: "In production, use controlled unit vocabulary or QUDT unit URIs"
 
       precision:
         type: integer
@@ -269,6 +290,9 @@ MetaModel:
         type: "list[uri]"
         description: "behavioral contracts this type implements (Layer 3 references)"
         example: ["fin:Queryable", "fin:Priceable"]
+        deprecated: true
+        deprecationReason: "Interfaces mixed behavior into semantic layer; use behavior-meta-model.yaml applicableToTypes instead"
+        removalVersion: "0.3.0"
 
       attributeUses:
         type: "list[AttributeUse]"
@@ -465,14 +489,12 @@ MetaModel:
         minCount: {type: integer, default: 0}
         maxCount: {type: integer, default: null, description: "null=unbounded"}
         description: "how many targets one subject can have"
-        example: {min: 1, max: 1}
         note: "one Equity → how many Organizations"
 
       inboundCardinality:
         minCount: {type: integer, default: 0}
         maxCount: {type: integer, default: null}
         description: "how many subjects can point to one target"
-        example: {min: 0, max: null}
         note: "one Organization ← how many Equities"
 
       constraints:
@@ -496,15 +518,17 @@ MetaModel:
 
       participantRoles:
         type: "list[ParticipantRole]"
-        minSize: 2
+        minCount: 2
         description: "typed participants in this association"
         example:
           - id: observedInstrument
             range: "fin:Instrument"
-            cardinality: {min: 1, max: 1}
+            minCount: 1
+            maxCount: 1
           - id: venue
             range: "fin:Market"
-            cardinality: {min: 1, max: 1}
+            minCount: 1
+            maxCount: 1
 
     optionalFields:
       attributeUses:
@@ -513,6 +537,7 @@ MetaModel:
         example:
           - attribute: "fin:quotedPrice"
             minCount: 1
+            maxCount: 1
 
       patternBindings:
         type: "list[PatternBinding]"
@@ -546,10 +571,15 @@ MetaModel:
         description: "participant ObjectType IRI"
         example: "fin:Instrument"
 
-      cardinality:
-        minCount: {type: integer, default: 0}
-        maxCount: {type: integer, default: null}
-        example: {min: 1, max: 1}
+      minCount:
+        type: integer
+        default: 0
+        description: "minimum number of participants in this role"
+
+      maxCount:
+        type: integer
+        default: null
+        description: "maximum number of participants in this role (null = unbounded)"
 
     optionalFields:
       label: {type: string}
@@ -629,6 +659,219 @@ MetaModel:
         verifiedAt: {type: instant}
         notes: {type: string}
 
+  # ==================== Constraint Definition ====================
+  ConstraintDefinition:
+    definition: "a meta-classifier for semantic validation rules that can be applied to types, attributes, relations, or associations"
+    owlProjection:
+      kind: class
+      stereotype: constraint
+
+    requiredFields:
+      iri:
+        type: uri
+        unique: true
+        description: "globally unique IRI for this constraint"
+        example: "{BASE_IRI}/constraints/ISINCheckDigit"
+
+      namespace:
+        type: string
+        required: true
+        description: "module namespace prefix"
+
+      localName:
+        type: string
+        required: true
+        description: "constraint name within namespace"
+
+      label:
+        type: string
+        required: true
+        example: "ISIN Check Digit Validation"
+
+      definition:
+        type: string
+        required: true
+        iso704: true
+        example: "validation rule that verifies the check digit of an ISIN code using the Luhn algorithm"
+
+      constraintType:
+        type: enum
+        required: true
+        values: [Cardinality, ValueRange, Pattern, Custom, Logical, Uniqueness, Dependency]
+        description: "category of constraint"
+
+      scope:
+        type: enum
+        required: true
+        values: [Attribute, Relation, Object, Association, Pattern, Module]
+        description: "what kind of element this constraint applies to"
+
+      expression:
+        type: ConstraintExpression
+        required: true
+        description: "formal expression of the constraint"
+
+      severity:
+        type: enum
+        required: true
+        values: [Error, Warning, Info]
+        default: Error
+
+      message:
+        type: LocalizedText
+        required: true
+        description: "error message template for violations"
+        example: "ISIN check digit validation failed for value {value}"
+
+    optionalFields:
+      parameters:
+        type: "list[ConstraintParameter]"
+        description: "parameterized constraints"
+
+      dependencies:
+        type: "list[uri]"
+        description: "other constraints that must be satisfied first"
+
+      alignments:
+        type: "list[Alignment]"
+
+  # ==================== Constraint Expression ====================
+  ConstraintExpression:
+    definition: "the formal expression of a constraint rule"
+
+    fields:
+      language:
+        type: enum
+        required: true
+        values: [SHACL, SPARQL, JSONSchema, Regex, Custom]
+        description: "constraint expression language"
+
+      expression:
+        type: string
+        required: true
+        description: "the actual constraint expression"
+        example: "^[A-Z]{2}[A-Z0-9]{9}[0-9]$"
+
+      expressionDigest:
+        type: string
+        description: "SHA256 hash of expression for versioning"
+
+  # ==================== Constraint Parameter ====================
+  ConstraintParameter:
+    definition: "a parameter for parameterized constraints"
+
+    fields:
+      name:
+        type: string
+        required: true
+
+      type:
+        type: string
+        required: true
+        description: "parameter value type"
+
+      required:
+        type: boolean
+        default: true
+
+      defaultValue:
+        type: any
+
+  # ==================== Constraint Binding ====================
+  ConstraintBinding:
+    definition: "the application of a ConstraintDefinition to a specific ontology element with parameter values"
+
+    requiredFields:
+      constraintRef:
+        type: uri
+        required: true
+        description: "IRI reference to ConstraintDefinition"
+        example: "{BASE_IRI}/constraints/ISINCheckDigit"
+
+      targetElement:
+        type: uri
+        required: true
+        description: "IRI of the element being constrained (ObjectType, AttributeUse, RelationUse, etc.)"
+        example: "{BASE_IRI}/attributes/hasISIN"
+
+    optionalFields:
+      parameters:
+        type: dict
+        description: "parameter values for this constraint binding"
+        example: {minLength: 12, maxLength: 12}
+
+      enforcementLevel:
+        type: enum
+        values: [Mandatory, Advisory, Disabled]
+        default: Mandatory
+        description: "whether this constraint must be enforced"
+
+      enforcementContext:
+        type: enum
+        values: [Write, Read, Query, Import, Export]
+        description: "when to enforce this constraint"
+
+  # ==================== Change Record ====================
+  ChangeRecord:
+    definition: "a record of a change to an ontology element for audit and version control"
+
+    requiredFields:
+      changeId:
+        type: string
+        unique: true
+        required: true
+        description: "unique identifier for this change"
+        example: "CHG-20260728-001"
+
+      timestamp:
+        type: instant
+        required: true
+        description: "when this change was made"
+
+      author:
+        type: string
+        required: true
+        description: "who made this change"
+        example: "ontology-team"
+
+      changeType:
+        type: enum
+        required: true
+        values: [Addition, Modification, Deprecation, Deletion, Restoration]
+        description: "type of change"
+
+      affectedElement:
+        type: uri
+        required: true
+        description: "IRI of the element that was changed"
+
+      description:
+        type: LocalizedText
+        required: true
+        description: "human-readable description of the change"
+
+    optionalFields:
+      breakingChange:
+        type: boolean
+        default: false
+        description: "whether this change breaks backward compatibility"
+
+      previousValue:
+        type: any
+        description: "the value before the change (for Modification)"
+
+      newValue:
+        type: any
+        description: "the value after the change (for Modification, Addition)"
+
+      approvedBy:
+        type: string
+        description: "who approved this change"
+
+      relatedChanges:
+        type: "list[string]"
+        description: "IDs of related changes"
+
   # ==================== Governance Metadata ====================
   GovernanceMetadata:
     definition: "ownership, approval, and change tracking metadata for ontology elements"
@@ -655,7 +898,8 @@ MetaModel:
         description: "business justification"
 
       changeHistory:
-        type: "list[ChangeRecord]"
+        type: "list[uri]"
+        description: "references to ChangeRecord IRIs"
 
   # ==================== Validation Rules ====================
   ValidationRules:

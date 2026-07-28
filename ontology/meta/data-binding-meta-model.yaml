@@ -170,6 +170,85 @@ DataBinding:
         partitionKeys: {type: "list[string]"}
         example: {strategy: range, partitionKeys: ["trade_date"]}
 
+  # ==================== Field Definition ====================
+  FieldDefinition:
+    definition: "a meta-classifier for physical field definitions in dataset schemas"
+    purpose: "Defines the structure of fields in physical datasets"
+
+    requiredFields:
+      name:
+        type: string
+        required: true
+        description: "field name in the physical schema"
+
+      dataType:
+        type: string
+        required: true
+        description: "native data type in source system"
+        example: "VARCHAR(255), DECIMAL(18,4), TIMESTAMP"
+
+    optionalFields:
+      nullable:
+        type: boolean
+        default: true
+
+      primaryKey:
+        type: boolean
+        default: false
+
+      foreignKey:
+        type: ForeignKeyReference
+
+      defaultValue:
+        type: any
+
+      constraints:
+        type: "list[uri]"
+        description: "references to ConstraintDefinition IRIs"
+
+      description:
+        type: string
+
+    structures:
+      ForeignKeyReference:
+        targetDataset: {type: uri, required: true, description: "referenced Dataset IRI"}
+        targetField: {type: string, required: true}
+        onDelete: {type: enum, values: [cascade, setNull, restrict], default: restrict}
+        onUpdate: {type: enum, values: [cascade, setNull, restrict], default: restrict}
+
+  # ==================== Index Definition ====================
+  IndexDefinition:
+    definition: "a meta-classifier for physical index structures in datasets"
+    purpose: "Defines indexes for query performance optimization"
+
+    requiredFields:
+      name:
+        type: string
+        required: true
+        description: "index name"
+
+      fields:
+        type: "list[string]"
+        required: true
+        minCount: 1
+        description: "field names included in this index"
+
+    optionalFields:
+      unique:
+        type: boolean
+        default: false
+        description: "whether this is a unique index"
+
+      indexType:
+        type: enum
+        values: [BTree, Hash, GiST, GIN, BRIN]
+        default: BTree
+        description: "physical index structure type"
+
+      partial:
+        type: string
+        description: "partial index predicate expression"
+
   # ==================== Field ====================
   Field:
     definition: "a meta-classifier for individual columns, properties, or fields in a dataset"
@@ -208,6 +287,42 @@ DataBinding:
         type: uri
         description: "reference to mapped AttributeType IRI"
         example: "fin:closePrice"
+
+  # ==================== Target Slot ====================
+  TargetSlot:
+    definition: "a union type representing different kinds of mapping targets (attributes, participant roles, relations, or pattern fields)"
+    purpose: "Allows SemanticMapping to target not just attributes but also Association participant roles, relations, and pattern-injected fields"
+    note: "Replaces simple targetAttribute: IRI with a discriminated union to support all mapping target types"
+
+    discriminator: slotType
+
+    variants:
+      AttributeSlot:
+        description: "maps to an AttributeType"
+        fields:
+          slotType: {type: literal, value: "attribute"}
+          targetAttribute: {type: uri, required: true, description: "AttributeType IRI"}
+
+      ParticipantRoleSlot:
+        description: "maps to a participant role in an AssociationType"
+        fields:
+          slotType: {type: literal, value: "participantRole"}
+          targetAssociation: {type: uri, required: true, description: "AssociationType IRI"}
+          targetRole: {type: string, required: true, description: "ParticipantRole.id"}
+
+      RelationSlot:
+        description: "maps to a RelationType"
+        fields:
+          slotType: {type: literal, value: "relation"}
+          targetRelation: {type: uri, required: true, description: "RelationType IRI"}
+          targetObjectType: {type: uri, required: false, description: "range ObjectType IRI (for disambiguation)"}
+
+      PatternFieldSlot:
+        description: "maps to a field injected by a Layer 2 pattern"
+        fields:
+          slotType: {type: literal, value: "patternField"}
+          targetPattern: {type: uri, required: true, description: "PatternDefinition IRI"}
+          targetField: {type: string, required: true, description: "injected attribute local name"}
 
   # ==================== Semantic Mapping ====================
   SemanticMapping:
@@ -297,11 +412,11 @@ DataBinding:
           description: "physical field name"
           example: "isin_code"
 
-        targetAttribute:
-          type: uri
+        target:
+          type: TargetSlot
           required: true
-          description: "AttributeType IRI"
-          example: "fin:hasISIN"
+          description: "mapping target (attribute, participant role, relation, or pattern field)"
+          note: "Replaces targetAttribute to support all target types"
 
         transformation:
           type: enum
@@ -407,6 +522,97 @@ DataBinding:
         failureAction: {type: enum, values: [reject, quarantine, accept-with-warning]}
         severity: {type: enum, values: [error, warning, info]}
 
+  # ==================== Materialization Plan ====================
+  MaterializationPlan:
+    definition: "a declarative specification of how to materialize ontology instances from physical data sources"
+    purpose: "Defines WHAT should be materialized and HOW data maps to ontology, without specifying runtime orchestration (scheduling, retries, monitoring)"
+    note: "Runtime orchestration (schedule, retry, monitoring) moved to separate orchestration/runtime layer per ADR-003"
+
+    requiredFields:
+      iri: {type: uri, unique: true, required: true}
+      label: {type: string, required: true}
+
+      definition:
+        type: string
+        required: true
+        description: "purpose and scope of this materialization plan"
+
+      sourceDatasets:
+        type: "list[uri]"
+        required: true
+        minCount: 1
+        description: "Dataset IRIs to be materialized"
+
+      targetOntologyModule:
+        type: uri
+        required: true
+        description: "OntologyModule IRI where instances will be created"
+
+      semanticMappings:
+        type: "list[uri]"
+        required: true
+        minCount: 1
+        description: "SemanticMapping IRIs that define how data maps to ontology"
+
+      materializationMode:
+        type: enum
+        required: true
+        values: [Incremental, Full, CDC, EventSourcing]
+        description: "how materialization handles updates"
+
+    optionalFields:
+      consistencyRequirement:
+        type: enum
+        values: [Eventual, Snapshot, Transactional]
+        default: Eventual
+        description: "consistency level required for materialized instances"
+
+      validationRules:
+        type: "list[ConstraintBinding]"
+        description: "validation rules applied during materialization"
+
+      conflictResolution:
+        type: ConflictResolutionStrategy
+        description: "how to handle conflicts when multiple sources provide same data"
+
+      incrementalKey:
+        type: string
+        description: "field name for incremental updates (e.g., updated_at timestamp)"
+
+      watermark:
+        type: string
+        description: "current watermark value for incremental processing"
+
+      targetGraphUri:
+        type: uri
+        description: "named graph URI where RDF triples will be stored"
+
+      owner:
+        type: string
+        description: "team or role responsible for this plan"
+
+    structures:
+      ConflictResolutionStrategy:
+        strategy:
+          type: enum
+          required: true
+          values: [AuthoritySource, TimestampPriority, ManualReview, Merge, RejectConflict]
+          description: "how to resolve conflicts when multiple mappings provide same attribute"
+
+        authoritySourcePriority:
+          type: "list[uri]"
+          description: "ordered list of DataSource IRIs by authority (highest first)"
+
+        timestampField:
+          type: string
+          description: "field name for timestamp comparison (when strategy=TimestampPriority)"
+
+    deprecated_note: |
+      IngestionPipeline with schedule, retry, monitoring has been deprecated.
+      Use MaterializationPlan for declarative mapping specifications.
+      For runtime orchestration, use dedicated workflow/orchestration tools (Airflow, Prefect, etc.)
+      or the platform's runtime execution layer.
+
   # ==================== Data Lineage ====================
   DataLineage:
     definition: "a meta-classifier for tracking data flow and transformation chains"
@@ -442,10 +648,15 @@ DataBinding:
         recordsProcessed: {type: integer}
         recordsFailed: {type: integer}
 
-  # ==================== Ingestion Pipeline ====================
+  # ==================== Ingestion Pipeline (DEPRECATED) ====================
   IngestionPipeline:
     definition: "a meta-classifier for ETL/ELT workflows that materialize ontology instances from data sources"
     purpose: "Orchestrates data extraction, transformation, validation, and loading"
+    deprecated: true
+    deprecationReason: "Mixed declarative mapping with runtime orchestration, violating Layer 4 boundaries. Use MaterializationPlan for mapping specifications and external orchestration tools for runtime execution."
+    deprecatedSince: "0.3.0"
+    removalVersion: "0.4.0"
+    migrationPath: "Convert to MaterializationPlan for mapping logic; move schedule/retry/monitoring to external orchestration layer (Airflow, Prefect, etc.)"
 
     requiredFields:
       iri: {type: uri, unique: true}
@@ -507,22 +718,32 @@ DataBinding:
 
         fieldMappings:
           - sourceField: "isin"
-            targetAttribute: "fin:observedInstrument"
+            target:
+              slotType: participantRole
+              targetAssociation: "fin:PriceObservation"
+              targetRole: "observedInstrument"
             transformation: lookup
             transformationExpression: "lookup_instrument_by_isin(isin)"
 
           - sourceField: "exchange_code"
-            targetAttribute: "fin:venue"
+            target:
+              slotType: participantRole
+              targetAssociation: "fin:PriceObservation"
+              targetRole: "venue"
             transformation: lookup
             transformationExpression: "lookup_market_by_mic(exchange_code)"
 
           - sourceField: "close_price"
-            targetAttribute: "fin:quotedPrice"
+            target:
+              slotType: attribute
+              targetAttribute: "fin:quotedPrice"
             transformation: function
             transformationExpression: "create_money(close_price, currency_code)"
 
           - sourceField: "volume"
-            targetAttribute: "fin:tradedVolume"
+            target:
+              slotType: attribute
+              targetAttribute: "fin:tradedVolume"
             transformation: function
             transformationExpression: "create_quantity(volume, 'shares')"
 
@@ -566,19 +787,29 @@ DataBinding:
 
         fieldMappings:
           - sourceField: "account_id"
-            targetAttribute: "fin:account"
+            target:
+              slotType: participantRole
+              targetAssociation: "fin:Holding"
+              targetRole: "account"
             transformation: lookup
 
           - sourceField: "isin"
-            targetAttribute: "fin:instrument"
+            target:
+              slotType: participantRole
+              targetAssociation: "fin:Holding"
+              targetRole: "instrument"
             transformation: lookup
 
           - sourceField: "quantity"
-            targetAttribute: "fin:quantity"
+            target:
+              slotType: attribute
+              targetAttribute: "fin:quantity"
             transformation: direct
 
           - sourceField: "avg_cost"
-            targetAttribute: "fin:costBasis"
+            target:
+              slotType: attribute
+              targetAttribute: "fin:costBasis"
             transformation: function
             transformationExpression: "create_money(avg_cost, account_currency)"
 
@@ -596,7 +827,19 @@ DataBinding:
   # ==================== Validation Rules ====================
   ValidationRules:
     - "SemanticMapping must reference valid Dataset and ObjectType/AssociationType"
-    - "FieldMapping.targetAttribute must reference valid AttributeType from Layer 1"
+    - "FieldMapping.target must be a valid TargetSlot variant (attribute, participantRole, relation, patternField)"
+    - "TargetSlot.targetAttribute must reference valid AttributeType from Layer 1"
+    - "TargetSlot.targetAssociation must reference valid AssociationType from Layer 1"
+    - "TargetSlot.targetRole must match a ParticipantRole.id in the referenced AssociationType"
+    - "TargetSlot.targetRelation must reference valid RelationType from Layer 1"
+    - "TargetSlot.targetPattern must reference valid PatternDefinition from Layer 2"
+    - "IdentityMappingSpec.syntheticKey must use deterministic UUID generation for reproducibility"
+    - "IdentityMappingSpec.uriTemplate must produce stable, reproducible IRIs"
+    - "TemporalMappingSpec.pattern must reference valid pattern from Layer 2"
+    - "TransformationExpression must declare language, input fields, output type, version, and test cases"
+    - "Multiple FieldMappings targeting same attribute must have conflict resolution strategy"
+    - "MaterializationPlan.semanticMappings must all target the same OntologyModule"
+    - "IngestionPipeline is deprecated; use MaterializationPlan + external orchestration"
     - "TemporalMapping field references must exist in source dataset schema"
     - "IdentityMapping must produce globally unique IRIs"
     - "Multiple SemanticMappings for same targetType must have non-overlapping filters or priority"
