@@ -69,7 +69,7 @@ Layer 4: Data Binding
 **Decision**:
 ```yaml
 ObjectType:
-  iri: https://moonweave.ai/ontology/finance/Equity  # globally unique
+  iri: {BASE_IRI}/finance/Equity  # globally unique (IRI strategy pending ADR-002)
   namespace: fin
   localName: Equity
 ```
@@ -77,6 +77,8 @@ ObjectType:
 - IRI is the stable identity
 - localName only needs to be unique within namespace
 - Follows FIBO and W3C best practices
+
+**Note**: Final IRI namespace design deferred to ADR-002.
 
 ### 4. Separation of OWL Projection and Alignment
 
