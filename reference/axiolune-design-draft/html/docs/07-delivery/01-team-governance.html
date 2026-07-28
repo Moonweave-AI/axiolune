@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="金融本体驱动平台总体设计、技术选型、模块、本体、算法与交付规范">
+  <title>团队结构、职责与治理 · 金融本体驱动平台</title>
+  <script>
+    (function() {
+      var saved = localStorage.getItem("finance-design-theme");
+      if (saved) document.documentElement.dataset.theme = saved;
+    }());
+    window.SITE_ROOT = "../../";
+    window.RAW_ROOT = "../../../";
+  </script>
+  <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <header class="topbar">
+    <button class="icon-button menu-button" type="button" data-menu-toggle aria-label="打开文档目录" aria-expanded="false">☰</button>
+    <a class="brand" href="../../index.html">
+      <span class="brand-mark" aria-hidden="true">FO</span>
+      <span class="brand-text">金融本体驱动平台设计</span>
+    </a>
+    <span class="topbar-spacer"></span>
+    <button class="icon-button" type="button" data-theme-toggle aria-label="切换主题">☾</button>
+  </header>
+  <div class="layout">
+    <aside class="sidebar" aria-label="文档目录">
+      <div class="search-wrap">
+        <input class="search-input" type="search" data-search placeholder="搜索全部文档…" aria-label="搜索全部文档">
+        <p class="search-hint">按 Ctrl/⌘ + K 聚焦 · Esc 清除</p>
+        <div class="search-results" data-search-results aria-live="polite"></div>
+      </div>
+      <nav class="nav-section" aria-label="首页">
+<h2 class="nav-section-title">首页</h2>
+<a class="nav-link" href="../../index.html">金融本体驱动平台：总体设计与实施规范</a>
+</nav>
+<nav class="nav-section" aria-label="交付说明">
+<h2 class="nav-section-title">交付说明</h2>
+<a class="nav-link" href="../../PACKAGE-SUMMARY.html">交付包清单与验证记录</a>
+</nav>
+<nav class="nav-section" aria-label="总览与追踪">
+<h2 class="nav-section-title">总览与追踪</h2>
+<a class="nav-link" href="../00-overview/00-executive-summary.html">执行摘要</a>
+<a class="nav-link" href="../00-overview/01-scope-assumptions.html">设计范围、假设与边界</a>
+<a class="nav-link" href="../00-overview/02-design-principles.html">核心设计原则与关键决策</a>
+<a class="nav-link" href="../00-overview/03-requirements-traceability.html">需求—模块—本体—证据追踪矩阵</a>
+</nav>
+<nav class="nav-section" aria-label="总体架构">
+<h2 class="nav-section-title">总体架构</h2>
+<a class="nav-link" href="../01-architecture/00-target-architecture.html">目标总体架构</a>
+<a class="nav-link" href="../01-architecture/01-domain-boundaries.html">领域边界与依赖</a>
+<a class="nav-link" href="../01-architecture/02-data-architecture.html">数据与多模态架构</a>
+<a class="nav-link" href="../01-architecture/03-deployment-topology.html">部署拓扑、环境与灾备</a>
+<a class="nav-link" href="../01-architecture/04-nonfunctional-requirements.html">非功能需求与质量属性</a>
+</nav>
+<nav class="nav-section" aria-label="技术选型">
+<h2 class="nav-section-title">技术选型</h2>
+<a class="nav-link" href="../02-technology/00-selection-summary.html">技术选型总表</a>
+<a class="nav-link" href="../02-technology/01-frontend-design-system.html">前端、视觉与交互设计</a>
+<a class="nav-link" href="../02-technology/02-backend-communication.html">后端、接口与通信</a>
+<a class="nav-link" href="../02-technology/03-databases-storage.html">数据库、搜索、图、向量与媒体存储</a>
+<a class="nav-link" href="../02-technology/04-compute-workflow.html">流批计算、数据编排与业务工作流</a>
+<a class="nav-link" href="../02-technology/05-ai-mlops.html">AI、MLOps、GraphRAG 与 Agent 技术</a>
+<a class="nav-link" href="../02-technology/06-security-devsecops.html">安全、DevSecOps 与可观测性技术</a>
+</nav>
+<nav class="nav-section" aria-label="模块设计">
+<h2 class="nav-section-title">模块设计</h2>
+<a class="nav-link" href="../03-modules/00-module-map.html">业务与平台模块全景</a>
+<a class="nav-link" href="../03-modules/01-workspace-data-intelligence.html">统一工作台、数据与资讯</a>
+<a class="nav-link" href="../03-modules/02-quant-active-research.html">量化研究与主动投研</a>
+<a class="nav-link" href="../03-modules/03-portfolio-execution.html">产品、组合、OMS/IMS 与算法执行</a>
+<a class="nav-link" href="../03-modules/04-risk-compliance.html">风险、合规与核对</a>
+<a class="nav-link" href="../03-modules/05-product-reporting.html">产品、渠道与经营报表</a>
+<a class="nav-link" href="../03-modules/06-ontology-automation-operations.html">本体、自动化、Agent 与平台运维</a>
+</nav>
+<nav class="nav-section" aria-label="本体工程">
+<h2 class="nav-section-title">本体工程</h2>
+<a class="nav-link" href="../04-ontology/00-method-meta-model.html">金融本体方法与元模型</a>
+<a class="nav-link" href="../04-ontology/01-domain-model.html">金融本体逻辑域</a>
+<a class="nav-link" href="../04-ontology/02-object-link-catalog.html">核心对象与链接目录</a>
+<a class="nav-link" href="../04-ontology/03-actions-functions-policies.html">动作、函数、模型、策略与工作流</a>
+<a class="nav-link" href="../04-ontology/04-temporal-provenance-quality.html">时间、来源、证据与质量</a>
+<a class="nav-link" href="../04-ontology/05-security-version-governance.html">本体安全、版本、分支与治理</a>
+<a class="nav-link" href="../04-ontology/06-implementation-mapping.html">本体到数据、API、UI 与运行时的映射</a>
+</nav>
+<nav class="nav-section" aria-label="逻辑域与算法">
+<h2 class="nav-section-title">逻辑域与算法</h2>
+<a class="nav-link" href="../05-algorithms/00-algorithm-framework.html">算法工程总规范</a>
+<a class="nav-link" href="../05-algorithms/01-market-factor-backtest.html">行情、因子与回测算法规范</a>
+<a class="nav-link" href="../05-algorithms/02-execution-tca.html">算法执行与交易成本分析规范</a>
+<a class="nav-link" href="../05-algorithms/03-portfolio-risk.html">组合、净值、风险、流动性与对账算法规范</a>
+<a class="nav-link" href="../05-algorithms/04-graph-ai.html">图算法、证据图、GraphRAG 与文档智能规范</a>
+</nav>
+<nav class="nav-section" aria-label="工程、安全与 SRE">
+<h2 class="nav-section-title">工程、安全与 SRE</h2>
+<a class="nav-link" href="../06-engineering/00-engineering-overview.html">工程实现总纲</a>
+<a class="nav-link" href="../06-engineering/01-api-event-contracts.html">API、事件与分布式一致性契约</a>
+<a class="nav-link" href="../06-engineering/02-security-model.html">安全、权限与审计模型</a>
+<a class="nav-link" href="../06-engineering/03-observability-sre.html">可观测性与 SRE</a>
+<a class="nav-link" href="../06-engineering/04-testing-validation.html">测试、验证与发布质量门</a>
+<a class="nav-link" href="../06-engineering/05-continuity-recovery.html">业务连续性、备份与灾难恢复</a>
+</nav>
+<nav class="nav-section" aria-label="交付与迁移">
+<h2 class="nav-section-title">交付与迁移</h2>
+<a class="nav-link" href="00-roadmap.html">分期路线图与投资顺序</a>
+<a class="nav-link is-active" href="01-team-governance.html" aria-current="page">团队结构、职责与治理</a>
+<a class="nav-link" href="02-migration-cutover.html">遗留迁移、双跑与切换</a>
+<a class="nav-link" href="03-acceptance-risks.html">验收体系与风险登记</a>
+<a class="nav-link" href="04-decision-register.html">架构决策登记册</a>
+<a class="nav-link" href="05-open-questions.html">立项前未决问题</a>
+</nav>
+<nav class="nav-section" aria-label="参考与证据">
+<h2 class="nav-section-title">参考与证据</h2>
+<a class="nav-link" href="../08-reference/00-palantir-capability-mapping.html">Palantir 能力体系与本方案映射</a>
+<a class="nav-link" href="../08-reference/01-attachment-audit-summary.html">附件审计摘要</a>
+<a class="nav-link" href="../08-reference/02-source-material-handling.html">源材料处理与证据边界</a>
+<a class="nav-link" href="../08-reference/03-source-register.html">参考资料登记册</a>
+<a class="nav-link" href="../08-reference/04-palantir-document-system-audit.html">Palantir 官方文档体系研究与金融平台本体工程映射</a>
+<a class="nav-link" href="../08-reference/05-glossary.html">术语表</a>
+</nav>
+    </aside>
+    <div class="overlay" aria-hidden="true"></div>
+    <main class="main" id="content">
+      <div class="content-shell">
+        <nav class="breadcrumbs" aria-label="面包屑"><a href="../../index.html">首页</a><span>›</span><span>交付与迁移</span><span>›</span><span>团队结构、职责与治理</span></nav>
+        <article class="article">
+          <section id="团队结构职责与治理" class="level1">
+<h1>团队结构、职责与治理</h1>
+<section id="1-组织模型" class="level2">
+<h2>1. 组织模型</h2>
+<p>采用“领域纵向团队 + 平台横向团队 + 轻量治理委员会”：</p>
+<pre class="mermaid">flowchart TB
+    SC["Steering Committee&lt;br/&gt;投资·风险·优先级"]
+    OC["Ontology &amp; Data Council&lt;br/&gt;共享语义·契约·质量"]
+    ARB["Architecture/Security/Risk Review&lt;br/&gt;关键决策与高风险门"]
+    PS["Platform Squads&lt;br/&gt;本体·数据·开发平台·SRE·安全"]
+    DS["Domain Squads&lt;br/&gt;研究·组合/交易·风险·产品"]
+    SC --&gt; OC
+    SC --&gt; ARB
+    OC --&gt; PS
+    OC --&gt; DS
+    ARB --&gt; PS
+    ARB --&gt; DS</pre>
+<p>委员会定义边界、标准和例外，不替代团队日常设计；普通属性和局部实现不需要层层审批。</p>
+</section>
+<section id="2-领域团队" class="level2">
+<h2>2. 领域团队</h2>
+<section id="21-建议团队" class="level3">
+<h3>2.1 建议团队</h3>
+<ul>
+<li><strong>市场与数据智能</strong>：主数据、行情、Level2、新闻、日历、媒体；</li>
+<li><strong>量化与主动研究</strong>：因子、回测、行业、预期、主题和 AI 研究；</li>
+<li><strong>组合与执行</strong>：产品/组合、账户、持仓、OMS、算法和柜台；</li>
+<li><strong>风险与合规</strong>：规则、限额、观察/限制、例外、核对和监管证据；</li>
+<li><strong>产品与报告</strong>：净值、绩效、渠道、报告生成/发布；</li>
+<li><strong>本体与应用平台</strong>：Registry、Object/Action API、SDK、应用壳和 Studio；</li>
+<li><strong>数据平台</strong>：连接器、Kafka、湖仓、计算、质量、目录和索引；</li>
+<li><strong>平台工程/SRE/安全</strong>：环境、CI/CD、IAM、密钥、观测、连续性。</li>
+</ul>
+<p>团队规模较小时可合并，但 Owner 职责不能消失。</p>
+</section>
+<section id="22-每个-squad-的最小能力" class="level3">
+<h3>2.2 每个 Squad 的最小能力</h3>
+<ul>
+<li>Product/Domain Owner；</li>
+<li>领域架构/资深工程；</li>
+<li>前后端或数据工程；</li>
+<li>QA/测试自动化；</li>
+<li>Data Steward 或数据责任接口；</li>
+<li>SRE/Security/UX 共享伙伴；</li>
+<li>量化、风控、交易等专业团队还需对应 Subject Matter Expert。</li>
+</ul>
+</section>
+</section>
+<section id="3-核心角色" class="level2">
+<h2>3. 核心角色</h2>
+<table>
+<thead>
+<tr class="header">
+<th>角色</th>
+<th>决策权与责任</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Executive Sponsor</td>
+<td>资金、跨部门障碍和风险接受</td>
+</tr>
+<tr class="even">
+<td>Product/Domain Owner</td>
+<td>业务边界、价值、优先级、语义与验收</td>
+</tr>
+<tr class="odd">
+<td>Ontology Architect</td>
+<td>元模型、跨域共享类型、API 名、兼容和迁移</td>
+</tr>
+<tr class="even">
+<td>Data Owner</td>
+<td>数据用途、分类、质量目标、访问与保留</td>
+</tr>
+<tr class="odd">
+<td>Data Steward</td>
+<td>字段映射、来源、质量、冲突和日常治理</td>
+</tr>
+<tr class="even">
+<td>Action Owner</td>
+<td>业务不变量、副作用、审批、幂等和运行手册</td>
+</tr>
+<tr class="odd">
+<td>Function/Metric Owner</td>
+<td>口径、算法、点时、版本和质量</td>
+</tr>
+<tr class="even">
+<td>Model Owner/Model Risk</td>
+<td>模型评测、限制、漂移、回退和退役</td>
+</tr>
+<tr class="odd">
+<td>Application Owner</td>
+<td>用户旅程、对象视图、可访问性和支持</td>
+</tr>
+<tr class="even">
+<td>Security/Privacy</td>
+<td>IAM、分类、威胁、策略和事件</td>
+</tr>
+<tr class="odd">
+<td>Compliance/Legal</td>
+<td>适用规则、证据、报送、许可和第三方</td>
+</tr>
+<tr class="even">
+<td>SRE</td>
+<td>SLO、容量、发布、事件、备份和 DR</td>
+</tr>
+<tr class="odd">
+<td>Release Manager</td>
+<td>版本清单、窗口、门禁、沟通和回退</td>
+</tr>
+<tr class="even">
+<td>QA/Validation Lead</td>
+<td>风险测试策略、独立证据和质量豁免</td>
+</tr>
+</tbody>
+</table>
+<p>同一人可以兼任低风险角色，但职责分离规则仍必须满足。</p>
+</section>
+<section id="4-决策机构" class="level2">
+<h2>4. 决策机构</h2>
+<section id="41-steering-committee" class="level3">
+<h3>4.1 Steering Committee</h3>
+<p>频率：月度或重大里程碑。</p>
+<p>职责：</p>
+<ul>
+<li>投资、范围、优先级和阶段门；</li>
+<li>跨部门资源与外部供应商；</li>
+<li>高剩余风险和重大延期；</li>
+<li>Tier 0 上线、DR 和遗留退役的最终业务批准。</li>
+</ul>
+</section>
+<section id="42-ontology--data-council" class="level3">
+<h3>4.2 Ontology &amp; Data Council</h3>
+<p>频率：每周固定时段 + 异步评审。</p>
+<p>只审：</p>
+<ul>
+<li>新共享 Domain/Interface/ValueType；</li>
+<li>主键、身份解析和跨域 Link；</li>
+<li>指标/时间/单位的跨域口径；</li>
+<li>major/破坏性变化、权限语义和退役；</li>
+<li>多团队数据主权和冲突。</li>
+</ul>
+<p>普通域内 optional property 由 Domain Owner + Steward 批准并通过自动门。</p>
+</section>
+<section id="43-architecture-review-board" class="level3">
+<h3>4.3 Architecture Review Board</h3>
+<p>审查不可逆或高退出成本决定：</p>
+<ul>
+<li>新数据库/消息/工作流/云服务；</li>
+<li>跨域同步依赖和 Tier 0 拆分；</li>
+<li>数据驻留、跨地域和供应商锁定；</li>
+<li>性能/可用性目标与重大例外；</li>
+<li>平台公共库和协议。</li>
+</ul>
+<p>使用 ADR，记录背景、选项、决策、后果、复审触发和退出方案。</p>
+</section>
+<section id="44-securitymodelrisk-review" class="level3">
+<h3>4.4 Security/Model/Risk Review</h3>
+<p>按风险触发：</p>
+<ul>
+<li>Restricted 数据、新外联、新身份/权限模型；</li>
+<li>L3/L4 Action、生产交易规则和风险例外；</li>
+<li>模型用于投资/风险/客户或外部输出；</li>
+<li>Agent 工具、副作用、外部模型和敏感检索；</li>
+<li>Break-glass、密钥恢复、DR 和重大安全例外。</li>
+</ul>
+</section>
+</section>
+<section id="5-raci-示例" class="level2">
+<h2>5. RACI 示例</h2>
+<table>
+<thead>
+<tr class="header">
+<th>制品/决策</th>
+<th>Domain Owner</th>
+<th>Ontology</th>
+<th>Data</th>
+<th>Engineering</th>
+<th>Security/Compliance</th>
+<th>SRE/QA</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Object/Link 语义</td>
+<td>A</td>
+<td>R</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>I</td>
+</tr>
+<tr class="even">
+<td>数据映射/质量</td>
+<td>A/C</td>
+<td>C</td>
+<td>R</td>
+<td>R</td>
+<td>C</td>
+<td>C</td>
+</tr>
+<tr class="odd">
+<td>Action 不变量</td>
+<td>A</td>
+<td>C</td>
+<td>C</td>
+<td>R</td>
+<td>C/A（高风险）</td>
+<td>C</td>
+</tr>
+<tr class="even">
+<td>API/Event 实现</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>A/R</td>
+<td>C</td>
+<td>C</td>
+</tr>
+<tr class="odd">
+<td>权限策略</td>
+<td>A/C</td>
+<td>C</td>
+<td>C</td>
+<td>R</td>
+<td>A/R</td>
+<td>C</td>
+</tr>
+<tr class="even">
+<td>模型发布</td>
+<td>A/R</td>
+<td>C</td>
+<td>C</td>
+<td>R</td>
+<td>A/C</td>
+<td>R/C</td>
+</tr>
+<tr class="odd">
+<td>生产发布</td>
+<td>A（业务）</td>
+<td>I</td>
+<td>I</td>
+<td>R</td>
+<td>C/A（高风险）</td>
+<td>A/R</td>
+</tr>
+<tr class="even">
+<td>DR 切换</td>
+<td>A（业务连续性）</td>
+<td>I</td>
+<td>C</td>
+<td>R</td>
+<td>C</td>
+<td>A/R</td>
+</tr>
+<tr class="odd">
+<td>退役与删除</td>
+<td>A</td>
+<td>C</td>
+<td>A/R</td>
+<td>R</td>
+<td>C/A</td>
+<td>C</td>
+</tr>
+</tbody>
+</table>
+<p><code>A</code> 必须唯一或明确联合批准边界；<code>R</code> 可以多个。每个实际制品在 Registry 记录具体人员/团队而非只写岗位。</p>
+</section>
+<section id="6-需求与设计治理" class="level2">
+<h2>6. 需求与设计治理</h2>
+<p>一项需求使用统一模板：</p>
+<ul>
+<li>业务问题、用户和可量化结果；</li>
+<li>涉及对象、链接、函数、指标、动作和策略；</li>
+<li>数据来源、点时、质量和许可；</li>
+<li>副作用、金额/影响范围和风险等级；</li>
+<li>权限、用途、审批和审计；</li>
+<li>SLO、容量、RTO/RPO；</li>
+<li>正常、异常、降级、核对和恢复；</li>
+<li>验收证据、Owner 和非目标。</li>
+</ul>
+<p>从需求自动/人工维护追踪：</p>
+<p><code>Requirement → OntologyChange → Contract → Code/Data/Policy → ValidationRun → ReleaseManifest → SLO/Incident</code></p>
+</section>
+<section id="7-本体变更流程" class="level2">
+<h2>7. 本体变更流程</h2>
+<ol type="1">
+<li>在 Global Branch/工程分支声明变更意图和 Owner；</li>
+<li>运行 API 名、主键、基数、值类型和语义检查；</li>
+<li>生成数据映射、SDK、应用、策略和下游影响；</li>
+<li>域内变更由 Domain Owner/Steward 评审；</li>
+<li>跨域/破坏性变更进入 Council；</li>
+<li>安全敏感变化进入 Security Review；</li>
+<li>在 Scenario/Replay 验证数据、动作和迁移；</li>
+<li>Maker-checker 合并、灰度物化并观察；</li>
+<li>发布不可变版本和迁移指南；</li>
+<li>Deprecated 资源跟踪消费者清零后退役。</li>
+</ol>
+<p>委员会 SLA 要明确，避免治理成为交付瓶颈。</p>
+</section>
+<section id="8-数据产品治理" class="level2">
+<h2>8. 数据产品治理</h2>
+<p>每个 <code>DataProduct/DataAsset</code> 有：</p>
+<ul>
+<li>Owner/Steward、消费者和业务用途；</li>
+<li>Schema、主键、时间、单位和枚举；</li>
+<li>来源许可、地域、分类、保存和删除；</li>
+<li>新鲜度、完整性、正确性和可用性 SLO；</li>
+<li>点时语义、修订和回填规则；</li>
+<li>血缘、下游和变更通知；</li>
+<li>隔离、补救、回滚和退役。</li>
+</ul>
+<p>数据质量失败由责任团队接单；平台团队提供机制但不替业务接受错误数据。</p>
+</section>
+<section id="9-动作与策略治理" class="level2">
+<h2>9. 动作与策略治理</h2>
+<ul>
+<li>Action Owner 定义参数、前置/后置、状态机、副作用、幂等、未知状态和核对；</li>
+<li>Security/Compliance 定义主体、用途、环境、属性和职责分离；</li>
+<li>Domain Owner 定义金额/影响阈值与例外；</li>
+<li>SRE 定义超时、重试、告警、手工接管和恢复；</li>
+<li>QA 提供状态机、重放、并发、权限和补偿证据；</li>
+<li>L3/L4 发布需要独立 Checker；</li>
+<li>所有临时例外有范围、理由、补偿控制、到期和复核。</li>
+</ul>
+</section>
+<section id="10-模型与-agent-治理" class="level2">
+<h2>10. 模型与 Agent 治理</h2>
+<p>按用途和影响分级：</p>
+<table>
+<thead>
+<tr class="header">
+<th>等级</th>
+<th>示例</th>
+<th>治理</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>M0</td>
+<td>内部文档辅助检索</td>
+<td>基本质量、ACL、成本</td>
+</tr>
+<tr class="even">
+<td>M1</td>
+<td>研究摘要/候选提取</td>
+<td>引用、人工复核、漂移</td>
+</tr>
+<tr class="odd">
+<td>M2</td>
+<td>信号/风险建议、报告草稿</td>
+<td>独立评测、Model Risk、影子</td>
+</tr>
+<tr class="even">
+<td>M3</td>
+<td>影响交易/客户/监管的决策</td>
+<td>严格验证；通常只允许 proposal</td>
+</tr>
+</tbody>
+</table>
+<p>注册训练/评测数据快照、模型/提示/工具版本、限制、风险、Owner、批准、监控、回退和退役。外部基础模型版本变化按受控供应链变更处理。</p>
+</section>
+<section id="11-发布与变更委员会" class="level2">
+<h2>11. 发布与变更委员会</h2>
+<p>普通低风险服务使用自动门和团队批准；以下进入 Change Advisory：</p>
+<ul>
+<li>Tier 0、交易时段或柜台协议；</li>
+<li>本体/API/Event major；</li>
+<li>数据库不可逆迁移或大规模回填；</li>
+<li>权限、密钥、网络边界；</li>
+<li>DR 切换和遗留真源退役；</li>
+<li>重大模型/风险规则发布。</li>
+</ul>
+<p>会议不替代自动证据。变更单链接 ReleaseManifest、影响、测试、容量、观察、回滚、Owner、窗口和沟通。</p>
+</section>
+<section id="12-运营治理节奏" class="level2">
+<h2>12. 运营治理节奏</h2>
+<table>
+<thead>
+<tr class="header">
+<th>节奏</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>每日</td>
+<td>交易/数据就绪、事件、关键核对、发布观察</td>
+</tr>
+<tr class="even">
+<td>每周</td>
+<td>本体/数据变更、风险登记、依赖和运维债务</td>
+</tr>
+<tr class="odd">
+<td>双周/月</td>
+<td>领域成果、用户指标、质量、成本和容量</td>
+</tr>
+<tr class="even">
+<td>月度</td>
+<td>SLO/错误预算、事故趋势、安全与权限</td>
+</tr>
+<tr class="odd">
+<td>季度</td>
+<td>路线、架构复审、权限证明、供应商和 DR</td>
+</tr>
+<tr class="even">
+<td>年度</td>
+<td>BIA、法规矩阵、全场景连续性和平台退出策略</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="13-文档与知识要求" class="level2">
+<h2>13. 文档与知识要求</h2>
+<ul>
+<li>架构、ADR、本体、契约、运行手册和用户说明与代码同版本；</li>
+<li>关键定义放 Registry/声明文件，不只存在会议纪要；</li>
+<li>变更说明面向消费者描述行为和迁移，而非只列提交；</li>
+<li>事故复盘无责但有明确 Owner/截止和验证；</li>
+<li>临时脚本、手工 SQL 和 Notebook 进入资产登记并有到期；</li>
+<li>关键岗位知识至少两人掌握并通过演练验证。</li>
+</ul>
+</section>
+<section id="14-治理效果指标" class="level2">
+<h2>14. 治理效果指标</h2>
+<ul>
+<li>破坏性变化在生产前发现比例；</li>
+<li>共享类型重复/冲突和平均解决时长；</li>
+<li>数据产品有 Owner/SLO/血缘比例；</li>
+<li>生产动作有幂等、审批、核对和运行手册比例；</li>
+<li>临时权限/例外按期关闭比例；</li>
+<li>审批周期 P50/P95 与退回原因；</li>
+<li>事故改进项按期关闭和复发率；</li>
+<li>被弃用资源的消费者清零时长；</li>
+<li>用户任务结果和可靠性提升，而非委员会/文档数量。</li>
+</ul>
+</section>
+</section>
+
+        </article>
+        <footer class="page-meta">
+          <span>基线 1.0 · 2026-07-27 · Markdown 与 HTML 同源</span>
+          <span><a href="../../../ontology/financial-ontology.yaml">本体 YAML</a> · <a href="../../../contracts/ontology-api.openapi.yaml">OpenAPI</a> · <a href="../../../contracts/events.asyncapi.yaml">AsyncAPI</a></span>
+        </footer>
+      </div>
+    </main>
+  </div>
+  <script src="../../assets/search-index.js"></script>
+  <script src="../../assets/mermaid-11.16.0.min.js"></script>
+  <script src="../../assets/app.js"></script>
+</body>
+</html>

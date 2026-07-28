@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="金融本体驱动平台总体设计、技术选型、模块、本体、算法与交付规范">
+  <title>遗留迁移、双跑与切换 · 金融本体驱动平台</title>
+  <script>
+    (function() {
+      var saved = localStorage.getItem("finance-design-theme");
+      if (saved) document.documentElement.dataset.theme = saved;
+    }());
+    window.SITE_ROOT = "../../";
+    window.RAW_ROOT = "../../../";
+  </script>
+  <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <header class="topbar">
+    <button class="icon-button menu-button" type="button" data-menu-toggle aria-label="打开文档目录" aria-expanded="false">☰</button>
+    <a class="brand" href="../../index.html">
+      <span class="brand-mark" aria-hidden="true">FO</span>
+      <span class="brand-text">金融本体驱动平台设计</span>
+    </a>
+    <span class="topbar-spacer"></span>
+    <button class="icon-button" type="button" data-theme-toggle aria-label="切换主题">☾</button>
+  </header>
+  <div class="layout">
+    <aside class="sidebar" aria-label="文档目录">
+      <div class="search-wrap">
+        <input class="search-input" type="search" data-search placeholder="搜索全部文档…" aria-label="搜索全部文档">
+        <p class="search-hint">按 Ctrl/⌘ + K 聚焦 · Esc 清除</p>
+        <div class="search-results" data-search-results aria-live="polite"></div>
+      </div>
+      <nav class="nav-section" aria-label="首页">
+<h2 class="nav-section-title">首页</h2>
+<a class="nav-link" href="../../index.html">金融本体驱动平台：总体设计与实施规范</a>
+</nav>
+<nav class="nav-section" aria-label="交付说明">
+<h2 class="nav-section-title">交付说明</h2>
+<a class="nav-link" href="../../PACKAGE-SUMMARY.html">交付包清单与验证记录</a>
+</nav>
+<nav class="nav-section" aria-label="总览与追踪">
+<h2 class="nav-section-title">总览与追踪</h2>
+<a class="nav-link" href="../00-overview/00-executive-summary.html">执行摘要</a>
+<a class="nav-link" href="../00-overview/01-scope-assumptions.html">设计范围、假设与边界</a>
+<a class="nav-link" href="../00-overview/02-design-principles.html">核心设计原则与关键决策</a>
+<a class="nav-link" href="../00-overview/03-requirements-traceability.html">需求—模块—本体—证据追踪矩阵</a>
+</nav>
+<nav class="nav-section" aria-label="总体架构">
+<h2 class="nav-section-title">总体架构</h2>
+<a class="nav-link" href="../01-architecture/00-target-architecture.html">目标总体架构</a>
+<a class="nav-link" href="../01-architecture/01-domain-boundaries.html">领域边界与依赖</a>
+<a class="nav-link" href="../01-architecture/02-data-architecture.html">数据与多模态架构</a>
+<a class="nav-link" href="../01-architecture/03-deployment-topology.html">部署拓扑、环境与灾备</a>
+<a class="nav-link" href="../01-architecture/04-nonfunctional-requirements.html">非功能需求与质量属性</a>
+</nav>
+<nav class="nav-section" aria-label="技术选型">
+<h2 class="nav-section-title">技术选型</h2>
+<a class="nav-link" href="../02-technology/00-selection-summary.html">技术选型总表</a>
+<a class="nav-link" href="../02-technology/01-frontend-design-system.html">前端、视觉与交互设计</a>
+<a class="nav-link" href="../02-technology/02-backend-communication.html">后端、接口与通信</a>
+<a class="nav-link" href="../02-technology/03-databases-storage.html">数据库、搜索、图、向量与媒体存储</a>
+<a class="nav-link" href="../02-technology/04-compute-workflow.html">流批计算、数据编排与业务工作流</a>
+<a class="nav-link" href="../02-technology/05-ai-mlops.html">AI、MLOps、GraphRAG 与 Agent 技术</a>
+<a class="nav-link" href="../02-technology/06-security-devsecops.html">安全、DevSecOps 与可观测性技术</a>
+</nav>
+<nav class="nav-section" aria-label="模块设计">
+<h2 class="nav-section-title">模块设计</h2>
+<a class="nav-link" href="../03-modules/00-module-map.html">业务与平台模块全景</a>
+<a class="nav-link" href="../03-modules/01-workspace-data-intelligence.html">统一工作台、数据与资讯</a>
+<a class="nav-link" href="../03-modules/02-quant-active-research.html">量化研究与主动投研</a>
+<a class="nav-link" href="../03-modules/03-portfolio-execution.html">产品、组合、OMS/IMS 与算法执行</a>
+<a class="nav-link" href="../03-modules/04-risk-compliance.html">风险、合规与核对</a>
+<a class="nav-link" href="../03-modules/05-product-reporting.html">产品、渠道与经营报表</a>
+<a class="nav-link" href="../03-modules/06-ontology-automation-operations.html">本体、自动化、Agent 与平台运维</a>
+</nav>
+<nav class="nav-section" aria-label="本体工程">
+<h2 class="nav-section-title">本体工程</h2>
+<a class="nav-link" href="../04-ontology/00-method-meta-model.html">金融本体方法与元模型</a>
+<a class="nav-link" href="../04-ontology/01-domain-model.html">金融本体逻辑域</a>
+<a class="nav-link" href="../04-ontology/02-object-link-catalog.html">核心对象与链接目录</a>
+<a class="nav-link" href="../04-ontology/03-actions-functions-policies.html">动作、函数、模型、策略与工作流</a>
+<a class="nav-link" href="../04-ontology/04-temporal-provenance-quality.html">时间、来源、证据与质量</a>
+<a class="nav-link" href="../04-ontology/05-security-version-governance.html">本体安全、版本、分支与治理</a>
+<a class="nav-link" href="../04-ontology/06-implementation-mapping.html">本体到数据、API、UI 与运行时的映射</a>
+</nav>
+<nav class="nav-section" aria-label="逻辑域与算法">
+<h2 class="nav-section-title">逻辑域与算法</h2>
+<a class="nav-link" href="../05-algorithms/00-algorithm-framework.html">算法工程总规范</a>
+<a class="nav-link" href="../05-algorithms/01-market-factor-backtest.html">行情、因子与回测算法规范</a>
+<a class="nav-link" href="../05-algorithms/02-execution-tca.html">算法执行与交易成本分析规范</a>
+<a class="nav-link" href="../05-algorithms/03-portfolio-risk.html">组合、净值、风险、流动性与对账算法规范</a>
+<a class="nav-link" href="../05-algorithms/04-graph-ai.html">图算法、证据图、GraphRAG 与文档智能规范</a>
+</nav>
+<nav class="nav-section" aria-label="工程、安全与 SRE">
+<h2 class="nav-section-title">工程、安全与 SRE</h2>
+<a class="nav-link" href="../06-engineering/00-engineering-overview.html">工程实现总纲</a>
+<a class="nav-link" href="../06-engineering/01-api-event-contracts.html">API、事件与分布式一致性契约</a>
+<a class="nav-link" href="../06-engineering/02-security-model.html">安全、权限与审计模型</a>
+<a class="nav-link" href="../06-engineering/03-observability-sre.html">可观测性与 SRE</a>
+<a class="nav-link" href="../06-engineering/04-testing-validation.html">测试、验证与发布质量门</a>
+<a class="nav-link" href="../06-engineering/05-continuity-recovery.html">业务连续性、备份与灾难恢复</a>
+</nav>
+<nav class="nav-section" aria-label="交付与迁移">
+<h2 class="nav-section-title">交付与迁移</h2>
+<a class="nav-link" href="00-roadmap.html">分期路线图与投资顺序</a>
+<a class="nav-link" href="01-team-governance.html">团队结构、职责与治理</a>
+<a class="nav-link is-active" href="02-migration-cutover.html" aria-current="page">遗留迁移、双跑与切换</a>
+<a class="nav-link" href="03-acceptance-risks.html">验收体系与风险登记</a>
+<a class="nav-link" href="04-decision-register.html">架构决策登记册</a>
+<a class="nav-link" href="05-open-questions.html">立项前未决问题</a>
+</nav>
+<nav class="nav-section" aria-label="参考与证据">
+<h2 class="nav-section-title">参考与证据</h2>
+<a class="nav-link" href="../08-reference/00-palantir-capability-mapping.html">Palantir 能力体系与本方案映射</a>
+<a class="nav-link" href="../08-reference/01-attachment-audit-summary.html">附件审计摘要</a>
+<a class="nav-link" href="../08-reference/02-source-material-handling.html">源材料处理与证据边界</a>
+<a class="nav-link" href="../08-reference/03-source-register.html">参考资料登记册</a>
+<a class="nav-link" href="../08-reference/04-palantir-document-system-audit.html">Palantir 官方文档体系研究与金融平台本体工程映射</a>
+<a class="nav-link" href="../08-reference/05-glossary.html">术语表</a>
+</nav>
+    </aside>
+    <div class="overlay" aria-hidden="true"></div>
+    <main class="main" id="content">
+      <div class="content-shell">
+        <nav class="breadcrumbs" aria-label="面包屑"><a href="../../index.html">首页</a><span>›</span><span>交付与迁移</span><span>›</span><span>遗留迁移、双跑与切换</span></nav>
+        <article class="article">
+          <section id="遗留迁移双跑与切换" class="level1">
+<h1>遗留迁移、双跑与切换</h1>
+<section id="1-迁移目标" class="level2">
+<h2>1. 迁移目标</h2>
+<p>迁移要同时完成四件事：</p>
+<ol type="1">
+<li>把离散字段、页面和脚本映射为稳定的金融本体；</li>
+<li>保持订单、成交、持仓、资金、研究和报告的历史/点时语义；</li>
+<li>在新旧系统并行期间证明结果、权限和操作一致；</li>
+<li>可按业务最小单元切换、核对、回退并最终退役旧路径。</li>
+</ol>
+<p>迁移不以“数据复制完成”或“新页面可打开”为成功标准。</p>
+</section>
+<section id="2-已发现的迁移特征" class="level2">
+<h2>2. 已发现的迁移特征</h2>
+<p>附件审计显示：</p>
+<ul>
+<li>现状覆盖工作台、数据、量化研究、主动研究、OMS/IMS/UFT、算法、风险、产品和 AI；</li>
+<li>前端至少存在黑色终端、深色 OMS/IMS、浅色企业应用和独立 AI 面板等多套体验；</li>
+<li>订单 CSV 约 2,474 行 × 20 列，持仓 CSV 约 802 行 × 30 列；</li>
+<li>存在 19 位订单标识，超过 JavaScript 安全整数，必须按字符串迁移；</li>
+<li>时间戳含毫秒，交易日/事件时间/记录时间未完全区分；</li>
+<li>多个 code/枚举缺少字典，零、空、未知和不适用语义不清；</li>
+<li>部分单位写在列名，目标字段全部为空；</li>
+<li>现有技术包含 Umi/React/DVA/Ant Design/DevExtreme/ECharts/Chart.js、Axios、WebSocket、DataHub/SQL API 与微前端迹象；</li>
+<li>运维存在文件配置、静态秘密、Cron/终端进程和手工操作。</li>
+</ul>
+<p>这些是迁移输入与风险证据，不应被固化为目标设计。</p>
+</section>
+<section id="3-迁移原则" class="level2">
+<h2>3. 迁移原则</h2>
+<ul>
+<li>先观测、后读取、再提案、最后写入；</li>
+<li>新本体使用规范 ID，保留所有源系统 ID 的 <code>ExternalIdentifier</code>；</li>
+<li>原始数据不可变保存，规范化和修订另建版本；</li>
+<li>业务含义不明确时进入 <code>UnresolvedMapping</code>，不猜测；</li>
+<li>迁移、回填、核对和修复均为可审计运行/Action；</li>
+<li>新旧双写只在有唯一幂等键、写入围栏和逐笔核对时使用；</li>
+<li>切换以账户、策略、市场、数据产品或用户组为最小波次；</li>
+<li>回退不删除新系统历史；保留时间线并恢复权威路由；</li>
+<li>只有消费者、数据、合规和恢复条件全部满足才退役旧系统。</li>
+</ul>
+</section>
+<section id="4-迁移清单" class="level2">
+<h2>4. 迁移清单</h2>
+<p>为每个遗留资产创建 <code>LegacyAsset</code>：</p>
+<table>
+<thead>
+<tr class="header">
+<th>类别</th>
+<th>必录信息</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>系统/页面</td>
+<td>Owner、用户、旅程、输入/输出、使用频率、替代模块</td>
+</tr>
+<tr class="even">
+<td>数据库/表/CSV</td>
+<td>Schema、主键、时间、单位、质量、规模、保存、许可</td>
+</tr>
+<tr class="odd">
+<td>API/消息/共享内存</td>
+<td>协议、序号、幂等、延迟、错误、身份和网络</td>
+</tr>
+<tr class="even">
+<td>Cron/脚本/Notebook</td>
+<td>触发、依赖、Owner、输出、副作用、恢复</td>
+</tr>
+<tr class="odd">
+<td>账户/权限</td>
+<td>人/服务、范围、审批、秘密引用、到期</td>
+</tr>
+<tr class="even">
+<td>算法/规则</td>
+<td>版本、参数、输入、边界、黄金结果和 Owner</td>
+</tr>
+<tr class="odd">
+<td>报告/文件/媒体</td>
+<td>模板、快照、来源、审批、分发、保留</td>
+</tr>
+<tr class="even">
+<td>外部供应商</td>
+<td>合同、SLA、数据许可、协议、测试和退出</td>
+</tr>
+</tbody>
+</table>
+<p>每项标记 <code>retain / migrate / replace / retire / unresolved</code> 和目标日期。</p>
+</section>
+<section id="5-语义映射" class="level2">
+<h2>5. 语义映射</h2>
+<section id="51-映射模板" class="level3">
+<h3>5.1 映射模板</h3>
+<table>
+<thead>
+<tr class="header">
+<th>源字段</th>
+<th>源含义</th>
+<th>目标对象.属性</th>
+<th>转换</th>
+<th>时间/单位</th>
+<th>null/zero</th>
+<th>质量规则</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>order_id</code></td>
+<td>源委托标识</td>
+<td><code>Order.externalIdentifiers</code></td>
+<td>原样字符串</td>
+<td>不适用</td>
+<td>不可空</td>
+<td>长度/唯一/来源</td>
+<td>OMS Owner</td>
+</tr>
+<tr class="even">
+<td><code>ts_ms</code></td>
+<td>待确认</td>
+<td><code>OrderEvent.occurredAt</code></td>
+<td>epoch ms → zoned</td>
+<td>Asia/Taipei? 待确认</td>
+<td>不可空</td>
+<td>范围/单调</td>
+<td>Source Owner</td>
+</tr>
+<tr class="odd">
+<td><code>qty</code></td>
+<td>待确认总量/剩余量</td>
+<td>对应类型化数量</td>
+<td>decimal</td>
+<td>share/lot 待确认</td>
+<td>零语义确认</td>
+<td>状态机核对</td>
+<td>Domain Owner</td>
+</tr>
+</tbody>
+</table>
+<p>所有“待确认”必须形成访谈问题和阻断/非阻断分类。</p>
+</section>
+<section id="52-标识解析" class="level3">
+<h3>5.2 标识解析</h3>
+<ul>
+<li>为 Instrument、Party、Product、Portfolio、Account、Order、Execution 建规范 ID；</li>
+<li><code>ExternalIdentifier</code> 保存 <code>{source, id_type, value, valid_time}</code>；</li>
+<li>合并/拆分实体是带审批和前后证据的 Action；</li>
+<li>规范 ID 不复用被删除实体，不依赖可变证券代码；</li>
+<li>19 位及更长数字标识在数据库、JSON、CSV、前端和 Excel 导出全链路按文本；</li>
+<li>对同一标识冲突、前导零、编码/全半角、大小写建立规则和隔离。</li>
+</ul>
+</section>
+<section id="53-时间与点时" class="level3">
+<h3>5.3 时间与点时</h3>
+<ul>
+<li>源时间先保留原值、时区推断依据和解析状态；</li>
+<li>区分交易日、业务日、事件发生、来源接收、平台记录和有效期；</li>
+<li>不用文件修改时间代替业务时间；</li>
+<li>历史修订以双时态追加，不覆盖“当时所知”；</li>
+<li>财报、成分、分类、公司行动和借券数据按实际可知时间映射；</li>
+<li>DST/跨市场/夜盘虽当前可能少见，也由值类型显式支持。</li>
+</ul>
+</section>
+<section id="54-数值单位与缺失" class="level3">
+<h3>5.4 数值、单位与缺失</h3>
+<ul>
+<li>decimal/定点类型按业务精度定义，不经 IEEE 754 浮点中转；</li>
+<li>单位从列名迁移为 ValueType 元数据；</li>
+<li>金额携带币种，比例区分 0–1、百分数和 BP；</li>
+<li><code>null/unknown/not_applicable/not_calculated/zero</code> 分开；</li>
+<li>源系统 magic number 或枚举 code 保留原值并映射到受治理字典；</li>
+<li>无法映射的记录进入隔离，不默认映射为 0 或“其他”。</li>
+</ul>
+</section>
+</section>
+<section id="6-迁移技术模式" class="level2">
+<h2>6. 迁移技术模式</h2>
+<section id="61-适配器防腐层" class="level3">
+<h3>6.1 适配器/防腐层</h3>
+<p>遗留 API、Redis Pub/Sub、共享内存、文件和数据库由适配器转换为：</p>
+<ul>
+<li>规范领域事件；</li>
+<li>Object/ExternalIdentifier；</li>
+<li>健康、序号、来源和质量状态；</li>
+<li>受控 Action 的外部端口。</li>
+</ul>
+<p>适配器不得把遗留表结构泄露到公共契约，也不得偷偷重写业务语义。</p>
+</section>
+<section id="62-数据获取" class="level3">
+<h3>6.2 数据获取</h3>
+<table>
+<thead>
+<tr class="header">
+<th>模式</th>
+<th>适用</th>
+<th>要求</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>快照 + CDC</td>
+<td>OLTP 主数据/状态</td>
+<td>一致切点、日志位置、去重、Schema 变化</td>
+</tr>
+<tr class="even">
+<td>事件订阅</td>
+<td>订单/成交/行情</td>
+<td>来源序号、重连、缺口回补、原始报文</td>
+</tr>
+<tr class="odd">
+<td>文件批量</td>
+<td>CSV/报告/外部交付</td>
+<td>清单、校验和、幂等、隔离和归档</td>
+</tr>
+<tr class="even">
+<td>API 拉取</td>
+<td>供应商/小规模对象</td>
+<td>游标、限流、修改时间和全量核对</td>
+</tr>
+<tr class="odd">
+<td>历史导出</td>
+<td>冷数据</td>
+<td>不可变、分区、点时、控制总数</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="63-strangler-路由" class="level3">
+<h3>6.3 Strangler 路由</h3>
+<p>在统一入口后按能力逐步路由：</p>
+<ul>
+<li>查询：新 Object API 优先，未迁移对象由 legacy adapter；</li>
+<li>动作：Action Service 是唯一入口，按账户/策略选择旧/新执行器；</li>
+<li>事件：新旧事实进入统一信封并标识来源；</li>
+<li>UI：统一应用壳链接遗留页面，逐模块替换；</li>
+<li>身份：先统一 SSO/审计，再迁移细粒度授权。</li>
+</ul>
+</section>
+</section>
+<section id="7-历史数据迁移" class="level2">
+<h2>7. 历史数据迁移</h2>
+<section id="71-顺序" class="level3">
+<h3>7.1 顺序</h3>
+<ol type="1">
+<li>固定数据契约和映射版本；</li>
+<li>复制不可变 Raw，并记录文件/表快照、行数、大小、哈希；</li>
+<li>规范化标识、时间、单位和枚举；</li>
+<li>运行质量检查，隔离异常；</li>
+<li>创建对象、链接、事件和分析投影；</li>
+<li>对控制总数、逐记录样本、业务恒等式和点时查询；</li>
+<li>由 Data/Domain Owner 签署批次；</li>
+<li>增量 CDC/事件追平；</li>
+<li>生成 <code>MigrationRun</code> 和差异清单。</li>
+</ol>
+</section>
+<section id="72-核对层次" class="level3">
+<h3>7.2 核对层次</h3>
+<ul>
+<li>传输：文件数、字节、哈希、行数；</li>
+<li>Schema：字段、类型、精度、枚举；</li>
+<li>实体：主键唯一、标识冲突、链接悬空；</li>
+<li>财务：数量、金额、费用、资金、持仓控制总数；</li>
+<li>状态：订单/成交状态机与最终态；</li>
+<li>时间：每日/市场/账户分区和迟到；</li>
+<li>业务：净值、风险、因子、报告黄金结果；</li>
+<li>权限：对象/属性可见集合和导出范围。</li>
+</ul>
+<p>金额/数量容差由值类型和业务批准，不使用一个全局浮点容差。</p>
+</section>
+</section>
+<section id="8-双跑模式" class="level2">
+<h2>8. 双跑模式</h2>
+<section id="81-双跑阶段" class="level3">
+<h3>8.1 双跑阶段</h3>
+<table>
+<thead>
+<tr class="header">
+<th>模式</th>
+<th>旧系统</th>
+<th>新系统</th>
+<th>目的</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Observe</td>
+<td>权威</td>
+<td>只采遥测</td>
+<td>理解负载、失败和依赖</td>
+</tr>
+<tr class="even">
+<td>Dual-read</td>
+<td>权威</td>
+<td>读取/计算</td>
+<td>数据与口径比对</td>
+</tr>
+<tr class="odd">
+<td>Shadow</td>
+<td>权威执行</td>
+<td>同输入、不产生副作用</td>
+<td>规则/算法/性能比对</td>
+</tr>
+<tr class="even">
+<td>Proposal</td>
+<td>权威执行</td>
+<td>生成动作建议</td>
+<td>用户与审批验收</td>
+</tr>
+<tr class="odd">
+<td>Canary-write</td>
+<td>非目标账户权威</td>
+<td>指定账户/策略权威</td>
+<td>小范围真实验证</td>
+</tr>
+<tr class="even">
+<td>New-primary</td>
+<td>只读/回退</td>
+<td>权威</td>
+<td>观察和退役准备</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="82-差异模型" class="level3">
+<h3>8.2 差异模型</h3>
+<p><code>ComparisonResult</code> 包含：</p>
+<ul>
+<li>业务键、源/新版本和输入快照；</li>
+<li>旧值、新值、绝对/相对差和类型化容差；</li>
+<li>分类：时间差、数据缺失、映射、精度、规则、软件错误、预期设计差异；</li>
+<li>严重度、可否自动修复、Owner 和 SLA；</li>
+<li>证据、修复版本和复验结果。</li>
+</ul>
+<p>不可只汇报“匹配率 99%”；1% 可能包含全部高金额订单。按金额、账户、状态、风险和业务截止分层。</p>
+</section>
+<section id="83-影子安全" class="level3">
+<h3>8.3 影子安全</h3>
+<ul>
+<li>影子订单使用物理隔离的仿真适配器或写入硬禁用；</li>
+<li>Replay 事件标记 <code>replay_id</code>，消费者不触发通知/外部动作；</li>
+<li>Shadow 结果不能回写生产风险/账户；</li>
+<li>用生产输入时仍按生产权限和数据分类；</li>
+<li>影子计算资源不能抢占 Tier 0。</li>
+</ul>
+</section>
+</section>
+<section id="9-切换单元与准入" class="level2">
+<h2>9. 切换单元与准入</h2>
+<p>建议切换键：</p>
+<ul>
+<li>数据产品/来源；</li>
+<li>用户组/功能；</li>
+<li>产品/组合；</li>
+<li>账户；</li>
+<li>策略/算法；</li>
+<li>市场/柜台；</li>
+<li>报告模板/渠道。</li>
+</ul>
+<p>每个切换单元具备：</p>
+<ul>
+<li>显式路由和写入围栏；</li>
+<li>唯一幂等/业务键；</li>
+<li>新旧实时比较；</li>
+<li>独立 SLO、额度和暂停开关；</li>
+<li>回退后的事件/数据合并方案；</li>
+<li>Owner、Checker、观察窗和成功/停止阈值。</li>
+</ul>
+</section>
+<section id="10-上线准备门" class="level2">
+<h2>10. 上线准备门</h2>
+<section id="101-t-30-至-t-7" class="level3">
+<h3>10.1 T-30 至 T-7</h3>
+<ul>
+<li>范围、窗口、参与者、联系和沟通确认；</li>
+<li>数据迁移/CDC 连续稳定，差异低于批准阈值；</li>
+<li>1×/2×/5× Replay、故障、恢复和安全验证通过；</li>
+<li>外部券商/行情/网络/证书/白名单验证；</li>
+<li>数据库/本体/API/Event 兼容和回退演练；</li>
+<li>备份恢复和 DR 健康；</li>
+<li>运行手册、仪表板、告警和值班演练；</li>
+<li>用户培训、权限复核和业务 sign-off；</li>
+<li>冻结冲突变更。</li>
+</ul>
+</section>
+<section id="102-t-1" class="level3">
+<h3>10.2 T-1</h3>
+<ul>
+<li>记录新旧版本、数据/事件水位和控制总数；</li>
+<li>清零或接受所有阻断差异；</li>
+<li>验证密钥、证书、时间同步、容量和降级；</li>
+<li>确认回退脚本/Action 不依赖同一故障；</li>
+<li>再次确认 Go/No-Go 和停止阈值。</li>
+</ul>
+</section>
+</section>
+<section id="11-切换执行" class="level2">
+<h2>11. 切换执行</h2>
+<ol type="1">
+<li>宣告开始，冻结非必要写入/变更；</li>
+<li>记录旧系统最后权威水位；</li>
+<li>等待/核对 CDC 与事件追平；</li>
+<li>启用目标单元写入围栏，防双主；</li>
+<li>将少量流量路由至新系统；</li>
+<li>验证认证、策略、订单/数据状态、外部回执和审计；</li>
+<li>按波次增加账户/策略/用户；</li>
+<li>每波观察技术 SLI、业务差异和风险；</li>
+<li>达到停止阈值立即暂停扩展或执行回退；</li>
+<li>完成后旧路径保持只读/热备至观察期结束。</li>
+</ol>
+</section>
+<section id="12-停止与回退条件" class="level2">
+<h2>12. 停止与回退条件</h2>
+<p>必须预先量化，例如：</p>
+<ul>
+<li>任何重复订单、错误账户/市场或未授权动作；</li>
+<li>订单/成交/资金/持仓不变量破坏；</li>
+<li>外部未知状态数量或持续时间超过阈值；</li>
+<li>硬风控错误、超时或 fail-open 非预期；</li>
+<li>Tier 0 SLO 快速燃烧或审计不可写；</li>
+<li>新旧差异集中在高金额/受限对象；</li>
+<li>无法在 RTO 内定位或恢复；</li>
+<li>数据/权限/密钥安全事件。</li>
+</ul>
+<p>回退流程：</p>
+<ol type="1">
+<li>停止新流量并保持证据；</li>
+<li>对新系统未决动作分类，不盲目重发；</li>
+<li>查询外部权威状态；</li>
+<li>确定旧系统恢复水位和写入围栏；</li>
+<li>恢复旧路由；</li>
+<li>核对订单、成交、持仓、资金和审计；</li>
+<li>向业务/管理层沟通实际影响；</li>
+<li>修复并重新通过准入门。</li>
+</ol>
+<p>数据库/本体不可逆变化优先前滚修复；所谓“代码回滚”不保证状态自动回滚。</p>
+</section>
+<section id="13-切换后观察" class="level2">
+<h2>13. 切换后观察</h2>
+<ul>
+<li>Tier 0 每笔/每状态实时核对，Tier 1 按批准频率；</li>
+<li>比较流量、错误、延迟、业务分布、人工操作和用户反馈；</li>
+<li>观察至少覆盖市场开/收盘、日终、周/月截止和一个异常场景；</li>
+<li>旧系统保持可读取证据，不允许继续隐式写入；</li>
+<li>清理临时账号、白名单、Feature Flag、双写和高采样；</li>
+<li>更新 Owner、运行手册、架构图、CMDB/服务目录；</li>
+<li>只有观察门通过后才进入退役。</li>
+</ul>
+</section>
+<section id="14-遗留退役" class="level2">
+<h2>14. 遗留退役</h2>
+<p>退役检查：</p>
+<ul>
+<li>所有消费者和依赖已清零并有流量证据；</li>
+<li>历史、审计、许可、保存和法定冻结满足要求；</li>
+<li>新系统已通过业务周期和 DR；</li>
+<li>旧系统数据有可读取归档与检索方式；</li>
+<li>账号、证书、密钥、网络、DNS、Topic、Cron 和备份被受控回收；</li>
+<li>商业许可证/供应商终止和资产处置完成；</li>
+<li>退役 Action 有 Maker-checker 和不可变记录。</li>
+</ul>
+<p>不要为了“可回退”无限期维持双系统；长期双跑会产生语义分叉和更高风险。</p>
+</section>
+</section>
+
+        </article>
+        <footer class="page-meta">
+          <span>基线 1.0 · 2026-07-27 · Markdown 与 HTML 同源</span>
+          <span><a href="../../../ontology/financial-ontology.yaml">本体 YAML</a> · <a href="../../../contracts/ontology-api.openapi.yaml">OpenAPI</a> · <a href="../../../contracts/events.asyncapi.yaml">AsyncAPI</a></span>
+        </footer>
+      </div>
+    </main>
+  </div>
+  <script src="../../assets/search-index.js"></script>
+  <script src="../../assets/mermaid-11.16.0.min.js"></script>
+  <script src="../../assets/app.js"></script>
+</body>
+</html>

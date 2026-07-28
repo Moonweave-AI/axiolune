@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="金融本体驱动平台总体设计、技术选型、模块、本体、算法与交付规范">
+  <title>动作、函数、模型、策略与工作流 · 金融本体驱动平台</title>
+  <script>
+    (function() {
+      var saved = localStorage.getItem("finance-design-theme");
+      if (saved) document.documentElement.dataset.theme = saved;
+    }());
+    window.SITE_ROOT = "../../";
+    window.RAW_ROOT = "../../../";
+  </script>
+  <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <header class="topbar">
+    <button class="icon-button menu-button" type="button" data-menu-toggle aria-label="打开文档目录" aria-expanded="false">☰</button>
+    <a class="brand" href="../../index.html">
+      <span class="brand-mark" aria-hidden="true">FO</span>
+      <span class="brand-text">金融本体驱动平台设计</span>
+    </a>
+    <span class="topbar-spacer"></span>
+    <button class="icon-button" type="button" data-theme-toggle aria-label="切换主题">☾</button>
+  </header>
+  <div class="layout">
+    <aside class="sidebar" aria-label="文档目录">
+      <div class="search-wrap">
+        <input class="search-input" type="search" data-search placeholder="搜索全部文档…" aria-label="搜索全部文档">
+        <p class="search-hint">按 Ctrl/⌘ + K 聚焦 · Esc 清除</p>
+        <div class="search-results" data-search-results aria-live="polite"></div>
+      </div>
+      <nav class="nav-section" aria-label="首页">
+<h2 class="nav-section-title">首页</h2>
+<a class="nav-link" href="../../index.html">金融本体驱动平台：总体设计与实施规范</a>
+</nav>
+<nav class="nav-section" aria-label="交付说明">
+<h2 class="nav-section-title">交付说明</h2>
+<a class="nav-link" href="../../PACKAGE-SUMMARY.html">交付包清单与验证记录</a>
+</nav>
+<nav class="nav-section" aria-label="总览与追踪">
+<h2 class="nav-section-title">总览与追踪</h2>
+<a class="nav-link" href="../00-overview/00-executive-summary.html">执行摘要</a>
+<a class="nav-link" href="../00-overview/01-scope-assumptions.html">设计范围、假设与边界</a>
+<a class="nav-link" href="../00-overview/02-design-principles.html">核心设计原则与关键决策</a>
+<a class="nav-link" href="../00-overview/03-requirements-traceability.html">需求—模块—本体—证据追踪矩阵</a>
+</nav>
+<nav class="nav-section" aria-label="总体架构">
+<h2 class="nav-section-title">总体架构</h2>
+<a class="nav-link" href="../01-architecture/00-target-architecture.html">目标总体架构</a>
+<a class="nav-link" href="../01-architecture/01-domain-boundaries.html">领域边界与依赖</a>
+<a class="nav-link" href="../01-architecture/02-data-architecture.html">数据与多模态架构</a>
+<a class="nav-link" href="../01-architecture/03-deployment-topology.html">部署拓扑、环境与灾备</a>
+<a class="nav-link" href="../01-architecture/04-nonfunctional-requirements.html">非功能需求与质量属性</a>
+</nav>
+<nav class="nav-section" aria-label="技术选型">
+<h2 class="nav-section-title">技术选型</h2>
+<a class="nav-link" href="../02-technology/00-selection-summary.html">技术选型总表</a>
+<a class="nav-link" href="../02-technology/01-frontend-design-system.html">前端、视觉与交互设计</a>
+<a class="nav-link" href="../02-technology/02-backend-communication.html">后端、接口与通信</a>
+<a class="nav-link" href="../02-technology/03-databases-storage.html">数据库、搜索、图、向量与媒体存储</a>
+<a class="nav-link" href="../02-technology/04-compute-workflow.html">流批计算、数据编排与业务工作流</a>
+<a class="nav-link" href="../02-technology/05-ai-mlops.html">AI、MLOps、GraphRAG 与 Agent 技术</a>
+<a class="nav-link" href="../02-technology/06-security-devsecops.html">安全、DevSecOps 与可观测性技术</a>
+</nav>
+<nav class="nav-section" aria-label="模块设计">
+<h2 class="nav-section-title">模块设计</h2>
+<a class="nav-link" href="../03-modules/00-module-map.html">业务与平台模块全景</a>
+<a class="nav-link" href="../03-modules/01-workspace-data-intelligence.html">统一工作台、数据与资讯</a>
+<a class="nav-link" href="../03-modules/02-quant-active-research.html">量化研究与主动投研</a>
+<a class="nav-link" href="../03-modules/03-portfolio-execution.html">产品、组合、OMS/IMS 与算法执行</a>
+<a class="nav-link" href="../03-modules/04-risk-compliance.html">风险、合规与核对</a>
+<a class="nav-link" href="../03-modules/05-product-reporting.html">产品、渠道与经营报表</a>
+<a class="nav-link" href="../03-modules/06-ontology-automation-operations.html">本体、自动化、Agent 与平台运维</a>
+</nav>
+<nav class="nav-section" aria-label="本体工程">
+<h2 class="nav-section-title">本体工程</h2>
+<a class="nav-link" href="00-method-meta-model.html">金融本体方法与元模型</a>
+<a class="nav-link" href="01-domain-model.html">金融本体逻辑域</a>
+<a class="nav-link" href="02-object-link-catalog.html">核心对象与链接目录</a>
+<a class="nav-link is-active" href="03-actions-functions-policies.html" aria-current="page">动作、函数、模型、策略与工作流</a>
+<a class="nav-link" href="04-temporal-provenance-quality.html">时间、来源、证据与质量</a>
+<a class="nav-link" href="05-security-version-governance.html">本体安全、版本、分支与治理</a>
+<a class="nav-link" href="06-implementation-mapping.html">本体到数据、API、UI 与运行时的映射</a>
+</nav>
+<nav class="nav-section" aria-label="逻辑域与算法">
+<h2 class="nav-section-title">逻辑域与算法</h2>
+<a class="nav-link" href="../05-algorithms/00-algorithm-framework.html">算法工程总规范</a>
+<a class="nav-link" href="../05-algorithms/01-market-factor-backtest.html">行情、因子与回测算法规范</a>
+<a class="nav-link" href="../05-algorithms/02-execution-tca.html">算法执行与交易成本分析规范</a>
+<a class="nav-link" href="../05-algorithms/03-portfolio-risk.html">组合、净值、风险、流动性与对账算法规范</a>
+<a class="nav-link" href="../05-algorithms/04-graph-ai.html">图算法、证据图、GraphRAG 与文档智能规范</a>
+</nav>
+<nav class="nav-section" aria-label="工程、安全与 SRE">
+<h2 class="nav-section-title">工程、安全与 SRE</h2>
+<a class="nav-link" href="../06-engineering/00-engineering-overview.html">工程实现总纲</a>
+<a class="nav-link" href="../06-engineering/01-api-event-contracts.html">API、事件与分布式一致性契约</a>
+<a class="nav-link" href="../06-engineering/02-security-model.html">安全、权限与审计模型</a>
+<a class="nav-link" href="../06-engineering/03-observability-sre.html">可观测性与 SRE</a>
+<a class="nav-link" href="../06-engineering/04-testing-validation.html">测试、验证与发布质量门</a>
+<a class="nav-link" href="../06-engineering/05-continuity-recovery.html">业务连续性、备份与灾难恢复</a>
+</nav>
+<nav class="nav-section" aria-label="交付与迁移">
+<h2 class="nav-section-title">交付与迁移</h2>
+<a class="nav-link" href="../07-delivery/00-roadmap.html">分期路线图与投资顺序</a>
+<a class="nav-link" href="../07-delivery/01-team-governance.html">团队结构、职责与治理</a>
+<a class="nav-link" href="../07-delivery/02-migration-cutover.html">遗留迁移、双跑与切换</a>
+<a class="nav-link" href="../07-delivery/03-acceptance-risks.html">验收体系与风险登记</a>
+<a class="nav-link" href="../07-delivery/04-decision-register.html">架构决策登记册</a>
+<a class="nav-link" href="../07-delivery/05-open-questions.html">立项前未决问题</a>
+</nav>
+<nav class="nav-section" aria-label="参考与证据">
+<h2 class="nav-section-title">参考与证据</h2>
+<a class="nav-link" href="../08-reference/00-palantir-capability-mapping.html">Palantir 能力体系与本方案映射</a>
+<a class="nav-link" href="../08-reference/01-attachment-audit-summary.html">附件审计摘要</a>
+<a class="nav-link" href="../08-reference/02-source-material-handling.html">源材料处理与证据边界</a>
+<a class="nav-link" href="../08-reference/03-source-register.html">参考资料登记册</a>
+<a class="nav-link" href="../08-reference/04-palantir-document-system-audit.html">Palantir 官方文档体系研究与金融平台本体工程映射</a>
+<a class="nav-link" href="../08-reference/05-glossary.html">术语表</a>
+</nav>
+    </aside>
+    <div class="overlay" aria-hidden="true"></div>
+    <main class="main" id="content">
+      <div class="content-shell">
+        <nav class="breadcrumbs" aria-label="面包屑"><a href="../../index.html">首页</a><span>›</span><span>本体工程</span><span>›</span><span>动作、函数、模型、策略与工作流</span></nav>
+        <article class="article">
+          <section id="动作函数模型策略与工作流" class="level1">
+<h1>动作、函数、模型、策略与工作流</h1>
+<section id="1-action-分类" class="level2">
+<h2>1. Action 分类</h2>
+<table>
+<thead>
+<tr class="header">
+<th>类别</th>
+<th>ActionType</th>
+<th>风险等级</th>
+<th>默认审批</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>主数据</td>
+<td>CorrectInstrument、MergeEntity、ChangeClassification</td>
+<td>中/高</td>
+<td>Steward；大范围需复核</td>
+</tr>
+<tr class="even">
+<td>数据</td>
+<td>PublishDataProduct、QuarantineAsset、SwitchSource</td>
+<td>中/高</td>
+<td>Data Owner；生产切源复核</td>
+</tr>
+<tr class="odd">
+<td>研究</td>
+<td>RunBacktest、PublishFactor、RetireFactor</td>
+<td>低/中</td>
+<td>发布需研究复核</td>
+</tr>
+<tr class="even">
+<td>组合</td>
+<td>SetTargetPosition、CreateRebalanceProposal</td>
+<td>中/高</td>
+<td>基金经理/合规</td>
+</tr>
+<tr class="odd">
+<td>交易</td>
+<td>SubmitOrder、PauseOrder、ResumeOrder、CancelOrder</td>
+<td>高</td>
+<td>按额度和职责分离</td>
+</tr>
+<tr class="even">
+<td>风险</td>
+<td>AddWatchlistEntry、BlockInstrument、ApproveRiskException</td>
+<td>高</td>
+<td>风控/合规双层</td>
+</tr>
+<tr class="odd">
+<td>账户/网关</td>
+<td>EnableAccount、ChangeGateway、ResumeExecutionUnit</td>
+<td>高</td>
+<td>运维 + 业务复核</td>
+</tr>
+<tr class="even">
+<td>报告</td>
+<td>PublishReport、WithdrawReport</td>
+<td>中/高</td>
+<td>业务/合规</td>
+</tr>
+<tr class="odd">
+<td>权限</td>
+<td>GrantAccess、DelegateAction、RevokeAccess</td>
+<td>高</td>
+<td>Owner + Security</td>
+</tr>
+<tr class="even">
+<td>本体/平台</td>
+<td>PublishOntologyRelease、PromoteModel、RollbackDeployment</td>
+<td>高</td>
+<td>对应变更委员会</td>
+</tr>
+<tr class="odd">
+<td>AI</td>
+<td>CreateActionProposal</td>
+<td>低/中</td>
+<td>不执行副作用</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="2-actiontype-完整结构" class="level2">
+<h2>2. ActionType 完整结构</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">api_name</span><span class="kw">:</span><span class="at"> SubmitParentOrder</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">context</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">ParentOrder</span><span class="kw">,</span><span class="at"> TradingAccount</span><span class="kw">,</span><span class="at"> Instrument</span><span class="kw">]</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">parameters</span><span class="kw">:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">order_id</span><span class="kw">:</span><span class="at"> Identifier</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">expected_version</span><span class="kw">:</span><span class="at"> Integer</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">reason</span><span class="kw">:</span><span class="at"> Text</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">preconditions</span><span class="kw">:</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> environment_is_explicit</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> order_state_is_approved</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> account_is_enabled</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> market_session_allows_submission</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">policies</span><span class="kw">:</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> trade_entitlement</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> instrument_watchlist</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> account_and_strategy_limits</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">approvals</span><span class="kw">:</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">mode</span><span class="kw">:</span><span class="at"> policy_driven</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">idempotency</span><span class="kw">:</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">key</span><span class="kw">:</span><span class="at"> order_id</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">execution</span><span class="kw">:</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">workflow</span><span class="kw">:</span><span class="at"> submit-order-v1</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">timeout</span><span class="kw">:</span><span class="at"> bounded</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">retry</span><span class="kw">:</span><span class="at"> only_before_external_acceptance</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">compensation</span><span class="kw">:</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">action</span><span class="kw">:</span><span class="at"> cancel_if_acknowledged</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="fu">audit</span><span class="kw">:</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">before_after</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">external_receipts</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre></div>
+<p>实际声明见 <code>ontology/financial-ontology.yaml</code>。</p>
+</section>
+<section id="3-action-执行状态机" class="level2">
+<h2>3. Action 执行状态机</h2>
+<p><code>Draft → Validating → Denied | AwaitingApproval → Approved → Executing → Succeeded | PartiallySucceeded | Failed | UnknownExternalState → Compensating → Compensated | Escalated</code></p>
+<p>规则：</p>
+<ul>
+<li><code>Accepted</code> 只表示平台受理，不表示外部成功；</li>
+<li>外部未知不自动重发不可幂等动作；</li>
+<li>幂等键在类型级定义；</li>
+<li>任何手工修复也是 Action；</li>
+<li>结果生成不可变 receipt；</li>
+<li>Action 可在 Scenario 中 dry-run，不触发生产副作用。</li>
+</ul>
+</section>
+<section id="4-函数目录" class="level2">
+<h2>4. 函数目录</h2>
+<section id="41-主数据与时间" class="level3">
+<h3>4.1 主数据与时间</h3>
+<ul>
+<li>ResolveInstrumentIdentifier；</li>
+<li>ResolvePartyIdentity；</li>
+<li>NormalizeCurrencyAndUnit；</li>
+<li>ResolveTradingSession；</li>
+<li>ApplyCorporateAction；</li>
+<li>BuildPointInTimeUniverse。</li>
+</ul>
+</section>
+<section id="42-行情与市场" class="level3">
+<h3>4.2 行情与市场</h3>
+<ul>
+<li>BuildOHLCVBar；</li>
+<li>BuildOrderBook；</li>
+<li>DetectSequenceGap；</li>
+<li>CalculateMarketDataLatency；</li>
+<li>CalculateBasis/AnnualizedBasis/ZScore；</li>
+<li>CalculateTWAP/VWAP/ArrivalPrice；</li>
+<li>CalculateMicrostructureFeatures。</li>
+</ul>
+</section>
+<section id="43-因子与研究" class="level3">
+<h3>4.3 因子与研究</h3>
+<ul>
+<li>CleanFactor（winsorize/standardize/missing）；</li>
+<li>NeutralizeFactor；</li>
+<li>CalculateIC/RankIC/ICIR；</li>
+<li>CalculateGroupedReturn；</li>
+<li>CalculateFactorTurnover/Decay/Capacity；</li>
+<li>CalculateCorrelation/VIF/Cluster；</li>
+<li>DetectLookAhead/Leakage；</li>
+<li>RunEventDrivenBacktest；</li>
+<li>CalculateAttribution。</li>
+</ul>
+</section>
+<section id="44-组合交易与风险" class="level3">
+<h3>4.4 组合、交易与风险</h3>
+<ul>
+<li>MarkToMarket；</li>
+<li>CalculateNAV/PnL/Exposure；</li>
+<li>OptimizePortfolio；</li>
+<li>CalculateOrderAvailability；</li>
+<li>CalculateImplementationShortfall；</li>
+<li>AttributeExecutionCost；</li>
+<li>CalculateVaR/ExpectedShortfall；</li>
+<li>RunStressScenario；</li>
+<li>EvaluateRiskRuleSet；</li>
+<li>ReconcileOrder/Execution/Position/Cash。</li>
+</ul>
+</section>
+<section id="45-证据图与-ai" class="level3">
+<h3>4.5 证据、图与 AI</h3>
+<ul>
+<li>ParseDocument/OCR/Transcribe；</li>
+<li>ExtractClaimCandidate；</li>
+<li>LinkEntityCandidate；</li>
+<li>RankEvidence；</li>
+<li>TraverseRiskPath；</li>
+<li>PropagateEventImpact；</li>
+<li>BuildPermissionAwareContext；</li>
+<li>VerifyCitationSupport；</li>
+<li>GenerateActionProposal。</li>
+</ul>
+</section>
+</section>
+<section id="5-functiontype-运行语义" class="level2">
+<h2>5. FunctionType 运行语义</h2>
+<p>每个函数声明：</p>
+<ul>
+<li>输入/输出 Value/Object/Metric 类型；</li>
+<li>sync/async/batch/stream；</li>
+<li>pure/deterministic/model-assisted；</li>
+<li>event time、as-of 和窗口；</li>
+<li>缺失、异常和冲突；</li>
+<li>资源、超时、成本和缓存；</li>
+<li>数据/模型/代码版本；</li>
+<li>访问、用途和敏感输出；</li>
+<li>测试、质量门和 owner。</li>
+</ul>
+<p>纯函数可安全缓存；依赖外部实时状态的函数必须声明新鲜度。产生副作用的逻辑不能伪装成 Function，必须由 Action 承载。</p>
+</section>
+<section id="6-metrictype" class="level2">
+<h2>6. MetricType</h2>
+<p>指标定义至少含：</p>
+<ul>
+<li>formula/function；</li>
+<li>dimensions、grain；</li>
+<li>unit、currency、precision；</li>
+<li>event/business/system time；</li>
+<li>allowed aggregations；</li>
+<li>numerator/denominator；</li>
+<li>null/zero/not-applicable/not-calculated；</li>
+<li>source priority；</li>
+<li>owner、version、quality；</li>
+<li>applicability。</li>
+</ul>
+<p>例如“撤单率”要分别定义母单、子单、委托粒度和分母；“绩效 BP”要定义买卖方向、benchmark 和正负号；附件中的 <code>VMAP</code> 需由业务确认是否是 <code>VWAP</code> 拼写或独立口径。</p>
+</section>
+<section id="7-modeltype" class="level2">
+<h2>7. ModelType</h2>
+<p>模型不等于 Function 实现细节。ModelType 包含：</p>
+<ul>
+<li>task、inputs/outputs；</li>
+<li>training/evaluation snapshots；</li>
+<li>algorithm/artifact/license；</li>
+<li>adapter and serving endpoint；</li>
+<li>performance, uncertainty, limitations；</li>
+<li>risk tier、approval；</li>
+<li>drift and monitoring；</li>
+<li>fallback and retirement。</li>
+</ul>
+<p>Function 可以调用 ModelVersion，但对应用暴露稳定的业务输入/输出和回退语义。</p>
+</section>
+<section id="8-policy-示例" class="level2">
+<h2>8. Policy 示例</h2>
+<section id="81-对象读取" class="level3">
+<h3>8.1 对象读取</h3>
+<p>允许读取 Position，当且仅当：</p>
+<ul>
+<li>主体属于产品/组合授权团队或有审计职责；</li>
+<li>目的属于 Investment/Risk/Operations/Audit；</li>
+<li>环境授权匹配；</li>
+<li>属性分类不超过主体许可；</li>
+<li>授权未过期。</li>
+</ul>
+</section>
+<section id="82-交易动作" class="level3">
+<h3>8.2 交易动作</h3>
+<p>SubmitOrder 要求：</p>
+<ul>
+<li>交易员对账户和策略有 entitlement；</li>
+<li>RiskAssessment 为 Allow 或在有效例外范围；</li>
+<li>订单版本未变化；</li>
+<li>额度、时间、市场和环境符合；</li>
+<li>大额/敏感动作获得第二审批；</li>
+<li>Agent 不能作为最终审批主体。</li>
+</ul>
+</section>
+<section id="83-导出" class="level3">
+<h3>8.3 导出</h3>
+<p>ExportData 要求：</p>
+<ul>
+<li>估算对象数和分类；</li>
+<li>用途和保存期；</li>
+<li>禁止字段/脱敏；</li>
+<li>超阈值审批；</li>
+<li>水印/加密；</li>
+<li>短期下载与审计；</li>
+<li>下游使用限制继承。</li>
+</ul>
+</section>
+</section>
+<section id="9-workflowtype" class="level2">
+<h2>9. WorkflowType</h2>
+<section id="91-风险标的闭环" class="level3">
+<h3>9.1 风险标的闭环</h3>
+<p><code>Detect → CreateAlert → GatherEvidence → Triage → ProposeRestriction → Approve → ExecuteRestriction → Verify → ReviewExpiry</code></p>
+</section>
+<section id="92-因子发布" class="level3">
+<h3>9.2 因子发布</h3>
+<p><code>Draft → PointInTimeCheck → Reproduce → PeerReview → Risk/UsageReview → Publish → Monitor → Deprecate</code></p>
+</section>
+<section id="93-报告发布" class="level3">
+<h3>9.3 报告发布</h3>
+<p><code>FreezeSnapshot → QualityCheck → Generate → AuthorReview → ComplianceReview → Publish → Distribute → Revise/Withdraw</code></p>
+</section>
+<section id="94-本体发布" class="level3">
+<h3>9.4 本体发布</h3>
+<p><code>Branch → Edit → Generate → ContractTest → ImpactAnalysis → SecurityReview → DomainReview → Merge → Materialize → Observe</code></p>
+</section>
+</section>
+<section id="10-自动化约束" class="level2">
+<h2>10. 自动化约束</h2>
+<ul>
+<li>触发条件有 stable ID 和版本；</li>
+<li>recovery 与 trigger 是不同事件；</li>
+<li>多效果默认并行，不隐式依赖顺序；</li>
+<li>每对象/批执行明确；</li>
+<li>重复触发按业务键去重；</li>
+<li>失败重试和人工介入有上限；</li>
+<li>自动动作仍执行 Action Policy；</li>
+<li>高风险只创建 proposal。</li>
+</ul>
+</section>
+</section>
+
+        </article>
+        <footer class="page-meta">
+          <span>基线 1.0 · 2026-07-27 · Markdown 与 HTML 同源</span>
+          <span><a href="../../../ontology/financial-ontology.yaml">本体 YAML</a> · <a href="../../../contracts/ontology-api.openapi.yaml">OpenAPI</a> · <a href="../../../contracts/events.asyncapi.yaml">AsyncAPI</a></span>
+        </footer>
+      </div>
+    </main>
+  </div>
+  <script src="../../assets/search-index.js"></script>
+  <script src="../../assets/mermaid-11.16.0.min.js"></script>
+  <script src="../../assets/app.js"></script>
+</body>
+</html>

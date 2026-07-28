@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="金融本体驱动平台总体设计、技术选型、模块、本体、算法与交付规范">
+  <title>前端、视觉与交互设计 · 金融本体驱动平台</title>
+  <script>
+    (function() {
+      var saved = localStorage.getItem("finance-design-theme");
+      if (saved) document.documentElement.dataset.theme = saved;
+    }());
+    window.SITE_ROOT = "../../";
+    window.RAW_ROOT = "../../../";
+  </script>
+  <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <header class="topbar">
+    <button class="icon-button menu-button" type="button" data-menu-toggle aria-label="打开文档目录" aria-expanded="false">☰</button>
+    <a class="brand" href="../../index.html">
+      <span class="brand-mark" aria-hidden="true">FO</span>
+      <span class="brand-text">金融本体驱动平台设计</span>
+    </a>
+    <span class="topbar-spacer"></span>
+    <button class="icon-button" type="button" data-theme-toggle aria-label="切换主题">☾</button>
+  </header>
+  <div class="layout">
+    <aside class="sidebar" aria-label="文档目录">
+      <div class="search-wrap">
+        <input class="search-input" type="search" data-search placeholder="搜索全部文档…" aria-label="搜索全部文档">
+        <p class="search-hint">按 Ctrl/⌘ + K 聚焦 · Esc 清除</p>
+        <div class="search-results" data-search-results aria-live="polite"></div>
+      </div>
+      <nav class="nav-section" aria-label="首页">
+<h2 class="nav-section-title">首页</h2>
+<a class="nav-link" href="../../index.html">金融本体驱动平台：总体设计与实施规范</a>
+</nav>
+<nav class="nav-section" aria-label="交付说明">
+<h2 class="nav-section-title">交付说明</h2>
+<a class="nav-link" href="../../PACKAGE-SUMMARY.html">交付包清单与验证记录</a>
+</nav>
+<nav class="nav-section" aria-label="总览与追踪">
+<h2 class="nav-section-title">总览与追踪</h2>
+<a class="nav-link" href="../00-overview/00-executive-summary.html">执行摘要</a>
+<a class="nav-link" href="../00-overview/01-scope-assumptions.html">设计范围、假设与边界</a>
+<a class="nav-link" href="../00-overview/02-design-principles.html">核心设计原则与关键决策</a>
+<a class="nav-link" href="../00-overview/03-requirements-traceability.html">需求—模块—本体—证据追踪矩阵</a>
+</nav>
+<nav class="nav-section" aria-label="总体架构">
+<h2 class="nav-section-title">总体架构</h2>
+<a class="nav-link" href="../01-architecture/00-target-architecture.html">目标总体架构</a>
+<a class="nav-link" href="../01-architecture/01-domain-boundaries.html">领域边界与依赖</a>
+<a class="nav-link" href="../01-architecture/02-data-architecture.html">数据与多模态架构</a>
+<a class="nav-link" href="../01-architecture/03-deployment-topology.html">部署拓扑、环境与灾备</a>
+<a class="nav-link" href="../01-architecture/04-nonfunctional-requirements.html">非功能需求与质量属性</a>
+</nav>
+<nav class="nav-section" aria-label="技术选型">
+<h2 class="nav-section-title">技术选型</h2>
+<a class="nav-link" href="00-selection-summary.html">技术选型总表</a>
+<a class="nav-link is-active" href="01-frontend-design-system.html" aria-current="page">前端、视觉与交互设计</a>
+<a class="nav-link" href="02-backend-communication.html">后端、接口与通信</a>
+<a class="nav-link" href="03-databases-storage.html">数据库、搜索、图、向量与媒体存储</a>
+<a class="nav-link" href="04-compute-workflow.html">流批计算、数据编排与业务工作流</a>
+<a class="nav-link" href="05-ai-mlops.html">AI、MLOps、GraphRAG 与 Agent 技术</a>
+<a class="nav-link" href="06-security-devsecops.html">安全、DevSecOps 与可观测性技术</a>
+</nav>
+<nav class="nav-section" aria-label="模块设计">
+<h2 class="nav-section-title">模块设计</h2>
+<a class="nav-link" href="../03-modules/00-module-map.html">业务与平台模块全景</a>
+<a class="nav-link" href="../03-modules/01-workspace-data-intelligence.html">统一工作台、数据与资讯</a>
+<a class="nav-link" href="../03-modules/02-quant-active-research.html">量化研究与主动投研</a>
+<a class="nav-link" href="../03-modules/03-portfolio-execution.html">产品、组合、OMS/IMS 与算法执行</a>
+<a class="nav-link" href="../03-modules/04-risk-compliance.html">风险、合规与核对</a>
+<a class="nav-link" href="../03-modules/05-product-reporting.html">产品、渠道与经营报表</a>
+<a class="nav-link" href="../03-modules/06-ontology-automation-operations.html">本体、自动化、Agent 与平台运维</a>
+</nav>
+<nav class="nav-section" aria-label="本体工程">
+<h2 class="nav-section-title">本体工程</h2>
+<a class="nav-link" href="../04-ontology/00-method-meta-model.html">金融本体方法与元模型</a>
+<a class="nav-link" href="../04-ontology/01-domain-model.html">金融本体逻辑域</a>
+<a class="nav-link" href="../04-ontology/02-object-link-catalog.html">核心对象与链接目录</a>
+<a class="nav-link" href="../04-ontology/03-actions-functions-policies.html">动作、函数、模型、策略与工作流</a>
+<a class="nav-link" href="../04-ontology/04-temporal-provenance-quality.html">时间、来源、证据与质量</a>
+<a class="nav-link" href="../04-ontology/05-security-version-governance.html">本体安全、版本、分支与治理</a>
+<a class="nav-link" href="../04-ontology/06-implementation-mapping.html">本体到数据、API、UI 与运行时的映射</a>
+</nav>
+<nav class="nav-section" aria-label="逻辑域与算法">
+<h2 class="nav-section-title">逻辑域与算法</h2>
+<a class="nav-link" href="../05-algorithms/00-algorithm-framework.html">算法工程总规范</a>
+<a class="nav-link" href="../05-algorithms/01-market-factor-backtest.html">行情、因子与回测算法规范</a>
+<a class="nav-link" href="../05-algorithms/02-execution-tca.html">算法执行与交易成本分析规范</a>
+<a class="nav-link" href="../05-algorithms/03-portfolio-risk.html">组合、净值、风险、流动性与对账算法规范</a>
+<a class="nav-link" href="../05-algorithms/04-graph-ai.html">图算法、证据图、GraphRAG 与文档智能规范</a>
+</nav>
+<nav class="nav-section" aria-label="工程、安全与 SRE">
+<h2 class="nav-section-title">工程、安全与 SRE</h2>
+<a class="nav-link" href="../06-engineering/00-engineering-overview.html">工程实现总纲</a>
+<a class="nav-link" href="../06-engineering/01-api-event-contracts.html">API、事件与分布式一致性契约</a>
+<a class="nav-link" href="../06-engineering/02-security-model.html">安全、权限与审计模型</a>
+<a class="nav-link" href="../06-engineering/03-observability-sre.html">可观测性与 SRE</a>
+<a class="nav-link" href="../06-engineering/04-testing-validation.html">测试、验证与发布质量门</a>
+<a class="nav-link" href="../06-engineering/05-continuity-recovery.html">业务连续性、备份与灾难恢复</a>
+</nav>
+<nav class="nav-section" aria-label="交付与迁移">
+<h2 class="nav-section-title">交付与迁移</h2>
+<a class="nav-link" href="../07-delivery/00-roadmap.html">分期路线图与投资顺序</a>
+<a class="nav-link" href="../07-delivery/01-team-governance.html">团队结构、职责与治理</a>
+<a class="nav-link" href="../07-delivery/02-migration-cutover.html">遗留迁移、双跑与切换</a>
+<a class="nav-link" href="../07-delivery/03-acceptance-risks.html">验收体系与风险登记</a>
+<a class="nav-link" href="../07-delivery/04-decision-register.html">架构决策登记册</a>
+<a class="nav-link" href="../07-delivery/05-open-questions.html">立项前未决问题</a>
+</nav>
+<nav class="nav-section" aria-label="参考与证据">
+<h2 class="nav-section-title">参考与证据</h2>
+<a class="nav-link" href="../08-reference/00-palantir-capability-mapping.html">Palantir 能力体系与本方案映射</a>
+<a class="nav-link" href="../08-reference/01-attachment-audit-summary.html">附件审计摘要</a>
+<a class="nav-link" href="../08-reference/02-source-material-handling.html">源材料处理与证据边界</a>
+<a class="nav-link" href="../08-reference/03-source-register.html">参考资料登记册</a>
+<a class="nav-link" href="../08-reference/04-palantir-document-system-audit.html">Palantir 官方文档体系研究与金融平台本体工程映射</a>
+<a class="nav-link" href="../08-reference/05-glossary.html">术语表</a>
+</nav>
+    </aside>
+    <div class="overlay" aria-hidden="true"></div>
+    <main class="main" id="content">
+      <div class="content-shell">
+        <nav class="breadcrumbs" aria-label="面包屑"><a href="../../index.html">首页</a><span>›</span><span>技术选型</span><span>›</span><span>前端、视觉与交互设计</span></nav>
+        <article class="article">
+          <section id="前端视觉与交互设计" class="level1">
+<h1>前端、视觉与交互设计</h1>
+<section id="1-前端架构" class="level2">
+<h2>1. 前端架构</h2>
+<section id="11-推荐栈" class="level3">
+<h3>1.1 推荐栈</h3>
+<ul>
+<li>TypeScript 严格模式；</li>
+<li>React + Vite；</li>
+<li>TanStack Router 负责类型化路由和深链；</li>
+<li>TanStack Query 负责服务端状态、缓存、失效和重试；</li>
+<li>Zustand 只保存局部交互/布局状态；</li>
+<li>React Hook Form + Zod 负责表单和契约校验；</li>
+<li>Storybook 维护组件、对象视图与状态样例；</li>
+<li>Vitest、Testing Library、Playwright 和 axe 做单元、组件、端到端与可访问性测试；</li>
+<li>pnpm workspace + Nx 管理应用、组件和生成 SDK。</li>
+</ul>
+<p>现有网页资源显示 Umi、React 和 Ant Design Pro 体系痕迹。迁移时可保留页面壳和低风险组件，先建立适配层，再逐模块迁移；不要求一次重写。</p>
+</section>
+<section id="12-应用组织" class="level3">
+<h3>1.2 应用组织</h3>
+<pre class="text"><code>apps/
+├── workspace-web
+├── research-web
+├── execution-risk-web
+├── ontology-studio-web
+└── operations-web
+packages/
+├── design-tokens
+├── ui-components
+├── object-views
+├── chart-specs
+├── action-forms
+├── auth-client
+├── realtime-client
+└── generated-osdk</code></pre>
+<p>这些应用共享设计系统和对象 SDK，但按安全域和发布风险独立部署。首期不采用运行时微前端；若未来多团队独立发布成为实证瓶颈，再评估 Module Federation。</p>
+</section>
+</section>
+<section id="2-信息架构" class="level2">
+<h2>2. 信息架构</h2>
+<p>一级导航固定为：</p>
+<ol type="1">
+<li>工作台</li>
+<li>数据与资讯</li>
+<li>量化研究</li>
+<li>主动投研</li>
+<li>组合与执行</li>
+<li>风险与合规</li>
+<li>产品与经营</li>
+<li>本体与自动化</li>
+<li>平台运维</li>
+</ol>
+<p>全局顶栏提供：</p>
+<ul>
+<li>对象/命令搜索；</li>
+<li>环境标识；</li>
+<li>数据新鲜度与系统状态；</li>
+<li>待办与告警；</li>
+<li>最近对象与收藏；</li>
+<li>帮助、权限申请和用户入口。</li>
+</ul>
+<p>左侧导航只表达稳定能力；页面内部通过对象、保存视图和任务上下文切换，不把每种指标组合固化为菜单。</p>
+</section>
+<section id="3-对象化体验" class="level2">
+<h2>3. 对象化体验</h2>
+<p>每个核心对象复用统一详情框架：</p>
+<ul>
+<li>Header：名称、类型、状态、稳定标识、环境、收藏和可用动作；</li>
+<li>Summary：关键指标及其时间、来源和质量；</li>
+<li>Timeline：事件、动作、版本和评论；</li>
+<li>Relationships：账户—组合—策略—订单—成交等链接；</li>
+<li>Analysis：对象专属图表和指标；</li>
+<li>Evidence：来源、文档、引用和血缘；</li>
+<li>Access：权限、标记和申请路径；</li>
+<li>History：变更、审批、外部回执和审计。</li>
+</ul>
+<p>对象可以从新闻、告警、表格、图、报告和 Agent 引用深链进入同一视图，避免不同模块呈现不同真相。</p>
+</section>
+<section id="4-视觉系统" class="level2">
+<h2>4. 视觉系统</h2>
+<section id="41-字体" class="level3">
+<h3>4.1 字体</h3>
+<table>
+<thead>
+<tr class="header">
+<th>用途</th>
+<th>字体</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>中文 UI 与正文</td>
+<td><code>Noto Sans SC</code> / 思源黑体，系统无字体时回退到系统中文无衬线</td>
+</tr>
+<tr class="even">
+<td>拉丁字符和数字</td>
+<td><code>Inter</code>，金融数字启用 tabular nums</td>
+</tr>
+<tr class="odd">
+<td>代码、标识与日志</td>
+<td><code>JetBrains Mono</code> / <code>SFMono-Regular</code></td>
+</tr>
+<tr class="even">
+<td>报告长文</td>
+<td>UI 仍保持无衬线；导出报告可单独使用思源宋体</td>
+</tr>
+</tbody>
+</table>
+<p>正文 14 px、密集表格 13 px、辅助信息 12 px；标题使用 16/20/24/32 px 四级。不能通过 10–11 px 字号容纳过多列。</p>
+</section>
+<section id="42-亮色-token" class="level3">
+<h3>4.2 亮色 Token</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Token</th>
+<th>建议值</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>bg-canvas</code></td>
+<td><code>#F5F7FA</code></td>
+<td>全局背景</td>
+</tr>
+<tr class="even">
+<td><code>bg-surface</code></td>
+<td><code>#FFFFFF</code></td>
+<td>卡片/面板</td>
+</tr>
+<tr class="odd">
+<td><code>text-primary</code></td>
+<td><code>#17202A</code></td>
+<td>主文字</td>
+</tr>
+<tr class="even">
+<td><code>text-secondary</code></td>
+<td><code>#5B6675</code></td>
+<td>辅助文字</td>
+</tr>
+<tr class="odd">
+<td><code>border</code></td>
+<td><code>#D9E0E8</code></td>
+<td>边界</td>
+</tr>
+<tr class="even">
+<td><code>brand</code></td>
+<td><code>#1769E0</code></td>
+<td>主操作</td>
+</tr>
+<tr class="odd">
+<td><code>info</code></td>
+<td><code>#2F7DD1</code></td>
+<td>信息</td>
+</tr>
+<tr class="even">
+<td><code>success</code></td>
+<td><code>#178A5B</code></td>
+<td>成功</td>
+</tr>
+<tr class="odd">
+<td><code>warning</code></td>
+<td><code>#B56A00</code></td>
+<td>警告</td>
+</tr>
+<tr class="even">
+<td><code>danger</code></td>
+<td><code>#C7353A</code></td>
+<td>危险/阻断</td>
+</tr>
+<tr class="odd">
+<td><code>focus</code></td>
+<td><code>#7A4FE3</code></td>
+<td>键盘焦点</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="43-暗色-token" class="level3">
+<h3>4.3 暗色 Token</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Token</th>
+<th>建议值</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>bg-canvas</code></td>
+<td><code>#0B0F14</code></td>
+<td>全局背景</td>
+</tr>
+<tr class="even">
+<td><code>bg-surface</code></td>
+<td><code>#121821</code></td>
+<td>卡片/面板</td>
+</tr>
+<tr class="odd">
+<td><code>bg-elevated</code></td>
+<td><code>#19212C</code></td>
+<td>弹层</td>
+</tr>
+<tr class="even">
+<td><code>text-primary</code></td>
+<td><code>#E8EDF4</code></td>
+<td>主文字</td>
+</tr>
+<tr class="odd">
+<td><code>text-secondary</code></td>
+<td><code>#9EABBA</code></td>
+<td>辅助文字</td>
+</tr>
+<tr class="even">
+<td><code>border</code></td>
+<td><code>#293442</code></td>
+<td>边界</td>
+</tr>
+<tr class="odd">
+<td><code>brand</code></td>
+<td><code>#5B9CFF</code></td>
+<td>主操作</td>
+</tr>
+<tr class="even">
+<td><code>success</code></td>
+<td><code>#46C58A</code></td>
+<td>成功</td>
+</tr>
+<tr class="odd">
+<td><code>warning</code></td>
+<td><code>#E9A23B</code></td>
+<td>警告</td>
+</tr>
+<tr class="even">
+<td><code>danger</code></td>
+<td><code>#FF6B70</code></td>
+<td>危险</td>
+</tr>
+</tbody>
+</table>
+<p>中国市场涨跌默认“红涨绿跌”，但必须提供地域/用户配置；同时显示箭头、正负号和文本，避免只依赖颜色。图表色板须做色弱验证。</p>
+</section>
+<section id="44-布局与密度" class="level3">
+<h3>4.4 布局与密度</h3>
+<ul>
+<li>8 px 基础网格；</li>
+<li>顶栏 48–56 px，左栏展开 240–264 px；</li>
+<li>默认内容最大宽度不限制大表，但说明性页面控制在 1440 px；</li>
+<li>面板支持舒适/紧凑两种密度；</li>
+<li>表格行高建议 36/44 px，实时监控可 32 px；</li>
+<li>图表与表格共存时使用可调整 Split Pane；</li>
+<li>关键指标不使用大量同质 KPI 卡，优先按任务组织。</li>
+</ul>
+</section>
+</section>
+<section id="5-表格设计" class="level2">
+<h2>5. 表格设计</h2>
+<p>附件大量页面是高维数据表。统一表格必须支持：</p>
+<ul>
+<li>服务端过滤、排序、分组、聚合与游标分页；</li>
+<li>虚拟滚动、冻结列、列选择、列宽与保存视图；</li>
+<li>字段定义、单位、来源、时间和质量的悬浮信息；</li>
+<li>行对象深链、行内动作和批量动作；</li>
+<li>实时更新高亮但不打断阅读，支持暂停/恢复；</li>
+<li>数值右对齐、文本左对齐、状态居中；</li>
+<li>千分位、精度、币种和百分比由 ValueType 控制；</li>
+<li>导出前显示范围、字段、权限、脱敏和预计大小；</li>
+<li>超宽监控表提供列组、角色预设和详情抽屉，不一次展示全部字段。</li>
+</ul>
+</section>
+<section id="6-图表与分析交互" class="level2">
+<h2>6. 图表与分析交互</h2>
+<ul>
+<li>所有图表显示数据区间、时区、更新点、复权/不复权、单位和来源；</li>
+<li>时间刷选同步联动表格、对象和其他图；</li>
+<li>选中数据点可进入对象/证据，而不是只显示 tooltip；</li>
+<li>支持保存为分析视图，并记录指标版本；</li>
+<li>因子和回测图明确样本空间、调仓、费用、基准和置信区间；</li>
+<li>期指基差同时显示合约、现货代理、滚动窗口、均值和 0.5–3σ 阈值；</li>
+<li>实时行情断线、延迟或切源必须在图上显式提示。</li>
+</ul>
+</section>
+<section id="7-动作与审批交互" class="level2">
+<h2>7. 动作与审批交互</h2>
+<p>动作表单由 <code>ActionType</code> 元数据生成并允许专门组件覆盖。高风险动作使用：</p>
+<ol type="1">
+<li>参数输入与即时校验；</li>
+<li>影响预览；</li>
+<li>风险/权限判定；</li>
+<li>审批或二次确认；</li>
+<li>可追踪执行进度；</li>
+<li>结果、外部回执和下一步。</li>
+</ol>
+<p>不使用简单 toast 宣告异步订单或风控动作“成功”。UI 区分已受理、审批中、执行中、外部未知、已完成、部分完成、失败和已补偿。</p>
+</section>
+<section id="8-实时与异常状态" class="level2">
+<h2>8. 实时与异常状态</h2>
+<p>每个实时页面固定展示：</p>
+<ul>
+<li>连接状态；</li>
+<li>最新业务事件时间；</li>
+<li>平台处理延迟；</li>
+<li>当前数据源；</li>
+<li>丢包/乱序/回补状态；</li>
+<li>用户是否暂停刷新；</li>
+<li>降级能力和恢复建议。</li>
+</ul>
+<p>错误页面提供 <code>trace_id</code>、受影响对象、可重试性和支持入口，但不泄露内部堆栈或秘密。</p>
+</section>
+<section id="9-可访问性与国际化" class="level2">
+<h2>9. 可访问性与国际化</h2>
+<ul>
+<li>目标满足 WCAG 2.2 AA 的相关要求；</li>
+<li>全部核心流程可键盘操作；</li>
+<li>图表提供表格/摘要替代；</li>
+<li>焦点、错误和状态不只靠颜色；</li>
+<li>时间、数字、币种、交易日与市场名称使用 locale；</li>
+<li>中文术语为展示名，稳定 API 名保持英文且不可随展示文案变更。</li>
+</ul>
+</section>
+</section>
+
+        </article>
+        <footer class="page-meta">
+          <span>基线 1.0 · 2026-07-27 · Markdown 与 HTML 同源</span>
+          <span><a href="../../../ontology/financial-ontology.yaml">本体 YAML</a> · <a href="../../../contracts/ontology-api.openapi.yaml">OpenAPI</a> · <a href="../../../contracts/events.asyncapi.yaml">AsyncAPI</a></span>
+        </footer>
+      </div>
+    </main>
+  </div>
+  <script src="../../assets/search-index.js"></script>
+  <script src="../../assets/mermaid-11.16.0.min.js"></script>
+  <script src="../../assets/app.js"></script>
+</body>
+</html>

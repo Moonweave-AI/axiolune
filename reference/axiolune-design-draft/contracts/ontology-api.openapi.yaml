@@ -1,0 +1,502 @@
+openapi: 3.1.1
+info:
+  title: Financial Ontology Object and Action API
+  version: 1.0.0
+  license:
+    name: Internal design artifact; licensing to be determined
+    identifier: LicenseRef-Proprietary
+  description: >
+    本文件定义本体读取与业务动作的最小规范。所有整数型业务标识均编码为
+    string；所有金额、价格和数量以 decimal string 传输；写操作必须携带
+    Idempotency-Key、If-Match 和可审计的业务目的。
+servers:
+  - url: https://api.example.invalid/ontology/v1
+    description: Placeholder; replace through environment configuration
+security:
+  - oidc: [ontology.read]
+tags:
+  - {name: Objects, description: Security-trimmed ontology reads}
+  - {name: Actions, description: Policy-controlled and idempotent business verbs}
+  - {name: Approvals, description: Maker-checker decisions}
+  - {name: Evidence, description: Purpose-bound retrieval with citations}
+paths:
+  /objects/{objectType}/{objectId}:
+    get:
+      tags: [Objects]
+      operationId: getObject
+      summary: Read one security-trimmed ontology object
+      parameters:
+        - $ref: "#/components/parameters/ObjectType"
+        - $ref: "#/components/parameters/ObjectId"
+        - $ref: "#/components/parameters/ScenarioId"
+        - $ref: "#/components/parameters/AsOf"
+      responses:
+        "200":
+          description: Object visible in the caller policy context
+          headers:
+            ETag: {$ref: "#/components/headers/ETag"}
+            X-Data-As-Of: {$ref: "#/components/headers/DataAsOf"}
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/OntologyObject"}
+        "403": {$ref: "#/components/responses/Forbidden"}
+        "404": {$ref: "#/components/responses/NotFound"}
+  /objects/{objectType}/search:
+    post:
+      tags: [Objects]
+      operationId: searchObjects
+      summary: Search an object set with policy trimming and bounded cost
+      parameters:
+        - $ref: "#/components/parameters/ObjectType"
+        - $ref: "#/components/parameters/ScenarioId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/ObjectSearchRequest"}
+      responses:
+        "200":
+          description: A paginated and security-trimmed object set
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ObjectSearchResponse"}
+        "400": {$ref: "#/components/responses/BadRequest"}
+        "403": {$ref: "#/components/responses/Forbidden"}
+        "429": {$ref: "#/components/responses/TooManyRequests"}
+  /actions/submit-order:
+    post:
+      tags: [Actions]
+      operationId: submitOrder
+      summary: Validate and submit an order intent
+      security:
+        - oidc: [ontology.read, action.submit_order]
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Purpose"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/SubmitOrderRequest"}
+      responses:
+        "202":
+          description: Accepted for deterministic checks and workflow execution
+          headers:
+            Location: {$ref: "#/components/headers/Location"}
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ActionAccepted"}
+        "409": {$ref: "#/components/responses/Conflict"}
+        "412": {$ref: "#/components/responses/PreconditionFailed"}
+        "422": {$ref: "#/components/responses/PolicyDenied"}
+  /actions/{actionRunId}:
+    get:
+      tags: [Actions]
+      operationId: getActionRun
+      summary: Read action status, policy result and effect reconciliation state
+      parameters:
+        - $ref: "#/components/parameters/ActionRunId"
+      responses:
+        "200":
+          description: Action status
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ActionRun"}
+        "404": {$ref: "#/components/responses/NotFound"}
+  /actions/{actionRunId}/cancel:
+    post:
+      tags: [Actions]
+      operationId: requestActionCancellation
+      summary: Request cancellation or compensation where the action supports it
+      security:
+        - oidc: [ontology.read, action.cancel]
+      parameters:
+        - $ref: "#/components/parameters/ActionRunId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Purpose"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [reason]
+              properties:
+                reason: {type: string, minLength: 3, maxLength: 1000}
+      responses:
+        "202":
+          description: Cancellation or compensation workflow accepted
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ActionAccepted"}
+        "409": {$ref: "#/components/responses/Conflict"}
+        "422": {$ref: "#/components/responses/PolicyDenied"}
+  /approvals/{approvalTaskId}/decisions:
+    post:
+      tags: [Approvals]
+      operationId: decideApproval
+      summary: Approve or reject a maker-checker task
+      security:
+        - oidc: [ontology.read, approval.decide]
+      parameters:
+        - $ref: "#/components/parameters/ApprovalTaskId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Purpose"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/ApprovalDecisionRequest"}
+      responses:
+        "200":
+          description: Decision recorded
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/ApprovalTask"}
+        "409": {$ref: "#/components/responses/Conflict"}
+        "422": {$ref: "#/components/responses/PolicyDenied"}
+  /evidence/search:
+    post:
+      tags: [Evidence]
+      operationId: searchEvidence
+      summary: Hybrid retrieval with object, purpose and evidence policy trimming
+      security:
+        - oidc: [ontology.read, evidence.search]
+      parameters:
+        - $ref: "#/components/parameters/Purpose"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/EvidenceSearchRequest"}
+      responses:
+        "200":
+          description: Citable evidence fragments
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, dataAsOf]
+                properties:
+                  items:
+                    type: array
+                    items: {$ref: "#/components/schemas/EvidenceFragment"}
+                  dataAsOf: {type: string, format: date-time}
+        "403": {$ref: "#/components/responses/Forbidden"}
+components:
+  securitySchemes:
+    oidc:
+      type: openIdConnect
+      openIdConnectUrl: https://idp.example.invalid/.well-known/openid-configuration
+  parameters:
+    ObjectType:
+      name: objectType
+      in: path
+      required: true
+      schema: {type: string, pattern: "^[A-Z][A-Za-z0-9]{1,63}$"}
+    ObjectId:
+      name: objectId
+      in: path
+      required: true
+      schema: {type: string, minLength: 1, maxLength: 256}
+    ActionRunId:
+      name: actionRunId
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+    ApprovalTaskId:
+      name: approvalTaskId
+      in: path
+      required: true
+      schema: {type: string, format: uuid}
+    ScenarioId:
+      name: X-Scenario-Id
+      in: header
+      required: false
+      schema: {type: string, maxLength: 128}
+    AsOf:
+      name: asOf
+      in: query
+      required: false
+      schema: {type: string, format: date-time}
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: {type: string, minLength: 16, maxLength: 128}
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      schema: {type: string}
+    CorrelationId:
+      name: X-Correlation-Id
+      in: header
+      required: true
+      schema: {type: string, format: uuid}
+    Purpose:
+      name: X-Purpose
+      in: header
+      required: true
+      schema: {type: string, minLength: 3, maxLength: 128}
+  headers:
+    ETag:
+      description: Object version used for optimistic concurrency
+      schema: {type: string}
+    DataAsOf:
+      description: Latest event or snapshot incorporated into this response
+      schema: {type: string, format: date-time}
+    Location:
+      description: ActionRun resource
+      schema: {type: string, format: uri-reference}
+  schemas:
+    DecimalString:
+      type: string
+      pattern: "^-?[0-9]+(\\.[0-9]+)?$"
+    ObjectReference:
+      type: object
+      additionalProperties: false
+      required: [objectType, objectId]
+      properties:
+        objectType: {type: string}
+        objectId: {type: string}
+        version: {type: [string, "null"]}
+    OntologyObject:
+      type: object
+      additionalProperties: false
+      required: [objectType, objectId, version, properties, links, dataAsOf]
+      properties:
+        objectType: {type: string}
+        objectId: {type: string}
+        version: {type: string}
+        properties:
+          type: object
+          additionalProperties: true
+          description: Properties denied by policy are omitted, not silently falsified
+        links:
+          type: object
+          additionalProperties:
+            type: array
+            items: {$ref: "#/components/schemas/ObjectReference"}
+        dataAsOf: {type: string, format: date-time}
+        sourceOffset: {type: [string, "null"]}
+        qualityState: {type: [string, "null"]}
+    Filter:
+      type: object
+      additionalProperties: false
+      required: [field, operator]
+      properties:
+        field: {type: string}
+        operator:
+          type: string
+          enum: [eq, ne, lt, lte, gt, gte, in, contains, exists]
+        value: {}
+    ObjectSearchRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        filters:
+          type: array
+          maxItems: 50
+          items: {$ref: "#/components/schemas/Filter"}
+        sort:
+          type: array
+          maxItems: 5
+          items:
+            type: object
+            additionalProperties: false
+            required: [field, direction]
+            properties:
+              field: {type: string}
+              direction: {type: string, enum: [asc, desc]}
+        fields:
+          type: array
+          maxItems: 100
+          items: {type: string}
+        pageSize: {type: integer, minimum: 1, maximum: 1000, default: 100}
+        pageToken: {type: [string, "null"]}
+        asOf: {type: [string, "null"], format: date-time}
+    ObjectSearchResponse:
+      type: object
+      required: [items, dataAsOf]
+      properties:
+        items:
+          type: array
+          items: {$ref: "#/components/schemas/OntologyObject"}
+        nextPageToken: {type: [string, "null"]}
+        dataAsOf: {type: string, format: date-time}
+        estimatedCost: {type: [integer, "null"]}
+    SubmitOrderRequest:
+      type: object
+      additionalProperties: false
+      required: [intentId, accountId, portfolioId, instrumentId, side, quantity, environment]
+      properties:
+        intentId: {type: string}
+        accountId: {type: string}
+        portfolioId: {type: string}
+        instrumentId: {type: string}
+        side: {type: string, enum: [buy, sell]}
+        quantity: {$ref: "#/components/schemas/DecimalString"}
+        limitPrice:
+          oneOf:
+            - {$ref: "#/components/schemas/DecimalString"}
+            - {type: "null"}
+        orderType: {type: string, enum: [market, limit, algo]}
+        algoDefinitionId: {type: [string, "null"]}
+        algoVersion: {type: [string, "null"]}
+        parameters: {type: object, additionalProperties: true}
+        environment:
+          type: string
+          enum: [simulation, production]
+        expectedObjectVersions:
+          type: object
+          additionalProperties: {type: string}
+    ActionAccepted:
+      type: object
+      additionalProperties: false
+      required: [actionRunId, status, idempotencyKey, correlationId]
+      properties:
+        actionRunId: {type: string, format: uuid}
+        status: {type: string, enum: [accepted, awaiting_approval, running]}
+        idempotencyKey: {type: string}
+        correlationId: {type: string, format: uuid}
+        approvalTaskIds:
+          type: array
+          items: {type: string, format: uuid}
+    ActionRun:
+      type: object
+      additionalProperties: false
+      required: [actionRunId, actionType, actionVersion, status, actorId, requestedAt]
+      properties:
+        actionRunId: {type: string, format: uuid}
+        actionType: {type: string}
+        actionVersion: {type: string}
+        status:
+          type: string
+          enum: [accepted, awaiting_approval, running, succeeded, rejected, failed, compensating, compensated]
+        actorId: {type: string}
+        requestedAt: {type: string, format: date-time}
+        completedAt: {type: [string, "null"], format: date-time}
+        policyDecisionIds:
+          type: array
+          items: {type: string}
+        affectedObjects:
+          type: array
+          items: {$ref: "#/components/schemas/ObjectReference"}
+        externalEffectState:
+          type: string
+          enum: [not_applicable, pending, acknowledged, reconciled, failed, unknown]
+        error:
+          oneOf:
+            - {$ref: "#/components/schemas/Problem"}
+            - {type: "null"}
+    ApprovalDecisionRequest:
+      type: object
+      additionalProperties: false
+      required: [decision, rationale]
+      properties:
+        decision: {type: string, enum: [approve, reject]}
+        rationale: {type: string, minLength: 3, maxLength: 2000}
+        evidenceIds:
+          type: array
+          maxItems: 50
+          items: {type: string}
+    ApprovalTask:
+      type: object
+      required: [approvalTaskId, actionRunId, state, makerId, requiredApprovals]
+      properties:
+        approvalTaskId: {type: string, format: uuid}
+        actionRunId: {type: string, format: uuid}
+        state: {type: string, enum: [pending, approved, rejected, expired, cancelled]}
+        makerId: {type: string}
+        checkerIds: {type: array, items: {type: string}}
+        requiredApprovals: {type: integer, minimum: 1}
+        expiresAt: {type: string, format: date-time}
+    EvidenceSearchRequest:
+      type: object
+      additionalProperties: false
+      required: [query]
+      properties:
+        query: {type: string, minLength: 2, maxLength: 2000}
+        objectScope:
+          type: array
+          maxItems: 100
+          items: {$ref: "#/components/schemas/ObjectReference"}
+        validAt: {type: [string, "null"], format: date-time}
+        topK: {type: integer, minimum: 1, maximum: 50, default: 10}
+        retrievalMode: {type: string, enum: [lexical, vector, hybrid, graph], default: hybrid}
+    EvidenceFragment:
+      type: object
+      additionalProperties: false
+      required: [fragmentId, documentId, locator, sha256, score]
+      properties:
+        fragmentId: {type: string}
+        documentId: {type: string}
+        locator: {type: string}
+        excerpt: {type: string, maxLength: 2000}
+        sha256: {type: string}
+        score: {type: number, minimum: 0, maximum: 1}
+        validFrom: {type: [string, "null"], format: date-time}
+        validTo: {type: [string, "null"], format: date-time}
+        sourceVersion: {type: string}
+    Problem:
+      type: object
+      additionalProperties: false
+      required: [type, title, status, traceId]
+      properties:
+        type: {type: string, format: uri-reference}
+        title: {type: string}
+        status: {type: integer}
+        detail: {type: [string, "null"]}
+        code: {type: [string, "null"]}
+        traceId: {type: string}
+        retryable: {type: boolean, default: false}
+        violations:
+          type: array
+          items:
+            type: object
+            required: [field, reason]
+            properties:
+              field: {type: string}
+              reason: {type: string}
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/problem+json:
+          schema: {$ref: "#/components/schemas/Problem"}
+    Forbidden:
+      description: Caller is not authorized; response does not reveal hidden object existence
+      content:
+        application/problem+json:
+          schema: {$ref: "#/components/schemas/Problem"}
+    NotFound:
+      description: Object is absent or not visible
+      content:
+        application/problem+json:
+          schema: {$ref: "#/components/schemas/Problem"}
+    Conflict:
+      description: State transition or idempotency conflict
+      content:
+        application/problem+json:
+          schema: {$ref: "#/components/schemas/Problem"}
+    PreconditionFailed:
+      description: ETag or expected object version is stale
+      content:
+        application/problem+json:
+          schema: {$ref: "#/components/schemas/Problem"}
+    PolicyDenied:
+      description: Deterministic policy or business invariant denied the action
+      content:
+        application/problem+json:
+          schema: {$ref: "#/components/schemas/Problem"}
+    TooManyRequests:
+      description: Query cost or rate limit exceeded
+      content:
+        application/problem+json:
+          schema: {$ref: "#/components/schemas/Problem"}

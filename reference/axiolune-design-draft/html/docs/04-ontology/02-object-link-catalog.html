@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="金融本体驱动平台总体设计、技术选型、模块、本体、算法与交付规范">
+  <title>核心对象与链接目录 · 金融本体驱动平台</title>
+  <script>
+    (function() {
+      var saved = localStorage.getItem("finance-design-theme");
+      if (saved) document.documentElement.dataset.theme = saved;
+    }());
+    window.SITE_ROOT = "../../";
+    window.RAW_ROOT = "../../../";
+  </script>
+  <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <header class="topbar">
+    <button class="icon-button menu-button" type="button" data-menu-toggle aria-label="打开文档目录" aria-expanded="false">☰</button>
+    <a class="brand" href="../../index.html">
+      <span class="brand-mark" aria-hidden="true">FO</span>
+      <span class="brand-text">金融本体驱动平台设计</span>
+    </a>
+    <span class="topbar-spacer"></span>
+    <button class="icon-button" type="button" data-theme-toggle aria-label="切换主题">☾</button>
+  </header>
+  <div class="layout">
+    <aside class="sidebar" aria-label="文档目录">
+      <div class="search-wrap">
+        <input class="search-input" type="search" data-search placeholder="搜索全部文档…" aria-label="搜索全部文档">
+        <p class="search-hint">按 Ctrl/⌘ + K 聚焦 · Esc 清除</p>
+        <div class="search-results" data-search-results aria-live="polite"></div>
+      </div>
+      <nav class="nav-section" aria-label="首页">
+<h2 class="nav-section-title">首页</h2>
+<a class="nav-link" href="../../index.html">金融本体驱动平台：总体设计与实施规范</a>
+</nav>
+<nav class="nav-section" aria-label="交付说明">
+<h2 class="nav-section-title">交付说明</h2>
+<a class="nav-link" href="../../PACKAGE-SUMMARY.html">交付包清单与验证记录</a>
+</nav>
+<nav class="nav-section" aria-label="总览与追踪">
+<h2 class="nav-section-title">总览与追踪</h2>
+<a class="nav-link" href="../00-overview/00-executive-summary.html">执行摘要</a>
+<a class="nav-link" href="../00-overview/01-scope-assumptions.html">设计范围、假设与边界</a>
+<a class="nav-link" href="../00-overview/02-design-principles.html">核心设计原则与关键决策</a>
+<a class="nav-link" href="../00-overview/03-requirements-traceability.html">需求—模块—本体—证据追踪矩阵</a>
+</nav>
+<nav class="nav-section" aria-label="总体架构">
+<h2 class="nav-section-title">总体架构</h2>
+<a class="nav-link" href="../01-architecture/00-target-architecture.html">目标总体架构</a>
+<a class="nav-link" href="../01-architecture/01-domain-boundaries.html">领域边界与依赖</a>
+<a class="nav-link" href="../01-architecture/02-data-architecture.html">数据与多模态架构</a>
+<a class="nav-link" href="../01-architecture/03-deployment-topology.html">部署拓扑、环境与灾备</a>
+<a class="nav-link" href="../01-architecture/04-nonfunctional-requirements.html">非功能需求与质量属性</a>
+</nav>
+<nav class="nav-section" aria-label="技术选型">
+<h2 class="nav-section-title">技术选型</h2>
+<a class="nav-link" href="../02-technology/00-selection-summary.html">技术选型总表</a>
+<a class="nav-link" href="../02-technology/01-frontend-design-system.html">前端、视觉与交互设计</a>
+<a class="nav-link" href="../02-technology/02-backend-communication.html">后端、接口与通信</a>
+<a class="nav-link" href="../02-technology/03-databases-storage.html">数据库、搜索、图、向量与媒体存储</a>
+<a class="nav-link" href="../02-technology/04-compute-workflow.html">流批计算、数据编排与业务工作流</a>
+<a class="nav-link" href="../02-technology/05-ai-mlops.html">AI、MLOps、GraphRAG 与 Agent 技术</a>
+<a class="nav-link" href="../02-technology/06-security-devsecops.html">安全、DevSecOps 与可观测性技术</a>
+</nav>
+<nav class="nav-section" aria-label="模块设计">
+<h2 class="nav-section-title">模块设计</h2>
+<a class="nav-link" href="../03-modules/00-module-map.html">业务与平台模块全景</a>
+<a class="nav-link" href="../03-modules/01-workspace-data-intelligence.html">统一工作台、数据与资讯</a>
+<a class="nav-link" href="../03-modules/02-quant-active-research.html">量化研究与主动投研</a>
+<a class="nav-link" href="../03-modules/03-portfolio-execution.html">产品、组合、OMS/IMS 与算法执行</a>
+<a class="nav-link" href="../03-modules/04-risk-compliance.html">风险、合规与核对</a>
+<a class="nav-link" href="../03-modules/05-product-reporting.html">产品、渠道与经营报表</a>
+<a class="nav-link" href="../03-modules/06-ontology-automation-operations.html">本体、自动化、Agent 与平台运维</a>
+</nav>
+<nav class="nav-section" aria-label="本体工程">
+<h2 class="nav-section-title">本体工程</h2>
+<a class="nav-link" href="00-method-meta-model.html">金融本体方法与元模型</a>
+<a class="nav-link" href="01-domain-model.html">金融本体逻辑域</a>
+<a class="nav-link is-active" href="02-object-link-catalog.html" aria-current="page">核心对象与链接目录</a>
+<a class="nav-link" href="03-actions-functions-policies.html">动作、函数、模型、策略与工作流</a>
+<a class="nav-link" href="04-temporal-provenance-quality.html">时间、来源、证据与质量</a>
+<a class="nav-link" href="05-security-version-governance.html">本体安全、版本、分支与治理</a>
+<a class="nav-link" href="06-implementation-mapping.html">本体到数据、API、UI 与运行时的映射</a>
+</nav>
+<nav class="nav-section" aria-label="逻辑域与算法">
+<h2 class="nav-section-title">逻辑域与算法</h2>
+<a class="nav-link" href="../05-algorithms/00-algorithm-framework.html">算法工程总规范</a>
+<a class="nav-link" href="../05-algorithms/01-market-factor-backtest.html">行情、因子与回测算法规范</a>
+<a class="nav-link" href="../05-algorithms/02-execution-tca.html">算法执行与交易成本分析规范</a>
+<a class="nav-link" href="../05-algorithms/03-portfolio-risk.html">组合、净值、风险、流动性与对账算法规范</a>
+<a class="nav-link" href="../05-algorithms/04-graph-ai.html">图算法、证据图、GraphRAG 与文档智能规范</a>
+</nav>
+<nav class="nav-section" aria-label="工程、安全与 SRE">
+<h2 class="nav-section-title">工程、安全与 SRE</h2>
+<a class="nav-link" href="../06-engineering/00-engineering-overview.html">工程实现总纲</a>
+<a class="nav-link" href="../06-engineering/01-api-event-contracts.html">API、事件与分布式一致性契约</a>
+<a class="nav-link" href="../06-engineering/02-security-model.html">安全、权限与审计模型</a>
+<a class="nav-link" href="../06-engineering/03-observability-sre.html">可观测性与 SRE</a>
+<a class="nav-link" href="../06-engineering/04-testing-validation.html">测试、验证与发布质量门</a>
+<a class="nav-link" href="../06-engineering/05-continuity-recovery.html">业务连续性、备份与灾难恢复</a>
+</nav>
+<nav class="nav-section" aria-label="交付与迁移">
+<h2 class="nav-section-title">交付与迁移</h2>
+<a class="nav-link" href="../07-delivery/00-roadmap.html">分期路线图与投资顺序</a>
+<a class="nav-link" href="../07-delivery/01-team-governance.html">团队结构、职责与治理</a>
+<a class="nav-link" href="../07-delivery/02-migration-cutover.html">遗留迁移、双跑与切换</a>
+<a class="nav-link" href="../07-delivery/03-acceptance-risks.html">验收体系与风险登记</a>
+<a class="nav-link" href="../07-delivery/04-decision-register.html">架构决策登记册</a>
+<a class="nav-link" href="../07-delivery/05-open-questions.html">立项前未决问题</a>
+</nav>
+<nav class="nav-section" aria-label="参考与证据">
+<h2 class="nav-section-title">参考与证据</h2>
+<a class="nav-link" href="../08-reference/00-palantir-capability-mapping.html">Palantir 能力体系与本方案映射</a>
+<a class="nav-link" href="../08-reference/01-attachment-audit-summary.html">附件审计摘要</a>
+<a class="nav-link" href="../08-reference/02-source-material-handling.html">源材料处理与证据边界</a>
+<a class="nav-link" href="../08-reference/03-source-register.html">参考资料登记册</a>
+<a class="nav-link" href="../08-reference/04-palantir-document-system-audit.html">Palantir 官方文档体系研究与金融平台本体工程映射</a>
+<a class="nav-link" href="../08-reference/05-glossary.html">术语表</a>
+</nav>
+    </aside>
+    <div class="overlay" aria-hidden="true"></div>
+    <main class="main" id="content">
+      <div class="content-shell">
+        <nav class="breadcrumbs" aria-label="面包屑"><a href="../../index.html">首页</a><span>›</span><span>本体工程</span><span>›</span><span>核心对象与链接目录</span></nav>
+        <article class="article">
+          <section id="核心对象与链接目录" class="level1">
+<h1>核心对象与链接目录</h1>
+<section id="1-核心对象字段" class="level2">
+<h2>1. 核心对象字段</h2>
+<p>以下是首个发布包必须包含的最小对象集；更细字段见机器可读清单。</p>
+<section id="11-instrument" class="level3">
+<h3>1.1 Instrument</h3>
+<p>关键属性：</p>
+<ul>
+<li>canonical_id、instrument_type；</li>
+<li>primary_symbol、exchange_code、name；</li>
+<li>currency、price_precision、quantity_unit、lot_size；</li>
+<li>issue/list/delist/maturity dates；</li>
+<li>trading_status；</li>
+<li>valid/system time；</li>
+<li>source、quality、classification。</li>
+</ul>
+<p>链接：</p>
+<ul>
+<li>ISSUED_BY Issuer；</li>
+<li>TRADED_ON Venue；</li>
+<li>CLASSIFIED_AS ClassificationMembership；</li>
+<li>HAS_CORPORATE_ACTION CorporateAction；</li>
+<li>UNDERLYING/CONSTITUENT_OF Instrument。</li>
+</ul>
+</section>
+<section id="12-fundproduct--portfolio--account--assetunit" class="level3">
+<h3>1.2 FundProduct / Portfolio / Account / AssetUnit</h3>
+<p><code>FundProduct</code>：产品代码、名称、法人、策略、基准、币种、状态。<br />
+<code>Portfolio</code>：组合类型、基准、估值口径、负责人、状态。<br />
+<code>TradingAccount</code>：账户类型、市场、券商、环境、状态、能力，不含秘密。<br />
+<code>AssetUnit</code>：代码、名称、类型、所属产品/账户、杠杆、状态、连接引用。</p>
+<p>关键链接：</p>
+<ul>
+<li>Product HAS_PORTFOLIO Portfolio；</li>
+<li>Portfolio USES_BENCHMARK Instrument；</li>
+<li>Product AUTHORIZED_FOR TradingAccount；</li>
+<li>AssetUnit BELONGS_TO Product/Account；</li>
+<li>TradingAccount CONNECTED_VIA Gateway。</li>
+</ul>
+</section>
+<section id="13-position--targetposition" class="level3">
+<h3>1.3 Position / TargetPosition</h3>
+<p>Position：</p>
+<ul>
+<li>portfolio/account/instrument；</li>
+<li>quantity、available、frozen；</li>
+<li>cost、market_value、currency；</li>
+<li>realized/unrealized PnL；</li>
+<li>source_snapshot、as_of；</li>
+<li>quality/reconciliation state。</li>
+</ul>
+<p>TargetPosition：</p>
+<ul>
+<li>target quantity/weight/value；</li>
+<li>source strategy/signal；</li>
+<li>effective window；</li>
+<li>constraints、approval；</li>
+<li>current deviation。</li>
+</ul>
+</section>
+<section id="14-parentorder--childorder--execution" class="level3">
+<h3>1.4 ParentOrder / ChildOrder / Execution</h3>
+<p>ParentOrder：</p>
+<ul>
+<li>order_id 字符串；</li>
+<li>instruction、account、instrument；</li>
+<li>side、order type、quantity、limit；</li>
+<li>algo provider/definition/config version；</li>
+<li>start/end、state、filled/remaining；</li>
+<li>benchmarks、environment、version。</li>
+</ul>
+<p>ChildOrder：</p>
+<ul>
+<li>parent、external order ID；</li>
+<li>venue/gateway、quantity/price/type；</li>
+<li>normalized state、external state；</li>
+<li>sent/ack/update times；</li>
+<li>reject code/source/message。</li>
+</ul>
+<p>Execution：</p>
+<ul>
+<li>execution ID、child order；</li>
+<li>quantity、price、amount、fee；</li>
+<li>venue/time/trading date；</li>
+<li>source sequence、operator、currency、hedge/margin flags。</li>
+</ul>
+</section>
+<section id="15-factordefinition--factorversion--backtestrun" class="level3">
+<h3>1.5 FactorDefinition / FactorVersion / BacktestRun</h3>
+<p>FactorDefinition 保存稳定身份和假设。FactorVersion 保存表达式、输入、频率、lag、清洗、中性化和实现。BacktestRun 保存：</p>
+<ul>
+<li>factor/model versions；</li>
+<li>point-in-time dataset snapshots；</li>
+<li>universe/benchmark；</li>
+<li>date、rebalance、horizon/group；</li>
+<li>execution/fee/slippage；</li>
+<li>code commit/image/seed；</li>
+<li>outputs、quality、review。</li>
+</ul>
+</section>
+<section id="16-riskrule--riskassessment--riskalert" class="level3">
+<h3>1.6 RiskRule / RiskAssessment / RiskAlert</h3>
+<p>RiskRule：</p>
+<ul>
+<li>scope、condition、threshold/unit/window；</li>
+<li>hard/warn/approve；</li>
+<li>priority/conflict；</li>
+<li>missing/freshness policy；</li>
+<li>effective period、owner、version。</li>
+</ul>
+<p>RiskAssessment：</p>
+<ul>
+<li>subject/object/action；</li>
+<li>input snapshot；</li>
+<li>rule set/version；</li>
+<li>decision、metrics、reason；</li>
+<li>latency、time、evidence。</li>
+</ul>
+<p>RiskAlert：</p>
+<ul>
+<li>severity、status、first/last seen；</li>
+<li>affected objects；</li>
+<li>assessment/rules/evidence；</li>
+<li>assignee、SLA、mitigation/outcome。</li>
+</ul>
+</section>
+<section id="17-document--claim--evidencefragment" class="level3">
+<h3>1.7 Document / Claim / EvidenceFragment</h3>
+<p>Document 保存原件引用、来源、许可、hash、版本和时间。EvidenceFragment 保存页/段/时间片/框坐标。Claim 保存结构化声明、置信、复核和反证。Citation 把结论精确指向 fragment。</p>
+</section>
+</section>
+<section id="2-首批-linktype" class="level2">
+<h2>2. 首批 LinkType</h2>
+<table>
+<thead>
+<tr class="header">
+<th>API 名</th>
+<th>起点 → 终点</th>
+<th>基数</th>
+<th>时间/证据</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>issuedBy</code></td>
+<td>Instrument → Issuer</td>
+<td>N:1</td>
+<td>有效期</td>
+</tr>
+<tr class="even">
+<td><code>tradedOn</code></td>
+<td>Instrument → Venue</td>
+<td>N:M</td>
+<td>有效期</td>
+</tr>
+<tr class="odd">
+<td><code>classifiedAs</code></td>
+<td>Instrument → ClassificationMembership</td>
+<td>1:N</td>
+<td>双时间、来源</td>
+</tr>
+<tr class="even">
+<td><code>constituentOf</code></td>
+<td>Instrument → Index</td>
+<td>N:M</td>
+<td>权重、双时间</td>
+</tr>
+<tr class="odd">
+<td><code>productHasPortfolio</code></td>
+<td>FundProduct → Portfolio</td>
+<td>1:N</td>
+<td>有效期</td>
+</tr>
+<tr class="even">
+<td><code>portfolioUsesBenchmark</code></td>
+<td>Portfolio → Instrument</td>
+<td>N:1</td>
+<td>有效期</td>
+</tr>
+<tr class="odd">
+<td><code>productAuthorizedForAccount</code></td>
+<td>FundProduct → TradingAccount</td>
+<td>N:M</td>
+<td>审批、有效期</td>
+</tr>
+<tr class="even">
+<td><code>assetUnitBelongsToAccount</code></td>
+<td>AssetUnit → TradingAccount</td>
+<td>N:1</td>
+<td>有效期</td>
+</tr>
+<tr class="odd">
+<td><code>accountConnectedViaGateway</code></td>
+<td>TradingAccount → Gateway</td>
+<td>N:M</td>
+<td>环境、有效期</td>
+</tr>
+<tr class="even">
+<td><code>portfolioHasPosition</code></td>
+<td>Portfolio → Position</td>
+<td>1:N</td>
+<td>as-of</td>
+</tr>
+<tr class="odd">
+<td><code>positionInInstrument</code></td>
+<td>Position → Instrument</td>
+<td>N:1</td>
+<td>as-of</td>
+</tr>
+<tr class="even">
+<td><code>portfolioHasTarget</code></td>
+<td>Portfolio → TargetPosition</td>
+<td>1:N</td>
+<td>场景/有效期</td>
+</tr>
+<tr class="odd">
+<td><code>targetForInstrument</code></td>
+<td>TargetPosition → Instrument</td>
+<td>N:1</td>
+<td>有效期</td>
+</tr>
+<tr class="even">
+<td><code>signalTargetsInstrument</code></td>
+<td>Signal → Instrument</td>
+<td>N:M</td>
+<td>置信/有效期</td>
+</tr>
+<tr class="odd">
+<td><code>orderImplementsInstruction</code></td>
+<td>ParentOrder → Instruction</td>
+<td>N:1</td>
+<td>不可变</td>
+</tr>
+<tr class="even">
+<td><code>orderForInstrument</code></td>
+<td>Order → Instrument</td>
+<td>N:1</td>
+<td>不可变</td>
+</tr>
+<tr class="odd">
+<td><code>orderUsesAccount</code></td>
+<td>Order → TradingAccount</td>
+<td>N:1</td>
+<td>不可变</td>
+</tr>
+<tr class="even">
+<td><code>parentHasChild</code></td>
+<td>ParentOrder → ChildOrder</td>
+<td>1:N</td>
+<td>不可变</td>
+</tr>
+<tr class="odd">
+<td><code>childHasExecution</code></td>
+<td>ChildOrder → Execution</td>
+<td>1:N</td>
+<td>不可变</td>
+</tr>
+<tr class="even">
+<td><code>orderUsesAlgo</code></td>
+<td>ParentOrder → AlgoDefinition</td>
+<td>N:1</td>
+<td>版本</td>
+</tr>
+<tr class="odd">
+<td><code>assessmentEvaluatesAction</code></td>
+<td>RiskAssessment → ActionRun</td>
+<td>N:1</td>
+<td>不可变</td>
+</tr>
+<tr class="even">
+<td><code>alertAffectsObject</code></td>
+<td>RiskAlert → Identified</td>
+<td>N:M</td>
+<td>证据</td>
+</tr>
+<tr class="odd">
+<td><code>watchlistEntryTargets</code></td>
+<td>WatchlistEntry → Instrument/Party</td>
+<td>N:1</td>
+<td>双时间</td>
+</tr>
+<tr class="even">
+<td><code>exceptionOverridesRule</code></td>
+<td>RiskException → RiskRule</td>
+<td>N:1</td>
+<td>审批/有效期</td>
+</tr>
+<tr class="odd">
+<td><code>researchUsesSnapshot</code></td>
+<td>ResearchRun → DatasetSnapshot</td>
+<td>N:M</td>
+<td>不可变</td>
+</tr>
+<tr class="even">
+<td><code>factorDerivedFromAsset</code></td>
+<td>FactorVersion → DataAsset</td>
+<td>N:M</td>
+<td>版本/血缘</td>
+</tr>
+<tr class="odd">
+<td><code>backtestEvaluatesFactor</code></td>
+<td>BacktestRun → FactorVersion</td>
+<td>N:M</td>
+<td>不可变</td>
+</tr>
+<tr class="even">
+<td><code>reportCitesEvidence</code></td>
+<td>ReportRun → EvidenceFragment</td>
+<td>N:M</td>
+<td>精确引用</td>
+</tr>
+<tr class="odd">
+<td><code>claimSupportedBy</code></td>
+<td>Claim → EvidenceFragment</td>
+<td>N:M</td>
+<td>支持/反对</td>
+</tr>
+<tr class="even">
+<td><code>documentMentionsObject</code></td>
+<td>Document → Identified</td>
+<td>N:M</td>
+<td>抽取/复核</td>
+</tr>
+<tr class="odd">
+<td><code>actionExecutedBy</code></td>
+<td>ActionRun → Subject</td>
+<td>N:1</td>
+<td>审计</td>
+</tr>
+<tr class="even">
+<td><code>actionAffectsObject</code></td>
+<td>ActionRun → Identified</td>
+<td>N:M</td>
+<td>前后版本</td>
+</tr>
+<tr class="odd">
+<td><code>approvalApprovesAction</code></td>
+<td>ApprovalTask → ActionRun</td>
+<td>N:1</td>
+<td>审计</td>
+</tr>
+<tr class="even">
+<td><code>dataAssetBacksObjectType</code></td>
+<td>DataAsset → ObjectType</td>
+<td>N:M</td>
+<td>映射版本</td>
+</tr>
+<tr class="odd">
+<td><code>functionProducesMetric</code></td>
+<td>FunctionVersion → MetricType</td>
+<td>N:M</td>
+<td>版本</td>
+</tr>
+<tr class="even">
+<td><code>agentUsedTool</code></td>
+<td>AgentRun → ToolCall</td>
+<td>1:N</td>
+<td>不可变</td>
+</tr>
+<tr class="odd">
+<td><code>toolInvokesFunctionOrAction</code></td>
+<td>ToolCall → Function/Action</td>
+<td>N:1</td>
+<td>版本</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="3-关系对象" class="level2">
+<h2>3. 关系对象</h2>
+<p>以下关系应建成对象而不是简单边：</p>
+<ul>
+<li>ClassificationMembership：方案、节点、权重、有效期、来源；</li>
+<li>UniverseMembership：样本、权重、纳入/剔除原因和点时；</li>
+<li>CoverageAssignment：分析师、行业/公司、角色和期限；</li>
+<li>ThemeMembership：主题、对象、证据、置信和复核；</li>
+<li>Entitlement：主体、资源范围、动作、用途和期限；</li>
+<li>Delegation：委托人、代理人、范围和期限；</li>
+<li>AccountCapability：市场、方向、业务类型、额度和状态；</li>
+<li>ReconciliationBreak：两侧来源、差异、原因和处置。</li>
+</ul>
+</section>
+<section id="4-基数与完整性" class="level2">
+<h2>4. 基数与完整性</h2>
+<ul>
+<li>每个 Order 必须有且只有一个 environment、account、instrument 和 side；</li>
+<li>Execution 必须关联一个已知 ChildOrder 或显式 Unmatched 状态；</li>
+<li>Position 必须有 portfolio/account/instrument/as_of；</li>
+<li>Published FactorVersion 必须有可复现 ResearchRun；</li>
+<li>Claim 至少有一个 EvidenceFragment 或状态为 Unsupported；</li>
+<li>RiskException 必须有 rule、scope、审批和 expires_at；</li>
+<li>ActionRun 必须有 actor、action type/version、idempotency key 和 audit；</li>
+<li>媒体/附件只通过 MediaReference，不能把二进制内嵌对象 JSON。</li>
+</ul>
+</section>
+<section id="5-链接权限" class="level2">
+<h2>5. 链接权限</h2>
+<p>查看链接需要：</p>
+<ol type="1">
+<li>有权查看 link type；</li>
+<li>有权查看起点对象；</li>
+<li>有权查看终点对象；</li>
+<li>满足属性/用途/时间策略。</li>
+</ol>
+<p>不可因知道边存在而泄露不可见对象。聚合结果需要最小群体阈值或差分策略，防止从计数反推受限对象。</p>
+</section>
+</section>
+
+        </article>
+        <footer class="page-meta">
+          <span>基线 1.0 · 2026-07-27 · Markdown 与 HTML 同源</span>
+          <span><a href="../../../ontology/financial-ontology.yaml">本体 YAML</a> · <a href="../../../contracts/ontology-api.openapi.yaml">OpenAPI</a> · <a href="../../../contracts/events.asyncapi.yaml">AsyncAPI</a></span>
+        </footer>
+      </div>
+    </main>
+  </div>
+  <script src="../../assets/search-index.js"></script>
+  <script src="../../assets/mermaid-11.16.0.min.js"></script>
+  <script src="../../assets/app.js"></script>
+</body>
+</html>

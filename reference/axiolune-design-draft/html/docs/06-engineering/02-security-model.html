@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="金融本体驱动平台总体设计、技术选型、模块、本体、算法与交付规范">
+  <title>安全、权限与审计模型 · 金融本体驱动平台</title>
+  <script>
+    (function() {
+      var saved = localStorage.getItem("finance-design-theme");
+      if (saved) document.documentElement.dataset.theme = saved;
+    }());
+    window.SITE_ROOT = "../../";
+    window.RAW_ROOT = "../../../";
+  </script>
+  <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <header class="topbar">
+    <button class="icon-button menu-button" type="button" data-menu-toggle aria-label="打开文档目录" aria-expanded="false">☰</button>
+    <a class="brand" href="../../index.html">
+      <span class="brand-mark" aria-hidden="true">FO</span>
+      <span class="brand-text">金融本体驱动平台设计</span>
+    </a>
+    <span class="topbar-spacer"></span>
+    <button class="icon-button" type="button" data-theme-toggle aria-label="切换主题">☾</button>
+  </header>
+  <div class="layout">
+    <aside class="sidebar" aria-label="文档目录">
+      <div class="search-wrap">
+        <input class="search-input" type="search" data-search placeholder="搜索全部文档…" aria-label="搜索全部文档">
+        <p class="search-hint">按 Ctrl/⌘ + K 聚焦 · Esc 清除</p>
+        <div class="search-results" data-search-results aria-live="polite"></div>
+      </div>
+      <nav class="nav-section" aria-label="首页">
+<h2 class="nav-section-title">首页</h2>
+<a class="nav-link" href="../../index.html">金融本体驱动平台：总体设计与实施规范</a>
+</nav>
+<nav class="nav-section" aria-label="交付说明">
+<h2 class="nav-section-title">交付说明</h2>
+<a class="nav-link" href="../../PACKAGE-SUMMARY.html">交付包清单与验证记录</a>
+</nav>
+<nav class="nav-section" aria-label="总览与追踪">
+<h2 class="nav-section-title">总览与追踪</h2>
+<a class="nav-link" href="../00-overview/00-executive-summary.html">执行摘要</a>
+<a class="nav-link" href="../00-overview/01-scope-assumptions.html">设计范围、假设与边界</a>
+<a class="nav-link" href="../00-overview/02-design-principles.html">核心设计原则与关键决策</a>
+<a class="nav-link" href="../00-overview/03-requirements-traceability.html">需求—模块—本体—证据追踪矩阵</a>
+</nav>
+<nav class="nav-section" aria-label="总体架构">
+<h2 class="nav-section-title">总体架构</h2>
+<a class="nav-link" href="../01-architecture/00-target-architecture.html">目标总体架构</a>
+<a class="nav-link" href="../01-architecture/01-domain-boundaries.html">领域边界与依赖</a>
+<a class="nav-link" href="../01-architecture/02-data-architecture.html">数据与多模态架构</a>
+<a class="nav-link" href="../01-architecture/03-deployment-topology.html">部署拓扑、环境与灾备</a>
+<a class="nav-link" href="../01-architecture/04-nonfunctional-requirements.html">非功能需求与质量属性</a>
+</nav>
+<nav class="nav-section" aria-label="技术选型">
+<h2 class="nav-section-title">技术选型</h2>
+<a class="nav-link" href="../02-technology/00-selection-summary.html">技术选型总表</a>
+<a class="nav-link" href="../02-technology/01-frontend-design-system.html">前端、视觉与交互设计</a>
+<a class="nav-link" href="../02-technology/02-backend-communication.html">后端、接口与通信</a>
+<a class="nav-link" href="../02-technology/03-databases-storage.html">数据库、搜索、图、向量与媒体存储</a>
+<a class="nav-link" href="../02-technology/04-compute-workflow.html">流批计算、数据编排与业务工作流</a>
+<a class="nav-link" href="../02-technology/05-ai-mlops.html">AI、MLOps、GraphRAG 与 Agent 技术</a>
+<a class="nav-link" href="../02-technology/06-security-devsecops.html">安全、DevSecOps 与可观测性技术</a>
+</nav>
+<nav class="nav-section" aria-label="模块设计">
+<h2 class="nav-section-title">模块设计</h2>
+<a class="nav-link" href="../03-modules/00-module-map.html">业务与平台模块全景</a>
+<a class="nav-link" href="../03-modules/01-workspace-data-intelligence.html">统一工作台、数据与资讯</a>
+<a class="nav-link" href="../03-modules/02-quant-active-research.html">量化研究与主动投研</a>
+<a class="nav-link" href="../03-modules/03-portfolio-execution.html">产品、组合、OMS/IMS 与算法执行</a>
+<a class="nav-link" href="../03-modules/04-risk-compliance.html">风险、合规与核对</a>
+<a class="nav-link" href="../03-modules/05-product-reporting.html">产品、渠道与经营报表</a>
+<a class="nav-link" href="../03-modules/06-ontology-automation-operations.html">本体、自动化、Agent 与平台运维</a>
+</nav>
+<nav class="nav-section" aria-label="本体工程">
+<h2 class="nav-section-title">本体工程</h2>
+<a class="nav-link" href="../04-ontology/00-method-meta-model.html">金融本体方法与元模型</a>
+<a class="nav-link" href="../04-ontology/01-domain-model.html">金融本体逻辑域</a>
+<a class="nav-link" href="../04-ontology/02-object-link-catalog.html">核心对象与链接目录</a>
+<a class="nav-link" href="../04-ontology/03-actions-functions-policies.html">动作、函数、模型、策略与工作流</a>
+<a class="nav-link" href="../04-ontology/04-temporal-provenance-quality.html">时间、来源、证据与质量</a>
+<a class="nav-link" href="../04-ontology/05-security-version-governance.html">本体安全、版本、分支与治理</a>
+<a class="nav-link" href="../04-ontology/06-implementation-mapping.html">本体到数据、API、UI 与运行时的映射</a>
+</nav>
+<nav class="nav-section" aria-label="逻辑域与算法">
+<h2 class="nav-section-title">逻辑域与算法</h2>
+<a class="nav-link" href="../05-algorithms/00-algorithm-framework.html">算法工程总规范</a>
+<a class="nav-link" href="../05-algorithms/01-market-factor-backtest.html">行情、因子与回测算法规范</a>
+<a class="nav-link" href="../05-algorithms/02-execution-tca.html">算法执行与交易成本分析规范</a>
+<a class="nav-link" href="../05-algorithms/03-portfolio-risk.html">组合、净值、风险、流动性与对账算法规范</a>
+<a class="nav-link" href="../05-algorithms/04-graph-ai.html">图算法、证据图、GraphRAG 与文档智能规范</a>
+</nav>
+<nav class="nav-section" aria-label="工程、安全与 SRE">
+<h2 class="nav-section-title">工程、安全与 SRE</h2>
+<a class="nav-link" href="00-engineering-overview.html">工程实现总纲</a>
+<a class="nav-link" href="01-api-event-contracts.html">API、事件与分布式一致性契约</a>
+<a class="nav-link is-active" href="02-security-model.html" aria-current="page">安全、权限与审计模型</a>
+<a class="nav-link" href="03-observability-sre.html">可观测性与 SRE</a>
+<a class="nav-link" href="04-testing-validation.html">测试、验证与发布质量门</a>
+<a class="nav-link" href="05-continuity-recovery.html">业务连续性、备份与灾难恢复</a>
+</nav>
+<nav class="nav-section" aria-label="交付与迁移">
+<h2 class="nav-section-title">交付与迁移</h2>
+<a class="nav-link" href="../07-delivery/00-roadmap.html">分期路线图与投资顺序</a>
+<a class="nav-link" href="../07-delivery/01-team-governance.html">团队结构、职责与治理</a>
+<a class="nav-link" href="../07-delivery/02-migration-cutover.html">遗留迁移、双跑与切换</a>
+<a class="nav-link" href="../07-delivery/03-acceptance-risks.html">验收体系与风险登记</a>
+<a class="nav-link" href="../07-delivery/04-decision-register.html">架构决策登记册</a>
+<a class="nav-link" href="../07-delivery/05-open-questions.html">立项前未决问题</a>
+</nav>
+<nav class="nav-section" aria-label="参考与证据">
+<h2 class="nav-section-title">参考与证据</h2>
+<a class="nav-link" href="../08-reference/00-palantir-capability-mapping.html">Palantir 能力体系与本方案映射</a>
+<a class="nav-link" href="../08-reference/01-attachment-audit-summary.html">附件审计摘要</a>
+<a class="nav-link" href="../08-reference/02-source-material-handling.html">源材料处理与证据边界</a>
+<a class="nav-link" href="../08-reference/03-source-register.html">参考资料登记册</a>
+<a class="nav-link" href="../08-reference/04-palantir-document-system-audit.html">Palantir 官方文档体系研究与金融平台本体工程映射</a>
+<a class="nav-link" href="../08-reference/05-glossary.html">术语表</a>
+</nav>
+    </aside>
+    <div class="overlay" aria-hidden="true"></div>
+    <main class="main" id="content">
+      <div class="content-shell">
+        <nav class="breadcrumbs" aria-label="面包屑"><a href="../../index.html">首页</a><span>›</span><span>工程、安全与 SRE</span><span>›</span><span>安全、权限与审计模型</span></nav>
+        <article class="article">
+          <section id="安全权限与审计模型" class="level1">
+<h1>安全、权限与审计模型</h1>
+<section id="1-安全目标与边界" class="level2">
+<h2>1. 安全目标与边界</h2>
+<p>平台按零信任、最小权限、职责分离和可证明审计设计。安全控制覆盖：</p>
+<ul>
+<li>人、服务、设备、Agent 和外部系统身份；</li>
+<li>数据源、数据产品、本体对象/属性/链接；</li>
+<li>函数、指标、模型、动作、工作流和导出；</li>
+<li>开发、仿真、回放、生产与灾备环境；</li>
+<li>浏览器、API、消息、数据库、搜索、图、向量和媒体；</li>
+<li>构建、发布、运维、备份、恢复和退役。</li>
+</ul>
+<p>“能访问 Kafka/数据库”不等于“能读取全部业务数据”；“能看到对象”也不等于“能执行对象动作”。</p>
+</section>
+<section id="2-数据与动作分级" class="level2">
+<h2>2. 数据与动作分级</h2>
+<section id="21-数据分类" class="level3">
+<h3>2.1 数据分类</h3>
+<p>平台同时保存两个不能混为一谈的维度：</p>
+<ol type="1">
+<li><strong>监管/业务数据级别</strong>：按 2026《金融信息服务数据分类分级指南》和最终适用规则映射为 <code>核心、重要、敏感一般、常规一般</code>；</li>
+<li><strong>内部保密级别</strong>：用于日常访问和披露控制的 <code>Public、Internal、Confidential、Restricted</code>。</li>
+</ol>
+<p>同一对象可以是“重要 + Restricted”；策略取两个维度及用途、地域、对象关系中的最严格控制。初始内部保密分类建议：</p>
+<table>
+<thead>
+<tr class="header">
+<th>级别</th>
+<th>示例</th>
+<th>默认控制</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Public</td>
+<td>已批准公开的产品资料</td>
+<td>完整性、发布审批</td>
+</tr>
+<tr class="even">
+<td>Internal</td>
+<td>一般内部配置和运营数据</td>
+<td>企业身份、最小权限</td>
+</tr>
+<tr class="odd">
+<td>Confidential</td>
+<td>研究、组合、账户、合同、非公开报告</td>
+<td>对象/属性控制、加密、导出审批</td>
+</tr>
+<tr class="even">
+<td>Restricted</td>
+<td>交易指令、持仓细节、身份信息、密钥、监管限制数据</td>
+<td>强隔离、双人审批、字段加密、重点审计</td>
+</tr>
+</tbody>
+</table>
+<p>最终分级必须由法务、合规、数据安全团队按组织主体、业务牌照、部署地域和 2026 年适用规则建立“数据项—级别—用途—保存—出境—控制—证据”矩阵。</p>
+</section>
+<section id="22-动作风险" class="level3">
+<h3>2.2 动作风险</h3>
+<table>
+<thead>
+<tr class="header">
+<th>风险级别</th>
+<th>示例</th>
+<th>默认处理</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>L0 只读</td>
+<td>查询对象、查看公开报告</td>
+<td>策略允许即可</td>
+</tr>
+<tr class="even">
+<td>L1 可逆低风险</td>
+<td>保存视图、创建个人草稿</td>
+<td>单人、完整审计</td>
+</tr>
+<tr class="odd">
+<td>L2 业务变更</td>
+<td>发布研究、修改主数据</td>
+<td>Maker-checker 或抽样复核</td>
+</tr>
+<tr class="even">
+<td>L3 高风险</td>
+<td>下单、风险例外、账户启停、生产切源</td>
+<td>双人复核、强认证、额度/时窗</td>
+</tr>
+<tr class="odd">
+<td>L4 特权/系统性</td>
+<td>授权策略、密钥恢复、全局本体发布、DR 切换</td>
+<td>多角色批准、受控窗口、全程监控</td>
+</tr>
+</tbody>
+</table>
+<p>风险级别是 ActionType 元数据，策略可根据金额、对象分类、影响范围和环境动态提升，不可由调用者降低。</p>
+</section>
+</section>
+<section id="3-身份与会话" class="level2">
+<h2>3. 身份与会话</h2>
+<section id="31-人员身份" class="level3">
+<h3>3.1 人员身份</h3>
+<ul>
+<li>对接企业 IdP，使用 OIDC/SAML、MFA 和条件访问；</li>
+<li>HR/组织系统驱动入职、转岗、离职；离职/高风险变更近实时撤权；</li>
+<li>禁止共享账号；岗位账户必须映射到实际操作者；</li>
+<li>高风险动作要求近期强认证，敏感会话短时有效；</li>
+<li>设备合规、网络区、地理异常和风险信号进入策略上下文；</li>
+<li>Break-glass 身份离线保管、双人启用、短时授权、实时告警和事后复核。</li>
+</ul>
+</section>
+<section id="32-服务与工作负载" class="level3">
+<h3>3.2 服务与工作负载</h3>
+<ul>
+<li>Kubernetes/主机工作负载使用短期身份和 mTLS 证书；</li>
+<li>每个服务、环境和用途独立身份，不复用人的令牌；</li>
+<li>OAuth client 使用最小 scope、受限回调和自动轮换；</li>
+<li>柜台/供应商静态凭据无法避免时，存于 Vault/HSM，限制网络与进程读取，缩短轮换周期；</li>
+<li>Notebook、CI runner、Agent 与生产服务使用不同信任域。</li>
+</ul>
+</section>
+<section id="33-委托" class="level3">
+<h3>3.3 委托</h3>
+<p>用户通过应用或 Agent 触发动作时，审计同时保留：</p>
+<ul>
+<li>原始主体；</li>
+<li>调用应用/Agent/服务；</li>
+<li>委托链与 scope；</li>
+<li>用途和环境；</li>
+<li>生效策略版本；</li>
+<li>最终执行工作负载。</li>
+</ul>
+<p>服务间传递签名的最小授权上下文，不无限转发原始用户令牌。</p>
+</section>
+</section>
+<section id="4-授权决策" class="level2">
+<h2>4. 授权决策</h2>
+<section id="41-组合模型" class="level3">
+<h3>4.1 组合模型</h3>
+<p>平台组合使用：</p>
+<ul>
+<li><strong>RBAC</strong>：岗位基础能力，例如研究员、交易员、风险经理；</li>
+<li><strong>ReBAC</strong>：OpenFGA 或 SpiceDB 表达用户—团队—产品—组合—账户—对象关系；</li>
+<li><strong>ABAC</strong>：OPA 处理分类、目的、环境、时间、设备、金额、动作参数和风险；</li>
+<li><strong>物理执行控制</strong>：PostgreSQL RLS/列策略、OpenSearch ACL、图/向量过滤、对象存储策略和 Topic ACL。</li>
+</ul>
+<p>统一请求：</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;subject&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;u123&quot;</span><span class="fu">,</span> <span class="dt">&quot;roles&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;TRADER&quot;</span><span class="ot">]</span><span class="fu">,</span> <span class="dt">&quot;teams&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;desk-a&quot;</span><span class="ot">]</span><span class="fu">},</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;action&quot;</span><span class="fu">:</span> <span class="st">&quot;SubmitParentOrder&quot;</span><span class="fu">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;resource&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;TradingAccount&quot;</span><span class="fu">,</span> <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;acct-7&quot;</span><span class="fu">,</span> <span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="dv">11</span><span class="fu">},</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;environment&quot;</span><span class="fu">:</span> <span class="st">&quot;PRODUCTION&quot;</span><span class="fu">,</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;purpose&quot;</span><span class="fu">:</span> <span class="st">&quot;TRADE_EXECUTION&quot;</span><span class="fu">,</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;attributes&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;instrument_classification&quot;</span><span class="fu">:</span> <span class="st">&quot;CONFIDENTIAL&quot;</span><span class="fu">,</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;notional&quot;</span><span class="fu">:</span> <span class="st">&quot;12000000.00&quot;</span><span class="fu">,</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;currency&quot;</span><span class="fu">:</span> <span class="st">&quot;CNY&quot;</span><span class="fu">,</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;device_trust&quot;</span><span class="fu">:</span> <span class="st">&quot;MANAGED&quot;</span><span class="fu">,</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;current_session&quot;</span><span class="fu">:</span> <span class="st">&quot;CONTINUOUS&quot;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>决策返回 <code>allow/deny</code>、原因 code、匹配规则、策略版本、义务（脱敏、审批、水印、数量上限）和 TTL。领域服务负责执行义务，不能只读取布尔值。</p>
+</section>
+<section id="42-默认规则" class="level3">
+<h3>4.2 默认规则</h3>
+<ul>
+<li>默认拒绝；未分类资源按更严格级别处理；</li>
+<li>环境、用途和对象关系均必须匹配；</li>
+<li>派生数据继承输入中最严格的限制；</li>
+<li>链接查询检查边及两端；图路径逐跳授权；</li>
+<li>文档 chunk、OCR、embedding 和摘要继承原件 ACL；</li>
+<li>聚合设置最小群体和防差分推断规则；</li>
+<li>缓存、索引、下载和备份不削弱源权限；</li>
+<li>Agent 有效权限为“发起主体权限 ∩ Agent 工具白名单 ∩ 场景策略”。</li>
+</ul>
+</section>
+<section id="43-一致执行点" class="level3">
+<h3>4.3 一致执行点</h3>
+<table>
+<thead>
+<tr class="header">
+<th>层</th>
+<th>责任</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Gateway</td>
+<td>认证、租户/组织、粗粒度 scope、限流</td>
+</tr>
+<tr class="even">
+<td>Object/Action API</td>
+<td>对象、属性、链接、函数和动作决策</td>
+</tr>
+<tr class="odd">
+<td>领域服务</td>
+<td>业务不变量、参数义务、最终授权防线</td>
+</tr>
+<tr class="even">
+<td>数据层</td>
+<td>RLS/列、ACL、凭据隔离，防绕过</td>
+</tr>
+<tr class="odd">
+<td>Search/Graph/Vector</td>
+<td>查询前过滤，禁止检索后裁剪作为唯一措施</td>
+</tr>
+<tr class="even">
+<td>Export/Media</td>
+<td>字段、数量、用途、水印、签名 URL 和到期</td>
+</tr>
+<tr class="odd">
+<td>UI</td>
+<td>可解释反馈；不作为安全边界</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="5-maker-checker-与职责分离" class="level2">
+<h2>5. Maker-checker 与职责分离</h2>
+<section id="51-通用规则" class="level3">
+<h3>5.1 通用规则</h3>
+<ul>
+<li>Maker 不能批准自己的请求；</li>
+<li>Approval 对规范化请求摘要、对象版本、环境和有效期绑定；</li>
+<li>请求参数或对象版本变化使旧审批失效；</li>
+<li>批量审批展示全部影响或分层抽样规则，不以一个模糊按钮掩盖范围；</li>
+<li>Approver 必须对目标资源和动作有独立授权；</li>
+<li>Agent、服务账户和临时身份不能成为最终 Checker；</li>
+<li>紧急豁免有更短有效期、补偿控制和自动复核任务。</li>
+</ul>
+</section>
+<section id="52-典型职责矩阵" class="level3">
+<h3>5.2 典型职责矩阵</h3>
+<table>
+<thead>
+<tr class="header">
+<th>动作</th>
+<th>Maker</th>
+<th>Checker</th>
+<th>执行者</th>
+<th>禁止组合</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>发布因子/模型</td>
+<td>研究员</td>
+<td>独立研究评审/模型风险</td>
+<td>发布服务</td>
+<td>作者自批</td>
+</tr>
+<tr class="even">
+<td>修改证券主数据</td>
+<td>Data Steward</td>
+<td>Domain Owner</td>
+<td>主数据服务</td>
+<td>来源维护者自批重大合并</td>
+</tr>
+<tr class="odd">
+<td>大额下单/例外</td>
+<td>交易员</td>
+<td>风控/授权主管</td>
+<td>OMS</td>
+<td>同一人既放宽限额又下单</td>
+</tr>
+<tr class="even">
+<td>账户/网关启停</td>
+<td>运维</td>
+<td>业务 Owner + 安全（高风险）</td>
+<td>受控运维动作</td>
+<td>共享管理员直接执行</td>
+</tr>
+<tr class="odd">
+<td>授权关系变更</td>
+<td>资源 Owner</td>
+<td>Security/Compliance</td>
+<td>IAM 服务</td>
+<td>被授权人自批</td>
+</tr>
+<tr class="even">
+<td>本体 major 发布</td>
+<td>Ontology Architect</td>
+<td>Domain + Security + Platform</td>
+<td>发布控制器</td>
+<td>设计者单独发布</td>
+</tr>
+<tr class="odd">
+<td>DR 切换</td>
+<td>Incident Commander</td>
+<td>业务连续性负责人</td>
+<td>SRE</td>
+<td>单人无演练切换</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="6-密钥秘密与加密" class="level2">
+<h2>6. 密钥、秘密与加密</h2>
+<section id="61-密钥层级" class="level3">
+<h3>6.1 密钥层级</h3>
+<ul>
+<li>HSM/KMS 管理根密钥和 Key Encryption Key；</li>
+<li>Envelope Encryption 为数据域/租户/用途生成 Data Encryption Key；</li>
+<li>数据库、对象、消息、备份、制品和传输分别设置密钥与轮换；</li>
+<li>Restricted 字段按需令牌化或字段级加密；</li>
+<li>密钥访问策略与数据访问策略分离，应用只获得完成任务所需的解密能力。</li>
+</ul>
+</section>
+<section id="62-秘密生命周期" class="level3">
+<h3>6.2 秘密生命周期</h3>
+<p><code>申请 → 批准 → 生成 → 短期分发 → 使用观测 → 轮换 → 吊销 → 证明销毁</code></p>
+<ul>
+<li>禁止把密码、Token、证书私钥写入 Git、镜像、Markdown、CSV、日志、前端或 Notebook；</li>
+<li>使用 Vault/Secret Manager、CSI/sidecar 或短期动态凭据；</li>
+<li>CI 执行提交、历史、制品和镜像 Secret Scan；</li>
+<li>读取秘密有独立审计，异常批量读取立即告警；</li>
+<li>轮换同时验证消费者恢复；吊销后检查历史使用；</li>
+<li>附件中出现过明文凭据，因此进入迁移前必须完成轮换、撤销旧值和使用记录调查。</li>
+</ul>
+</section>
+</section>
+<section id="7-网络与运行隔离" class="level2">
+<h2>7. 网络与运行隔离</h2>
+<ul>
+<li>办公接入、应用、数据、交易、研究、管理和外联区分段；</li>
+<li>默认拒绝东西向和 egress；以工作负载身份和明确目的放行；</li>
+<li>交易关键服务不接受个人工作站直连；</li>
+<li>文件、PDF、图片、音视频进入非可信处理区，执行恶意检测、格式验证和沙箱解析；</li>
+<li>Notebook 不能访问生产交易凭据或直接写生产对象；</li>
+<li>生产、Replay、Simulation 的网络、证书、账户和 Topic 隔离；</li>
+<li>管理动作通过审计 API/堡垒路径，不以共享 SSH 和手工进程命令作为常态。</li>
+</ul>
+</section>
+<section id="8-审计证据模型" class="level2">
+<h2>8. 审计证据模型</h2>
+<p>审计事件是不可变业务证据，不等同于应用日志。最少字段：</p>
+<ul>
+<li><code>audit_id</code>、event/recorded time、环境；</li>
+<li>原始主体、委托链、设备/会话和认证强度；</li>
+<li>purpose、资源/对象/属性/动作、影响范围；</li>
+<li>规范化参数摘要和敏感字段掩码；</li>
+<li>策略决策 ID/版本、允许/拒绝理由和义务；</li>
+<li>Maker、Checker、审批内容和有效期；</li>
+<li>变更前后引用、领域事件、外部回执；</li>
+<li>代码、本体、规则、模型、配置和数据快照版本；</li>
+<li>trace/correlation/action ID；</li>
+<li>完整性哈希、存储位置、保留和法定冻结。</li>
+</ul>
+<p>审计管线写入高吞吐检索存储，并将规定记录归档到 WORM/Object Lock。审计访问、查询和导出同样被审计；时间源同步与签名链用于证明完整性。</p>
+</section>
+<section id="9-数据生命周期与外发" class="level2">
+<h2>9. 数据生命周期与外发</h2>
+<ul>
+<li>采集时登记目的、合法依据、分类、地域、Owner 和保留期；</li>
+<li>处理使用目的绑定，二次使用需重新评估；</li>
+<li>非生产环境使用合成或不可逆脱敏数据；</li>
+<li>导出前估算对象/字段/分类/接收方/保存期，执行审批、脱敏、水印、加密和短期下载；</li>
+<li>分享只共享视图定义，接收者仍按自身权限查询；</li>
+<li>到期删除覆盖 OLTP、湖仓、搜索、图、向量、媒体、缓存和可删除备份；</li>
+<li>法定冻结优先于普通删除并记录依据；</li>
+<li>跨境、外包和第三方传输由合规核验，不由技术团队默认放行。</li>
+</ul>
+</section>
+<section id="10-ai-与检索安全" class="level2">
+<h2>10. AI 与检索安全</h2>
+<ul>
+<li>权限裁剪在检索前执行，chunk/embedding 继承文档 ACL；</li>
+<li>不可信内容与系统指令、工具描述和用户提示分区；</li>
+<li>对提示注入、恶意文件、工具注入、数据投毒和越权链接做检测；</li>
+<li>模型输出不是授权依据；所有副作用进入 Action Service；</li>
+<li>高风险 Agent 默认只生成 <code>ActionProposal</code>，人工审阅证据、参数和影响；</li>
+<li>输出必须引用可访问证据，缺失或冲突时拒答/标记不确定；</li>
+<li>对模型、提示、检索配置、工具和评测集做版本和审计；</li>
+<li>禁止向外部模型发送未经批准的 Confidential/Restricted 数据。</li>
+</ul>
+</section>
+<section id="11-安全开发与供应链" class="level2">
+<h2>11. 安全开发与供应链</h2>
+<ul>
+<li>威胁建模覆盖身份、信任边界、数据流、滥用场景和恢复；</li>
+<li>SAST、DAST、SCA、IaC、容器、Secret、许可证与恶意依赖扫描；</li>
+<li>依赖锁定、内部镜像源、SBOM、签名制品和 provenance；</li>
+<li>CI 与运行环境分离，构建身份不能直接部署生产；</li>
+<li>Admission Policy 校验签名、来源、最小权限、只读根文件系统、网络和资源上限；</li>
+<li>漏洞按暴露、可利用性、业务影响和补偿控制确定修复时限；</li>
+<li>第三方 SDK、行情/券商连接器和模型制品执行安全与许可评审。</li>
+</ul>
+</section>
+<section id="12-安全测试矩阵" class="level2">
+<h2>12. 安全测试矩阵</h2>
+<table>
+<thead>
+<tr class="header">
+<th>范围</th>
+<th>必测场景</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>IAM</td>
+<td>入转离、MFA、Token 过期/撤销、服务身份轮换</td>
+</tr>
+<tr class="even">
+<td>Object</td>
+<td>行/列/单元、链接两端、时间/用途/环境变化</td>
+</tr>
+<tr class="odd">
+<td>Action</td>
+<td>自批、审批失效、陈旧版本、额度提升、重放</td>
+</tr>
+<tr class="even">
+<td>Search/Graph/Vector</td>
+<td>越权发现、推断、缓存污染、路径泄漏</td>
+</tr>
+<tr class="odd">
+<td>Export/Media</td>
+<td>大批量、隐藏字段、签名 URL、过期和转发</td>
+</tr>
+<tr class="even">
+<td>API/Event</td>
+<td>IDOR、注入、重放、伪造主体、敏感日志</td>
+</tr>
+<tr class="odd">
+<td>AI</td>
+<td>Prompt/tool injection、越权检索、错误引用、危险提案</td>
+</tr>
+<tr class="even">
+<td>Platform</td>
+<td>容器逃逸、供应链、网络绕过、Break-glass</td>
+</tr>
+<tr class="odd">
+<td>Recovery</td>
+<td>密钥丢失/轮换、备份解密、审计完整性</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="13-安全运营" class="level2">
+<h2>13. 安全运营</h2>
+<ul>
+<li>SIEM 汇聚认证、授权拒绝、敏感读取、导出、策略/密钥/本体变更和供应链事件；</li>
+<li>UEBA/规则识别异常时间、设备、对象数量、连续拒绝、批量下载和权限提升；</li>
+<li>P0/P1 安全事件自动冻结相关短期令牌和高风险动作，但避免无评估地停掉全部交易；</li>
+<li>Incident Response 保存证据、限定范围、轮换凭据、通知责任方和满足适用报告要求；</li>
+<li>权限按季度复核，特权/外部/临时权限更高频；</li>
+<li>策略、密钥恢复和 Break-glass 至少半年演练，并跟踪改进项关闭。</li>
+</ul>
+</section>
+</section>
+
+        </article>
+        <footer class="page-meta">
+          <span>基线 1.0 · 2026-07-27 · Markdown 与 HTML 同源</span>
+          <span><a href="../../../ontology/financial-ontology.yaml">本体 YAML</a> · <a href="../../../contracts/ontology-api.openapi.yaml">OpenAPI</a> · <a href="../../../contracts/events.asyncapi.yaml">AsyncAPI</a></span>
+        </footer>
+      </div>
+    </main>
+  </div>
+  <script src="../../assets/search-index.js"></script>
+  <script src="../../assets/mermaid-11.16.0.min.js"></script>
+  <script src="../../assets/app.js"></script>
+</body>
+</html>

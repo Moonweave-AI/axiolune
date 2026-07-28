@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="金融本体驱动平台总体设计、技术选型、模块、本体、算法与交付规范">
+  <title>可观测性与 SRE · 金融本体驱动平台</title>
+  <script>
+    (function() {
+      var saved = localStorage.getItem("finance-design-theme");
+      if (saved) document.documentElement.dataset.theme = saved;
+    }());
+    window.SITE_ROOT = "../../";
+    window.RAW_ROOT = "../../../";
+  </script>
+  <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <header class="topbar">
+    <button class="icon-button menu-button" type="button" data-menu-toggle aria-label="打开文档目录" aria-expanded="false">☰</button>
+    <a class="brand" href="../../index.html">
+      <span class="brand-mark" aria-hidden="true">FO</span>
+      <span class="brand-text">金融本体驱动平台设计</span>
+    </a>
+    <span class="topbar-spacer"></span>
+    <button class="icon-button" type="button" data-theme-toggle aria-label="切换主题">☾</button>
+  </header>
+  <div class="layout">
+    <aside class="sidebar" aria-label="文档目录">
+      <div class="search-wrap">
+        <input class="search-input" type="search" data-search placeholder="搜索全部文档…" aria-label="搜索全部文档">
+        <p class="search-hint">按 Ctrl/⌘ + K 聚焦 · Esc 清除</p>
+        <div class="search-results" data-search-results aria-live="polite"></div>
+      </div>
+      <nav class="nav-section" aria-label="首页">
+<h2 class="nav-section-title">首页</h2>
+<a class="nav-link" href="../../index.html">金融本体驱动平台：总体设计与实施规范</a>
+</nav>
+<nav class="nav-section" aria-label="交付说明">
+<h2 class="nav-section-title">交付说明</h2>
+<a class="nav-link" href="../../PACKAGE-SUMMARY.html">交付包清单与验证记录</a>
+</nav>
+<nav class="nav-section" aria-label="总览与追踪">
+<h2 class="nav-section-title">总览与追踪</h2>
+<a class="nav-link" href="../00-overview/00-executive-summary.html">执行摘要</a>
+<a class="nav-link" href="../00-overview/01-scope-assumptions.html">设计范围、假设与边界</a>
+<a class="nav-link" href="../00-overview/02-design-principles.html">核心设计原则与关键决策</a>
+<a class="nav-link" href="../00-overview/03-requirements-traceability.html">需求—模块—本体—证据追踪矩阵</a>
+</nav>
+<nav class="nav-section" aria-label="总体架构">
+<h2 class="nav-section-title">总体架构</h2>
+<a class="nav-link" href="../01-architecture/00-target-architecture.html">目标总体架构</a>
+<a class="nav-link" href="../01-architecture/01-domain-boundaries.html">领域边界与依赖</a>
+<a class="nav-link" href="../01-architecture/02-data-architecture.html">数据与多模态架构</a>
+<a class="nav-link" href="../01-architecture/03-deployment-topology.html">部署拓扑、环境与灾备</a>
+<a class="nav-link" href="../01-architecture/04-nonfunctional-requirements.html">非功能需求与质量属性</a>
+</nav>
+<nav class="nav-section" aria-label="技术选型">
+<h2 class="nav-section-title">技术选型</h2>
+<a class="nav-link" href="../02-technology/00-selection-summary.html">技术选型总表</a>
+<a class="nav-link" href="../02-technology/01-frontend-design-system.html">前端、视觉与交互设计</a>
+<a class="nav-link" href="../02-technology/02-backend-communication.html">后端、接口与通信</a>
+<a class="nav-link" href="../02-technology/03-databases-storage.html">数据库、搜索、图、向量与媒体存储</a>
+<a class="nav-link" href="../02-technology/04-compute-workflow.html">流批计算、数据编排与业务工作流</a>
+<a class="nav-link" href="../02-technology/05-ai-mlops.html">AI、MLOps、GraphRAG 与 Agent 技术</a>
+<a class="nav-link" href="../02-technology/06-security-devsecops.html">安全、DevSecOps 与可观测性技术</a>
+</nav>
+<nav class="nav-section" aria-label="模块设计">
+<h2 class="nav-section-title">模块设计</h2>
+<a class="nav-link" href="../03-modules/00-module-map.html">业务与平台模块全景</a>
+<a class="nav-link" href="../03-modules/01-workspace-data-intelligence.html">统一工作台、数据与资讯</a>
+<a class="nav-link" href="../03-modules/02-quant-active-research.html">量化研究与主动投研</a>
+<a class="nav-link" href="../03-modules/03-portfolio-execution.html">产品、组合、OMS/IMS 与算法执行</a>
+<a class="nav-link" href="../03-modules/04-risk-compliance.html">风险、合规与核对</a>
+<a class="nav-link" href="../03-modules/05-product-reporting.html">产品、渠道与经营报表</a>
+<a class="nav-link" href="../03-modules/06-ontology-automation-operations.html">本体、自动化、Agent 与平台运维</a>
+</nav>
+<nav class="nav-section" aria-label="本体工程">
+<h2 class="nav-section-title">本体工程</h2>
+<a class="nav-link" href="../04-ontology/00-method-meta-model.html">金融本体方法与元模型</a>
+<a class="nav-link" href="../04-ontology/01-domain-model.html">金融本体逻辑域</a>
+<a class="nav-link" href="../04-ontology/02-object-link-catalog.html">核心对象与链接目录</a>
+<a class="nav-link" href="../04-ontology/03-actions-functions-policies.html">动作、函数、模型、策略与工作流</a>
+<a class="nav-link" href="../04-ontology/04-temporal-provenance-quality.html">时间、来源、证据与质量</a>
+<a class="nav-link" href="../04-ontology/05-security-version-governance.html">本体安全、版本、分支与治理</a>
+<a class="nav-link" href="../04-ontology/06-implementation-mapping.html">本体到数据、API、UI 与运行时的映射</a>
+</nav>
+<nav class="nav-section" aria-label="逻辑域与算法">
+<h2 class="nav-section-title">逻辑域与算法</h2>
+<a class="nav-link" href="../05-algorithms/00-algorithm-framework.html">算法工程总规范</a>
+<a class="nav-link" href="../05-algorithms/01-market-factor-backtest.html">行情、因子与回测算法规范</a>
+<a class="nav-link" href="../05-algorithms/02-execution-tca.html">算法执行与交易成本分析规范</a>
+<a class="nav-link" href="../05-algorithms/03-portfolio-risk.html">组合、净值、风险、流动性与对账算法规范</a>
+<a class="nav-link" href="../05-algorithms/04-graph-ai.html">图算法、证据图、GraphRAG 与文档智能规范</a>
+</nav>
+<nav class="nav-section" aria-label="工程、安全与 SRE">
+<h2 class="nav-section-title">工程、安全与 SRE</h2>
+<a class="nav-link" href="00-engineering-overview.html">工程实现总纲</a>
+<a class="nav-link" href="01-api-event-contracts.html">API、事件与分布式一致性契约</a>
+<a class="nav-link" href="02-security-model.html">安全、权限与审计模型</a>
+<a class="nav-link is-active" href="03-observability-sre.html" aria-current="page">可观测性与 SRE</a>
+<a class="nav-link" href="04-testing-validation.html">测试、验证与发布质量门</a>
+<a class="nav-link" href="05-continuity-recovery.html">业务连续性、备份与灾难恢复</a>
+</nav>
+<nav class="nav-section" aria-label="交付与迁移">
+<h2 class="nav-section-title">交付与迁移</h2>
+<a class="nav-link" href="../07-delivery/00-roadmap.html">分期路线图与投资顺序</a>
+<a class="nav-link" href="../07-delivery/01-team-governance.html">团队结构、职责与治理</a>
+<a class="nav-link" href="../07-delivery/02-migration-cutover.html">遗留迁移、双跑与切换</a>
+<a class="nav-link" href="../07-delivery/03-acceptance-risks.html">验收体系与风险登记</a>
+<a class="nav-link" href="../07-delivery/04-decision-register.html">架构决策登记册</a>
+<a class="nav-link" href="../07-delivery/05-open-questions.html">立项前未决问题</a>
+</nav>
+<nav class="nav-section" aria-label="参考与证据">
+<h2 class="nav-section-title">参考与证据</h2>
+<a class="nav-link" href="../08-reference/00-palantir-capability-mapping.html">Palantir 能力体系与本方案映射</a>
+<a class="nav-link" href="../08-reference/01-attachment-audit-summary.html">附件审计摘要</a>
+<a class="nav-link" href="../08-reference/02-source-material-handling.html">源材料处理与证据边界</a>
+<a class="nav-link" href="../08-reference/03-source-register.html">参考资料登记册</a>
+<a class="nav-link" href="../08-reference/04-palantir-document-system-audit.html">Palantir 官方文档体系研究与金融平台本体工程映射</a>
+<a class="nav-link" href="../08-reference/05-glossary.html">术语表</a>
+</nav>
+    </aside>
+    <div class="overlay" aria-hidden="true"></div>
+    <main class="main" id="content">
+      <div class="content-shell">
+        <nav class="breadcrumbs" aria-label="面包屑"><a href="../../index.html">首页</a><span>›</span><span>工程、安全与 SRE</span><span>›</span><span>可观测性与 SRE</span></nav>
+        <article class="article">
+          <section id="可观测性与-sre" class="level1">
+<h1>可观测性与 SRE</h1>
+<section id="1-运行目标" class="level2">
+<h2>1. 运行目标</h2>
+<p>可观测性必须回答四类问题：</p>
+<ol type="1">
+<li><strong>系统是否健康</strong>：请求、资源、队列、依赖和发布状态；</li>
+<li><strong>业务是否正确</strong>：订单/成交、风险、持仓、净值和对账不变量；</li>
+<li><strong>数据是否可信</strong>：新鲜度、完整性、顺序、血缘和点时状态；</li>
+<li><strong>谁在何种上下文做了什么</strong>：动作、授权、审批、版本和证据。</li>
+</ol>
+<p>技术可用不代表业务可用。例如 HTTP 200 但行情滞后、持仓未核对或搜索索引少数据，都应计入相应服务等级。</p>
+</section>
+<section id="2-信号体系" class="level2">
+<h2>2. 信号体系</h2>
+<section id="21-统一上下文" class="level3">
+<h3>2.1 统一上下文</h3>
+<p>OpenTelemetry Trace、Metric、Log 和业务事件共享：</p>
+<ul>
+<li><code>trace_id</code>、<code>span_id</code>、<code>correlation_id</code>；</li>
+<li><code>action_id</code>、<code>workflow_id</code>、<code>event_id</code>；</li>
+<li><code>object_type/object_id</code>（敏感 ID 可哈希或受控引用）；</li>
+<li><code>service.name/version</code>、<code>ontology.version</code>、<code>policy.version</code>；</li>
+<li><code>environment</code>、<code>region/zone</code>、<code>deployment_id</code>；</li>
+<li><code>data_as_of</code>、<code>source</code>、<code>replay_id</code>；</li>
+<li>经过最小化处理的组织、用途和分类。</li>
+</ul>
+<p>日志不得记录令牌、完整请求体、密钥、受限字段或未脱敏文档内容。</p>
+</section>
+<section id="22-四类遥测" class="level3">
+<h3>2.2 四类遥测</h3>
+<table>
+<thead>
+<tr class="header">
+<th>信号</th>
+<th>示例</th>
+<th>推荐后端</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Trace</td>
+<td>Object Query → Policy → Domain → DB；Action → Workflow → OMS</td>
+<td>OpenTelemetry + Tempo/等价</td>
+</tr>
+<tr class="even">
+<td>Metric</td>
+<td>RED、USE、Kafka/Flink、数据库、GPU、业务计数</td>
+<td>Prometheus/VictoriaMetrics + Grafana</td>
+</tr>
+<tr class="odd">
+<td>Log</td>
+<td>结构化诊断、错误、适配器回执摘要</td>
+<td>Loki/OpenSearch/等价</td>
+</tr>
+<tr class="even">
+<td>Audit/Event</td>
+<td>授权、动作、发布、数据质量、业务事实</td>
+<td>Kafka + ClickHouse/WORM</td>
+</tr>
+</tbody>
+</table>
+<p>审计和业务事实不能依靠会采样、过期或被运维修改的普通日志保存。</p>
+</section>
+</section>
+<section id="3-服务目录与依赖图" class="level2">
+<h2>3. 服务目录与依赖图</h2>
+<p>每个运行组件在服务目录登记：</p>
+<ul>
+<li>业务/技术 Owner、值班组、严重度和支持时间；</li>
+<li>API、Topic、数据库、数据产品和外部依赖；</li>
+<li>Tier、SLO、容量上限、RTO/RPO；</li>
+<li>仪表板、告警、运行手册、发布和恢复链接；</li>
+<li>数据分类、许可证、地域和成本中心；</li>
+<li>最新版本、变更窗口和退役状态。</li>
+</ul>
+<p>服务目录与本体 <code>SystemComponent</code>、<code>DataAsset</code>、<code>ExternalSystem</code>、<code>ActionType</code> 建链接。故障影响分析不依靠过期的手工拓扑图。</p>
+</section>
+<section id="4-sli-与-slo" class="level2">
+<h2>4. SLI 与 SLO</h2>
+<section id="41-定义规则" class="level3">
+<h3>4.1 定义规则</h3>
+<p>一个 SLI 必须明确：</p>
+<ul>
+<li>计量事件和采集点；</li>
+<li>成功/合格条件；</li>
+<li>统计窗口和排除项；</li>
+<li>环境、用户旅程或业务分区；</li>
+<li>数据完整性和迟到处理；</li>
+<li>Owner 与决策用途。</li>
+</ul>
+<p>可用性 SLI：</p>
+<p>[ Availability = \frac{\text{合格请求或业务事件}}{\text{全部有效请求或业务事件}} ]</p>
+<p>延迟 SLI 用分布/直方图计算 P50/P95/P99，不能用平均值替代。数据新鲜度：</p>
+<p>[ FreshnessLag = t_{\text{now}}-\max(t_{\text{source event}}) ]</p>
+</section>
+<section id="42-初始-slo-目录" class="level3">
+<h3>4.2 初始 SLO 目录</h3>
+<p>以下是工程基线，需在容量、监管和柜台约束确认后固化为合同：</p>
+<table>
+<thead>
+<tr class="header">
+<th>用户旅程/能力</th>
+<th>SLI</th>
+<th>初始目标</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>风控硬限制判定</td>
+<td>正确完成率与平台内 P99</td>
+<td>≥99.99%；时延由端到端预算反推</td>
+</tr>
+<tr class="even">
+<td>订单提交受理</td>
+<td>非用户错误成功率、P99</td>
+<td>≥99.99%；P99≤500 ms（不含外部回执）</td>
+</tr>
+<tr class="odd">
+<td>订单状态到监控 UI</td>
+<td>来源回执至可见延迟 P95/P99</td>
+<td>P95≤1 s；P99 阈值专项确认</td>
+</tr>
+<tr class="even">
+<td>常规对象详情</td>
+<td>授权后成功率、P95</td>
+<td>≥99.95%；P95≤500 ms</td>
+</tr>
+<tr class="odd">
+<td>权限感知搜索</td>
+<td>结果完整率、P95</td>
+<td>≥99.9%；P95≤1.5 s</td>
+</tr>
+<tr class="even">
+<td>常用分析视图</td>
+<td>成功率、P95</td>
+<td>≥99.9%；P95≤3 s</td>
+</tr>
+<tr class="odd">
+<td>关键行情</td>
+<td>消息完整率、序号缺口、端到端新鲜度</td>
+<td>按市场/来源分开定义</td>
+</tr>
+<tr class="even">
+<td>持仓/资金</td>
+<td>核对及时率、未解释差异</td>
+<td>截止点 100% 核对；差异有时限</td>
+</tr>
+<tr class="odd">
+<td>数据产品</td>
+<td>准时率、质量通过率</td>
+<td>按产品 SLA；关键资产单独目标</td>
+</tr>
+<tr class="even">
+<td>工作流/审批</td>
+<td>受理可用性、积压时长</td>
+<td>≥99.95%；积压按风险告警</td>
+</tr>
+<tr class="odd">
+<td>研究/报表</td>
+<td>作业按期完成率</td>
+<td>≥99.9% 服务；业务截止按报告定义</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="43-错误预算" class="level3">
+<h3>4.3 错误预算</h3>
+<p>若 30 天 SLO 为 99.95%，理论不可用预算约 21.6 分钟。错误预算用于决策：</p>
+<ul>
+<li>预算健康：允许正常功能发布；</li>
+<li>消耗过快：降低发布并优先可靠性修复；</li>
+<li>预算耗尽：除安全/故障修复外冻结风险性变更；</li>
+<li>Tier 0 交易事故即使未耗尽预算也可触发冻结。</li>
+</ul>
+<p>告警使用多窗口、多燃烧率，示例：</p>
+<ul>
+<li>快速：1 小时窗口燃烧率 ≥14.4 且 5 分钟确认；</li>
+<li>慢速：6 小时窗口燃烧率 ≥6 且 30 分钟确认；</li>
+<li>趋势：3 天窗口用于计划，不呼叫值班。</li>
+</ul>
+<p>具体阈值按 SLO 和流量校准，避免“每个错误都告警”和“只看月末平均”。</p>
+</section>
+</section>
+<section id="5-指标目录" class="level2">
+<h2>5. 指标目录</h2>
+<section id="51-服务-red-与资源-use" class="level3">
+<h3>5.1 服务 RED 与资源 USE</h3>
+<ul>
+<li>Rate：请求/事件/任务量及业务分区；</li>
+<li>Errors：稳定错误 code、拒绝、超时、部分失败；</li>
+<li>Duration：端到端及每依赖延迟；</li>
+<li>Utilization：CPU、内存、磁盘、网络、连接、线程、GPU；</li>
+<li>Saturation：队列、连接池、消费者积压、GC、IO wait；</li>
+<li>Errors：主机/容器、文件系统、网络和硬件错误。</li>
+</ul>
+</section>
+<section id="52-数据与流" class="level3">
+<h3>5.2 数据与流</h3>
+<ul>
+<li>来源/处理/发布时间和端到端 freshness；</li>
+<li>Kafka offset lag、消费速率、分区偏斜、ISR；</li>
+<li>Flink checkpoint 时长/失败、watermark、backpressure；</li>
+<li>数据行数、唯一性、null、范围、分布漂移、隔离量；</li>
+<li>Schema/枚举未知、点时回填、血缘断裂；</li>
+<li>Iceberg 小文件、快照、compaction 和 orphan；</li>
+<li>索引计数差、更新滞后和重建进度。</li>
+</ul>
+</section>
+<section id="53-交易与风险" class="level3">
+<h3>5.3 交易与风险</h3>
+<ul>
+<li>行情入站/解析/发布/消费各段延迟，序号缺口和主备源；</li>
+<li>母单/子单各状态数量和停留时长；</li>
+<li>提交—柜台回执—交易所回报各段延迟；</li>
+<li><code>UNKNOWN_EXTERNAL_STATE</code>、重复回执、拒单、撤单和部分成交；</li>
+<li>风险规则耗时、拒绝率、例外、规则版本和超时；</li>
+<li>账户可用量、持仓、资金、成交和订单核对差异；</li>
+<li>网关心跳、会话、序号、重连和降级模式；</li>
+<li>TWAP/VWAP/POV 等算法执行偏差及数据可用性。</li>
+</ul>
+</section>
+<section id="54-本体搜索与-ai" class="level3">
+<h3>5.4 本体、搜索与 AI</h3>
+<ul>
+<li>对象解析命中、主键冲突、链接悬空和物化延迟；</li>
+<li>本体版本采用率、旧 SDK 调用和弃用依赖；</li>
+<li>策略判定延迟、允许/拒绝/错误和缓存失效；</li>
+<li>搜索/图/向量 ACL 过滤时延与索引差异；</li>
+<li>模型延迟、错误、漂移、成本、回退和人工接管；</li>
+<li>Agent 检索无证据、引用不支持、工具拒绝、危险提案和预算；</li>
+<li>自动化重复触发、重试、补偿、人工队列和积压年龄。</li>
+</ul>
+</section>
+</section>
+<section id="6-仪表板层次" class="level2">
+<h2>6. 仪表板层次</h2>
+<ol type="1">
+<li><strong>高管/业务态势</strong>：关键市场、订单、风险、数据和客户旅程，不暴露实现噪声；</li>
+<li><strong>SLO 总览</strong>：每服务错误预算、可用性、延迟和当前发布；</li>
+<li><strong>领域看板</strong>：行情、OMS/RMS、组合、数据产品、报告、Agent；</li>
+<li><strong>依赖看板</strong>：Kafka、PostgreSQL、ClickHouse、OpenSearch、对象存储、工作流；</li>
+<li><strong>发布看板</strong>：版本、金丝雀、差异、回滚门和变更事件；</li>
+<li><strong>事件调查</strong>：按 trace/action/order/account/data asset 深链到相关信号。</li>
+</ol>
+<p>每张面板注明数据源、更新频率、时区、口径、Owner 和最后验证日期。</p>
+</section>
+<section id="7-告警设计" class="level2">
+<h2>7. 告警设计</h2>
+<p>一个可呼叫告警必须具备：</p>
+<ul>
+<li>用户/业务影响或迫近的 SLO 风险；</li>
+<li>明确严重度、Owner 和响应时限；</li>
+<li>足够上下文：环境、版本、影响对象、最近变更、依赖；</li>
+<li>可执行运行手册；</li>
+<li>恢复条件和抑制/关联规则；</li>
+<li>定期检验并统计误报、漏报和无人处理。</li>
+</ul>
+<p>应优先告警：</p>
+<ul>
+<li>SLO 多窗口燃烧；</li>
+<li>交易/行情状态机不变量破坏；</li>
+<li>外部未知状态和核对差异；</li>
+<li>数据新鲜度/完整性越过业务截止；</li>
+<li>身份、权限、密钥和审计完整性异常；</li>
+<li>DR 复制、备份和恢复校验失败。</li>
+</ul>
+<p>不直接呼叫值班的指标进入趋势/容量计划，避免告警疲劳。</p>
+</section>
+<section id="8-事件管理" class="level2">
+<h2>8. 事件管理</h2>
+<section id="81-分级" class="level3">
+<h3>8.1 分级</h3>
+<table>
+<thead>
+<tr class="header">
+<th>级别</th>
+<th>示例</th>
+<th>目标</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>SEV0</td>
+<td>交易错误扩散、重大数据/密钥泄露、核心状态不可证明</td>
+<td>立即全员响应和管理层/合规介入</td>
+</tr>
+<tr class="even">
+<td>SEV1</td>
+<td>Tier 0 大范围不可用、外部状态大量未知、关键数据截止失败</td>
+<td>5 分钟确认、15 分钟建立指挥</td>
+</tr>
+<tr class="odd">
+<td>SEV2</td>
+<td>单领域显著降级、有替代路径、错误预算快速燃烧</td>
+<td>15 分钟确认</td>
+</tr>
+<tr class="even">
+<td>SEV3</td>
+<td>局部问题、无即时业务影响</td>
+<td>工作时段处理</td>
+</tr>
+</tbody>
+</table>
+<p>正式时限由组织排班、合规和业务等级确认。</p>
+</section>
+<section id="82-角色" class="level3">
+<h3>8.2 角色</h3>
+<ul>
+<li>Incident Commander：决策、优先级和切换；</li>
+<li>Operations Lead：技术恢复；</li>
+<li>Business Lead：交易/产品影响和业务降级；</li>
+<li>Communications Lead：状态更新和外部沟通；</li>
+<li>Security/Compliance：数据、监管和证据；</li>
+<li>Scribe：时间线、决定、动作和证据。</li>
+</ul>
+</section>
+<section id="83-流程" class="level3">
+<h3>8.3 流程</h3>
+<p><code>检测 → 宣告/分级 → 限制影响 → 恢复服务 → 核对业务状态 → 沟通 → 根因与复盘 → 改进关闭</code></p>
+<p>恢复 HTTP 服务不等于事件结束；订单、成交、持仓、资金、风险和数据缺口全部核对后才能关闭。</p>
+</section>
+</section>
+<section id="9-运行手册与自动化" class="level2">
+<h2>9. 运行手册与自动化</h2>
+<p>运行手册至少包含触发条件、前置检查、风险、权限、步骤、预期输出、停止条件、回退和验证。高风险步骤转换为类型化运维 Action：</p>
+<ul>
+<li>切换行情源；</li>
+<li>暂停/恢复账户或执行单元；</li>
+<li>查询外部未知订单；</li>
+<li>重放指定事件区间；</li>
+<li>扩容/限流；</li>
+<li>切换只读/降级；</li>
+<li>恢复备份或执行 DR。</li>
+</ul>
+<p>动作需要幂等、范围预览、Maker-checker、审计和自动超时，取代长期依赖 <code>screen</code>、手工 <code>crontab</code>、共享 SSH 或 <code>kill -9</code>。</p>
+</section>
+<section id="10-容量与性能管理" class="level2">
+<h2>10. 容量与性能管理</h2>
+<ul>
+<li>为用户、服务、Topic、数据库、搜索、图、向量和模型建立容量模型；</li>
+<li>按市场开盘、收盘、报告截止、批处理和回放模拟峰值；</li>
+<li>Replay 环境运行 1×、2×、5× 负载和突发；</li>
+<li>观察延迟曲线、积压恢复时间、热分区、GC/IO、降级和成本；</li>
+<li>Tier 0 保留可验证冗余，不能把自动扩容当作即时容量；</li>
+<li>容量阈值提前触发采购/扩容，避免只在 90% 使用率后处理；</li>
+<li>每次大客户、市场、账户或数据源接入均复核容量。</li>
+</ul>
+</section>
+<section id="11-发布可靠性" class="level2">
+<h2>11. 发布可靠性</h2>
+<ul>
+<li>发布事件进入所有相关仪表板；</li>
+<li>金丝雀按流量、账户、策略或只读影子划分，不能只按随机 Pod；</li>
+<li>自动回滚同时观察技术 SLI 和业务不变量；</li>
+<li>数据库、本体、策略和事件变化使用前向兼容；</li>
+<li>低时延交易发布在批准窗口，并有预热、连接和序号检查；</li>
+<li>发布后观察窗未结束前不宣布完成；</li>
+<li>错误预算不足、DR 不健康或审计中断时阻止非必要发布。</li>
+</ul>
+</section>
+<section id="12-sre-验收" class="level2">
+<h2>12. SRE 验收</h2>
+<ul>
+<li>任意失败动作能从 <code>action_id</code> 定位 API、策略、工作流、事件和外部回执；</li>
+<li>任意异常指标能定位负责人、版本、最近变更和运行手册；</li>
+<li>仪表板显示业务时间和数据新鲜度，不仅显示采集时间；</li>
+<li>告警注入演练能在目标时间被接收、分级和处理；</li>
+<li>故障恢复后能自动生成待核对对象集；</li>
+<li>采样不丢失 Tier 0 错误、审计和安全证据；</li>
+<li>SLO 月报能解释预算消耗来源并驱动发布决策。</li>
+</ul>
+</section>
+</section>
+
+        </article>
+        <footer class="page-meta">
+          <span>基线 1.0 · 2026-07-27 · Markdown 与 HTML 同源</span>
+          <span><a href="../../../ontology/financial-ontology.yaml">本体 YAML</a> · <a href="../../../contracts/ontology-api.openapi.yaml">OpenAPI</a> · <a href="../../../contracts/events.asyncapi.yaml">AsyncAPI</a></span>
+        </footer>
+      </div>
+    </main>
+  </div>
+  <script src="../../assets/search-index.js"></script>
+  <script src="../../assets/mermaid-11.16.0.min.js"></script>
+  <script src="../../assets/app.js"></script>
+</body>
+</html>

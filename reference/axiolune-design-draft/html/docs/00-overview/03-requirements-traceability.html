@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="金融本体驱动平台总体设计、技术选型、模块、本体、算法与交付规范">
+  <title>需求—模块—本体—证据追踪矩阵 · 金融本体驱动平台</title>
+  <script>
+    (function() {
+      var saved = localStorage.getItem("finance-design-theme");
+      if (saved) document.documentElement.dataset.theme = saved;
+    }());
+    window.SITE_ROOT = "../../";
+    window.RAW_ROOT = "../../../";
+  </script>
+  <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <header class="topbar">
+    <button class="icon-button menu-button" type="button" data-menu-toggle aria-label="打开文档目录" aria-expanded="false">☰</button>
+    <a class="brand" href="../../index.html">
+      <span class="brand-mark" aria-hidden="true">FO</span>
+      <span class="brand-text">金融本体驱动平台设计</span>
+    </a>
+    <span class="topbar-spacer"></span>
+    <button class="icon-button" type="button" data-theme-toggle aria-label="切换主题">☾</button>
+  </header>
+  <div class="layout">
+    <aside class="sidebar" aria-label="文档目录">
+      <div class="search-wrap">
+        <input class="search-input" type="search" data-search placeholder="搜索全部文档…" aria-label="搜索全部文档">
+        <p class="search-hint">按 Ctrl/⌘ + K 聚焦 · Esc 清除</p>
+        <div class="search-results" data-search-results aria-live="polite"></div>
+      </div>
+      <nav class="nav-section" aria-label="首页">
+<h2 class="nav-section-title">首页</h2>
+<a class="nav-link" href="../../index.html">金融本体驱动平台：总体设计与实施规范</a>
+</nav>
+<nav class="nav-section" aria-label="交付说明">
+<h2 class="nav-section-title">交付说明</h2>
+<a class="nav-link" href="../../PACKAGE-SUMMARY.html">交付包清单与验证记录</a>
+</nav>
+<nav class="nav-section" aria-label="总览与追踪">
+<h2 class="nav-section-title">总览与追踪</h2>
+<a class="nav-link" href="00-executive-summary.html">执行摘要</a>
+<a class="nav-link" href="01-scope-assumptions.html">设计范围、假设与边界</a>
+<a class="nav-link" href="02-design-principles.html">核心设计原则与关键决策</a>
+<a class="nav-link is-active" href="03-requirements-traceability.html" aria-current="page">需求—模块—本体—证据追踪矩阵</a>
+</nav>
+<nav class="nav-section" aria-label="总体架构">
+<h2 class="nav-section-title">总体架构</h2>
+<a class="nav-link" href="../01-architecture/00-target-architecture.html">目标总体架构</a>
+<a class="nav-link" href="../01-architecture/01-domain-boundaries.html">领域边界与依赖</a>
+<a class="nav-link" href="../01-architecture/02-data-architecture.html">数据与多模态架构</a>
+<a class="nav-link" href="../01-architecture/03-deployment-topology.html">部署拓扑、环境与灾备</a>
+<a class="nav-link" href="../01-architecture/04-nonfunctional-requirements.html">非功能需求与质量属性</a>
+</nav>
+<nav class="nav-section" aria-label="技术选型">
+<h2 class="nav-section-title">技术选型</h2>
+<a class="nav-link" href="../02-technology/00-selection-summary.html">技术选型总表</a>
+<a class="nav-link" href="../02-technology/01-frontend-design-system.html">前端、视觉与交互设计</a>
+<a class="nav-link" href="../02-technology/02-backend-communication.html">后端、接口与通信</a>
+<a class="nav-link" href="../02-technology/03-databases-storage.html">数据库、搜索、图、向量与媒体存储</a>
+<a class="nav-link" href="../02-technology/04-compute-workflow.html">流批计算、数据编排与业务工作流</a>
+<a class="nav-link" href="../02-technology/05-ai-mlops.html">AI、MLOps、GraphRAG 与 Agent 技术</a>
+<a class="nav-link" href="../02-technology/06-security-devsecops.html">安全、DevSecOps 与可观测性技术</a>
+</nav>
+<nav class="nav-section" aria-label="模块设计">
+<h2 class="nav-section-title">模块设计</h2>
+<a class="nav-link" href="../03-modules/00-module-map.html">业务与平台模块全景</a>
+<a class="nav-link" href="../03-modules/01-workspace-data-intelligence.html">统一工作台、数据与资讯</a>
+<a class="nav-link" href="../03-modules/02-quant-active-research.html">量化研究与主动投研</a>
+<a class="nav-link" href="../03-modules/03-portfolio-execution.html">产品、组合、OMS/IMS 与算法执行</a>
+<a class="nav-link" href="../03-modules/04-risk-compliance.html">风险、合规与核对</a>
+<a class="nav-link" href="../03-modules/05-product-reporting.html">产品、渠道与经营报表</a>
+<a class="nav-link" href="../03-modules/06-ontology-automation-operations.html">本体、自动化、Agent 与平台运维</a>
+</nav>
+<nav class="nav-section" aria-label="本体工程">
+<h2 class="nav-section-title">本体工程</h2>
+<a class="nav-link" href="../04-ontology/00-method-meta-model.html">金融本体方法与元模型</a>
+<a class="nav-link" href="../04-ontology/01-domain-model.html">金融本体逻辑域</a>
+<a class="nav-link" href="../04-ontology/02-object-link-catalog.html">核心对象与链接目录</a>
+<a class="nav-link" href="../04-ontology/03-actions-functions-policies.html">动作、函数、模型、策略与工作流</a>
+<a class="nav-link" href="../04-ontology/04-temporal-provenance-quality.html">时间、来源、证据与质量</a>
+<a class="nav-link" href="../04-ontology/05-security-version-governance.html">本体安全、版本、分支与治理</a>
+<a class="nav-link" href="../04-ontology/06-implementation-mapping.html">本体到数据、API、UI 与运行时的映射</a>
+</nav>
+<nav class="nav-section" aria-label="逻辑域与算法">
+<h2 class="nav-section-title">逻辑域与算法</h2>
+<a class="nav-link" href="../05-algorithms/00-algorithm-framework.html">算法工程总规范</a>
+<a class="nav-link" href="../05-algorithms/01-market-factor-backtest.html">行情、因子与回测算法规范</a>
+<a class="nav-link" href="../05-algorithms/02-execution-tca.html">算法执行与交易成本分析规范</a>
+<a class="nav-link" href="../05-algorithms/03-portfolio-risk.html">组合、净值、风险、流动性与对账算法规范</a>
+<a class="nav-link" href="../05-algorithms/04-graph-ai.html">图算法、证据图、GraphRAG 与文档智能规范</a>
+</nav>
+<nav class="nav-section" aria-label="工程、安全与 SRE">
+<h2 class="nav-section-title">工程、安全与 SRE</h2>
+<a class="nav-link" href="../06-engineering/00-engineering-overview.html">工程实现总纲</a>
+<a class="nav-link" href="../06-engineering/01-api-event-contracts.html">API、事件与分布式一致性契约</a>
+<a class="nav-link" href="../06-engineering/02-security-model.html">安全、权限与审计模型</a>
+<a class="nav-link" href="../06-engineering/03-observability-sre.html">可观测性与 SRE</a>
+<a class="nav-link" href="../06-engineering/04-testing-validation.html">测试、验证与发布质量门</a>
+<a class="nav-link" href="../06-engineering/05-continuity-recovery.html">业务连续性、备份与灾难恢复</a>
+</nav>
+<nav class="nav-section" aria-label="交付与迁移">
+<h2 class="nav-section-title">交付与迁移</h2>
+<a class="nav-link" href="../07-delivery/00-roadmap.html">分期路线图与投资顺序</a>
+<a class="nav-link" href="../07-delivery/01-team-governance.html">团队结构、职责与治理</a>
+<a class="nav-link" href="../07-delivery/02-migration-cutover.html">遗留迁移、双跑与切换</a>
+<a class="nav-link" href="../07-delivery/03-acceptance-risks.html">验收体系与风险登记</a>
+<a class="nav-link" href="../07-delivery/04-decision-register.html">架构决策登记册</a>
+<a class="nav-link" href="../07-delivery/05-open-questions.html">立项前未决问题</a>
+</nav>
+<nav class="nav-section" aria-label="参考与证据">
+<h2 class="nav-section-title">参考与证据</h2>
+<a class="nav-link" href="../08-reference/00-palantir-capability-mapping.html">Palantir 能力体系与本方案映射</a>
+<a class="nav-link" href="../08-reference/01-attachment-audit-summary.html">附件审计摘要</a>
+<a class="nav-link" href="../08-reference/02-source-material-handling.html">源材料处理与证据边界</a>
+<a class="nav-link" href="../08-reference/03-source-register.html">参考资料登记册</a>
+<a class="nav-link" href="../08-reference/04-palantir-document-system-audit.html">Palantir 官方文档体系研究与金融平台本体工程映射</a>
+<a class="nav-link" href="../08-reference/05-glossary.html">术语表</a>
+</nav>
+    </aside>
+    <div class="overlay" aria-hidden="true"></div>
+    <main class="main" id="content">
+      <div class="content-shell">
+        <nav class="breadcrumbs" aria-label="面包屑"><a href="../../index.html">首页</a><span>›</span><span>总览与追踪</span><span>›</span><span>需求—模块—本体—证据追踪矩阵</span></nav>
+        <article class="article">
+          <section id="需求模块本体证据追踪矩阵" class="level1">
+<h1>需求—模块—本体—证据追踪矩阵</h1>
+<section id="1-追踪口径" class="level2">
+<h2>1. 追踪口径</h2>
+<p>本矩阵把附件中的页面、字段、截图和导出样例重新组织为可实施能力。证据编号 <code>IMG-n</code> 对应附件审计中的截图序号；<code>MD-001</code> 为需求 Markdown；<code>CSV-001/002</code> 为委托与持仓导出；<code>WEB-*</code> 为嵌套网页资产。原附件不是正式需求规格，因此：</p>
+<ul>
+<li><code>已设计</code>：已给出模块、本体、技术和验收框架，不代表已完成开发；</li>
+<li><code>需确认</code>：材料可以证明页面存在，但业务语义、规则或权限仍需访谈冻结；</li>
+<li><code>归档评估</code>：材料明确停用或价值不足，迁移前需由业务决定只读、归档或退役；</li>
+<li>任何截图中的实际数据、账号、网络参数和凭据均不进入本交付物。</li>
+</ul>
+</section>
+<section id="2-工作台与数据资讯" class="level2">
+<h2>2. 工作台与数据资讯</h2>
+<table>
+<thead>
+<tr class="header">
+<th>需求 ID</th>
+<th>附件能力</th>
+<th>证据</th>
+<th>目标模块</th>
+<th>核心对象/函数/动作</th>
+<th>状态与缺口</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>R-WB-01</td>
+<td>黑灰名单监控</td>
+<td>IMG-0</td>
+<td>统一工作台／监控画布</td>
+<td>Watchlist、WatchlistEntry、Instrument、PriceSeries；<code>AcknowledgeAlert</code></td>
+<td>已设计；名单语义、告警阈值和维护权需确认</td>
+</tr>
+<tr class="even">
+<td>R-WB-02</td>
+<td>策略监控卡片</td>
+<td>IMG-1</td>
+<td>统一工作台／策略健康</td>
+<td>StrategyBook、Portfolio、Signal、SLO；<code>OpenIncident</code></td>
+<td>已设计；空卡片原因、实时频率需确认</td>
+</tr>
+<tr class="odd">
+<td>R-WB-03</td>
+<td>市场总览</td>
+<td>IMG-2</td>
+<td>市场数据工作台</td>
+<td>Instrument、MarketSnapshot、KLine</td>
+<td>已设计</td>
+</tr>
+<tr class="even">
+<td>R-WB-04</td>
+<td>网下打新规模表</td>
+<td>MD-001</td>
+<td>产品与市场机会</td>
+<td>Offering、Subscription、Allocation</td>
+<td>需确认；附件无字段或截图</td>
+</tr>
+<tr class="odd">
+<td>R-DI-01</td>
+<td>财经新闻</td>
+<td>IMG-3</td>
+<td>资讯与证据中心</td>
+<td>Document、Source、Claim、Citation；检索/关注</td>
+<td>已设计；内容许可与保存期需确认</td>
+</tr>
+<tr class="even">
+<td>R-DI-02</td>
+<td>互动问答</td>
+<td>IMG-4</td>
+<td>公司事件与投资者关系</td>
+<td>Communication、Party、Instrument、Claim</td>
+<td>已设计</td>
+</tr>
+<tr class="odd">
+<td>R-DI-03</td>
+<td>数据集市与数据字典</td>
+<td>IMG-5、WEB-*</td>
+<td>数据产品目录</td>
+<td>DataProduct、DataAsset、DataContract、SchemaVersion；<code>RequestAccess</code></td>
+<td>已合并设计；去除重复信息架构</td>
+</tr>
+<tr class="even">
+<td>R-DI-04</td>
+<td>投资日历</td>
+<td>IMG-6</td>
+<td>事件与日历</td>
+<td>CalendarEvent、CorporateEvent、TradingCalendar</td>
+<td>已设计</td>
+</tr>
+<tr class="odd">
+<td>R-DI-05</td>
+<td>Level-2 查询</td>
+<td>IMG-7</td>
+<td>市场微观数据</td>
+<td>OrderBookEvent、Quote、TradePrint；事件时间查询</td>
+<td>已设计；供应商码表和许可需确认</td>
+</tr>
+<tr class="even">
+<td>R-DI-06</td>
+<td>分时/K 线</td>
+<td>IMG-8–9</td>
+<td>行情与图表</td>
+<td>MarketObservation、KLine、CorporateAction</td>
+<td>已设计；复权和时区规则进入数据契约</td>
+</tr>
+<tr class="odd">
+<td>R-DI-07</td>
+<td>期指基差四视图</td>
+<td>IMG-10–12</td>
+<td>衍生品分析</td>
+<td>FutureContract、Index、BasisObservation、SeasonalSeries；<code>ComputeBasisBand</code></td>
+<td>已设计；0.5–3σ 仅为可配置研究参数</td>
+</tr>
+<tr class="even">
+<td>R-MD-01</td>
+<td>基金、资金账号、资产单元、券商、网关、板块成分</td>
+<td>IMG-13–14、MD-001</td>
+<td>主数据管理</td>
+<td>FundProduct、TradingAccount、AssetUnit、Broker、Gateway、ClassificationMembership</td>
+<td>已设计；基数、生命周期、归属需确认</td>
+</tr>
+<tr class="odd">
+<td>R-INF-01</td>
+<td>图、向量、消息、S3/云存储</td>
+<td>MD-001</td>
+<td>多模态数据平面</td>
+<td>StorageBinding、Projection、Topic、MediaReference</td>
+<td>已完成职责选型；不得把技术组件当业务真源</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="3-交易执行与风险" class="level2">
+<h2>3. 交易、执行与风险</h2>
+<table>
+<thead>
+<tr class="header">
+<th>需求 ID</th>
+<th>附件能力</th>
+<th>证据</th>
+<th>目标模块</th>
+<th>核心对象/函数/动作</th>
+<th>状态与缺口</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>R-EX-01</td>
+<td>算法监控</td>
+<td>MD-001</td>
+<td>执行控制台</td>
+<td>ParentOrder、ChildOrder、ExecutionMetricObservation</td>
+<td>已设计；VMAP/VWAP 命名需澄清</td>
+</tr>
+<tr class="even">
+<td>R-EX-02</td>
+<td>算法母单</td>
+<td>IMG-15、CSV-001</td>
+<td>OMS／母子单</td>
+<td>ParentOrder、ChildOrder、Execution；<code>CancelParentOrder</code></td>
+<td>已设计；19 位订单号必须为字符串</td>
+</tr>
+<tr class="odd">
+<td>R-EX-03</td>
+<td>算法绩效</td>
+<td>IMG-16</td>
+<td>TCA</td>
+<td>BenchmarkObservation、TCAResult；TWAP/VWAP/IS 函数</td>
+<td>已设计；详见算法分册</td>
+</tr>
+<tr class="even">
+<td>R-EX-04</td>
+<td>账户、交易与行情延时</td>
+<td>IMG-17–18</td>
+<td>执行可观测性</td>
+<td>LatencyObservation、GatewaySession、SLO、Incident</td>
+<td>已设计；需用真实链路校准 SLO</td>
+</tr>
+<tr class="odd">
+<td>R-EX-05</td>
+<td>算法账户/AUG</td>
+<td>MD-001</td>
+<td>账户与连接管理</td>
+<td>AlgoAccount、AccountCapability、AlgoConfig</td>
+<td>需确认字段、密码迁移和供应商接口</td>
+</tr>
+<tr class="even">
+<td>R-EX-06</td>
+<td>厂商算法能力矩阵</td>
+<td>MD-001</td>
+<td>算法目录</td>
+<td>AlgoProvider、AlgoDefinition、AlgoCapability、Constraint</td>
+<td>已设计；自然语言规则需结构化并版本化</td>
+</tr>
+<tr class="odd">
+<td>R-EX-07</td>
+<td>现有手工启停/盘中改账号</td>
+<td>MD-001</td>
+<td>平台运行与变更</td>
+<td>Deployment、ChangeRequest、Runbook、ApprovalTask</td>
+<td>替代设计完成；禁止以 screen/强杀进程作为正式方案</td>
+</tr>
+<tr class="even">
+<td>R-RK-01</td>
+<td>股票/期货风控配置与监控</td>
+<td>MD-001</td>
+<td>RMS</td>
+<td>RiskRuleSet、Limit、RiskAssessment、RiskAlert</td>
+<td>已设计；规则优先级、缺失策略、豁免需确认</td>
+</tr>
+<tr class="odd">
+<td>R-RK-02</td>
+<td>风险标的/黑灰名单</td>
+<td>IMG-19</td>
+<td>监控与案件</td>
+<td>Watchlist、WatchlistEntry、Evidence、RiskCase</td>
+<td>已设计</td>
+</tr>
+<tr class="even">
+<td>R-RK-03</td>
+<td>事后/快速风控</td>
+<td>MD-001</td>
+<td>盘后风险与应急控制</td>
+<td>PostTradeAssessment、EmergencyControl；<code>ActivateKillSwitch</code></td>
+<td>已设计；权限和解除流程需双人审批</td>
+</tr>
+<tr class="odd">
+<td>R-GE-01</td>
+<td>Algohub 策略监控</td>
+<td>MD-001</td>
+<td>组合与策略运营</td>
+<td>StrategyBook、PortfolioSnapshot、AccountSnapshot</td>
+<td>已设计</td>
+</tr>
+<tr class="even">
+<td>R-GE-02</td>
+<td>OMS 概览/持仓/委托/成交/划拨/配置</td>
+<td>IMG-20–22、CSV-001/002</td>
+<td>OMS 与持仓</td>
+<td>Position、Order、Execution、Transfer、ConfigVersion</td>
+<td>已设计；快照/事件、枚举、精度需确认</td>
+</tr>
+<tr class="odd">
+<td>R-GE-03</td>
+<td>IMS 策略聚合与成交明细</td>
+<td>IMG-23</td>
+<td>组合/执行联合工作台</td>
+<td>StrategyBook、PnLObservation、Execution、TargetPosition</td>
+<td>已设计</td>
+</tr>
+<tr class="even">
+<td>R-GE-04</td>
+<td>分仓 UFT</td>
+<td>MD-001、WEB-*</td>
+<td>分仓与路由</td>
+<td>AllocationRule、Allocation、SubAccount</td>
+<td>需确认；附件仅有名称/实时通道线索</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="4-量化与主动投研" class="level2">
+<h2>4. 量化与主动投研</h2>
+<table>
+<thead>
+<tr class="header">
+<th>需求 ID</th>
+<th>附件能力</th>
+<th>证据</th>
+<th>目标模块</th>
+<th>核心对象/函数/动作</th>
+<th>状态与缺口</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>R-QR-01</td>
+<td>分析师行业覆盖、强势股、调入调出</td>
+<td>IMG-24–25</td>
+<td>覆盖与选股</td>
+<td>CoverageAssignment、Universe、Recommendation</td>
+<td>已设计</td>
+</tr>
+<tr class="even">
+<td>R-QR-02</td>
+<td>单因子回测参数与长因子目录</td>
+<td>IMG-26–68、MD-001</td>
+<td>因子实验室</td>
+<td>FactorDefinition/Version、UniverseSnapshot、BacktestRun</td>
+<td>已设计；因子公式必须逐一登记而非仅迁移名称</td>
+</tr>
+<tr class="odd">
+<td>R-QR-03</td>
+<td>测试结果汇总</td>
+<td>IMG-69</td>
+<td>因子评测</td>
+<td>ICSeries、GroupReturn、FactorEvaluation</td>
+<td>已设计；无标题列需业务补义</td>
+</tr>
+<tr class="even">
+<td>R-QR-04</td>
+<td>因子相关性</td>
+<td>IMG-70</td>
+<td>因子去冗余</td>
+<td>CorrelationRun、FactorCluster</td>
+<td>已设计</td>
+</tr>
+<tr class="odd">
+<td>R-QR-05</td>
+<td>每日实盘/回测核对</td>
+<td>IMG-71–72</td>
+<td>组合核对</td>
+<td>ReconciliationRun/Break、NAVObservation；<code>ResolveBreak</code></td>
+<td>已设计；阈值、签署和重跑责任需确认</td>
+</tr>
+<tr class="even">
+<td>R-QR-06</td>
+<td>行业周期研究</td>
+<td>IMG-73</td>
+<td>历史研究归档</td>
+<td>ResearchRun、ReportArtifact</td>
+<td>归档评估；材料明确已停用</td>
+</tr>
+<tr class="odd">
+<td>R-QR-07</td>
+<td>WIND65/八大类涨跌幅</td>
+<td>IMG-74–75</td>
+<td>行业研究</td>
+<td>ClassificationScheme、IndustryReturnSeries</td>
+<td>已设计；数据授权需确认</td>
+</tr>
+<tr class="even">
+<td>R-QR-08</td>
+<td>一致预期研究</td>
+<td>IMG-76–88</td>
+<td>预期与策略研究</td>
+<td>ConsensusEstimate、EstimateRevision、StrategyEvaluation</td>
+<td>已设计；指标口径和许可需确认</td>
+</tr>
+<tr class="odd">
+<td>R-QR-09</td>
+<td>逐笔复盘</td>
+<td>MD-001</td>
+<td>市场回放</td>
+<td>OrderBookSnapshot、ReplaySession</td>
+<td>已设计；b/s/bs/d 缩写码表需确认</td>
+</tr>
+<tr class="even">
+<td>R-QR-10</td>
+<td>融券管理</td>
+<td>IMG-89</td>
+<td>券源与融券</td>
+<td>BorrowAvailability、BorrowReservation；<code>ReserveBorrow</code></td>
+<td>已设计</td>
+</tr>
+<tr class="odd">
+<td>R-AR-01</td>
+<td>财报披露率与明细</td>
+<td>IMG-90–91</td>
+<td>公司事件</td>
+<td>FinancialReport、Disclosure、CompanyCoverage</td>
+<td>已设计</td>
+</tr>
+<tr class="even">
+<td>R-AR-02</td>
+<td>可视化估值与评级</td>
+<td>IMG-92</td>
+<td>估值工作台</td>
+<td>ValuationModel/Run、RatingScale、Rating</td>
+<td>已设计；SS/S/AA/A/B/T 语义需确认</td>
+</tr>
+<tr class="odd">
+<td>R-AR-03</td>
+<td>重点监控股票与理由</td>
+<td>IMG-93</td>
+<td>推荐与跟踪</td>
+<td>Recommendation、Thesis、Evidence、TrackingEvent</td>
+<td>已设计</td>
+</tr>
+<tr class="even">
+<td>R-AR-04</td>
+<td>项目报告与路演日历</td>
+<td>IMG-94</td>
+<td>研究项目</td>
+<td>ResearchProject、RoadshowEvent、ResearchReport</td>
+<td>已设计</td>
+</tr>
+<tr class="odd">
+<td>R-AR-05</td>
+<td>股票池及模拟盘</td>
+<td>IMG-95–96</td>
+<td>研究场景</td>
+<td>StockPool、SimulationPortfolio、Scenario</td>
+<td>已设计；与生产组合强隔离</td>
+</tr>
+<tr class="even">
+<td>R-AR-06</td>
+<td>主题点亮</td>
+<td>IMG-97</td>
+<td>主题知识域</td>
+<td>Theme、ThemeMembership、Vote</td>
+<td>已设计；热度不能替代研究证据</td>
+</tr>
+<tr class="odd">
+<td>R-AR-07</td>
+<td>指数估值与二阶段 PB</td>
+<td>IMG-98–100</td>
+<td>估值统计</td>
+<td>ValuationObservation、ScenarioResult</td>
+<td>已设计；公式和样本口径需模型审批</td>
+</tr>
+<tr class="even">
+<td>R-AR-08</td>
+<td>AI 景气度仪表盘</td>
+<td>IMG-101、WEB-027</td>
+<td>主题与 AI 监控</td>
+<td>IndicatorDefinition/Observation、ThresholdPolicy、Citation</td>
+<td>已设计；静态快照改为服务端数据与新鲜度标识</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="5-产品经营与客服" class="level2">
+<h2>5. 产品、经营与客服</h2>
+<table>
+<thead>
+<tr class="header">
+<th>需求 ID</th>
+<th>附件能力</th>
+<th>证据</th>
+<th>目标模块</th>
+<th>核心对象/函数/动作</th>
+<th>状态与缺口</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>R-PR-01</td>
+<td>市场观察</td>
+<td>IMG-102</td>
+<td>产品投研门户</td>
+<td>MarketSnapshot、LiquidityMetric、ValuationMetric</td>
+<td>已设计</td>
+</tr>
+<tr class="even">
+<td>R-PR-02</td>
+<td>规模/申赎/渠道仪表盘</td>
+<td>IMG-103–105</td>
+<td>产品经营</td>
+<td>ProductMetricObservation、DistributionChannel、FlowObservation</td>
+<td>已设计；空状态需区分无数据/未计算/无权限</td>
+</tr>
+<tr class="odd">
+<td>R-PR-03</td>
+<td>竞品筛选、上传、导出</td>
+<td>IMG-106–107</td>
+<td>竞品分析</td>
+<td>CompetitorProduct、PeerGroup、ReportRun、ExportJob</td>
+<td>已设计；许可和可比性需确认</td>
+</tr>
+<tr class="even">
+<td>R-PR-04</td>
+<td>智能报表/公式/收益</td>
+<td>IMG-108</td>
+<td>指标与报告中心</td>
+<td>MetricDefinition、FormulaVersion、ReportDefinition/Run</td>
+<td>已设计</td>
+</tr>
+<tr class="odd">
+<td>R-PR-05</td>
+<td>结算估值/费率</td>
+<td>IMG-108</td>
+<td>结算与运营</td>
+<td>Settlement、ValuationBreak、FeeSchedule</td>
+<td>已设计；字段需补充</td>
+</tr>
+<tr class="even">
+<td>R-PR-06</td>
+<td>TRS 持仓/交易流水</td>
+<td>IMG-108</td>
+<td>合约与交易运营</td>
+<td>TotalReturnSwap、Position、CashFlow、Trade</td>
+<td>需确认；附件只有导航</td>
+</tr>
+<tr class="odd">
+<td>R-PR-07</td>
+<td>客户、沟通、申赎、开放日</td>
+<td>IMG-108</td>
+<td>客户与渠道</td>
+<td>Client、Communication、Subscription、Redemption、OpenDay</td>
+<td>需确认；合规、PII、录音保存要求需冻结</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="6-横向需求与安全整改" class="level2">
+<h2>6. 横向需求与安全整改</h2>
+<table>
+<thead>
+<tr class="header">
+<th>需求 ID</th>
+<th>横向问题</th>
+<th>证据</th>
+<th>设计落点</th>
+<th>验收要求</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>R-X-01</td>
+<td>四套视觉语言并存</td>
+<td>IMG-0–108</td>
+<td>统一 Token、亮/暗主题、密度模式、语义色和组件层</td>
+<td>同一对象/状态跨页面表达一致；WCAG 关键流程检测</td>
+</tr>
+<tr class="even">
+<td>R-X-02</td>
+<td>明文凭据、内部端点、人工命令</td>
+<td>MD-001、WEB-*</td>
+<td>Vault/KMS/HSM、工作负载身份、GitOps、审批与审计</td>
+<td>凭据轮换；代码/文档/镜像扫描无秘密；禁用共享账号</td>
+</tr>
+<tr class="odd">
+<td>R-X-03</td>
+<td>超大整数 ID</td>
+<td>CSV-001</td>
+<td><code>Identifier</code> 值类型与字符串契约</td>
+<td>浏览器、API、导出往返不丢精度</td>
+</tr>
+<tr class="even">
+<td>R-X-04</td>
+<td>枚举/单位/0/空值混乱</td>
+<td>CSV-001/002</td>
+<td>ValueType、CodeSet、Money/Quantity、MissingReason</td>
+<td>契约测试覆盖每个码表版本和缺失原因</td>
+</tr>
+<tr class="odd">
+<td>R-X-05</td>
+<td>通用 SQL/前端权限风险</td>
+<td>WEB-*</td>
+<td>Object/Action API、参数化查询、ABAC/ReBAC、审计</td>
+<td>服务端负例测试证明不能越权或任意执行 SQL</td>
+</tr>
+<tr class="even">
+<td>R-X-06</td>
+<td>生产/仿真/测试混用风险</td>
+<td>IMG-20–23</td>
+<td>Environment 强制上下文、颜色+文字+边框三重提示</td>
+<td>生产 Action 不接受非生产对象；跨环境复制有审批</td>
+</tr>
+<tr class="odd">
+<td>R-X-07</td>
+<td>原图中的个人信息与业务数据</td>
+<td>IMG-<em>、WEB-</em></td>
+<td>证据最小化、脱敏、DLP、授权与留存</td>
+<td>原始截图不随设计包分发；访问与导出可审计</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="7-关闭追踪项的规则" class="level2">
+<h2>7. 关闭追踪项的规则</h2>
+<p>每个 <code>需确认</code> 项关闭时必须留下：业务定义、对象/动作映射、数据 owner、权限矩阵、状态机或公式版本、SLO、异常与补偿、测试样例、迁移规则、审批记录。页面“看起来一致”不能作为需求关闭证据。</p>
+</section>
+</section>
+
+        </article>
+        <footer class="page-meta">
+          <span>基线 1.0 · 2026-07-27 · Markdown 与 HTML 同源</span>
+          <span><a href="../../../ontology/financial-ontology.yaml">本体 YAML</a> · <a href="../../../contracts/ontology-api.openapi.yaml">OpenAPI</a> · <a href="../../../contracts/events.asyncapi.yaml">AsyncAPI</a></span>
+        </footer>
+      </div>
+    </main>
+  </div>
+  <script src="../../assets/search-index.js"></script>
+  <script src="../../assets/mermaid-11.16.0.min.js"></script>
+  <script src="../../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,909 @@
+ontology:
+  id: finance-platform
+  title: 金融本体驱动平台
+  version: 1.0.0
+  status: proposed
+  releasedOn: "2026-07-27"
+  defaultTimeZone: Asia/Shanghai
+  designRules:
+    - canonical identity is separated from source identifiers
+    - business valid time and system transaction time are explicit
+    - actions are business verbs with policy and audit
+    - graph search vector and OLAP stores are rebuildable projections
+    - every derived result references inputs and function or model version
+    - environment is mandatory for transactional objects
+
+valueTypes:
+  CanonicalId:
+    base: string
+    pattern: "^[a-z][a-z0-9_-]{2,127}$"
+  ExternalId:
+    base: string
+    maxLength: 256
+  CorrelationId:
+    base: string
+    format: uuid
+  IdempotencyKey:
+    base: string
+    minLength: 16
+    maxLength: 128
+  ISIN:
+    base: string
+    pattern: "^[A-Z]{2}[A-Z0-9]{9}[0-9]$"
+  CurrencyCode:
+    base: string
+    pattern: "^[A-Z]{3}$"
+  MIC:
+    base: string
+    pattern: "^[A-Z0-9]{4}$"
+  BusinessDate:
+    base: string
+    format: date
+  Instant:
+    base: string
+    format: date-time
+  Percentage:
+    base: decimal
+    precision: 18
+    scale: 10
+    unit: ratio
+  BasisPoints:
+    base: decimal
+    precision: 18
+    scale: 6
+    unit: bp
+  Quantity:
+    base: decimal
+    precision: 30
+    scale: 10
+  Price:
+    base: decimal
+    precision: 30
+    scale: 12
+  Money:
+    base: struct
+    fields:
+      amount: {type: decimal, precision: 30, scale: 8}
+      currency: {type: CurrencyCode}
+  TimeRange:
+    base: struct
+    fields:
+      from: {type: Instant}
+      to: {type: Instant, nullable: true}
+  EvidencePointer:
+    base: struct
+    fields:
+      artifactId: {type: CanonicalId}
+      locator: {type: string}
+      hash: {type: string}
+  DataClassification:
+    base: enum
+    values: [core, important, sensitive_general, ordinary_general]
+  Environment:
+    base: enum
+    values: [development, test, simulation, staging, production]
+
+interfaces:
+  Identified:
+    required: [id]
+    properties:
+      id: {type: CanonicalId}
+      externalIds: {type: ExternalId, collection: true}
+  EffectiveDated:
+    required: [validFrom, recordedAt]
+    properties:
+      validFrom: {type: Instant}
+      validTo: {type: Instant, nullable: true}
+      recordedAt: {type: Instant}
+      supersededAt: {type: Instant, nullable: true}
+  Sourced:
+    required: [sourceId]
+    properties:
+      sourceId: {type: CanonicalId}
+      sourceRecordId: {type: ExternalId, nullable: true}
+      observedAt: {type: Instant}
+      ingestedAt: {type: Instant}
+  Classified:
+    required: [classification]
+    properties:
+      classification: {type: DataClassification}
+      jurisdiction: {type: string, collection: true}
+  Versioned:
+    required: [version]
+    properties:
+      version: {type: string}
+      lifecycleState: {type: string}
+  Approvable:
+    properties:
+      approvalState: {type: string}
+      approvalPolicyId: {type: CanonicalId, nullable: true}
+  Evidenced:
+    properties:
+      evidenceIds: {type: CanonicalId, collection: true}
+      qualityState: {type: string}
+  EnvironmentScoped:
+    required: [environment]
+    properties:
+      environment: {type: Environment}
+
+domains:
+  - id: organization-access
+    owner: Identity and Security
+  - id: parties
+    owner: Master Data
+  - id: instruments-markets
+    owner: Market Data
+  - id: products-accounts
+    owner: Product Operations
+  - id: portfolios-positions
+    owner: Investment Operations
+  - id: research-factors
+    owner: Research Platform
+  - id: orders-execution
+    owner: Trading Engineering
+  - id: risk-compliance
+    owner: Risk and Compliance
+  - id: companies-events
+    owner: Research Data
+  - id: information-evidence
+    owner: Data Governance
+  - id: product-business
+    owner: Business Operations
+  - id: platform-governance
+    owner: Platform Engineering
+
+objectTypes:
+  Tenant:
+    domain: organization-access
+    interfaces: [Identified, EffectiveDated, Classified]
+    properties:
+      name: {type: string, required: true}
+      status: {type: string, required: true}
+  OrganizationUnit:
+    domain: organization-access
+    interfaces: [Identified, EffectiveDated]
+    properties:
+      name: {type: string, required: true}
+      unitType: {type: string, required: true}
+  Subject:
+    domain: organization-access
+    interfaces: [Identified, EffectiveDated]
+    abstract: true
+    properties:
+      displayName: {type: string, required: true}
+      subjectType: {type: string, required: true}
+  Person:
+    domain: organization-access
+    interfaces: [Identified, EffectiveDated, Classified]
+    implements: [Subject]
+    properties:
+      employeeRef: {type: ExternalId, nullable: true}
+      status: {type: string}
+  ServiceIdentity:
+    domain: organization-access
+    interfaces: [Identified, EffectiveDated]
+    implements: [Subject]
+    properties:
+      workload: {type: string}
+      credentialRef: {type: string, description: secret-manager reference only}
+  Entitlement:
+    domain: organization-access
+    interfaces: [Identified, EffectiveDated, Approvable, Evidenced]
+    properties:
+      resourceScope: {type: string, required: true}
+      allowedActions: {type: string, collection: true}
+      purpose: {type: string, required: true}
+  Delegation:
+    domain: organization-access
+    interfaces: [Identified, EffectiveDated, Approvable]
+    properties:
+      actionScope: {type: string, collection: true}
+      justification: {type: string, required: true}
+  Party:
+    domain: parties
+    interfaces: [Identified, EffectiveDated, Sourced, Classified, Evidenced]
+    abstract: true
+    properties:
+      legalName: {type: string, required: true}
+      partyType: {type: string, required: true}
+      status: {type: string, required: true}
+  LegalEntity:
+    domain: parties
+    interfaces: [Identified, EffectiveDated, Sourced, Classified, Evidenced]
+    implements: [Party]
+    properties:
+      lei: {type: string, nullable: true}
+      countryOfIncorporation: {type: string, nullable: true}
+  Issuer:
+    domain: parties
+    interfaces: [Identified, EffectiveDated, Sourced, Evidenced]
+    implements: [Party]
+    properties:
+      issuerCategory: {type: string}
+  Broker:
+    domain: parties
+    interfaces: [Identified, EffectiveDated, Sourced, Classified]
+    implements: [Party]
+    properties:
+      regulatoryStatus: {type: string}
+  Client:
+    domain: parties
+    interfaces: [Identified, EffectiveDated, Sourced, Classified, Evidenced]
+    implements: [Party]
+    properties:
+      riskRating: {type: string, nullable: true}
+      suitabilityProfileId: {type: CanonicalId, nullable: true}
+  Instrument:
+    domain: instruments-markets
+    interfaces: [Identified, EffectiveDated, Sourced, Classified, Evidenced]
+    abstract: true
+    properties:
+      name: {type: string, required: true}
+      symbol: {type: string, required: true}
+      instrumentType: {type: string, required: true}
+      currency: {type: CurrencyCode, required: true}
+      pricePrecision: {type: integer}
+      lotSize: {type: Quantity}
+      tradingStatus: {type: string}
+  Equity:
+    domain: instruments-markets
+    interfaces: [Identified, EffectiveDated, Sourced, Classified, Evidenced]
+    implements: [Instrument]
+    properties:
+      isin: {type: ISIN, nullable: true}
+      shareClass: {type: string, nullable: true}
+  FundInstrument:
+    domain: instruments-markets
+    interfaces: [Identified, EffectiveDated, Sourced, Classified]
+    implements: [Instrument]
+    properties:
+      fundType: {type: string}
+  Index:
+    domain: instruments-markets
+    interfaces: [Identified, EffectiveDated, Sourced]
+    implements: [Instrument]
+    properties:
+      methodologyVersion: {type: string}
+  FutureContract:
+    domain: instruments-markets
+    interfaces: [Identified, EffectiveDated, Sourced]
+    implements: [Instrument]
+    properties:
+      expiryDate: {type: BusinessDate}
+      multiplier: {type: decimal}
+  Venue:
+    domain: instruments-markets
+    interfaces: [Identified, EffectiveDated, Sourced]
+    properties:
+      mic: {type: MIC}
+      timeZone: {type: string}
+  TradingCalendar:
+    domain: instruments-markets
+    interfaces: [Identified, Versioned, Sourced]
+    properties:
+      market: {type: string}
+      timeZone: {type: string}
+  TradingSession:
+    domain: instruments-markets
+    interfaces: [Identified, EffectiveDated]
+    properties:
+      sessionType: {type: string}
+      opensAt: {type: Instant}
+      closesAt: {type: Instant}
+  CorporateAction:
+    domain: instruments-markets
+    interfaces: [Identified, EffectiveDated, Sourced, Evidenced]
+    properties:
+      actionType: {type: string}
+      exDate: {type: BusinessDate}
+      adjustmentFactor: {type: decimal, nullable: true}
+  ClassificationMembership:
+    domain: instruments-markets
+    interfaces: [Identified, EffectiveDated, Sourced, Evidenced]
+    properties:
+      scheme: {type: string}
+      node: {type: string}
+      weight: {type: Percentage, nullable: true}
+  FundProduct:
+    domain: products-accounts
+    interfaces: [Identified, EffectiveDated, Classified, Approvable, Evidenced]
+    properties:
+      productCode: {type: string, required: true}
+      name: {type: string, required: true}
+      baseCurrency: {type: CurrencyCode}
+      status: {type: string}
+  Mandate:
+    domain: products-accounts
+    interfaces: [Identified, EffectiveDated, Versioned, Approvable, Evidenced]
+    properties:
+      objective: {type: string}
+      constraints: {type: object}
+  TradingAccount:
+    domain: products-accounts
+    interfaces: [Identified, EffectiveDated, Classified, EnvironmentScoped, Evidenced]
+    properties:
+      displayCode: {type: string}
+      accountType: {type: string}
+      status: {type: string}
+      secretRef: {type: string, description: secret-manager reference only}
+  AssetUnit:
+    domain: products-accounts
+    interfaces: [Identified, EffectiveDated, EnvironmentScoped]
+    properties:
+      code: {type: string}
+      name: {type: string}
+      leverageLimit: {type: decimal, nullable: true}
+      status: {type: string}
+  Gateway:
+    domain: products-accounts
+    interfaces: [Identified, EffectiveDated, EnvironmentScoped, Versioned]
+    properties:
+      gatewayType: {type: string}
+      endpointRef: {type: string, description: configuration reference only}
+      status: {type: string}
+  Portfolio:
+    domain: portfolios-positions
+    interfaces: [Identified, EffectiveDated, Classified, Approvable]
+    properties:
+      name: {type: string}
+      portfolioType: {type: string}
+      baseCurrency: {type: CurrencyCode}
+      status: {type: string}
+  StrategyBook:
+    domain: portfolios-positions
+    interfaces: [Identified, EffectiveDated, Versioned]
+    properties:
+      name: {type: string}
+      strategyType: {type: string}
+  Position:
+    domain: portfolios-positions
+    interfaces: [Identified, Sourced, EnvironmentScoped, Evidenced]
+    properties:
+      asOf: {type: Instant, required: true}
+      quantity: {type: Quantity}
+      availableQuantity: {type: Quantity}
+      frozenQuantity: {type: Quantity}
+      cost: {type: Money}
+      marketValue: {type: Money}
+      realizedPnl: {type: Money}
+      unrealizedPnl: {type: Money}
+  TargetPosition:
+    domain: portfolios-positions
+    interfaces: [Identified, EffectiveDated, Versioned, Approvable, EnvironmentScoped]
+    properties:
+      targetQuantity: {type: Quantity, nullable: true}
+      targetWeight: {type: Percentage, nullable: true}
+      targetValue: {type: Money, nullable: true}
+  NAVObservation:
+    domain: portfolios-positions
+    interfaces: [Identified, Sourced, Evidenced, EnvironmentScoped]
+    properties:
+      asOf: {type: Instant}
+      nav: {type: Money}
+      unitNav: {type: Price, nullable: true}
+      status: {type: string}
+  ReconciliationRun:
+    domain: portfolios-positions
+    interfaces: [Identified, Versioned, Evidenced, EnvironmentScoped]
+    properties:
+      businessDate: {type: BusinessDate}
+      runType: {type: string}
+      status: {type: string}
+  ReconciliationBreak:
+    domain: portfolios-positions
+    interfaces: [Identified, EffectiveDated, Approvable, Evidenced, EnvironmentScoped]
+    properties:
+      breakType: {type: string}
+      amountDifference: {type: Money, nullable: true}
+      quantityDifference: {type: Quantity, nullable: true}
+      status: {type: string}
+  FactorDefinition:
+    domain: research-factors
+    interfaces: [Identified, Versioned, Classified, Evidenced]
+    properties:
+      name: {type: string}
+      hypothesis: {type: string}
+      owner: {type: string}
+  FactorVersion:
+    domain: research-factors
+    interfaces: [Identified, Versioned, Approvable, Evidenced]
+    properties:
+      expressionRef: {type: string}
+      frequency: {type: string}
+      lagPolicy: {type: string}
+      cleaningPolicy: {type: object}
+      neutralizationPolicy: {type: object}
+  ResearchRun:
+    domain: research-factors
+    interfaces: [Identified, Versioned, Sourced, Evidenced, EnvironmentScoped]
+    properties:
+      codeCommit: {type: string}
+      imageDigest: {type: string}
+      parameters: {type: object}
+      status: {type: string}
+  BacktestRun:
+    domain: research-factors
+    interfaces: [Identified, Versioned, Evidenced, EnvironmentScoped]
+    properties:
+      period: {type: TimeRange}
+      horizon: {type: string}
+      rebalancePolicy: {type: string}
+      costModelVersion: {type: string}
+      status: {type: string}
+  ModelVersion:
+    domain: research-factors
+    interfaces: [Identified, Versioned, Approvable, Evidenced]
+    properties:
+      modelType: {type: string}
+      artifactRef: {type: string}
+      trainingSnapshotIds: {type: CanonicalId, collection: true}
+      evalReportId: {type: CanonicalId}
+  Recommendation:
+    domain: research-factors
+    interfaces: [Identified, EffectiveDated, Versioned, Approvable, Evidenced]
+    properties:
+      direction: {type: string}
+      strength: {type: decimal}
+      rationale: {type: string}
+  OrderIntent:
+    domain: orders-execution
+    interfaces: [Identified, Versioned, Approvable, EnvironmentScoped, Evidenced]
+    properties:
+      side: {type: string}
+      quantity: {type: Quantity}
+      limitPrice: {type: Price, nullable: true}
+      purpose: {type: string}
+  ParentOrder:
+    domain: orders-execution
+    interfaces: [Identified, Versioned, EnvironmentScoped, Evidenced]
+    properties:
+      orderId: {type: string, description: never encode as JavaScript number}
+      side: {type: string}
+      quantity: {type: Quantity}
+      filledQuantity: {type: Quantity}
+      state: {type: string}
+      startAt: {type: Instant}
+      endAt: {type: Instant, nullable: true}
+  ChildOrder:
+    domain: orders-execution
+    interfaces: [Identified, Versioned, EnvironmentScoped, Evidenced]
+    properties:
+      externalOrderId: {type: string, nullable: true}
+      quantity: {type: Quantity}
+      price: {type: Price, nullable: true}
+      normalizedState: {type: string}
+      externalState: {type: string}
+      sentAt: {type: Instant, nullable: true}
+      acknowledgedAt: {type: Instant, nullable: true}
+  Execution:
+    domain: orders-execution
+    interfaces: [Identified, Sourced, EnvironmentScoped, Evidenced]
+    properties:
+      executionId: {type: string}
+      quantity: {type: Quantity}
+      price: {type: Price}
+      fee: {type: Money, nullable: true}
+      executedAt: {type: Instant}
+      sourceSequence: {type: string, nullable: true}
+  AlgoDefinition:
+    domain: orders-execution
+    interfaces: [Identified, Versioned, Approvable, Evidenced]
+    properties:
+      algoType: {type: string}
+      provider: {type: string}
+      capabilityMatrix: {type: object}
+  TCAResult:
+    domain: orders-execution
+    interfaces: [Identified, Versioned, Sourced, Evidenced]
+    properties:
+      benchmarkType: {type: string}
+      benchmarkPrice: {type: Price}
+      realizedPrice: {type: Price}
+      shortfallBps: {type: BasisPoints}
+  RiskRule:
+    domain: risk-compliance
+    interfaces: [Identified, Versioned, EffectiveDated, Approvable, Evidenced]
+    properties:
+      ruleType: {type: string}
+      expression: {type: string}
+      severity: {type: string}
+      missingPolicy: {type: string}
+      priority: {type: integer}
+  Limit:
+    domain: risk-compliance
+    interfaces: [Identified, Versioned, EffectiveDated, Approvable, Evidenced]
+    properties:
+      metric: {type: string}
+      threshold: {type: decimal}
+      unit: {type: string}
+      breachMode: {type: string}
+  RiskAssessment:
+    domain: risk-compliance
+    interfaces: [Identified, Versioned, Sourced, Evidenced, EnvironmentScoped]
+    properties:
+      decision: {type: string}
+      metrics: {type: object}
+      reasons: {type: string, collection: true}
+      evaluatedAt: {type: Instant}
+      latencyMicros: {type: integer, nullable: true}
+  RiskAlert:
+    domain: risk-compliance
+    interfaces: [Identified, EffectiveDated, Classified, Evidenced, EnvironmentScoped]
+    properties:
+      severity: {type: string}
+      status: {type: string}
+      firstSeenAt: {type: Instant}
+      lastSeenAt: {type: Instant}
+  RiskException:
+    domain: risk-compliance
+    interfaces: [Identified, EffectiveDated, Approvable, Evidenced, EnvironmentScoped]
+    properties:
+      scope: {type: string}
+      justification: {type: string}
+      expiresAt: {type: Instant}
+  BorrowAvailability:
+    domain: risk-compliance
+    interfaces: [Identified, EffectiveDated, Sourced, Evidenced]
+    properties:
+      availableQuantity: {type: Quantity}
+      annualizedRate: {type: Percentage}
+      termDays: {type: integer}
+  FinancialReport:
+    domain: companies-events
+    interfaces: [Identified, EffectiveDated, Sourced, Classified, Evidenced]
+    properties:
+      reportingPeriod: {type: string}
+      disclosureStatus: {type: string}
+      publishedAt: {type: Instant, nullable: true}
+  ConsensusEstimate:
+    domain: companies-events
+    interfaces: [Identified, EffectiveDated, Sourced, Evidenced]
+    properties:
+      metric: {type: string}
+      horizon: {type: string}
+      value: {type: decimal}
+      coverageCount: {type: integer}
+  CalendarEvent:
+    domain: companies-events
+    interfaces: [Identified, EffectiveDated, Sourced, Evidenced]
+    properties:
+      eventType: {type: string}
+      title: {type: string}
+      startsAt: {type: Instant}
+  Theme:
+    domain: companies-events
+    interfaces: [Identified, EffectiveDated, Versioned, Evidenced]
+    properties:
+      code: {type: string}
+      name: {type: string}
+      status: {type: string}
+  Source:
+    domain: information-evidence
+    interfaces: [Identified, EffectiveDated, Classified]
+    properties:
+      sourceType: {type: string}
+      owner: {type: string}
+      licenseRef: {type: string, nullable: true}
+  DataAsset:
+    domain: information-evidence
+    interfaces: [Identified, Versioned, Classified, Evidenced]
+    properties:
+      assetType: {type: string}
+      locationRef: {type: string}
+      owner: {type: string}
+  DatasetSnapshot:
+    domain: information-evidence
+    interfaces: [Identified, Versioned, Sourced, Classified, Evidenced]
+    properties:
+      snapshotRef: {type: string}
+      asOf: {type: Instant}
+      schemaVersion: {type: string}
+  Document:
+    domain: information-evidence
+    interfaces: [Identified, Versioned, Sourced, Classified, Evidenced]
+    properties:
+      title: {type: string}
+      mediaRef: {type: string}
+      sha256: {type: string}
+      mimeType: {type: string}
+  EvidenceFragment:
+    domain: information-evidence
+    interfaces: [Identified, Versioned, Classified]
+    properties:
+      locator: {type: string}
+      textHash: {type: string, nullable: true}
+      reviewState: {type: string}
+  Claim:
+    domain: information-evidence
+    interfaces: [Identified, EffectiveDated, Versioned, Evidenced]
+    properties:
+      predicate: {type: string}
+      value: {type: object}
+      confidence: {type: decimal}
+      reviewState: {type: string}
+  ProductMetricObservation:
+    domain: product-business
+    interfaces: [Identified, Sourced, Evidenced]
+    properties:
+      metric: {type: string}
+      asOf: {type: Instant}
+      value: {type: decimal}
+      unit: {type: string}
+  CompetitorProduct:
+    domain: product-business
+    interfaces: [Identified, EffectiveDated, Sourced, Evidenced]
+    properties:
+      name: {type: string}
+      strategyCategory: {type: string}
+  ReportRun:
+    domain: product-business
+    interfaces: [Identified, Versioned, Approvable, Evidenced, EnvironmentScoped]
+    properties:
+      reportType: {type: string}
+      businessDate: {type: BusinessDate}
+      status: {type: string}
+      artifactRef: {type: string, nullable: true}
+  DataContract:
+    domain: platform-governance
+    interfaces: [Identified, Versioned, Approvable, Evidenced]
+    properties:
+      schemaRef: {type: string}
+      owner: {type: string}
+      compatibility: {type: string}
+      sloRef: {type: string}
+  OntologyRelease:
+    domain: platform-governance
+    interfaces: [Identified, Versioned, Approvable, Evidenced]
+    properties:
+      commit: {type: string}
+      compatibilityReportRef: {type: string}
+      status: {type: string}
+  FunctionVersion:
+    domain: platform-governance
+    interfaces: [Identified, Versioned, Approvable, Evidenced]
+    properties:
+      runtime: {type: string}
+      artifactDigest: {type: string}
+      inputSchemaRef: {type: string}
+      outputSchemaRef: {type: string}
+  ActionRun:
+    domain: platform-governance
+    interfaces: [Identified, Versioned, Classified, EnvironmentScoped, Evidenced]
+    properties:
+      actionType: {type: string}
+      actionVersion: {type: string}
+      idempotencyKey: {type: IdempotencyKey}
+      correlationId: {type: CorrelationId}
+      actorId: {type: CanonicalId}
+      status: {type: string}
+      requestedAt: {type: Instant}
+      completedAt: {type: Instant, nullable: true}
+  ApprovalTask:
+    domain: platform-governance
+    interfaces: [Identified, EffectiveDated, Classified, Evidenced]
+    properties:
+      policyId: {type: CanonicalId}
+      state: {type: string}
+      makerId: {type: CanonicalId}
+      checkerIds: {type: CanonicalId, collection: true}
+  AgentRun:
+    domain: platform-governance
+    interfaces: [Identified, Versioned, Classified, Evidenced, EnvironmentScoped]
+    properties:
+      agentVersion: {type: string}
+      subjectId: {type: CanonicalId}
+      purpose: {type: string}
+      status: {type: string}
+      tokenBudget: {type: integer}
+  ToolCall:
+    domain: platform-governance
+    interfaces: [Identified, Versioned, Classified, Evidenced, EnvironmentScoped]
+    properties:
+      toolType: {type: string}
+      targetVersion: {type: string}
+      policyDecisionId: {type: CanonicalId}
+      status: {type: string}
+
+linkTypes:
+  memberOf: {from: Subject, to: OrganizationUnit, cardinality: many-to-many, temporal: true}
+  entitledBy: {from: Subject, to: Entitlement, cardinality: one-to-many, temporal: true}
+  delegationFrom: {from: Delegation, to: Subject, cardinality: many-to-one, temporal: true}
+  delegationTo: {from: Delegation, to: Subject, cardinality: many-to-one, temporal: true}
+  issuedBy: {from: Instrument, to: Issuer, cardinality: many-to-one, temporal: true}
+  tradedOn: {from: Instrument, to: Venue, cardinality: many-to-many, temporal: true}
+  classifiedAs: {from: Instrument, to: ClassificationMembership, cardinality: one-to-many, temporal: true, evidenced: true}
+  underlying: {from: Instrument, to: Instrument, cardinality: many-to-many, temporal: true}
+  productHasPortfolio: {from: FundProduct, to: Portfolio, cardinality: one-to-many, temporal: true}
+  productGovernedBy: {from: FundProduct, to: Mandate, cardinality: many-to-one, temporal: true}
+  productAuthorizedForAccount: {from: FundProduct, to: TradingAccount, cardinality: many-to-many, temporal: true, approvalRequired: true}
+  assetUnitBelongsToAccount: {from: AssetUnit, to: TradingAccount, cardinality: many-to-one, temporal: true}
+  accountConnectedViaGateway: {from: TradingAccount, to: Gateway, cardinality: many-to-many, temporal: true}
+  portfolioHasPosition: {from: Portfolio, to: Position, cardinality: one-to-many, temporal: false}
+  positionInInstrument: {from: Position, to: Instrument, cardinality: many-to-one, temporal: false}
+  portfolioHasTarget: {from: Portfolio, to: TargetPosition, cardinality: one-to-many, temporal: true}
+  targetForInstrument: {from: TargetPosition, to: Instrument, cardinality: many-to-one, temporal: true}
+  factorHasVersion: {from: FactorDefinition, to: FactorVersion, cardinality: one-to-many, temporal: false}
+  researchUsesSnapshot: {from: ResearchRun, to: DatasetSnapshot, cardinality: many-to-many, immutable: true}
+  backtestUsesFactor: {from: BacktestRun, to: FactorVersion, cardinality: many-to-many, immutable: true}
+  recommendationTargets: {from: Recommendation, to: Instrument, cardinality: many-to-many, temporal: true}
+  intentUsesPortfolio: {from: OrderIntent, to: Portfolio, cardinality: many-to-one, immutable: true}
+  orderImplementsIntent: {from: ParentOrder, to: OrderIntent, cardinality: many-to-one, immutable: true}
+  orderUsesAccount: {from: ParentOrder, to: TradingAccount, cardinality: many-to-one, immutable: true}
+  orderForInstrument: {from: ParentOrder, to: Instrument, cardinality: many-to-one, immutable: true}
+  parentHasChild: {from: ParentOrder, to: ChildOrder, cardinality: one-to-many, immutable: true}
+  childHasExecution: {from: ChildOrder, to: Execution, cardinality: one-to-many, immutable: true}
+  orderUsesAlgo: {from: ParentOrder, to: AlgoDefinition, cardinality: many-to-one, immutable: true}
+  tcaEvaluatesOrder: {from: TCAResult, to: ParentOrder, cardinality: many-to-one, immutable: true}
+  assessmentUsesRule: {from: RiskAssessment, to: RiskRule, cardinality: many-to-many, immutable: true}
+  assessmentUsesLimit: {from: RiskAssessment, to: Limit, cardinality: many-to-many, immutable: true}
+  alertFromAssessment: {from: RiskAlert, to: RiskAssessment, cardinality: many-to-many, immutable: true}
+  exceptionOverridesRule: {from: RiskException, to: RiskRule, cardinality: many-to-one, temporal: true, approvalRequired: true}
+  borrowForInstrument: {from: BorrowAvailability, to: Instrument, cardinality: many-to-one, temporal: true}
+  reportForIssuer: {from: FinancialReport, to: Issuer, cardinality: many-to-one, temporal: true}
+  estimateForIssuer: {from: ConsensusEstimate, to: Issuer, cardinality: many-to-one, temporal: true}
+  documentHasFragment: {from: Document, to: EvidenceFragment, cardinality: one-to-many, immutable: true}
+  claimSupportedBy: {from: Claim, to: EvidenceFragment, cardinality: many-to-many, immutable: true}
+  snapshotOfAsset: {from: DatasetSnapshot, to: DataAsset, cardinality: many-to-one, immutable: true}
+  actionExecutedBy: {from: ActionRun, to: Subject, cardinality: many-to-one, immutable: true}
+  approvalApprovesAction: {from: ApprovalTask, to: ActionRun, cardinality: many-to-one, immutable: true}
+  agentUsedTool: {from: AgentRun, to: ToolCall, cardinality: one-to-many, immutable: true}
+
+actionTypes:
+  SubmitOrder:
+    version: 1.0.0
+    input: [OrderIntent, IdempotencyKey]
+    creates: [ParentOrder, ActionRun]
+    policies: [order-write, pre-trade-risk, maker-checker-threshold]
+    externalEffect: trading-gateway
+    compensation: CancelOrder
+  CancelOrder:
+    version: 1.0.0
+    input: [ParentOrder, IdempotencyKey]
+    updates: [ParentOrder]
+    policies: [order-write, valid-order-transition]
+    externalEffect: trading-gateway
+  ApproveRiskException:
+    version: 1.0.0
+    input: [RiskException, IdempotencyKey]
+    updates: [RiskException]
+    creates: [ApprovalTask, ActionRun]
+    policies: [risk-approver, maker-checker]
+  ResolveReconciliationBreak:
+    version: 1.0.0
+    input: [ReconciliationBreak, string, IdempotencyKey]
+    updates: [ReconciliationBreak]
+    policies: [operations-write, evidence-required]
+  PublishFactorVersion:
+    version: 1.0.0
+    input: [FactorVersion, IdempotencyKey]
+    updates: [FactorVersion]
+    creates: [ApprovalTask, ActionRun]
+    policies: [research-reviewer, reproducibility-gate]
+  PublishReport:
+    version: 1.0.0
+    input: [ReportRun, IdempotencyKey]
+    updates: [ReportRun]
+    policies: [report-publisher, evidence-required, maker-checker]
+  GrantEntitlement:
+    version: 1.0.0
+    input: [Entitlement, IdempotencyKey]
+    creates: [ApprovalTask, ActionRun]
+    updates: [Entitlement]
+    policies: [access-governance, separation-of-duties]
+  ActivateKillSwitch:
+    version: 1.0.0
+    input: [Gateway, string, IdempotencyKey]
+    updates: [Gateway]
+    creates: [ActionRun]
+    policies: [emergency-control]
+    externalEffect: gateway-control
+  MergeOntologyRelease:
+    version: 1.0.0
+    input: [OntologyRelease, IdempotencyKey]
+    updates: [OntologyRelease]
+    policies: [ontology-owner, compatibility-gate, security-diff-gate]
+
+functionTypes:
+  ResolveIdentity:
+    version: 1.0.0
+    inputs: [Source, ExternalId]
+    output: {type: CanonicalId}
+    deterministic: true
+  BuildPointInTimeUniverse:
+    version: 1.0.0
+    inputs: [BusinessDate, string]
+    output: {type: CanonicalId, collection: true}
+    deterministic: true
+  ComputeFactor:
+    version: 1.0.0
+    inputs: [FactorVersion, DatasetSnapshot]
+    output: {type: DataAsset}
+    deterministic: true
+  RunBacktest:
+    version: 1.0.0
+    inputs: [BacktestRun]
+    output: {type: BacktestRun}
+    deterministic: true
+  ComputePreTradeRisk:
+    version: 1.0.0
+    inputs: [OrderIntent, Portfolio, Limit]
+    output: {type: RiskAssessment}
+    deterministic: true
+  ComputeTCA:
+    version: 1.0.0
+    inputs: [ParentOrder, Execution]
+    output: {type: TCAResult}
+    deterministic: true
+  ComputeNAV:
+    version: 1.0.0
+    inputs: [Portfolio, Position, DatasetSnapshot]
+    output: {type: NAVObservation}
+    deterministic: true
+  RetrieveEvidence:
+    version: 1.0.0
+    inputs: [string, Subject]
+    output: {type: EvidenceFragment, collection: true}
+    securityTrimmed: true
+  ExtractClaims:
+    version: 1.0.0
+    inputs: [Document, ModelVersion]
+    output: {type: Claim, collection: true}
+    humanReviewRequired: conditional
+
+policies:
+  order-write:
+    effect: allow
+    conditions:
+      - subject has active entitlement for account and action
+      - subject purpose permits trading
+      - object environment equals request environment
+  pre-trade-risk:
+    effect: deny-unless
+    conditions:
+      - current deterministic RiskAssessment decision is allow
+      - market data and limits satisfy freshness policy
+  maker-checker:
+    effect: deny-unless
+    conditions:
+      - maker differs from every checker
+      - required approvals are complete
+  maker-checker-threshold:
+    effect: conditional
+    conditions:
+      - dual approval is required above configured amount or risk threshold
+  evidence-required:
+    effect: deny-unless
+    conditions:
+      - at least one accessible immutable evidence pointer exists
+  separation-of-duties:
+    effect: deny-unless
+    conditions:
+      - requester cannot approve own privileged access
+  agent-action:
+    effect: deny-unless
+    conditions:
+      - tool is on allowlist
+      - delegated scope is no broader than user scope
+      - high risk action has deterministic validation and human approval
+  export-control:
+    effect: deny-unless
+    conditions:
+      - purpose and destination are approved
+      - row property and evidence policies are applied to export
+      - export is watermarked logged and expires
+
+invariants:
+  - id: order-context
+    expression: ParentOrder.environment and ParentOrder.account and ParentOrder.instrument and ParentOrder.side are present
+  - id: execution-parent
+    expression: Execution links to one ChildOrder or is explicitly classified as unmatched
+  - id: immutable-ledger-events
+    expression: order execution and audit events are amended or reversed, never overwritten
+  - id: reproducible-factor
+    expression: a published FactorVersion links to snapshots, code digest, parameters, tests and approval
+  - id: exception-expiry
+    expression: an active RiskException has rule, scope, evidence, approval and future expiresAt
+  - id: action-audit
+    expression: every ActionRun has actor, type version, idempotency key, correlation id, policy decision and before/after references
+  - id: projection-as-of
+    expression: graph search vector and OLAP responses expose source offset or asOf time

@@ -1,0 +1,242 @@
+asyncapi: 3.1.0
+info:
+  title: Financial Ontology Event Contracts
+  version: 1.0.0
+  description: >
+    Kafka facts use a CloudEvents-compatible envelope. Delivery is at-least-once
+    unless a concrete source and sink prove stronger semantics; every consumer
+    must deduplicate by event id or aggregate sequence and tolerate replay.
+defaultContentType: application/json
+servers:
+  production:
+    host: kafka.example.invalid:9093
+    protocol: kafka-secure
+    description: Placeholder only; resolved by deployment configuration
+channels:
+  orderFacts:
+    address: finance.order.fact.v1
+    messages:
+      orderFact: {$ref: "#/components/messages/OrderFact"}
+  executionFacts:
+    address: finance.execution.fact.v1
+    messages:
+      executionFact: {$ref: "#/components/messages/ExecutionFact"}
+  riskFacts:
+    address: finance.risk.assessment.v1
+    messages:
+      riskAssessment: {$ref: "#/components/messages/RiskAssessment"}
+  ontologyChanges:
+    address: finance.ontology.change.v1
+    messages:
+      ontologyChange: {$ref: "#/components/messages/OntologyChange"}
+  actionLifecycle:
+    address: finance.action.lifecycle.v1
+    messages:
+      actionLifecycle: {$ref: "#/components/messages/ActionLifecycle"}
+operations:
+  receiveOrderFacts:
+    action: receive
+    channel: {$ref: "#/channels/orderFacts"}
+  receiveExecutionFacts:
+    action: receive
+    channel: {$ref: "#/channels/executionFacts"}
+  receiveRiskFacts:
+    action: receive
+    channel: {$ref: "#/channels/riskFacts"}
+  receiveOntologyChanges:
+    action: receive
+    channel: {$ref: "#/channels/ontologyChanges"}
+  receiveActionLifecycle:
+    action: receive
+    channel: {$ref: "#/channels/actionLifecycle"}
+components:
+  schemas:
+    EventEnvelope:
+      type: object
+      additionalProperties: false
+      required:
+        - specversion
+        - id
+        - source
+        - type
+        - subject
+        - time
+        - datacontenttype
+        - dataschema
+        - correlationid
+        - causationid
+        - tenantid
+        - environment
+        - aggregateid
+        - aggregatesequence
+        - classification
+        - data
+      properties:
+        specversion: {type: string, const: "1.0"}
+        id: {type: string, format: uuid}
+        source: {type: string, format: uri-reference}
+        type: {type: string}
+        subject: {type: string}
+        time: {type: string, format: date-time}
+        datacontenttype: {type: string, const: application/json}
+        dataschema: {type: string, format: uri-reference}
+        correlationid: {type: string, format: uuid}
+        causationid: {type: string, format: uuid}
+        tenantid: {type: string}
+        environment:
+          type: string
+          enum: [development, test, simulation, staging, production]
+        aggregateid: {type: string}
+        aggregatesequence: {type: integer, minimum: 1}
+        partitionkey: {type: string}
+        businessdate: {type: string, format: date}
+        validtime: {type: [string, "null"], format: date-time}
+        recordedtime: {type: string, format: date-time}
+        actorid: {type: [string, "null"]}
+        purpose: {type: [string, "null"]}
+        classification:
+          type: string
+          enum: [core, important, sensitive_general, ordinary_general]
+        ontologyversion: {type: string}
+        traceparent: {type: [string, "null"]}
+        data: {type: object}
+    DecimalString:
+      type: string
+      pattern: "^-?[0-9]+(\\.[0-9]+)?$"
+    OrderFactData:
+      type: object
+      additionalProperties: false
+      required: [orderId, eventType, state, accountId, instrumentId, side, quantity]
+      properties:
+        orderId: {type: string, description: preserves 19 digit and vendor identifiers}
+        eventType:
+          type: string
+          enum: [submitted, approved, routed, acknowledged, partially_filled, filled, cancelled, rejected, expired, corrected]
+        state: {type: string}
+        accountId: {type: string}
+        portfolioId: {type: string}
+        instrumentId: {type: string}
+        side: {type: string, enum: [buy, sell]}
+        quantity: {$ref: "#/components/schemas/DecimalString"}
+        filledQuantity: {$ref: "#/components/schemas/DecimalString"}
+        limitPrice:
+          oneOf:
+            - {$ref: "#/components/schemas/DecimalString"}
+            - {type: "null"}
+        externalState: {type: [string, "null"]}
+        reasonCode: {type: [string, "null"]}
+        previousEventId: {type: [string, "null"], format: uuid}
+    ExecutionFactData:
+      type: object
+      additionalProperties: false
+      required: [executionId, childOrderId, quantity, price, executedAt, sourceSequence]
+      properties:
+        executionId: {type: string}
+        childOrderId: {type: string}
+        quantity: {$ref: "#/components/schemas/DecimalString"}
+        price: {$ref: "#/components/schemas/DecimalString"}
+        currency: {type: string, pattern: "^[A-Z]{3}$"}
+        fee:
+          oneOf:
+            - {$ref: "#/components/schemas/DecimalString"}
+            - {type: "null"}
+        executedAt: {type: string, format: date-time}
+        venue: {type: string}
+        sourceSequence: {type: string}
+        correctionOf: {type: [string, "null"]}
+    RiskAssessmentData:
+      type: object
+      additionalProperties: false
+      required: [assessmentId, subjectRef, decision, ruleSetVersion, inputSnapshotId, evaluatedAt]
+      properties:
+        assessmentId: {type: string}
+        subjectRef: {type: string}
+        decision: {type: string, enum: [allow, warn, review, deny, indeterminate]}
+        ruleSetVersion: {type: string}
+        inputSnapshotId: {type: string}
+        reasons: {type: array, items: {type: string}}
+        metrics: {type: object, additionalProperties: true}
+        evaluatedAt: {type: string, format: date-time}
+        latencyMicros: {type: integer, minimum: 0}
+        missingDataPolicyApplied: {type: string}
+    OntologyChangeData:
+      type: object
+      additionalProperties: false
+      required: [objectType, objectId, objectVersion, operation, changedProperties]
+      properties:
+        objectType: {type: string}
+        objectId: {type: string}
+        objectVersion: {type: string}
+        operation: {type: string, enum: [created, updated, linked, unlinked, deactivated]}
+        changedProperties: {type: array, items: {type: string}}
+        linkChanges: {type: array, items: {type: object}}
+        sourceOffsets: {type: object, additionalProperties: {type: string}}
+    ActionLifecycleData:
+      type: object
+      additionalProperties: false
+      required: [actionRunId, actionType, actionVersion, status, idempotencyKey]
+      properties:
+        actionRunId: {type: string, format: uuid}
+        actionType: {type: string}
+        actionVersion: {type: string}
+        status:
+          type: string
+          enum: [accepted, awaiting_approval, running, succeeded, rejected, failed, compensating, compensated]
+        idempotencyKey: {type: string}
+        policyDecisionIds: {type: array, items: {type: string}}
+        affectedObjectRefs: {type: array, items: {type: string}}
+        externalEffectState:
+          type: string
+          enum: [not_applicable, pending, acknowledged, reconciled, failed, unknown]
+        errorCode: {type: [string, "null"]}
+  messages:
+    OrderFact:
+      name: OrderFact
+      title: Immutable order lifecycle fact
+      payload:
+        allOf:
+          - {$ref: "#/components/schemas/EventEnvelope"}
+          - type: object
+            properties:
+              type: {const: com.example.finance.order.fact.v1}
+              data: {$ref: "#/components/schemas/OrderFactData"}
+    ExecutionFact:
+      name: ExecutionFact
+      title: Immutable execution or correction fact
+      payload:
+        allOf:
+          - {$ref: "#/components/schemas/EventEnvelope"}
+          - type: object
+            properties:
+              type: {const: com.example.finance.execution.fact.v1}
+              data: {$ref: "#/components/schemas/ExecutionFactData"}
+    RiskAssessment:
+      name: RiskAssessment
+      title: Versioned deterministic risk decision
+      payload:
+        allOf:
+          - {$ref: "#/components/schemas/EventEnvelope"}
+          - type: object
+            properties:
+              type: {const: com.example.finance.risk.assessment.v1}
+              data: {$ref: "#/components/schemas/RiskAssessmentData"}
+    OntologyChange:
+      name: OntologyChange
+      title: Rebuildable ontology projection change
+      payload:
+        allOf:
+          - {$ref: "#/components/schemas/EventEnvelope"}
+          - type: object
+            properties:
+              type: {const: com.example.finance.ontology.change.v1}
+              data: {$ref: "#/components/schemas/OntologyChangeData"}
+    ActionLifecycle:
+      name: ActionLifecycle
+      title: Auditable action state transition
+      payload:
+        allOf:
+          - {$ref: "#/components/schemas/EventEnvelope"}
+          - type: object
+            properties:
+              type: {const: com.example.finance.action.lifecycle.v1}
+              data: {$ref: "#/components/schemas/ActionLifecycleData"}

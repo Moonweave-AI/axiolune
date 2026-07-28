@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="金融本体驱动平台总体设计、技术选型、模块、本体、算法与交付规范">
+  <title>本体、自动化、Agent 与平台运维 · 金融本体驱动平台</title>
+  <script>
+    (function() {
+      var saved = localStorage.getItem("finance-design-theme");
+      if (saved) document.documentElement.dataset.theme = saved;
+    }());
+    window.SITE_ROOT = "../../";
+    window.RAW_ROOT = "../../../";
+  </script>
+  <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <header class="topbar">
+    <button class="icon-button menu-button" type="button" data-menu-toggle aria-label="打开文档目录" aria-expanded="false">☰</button>
+    <a class="brand" href="../../index.html">
+      <span class="brand-mark" aria-hidden="true">FO</span>
+      <span class="brand-text">金融本体驱动平台设计</span>
+    </a>
+    <span class="topbar-spacer"></span>
+    <button class="icon-button" type="button" data-theme-toggle aria-label="切换主题">☾</button>
+  </header>
+  <div class="layout">
+    <aside class="sidebar" aria-label="文档目录">
+      <div class="search-wrap">
+        <input class="search-input" type="search" data-search placeholder="搜索全部文档…" aria-label="搜索全部文档">
+        <p class="search-hint">按 Ctrl/⌘ + K 聚焦 · Esc 清除</p>
+        <div class="search-results" data-search-results aria-live="polite"></div>
+      </div>
+      <nav class="nav-section" aria-label="首页">
+<h2 class="nav-section-title">首页</h2>
+<a class="nav-link" href="../../index.html">金融本体驱动平台：总体设计与实施规范</a>
+</nav>
+<nav class="nav-section" aria-label="交付说明">
+<h2 class="nav-section-title">交付说明</h2>
+<a class="nav-link" href="../../PACKAGE-SUMMARY.html">交付包清单与验证记录</a>
+</nav>
+<nav class="nav-section" aria-label="总览与追踪">
+<h2 class="nav-section-title">总览与追踪</h2>
+<a class="nav-link" href="../00-overview/00-executive-summary.html">执行摘要</a>
+<a class="nav-link" href="../00-overview/01-scope-assumptions.html">设计范围、假设与边界</a>
+<a class="nav-link" href="../00-overview/02-design-principles.html">核心设计原则与关键决策</a>
+<a class="nav-link" href="../00-overview/03-requirements-traceability.html">需求—模块—本体—证据追踪矩阵</a>
+</nav>
+<nav class="nav-section" aria-label="总体架构">
+<h2 class="nav-section-title">总体架构</h2>
+<a class="nav-link" href="../01-architecture/00-target-architecture.html">目标总体架构</a>
+<a class="nav-link" href="../01-architecture/01-domain-boundaries.html">领域边界与依赖</a>
+<a class="nav-link" href="../01-architecture/02-data-architecture.html">数据与多模态架构</a>
+<a class="nav-link" href="../01-architecture/03-deployment-topology.html">部署拓扑、环境与灾备</a>
+<a class="nav-link" href="../01-architecture/04-nonfunctional-requirements.html">非功能需求与质量属性</a>
+</nav>
+<nav class="nav-section" aria-label="技术选型">
+<h2 class="nav-section-title">技术选型</h2>
+<a class="nav-link" href="../02-technology/00-selection-summary.html">技术选型总表</a>
+<a class="nav-link" href="../02-technology/01-frontend-design-system.html">前端、视觉与交互设计</a>
+<a class="nav-link" href="../02-technology/02-backend-communication.html">后端、接口与通信</a>
+<a class="nav-link" href="../02-technology/03-databases-storage.html">数据库、搜索、图、向量与媒体存储</a>
+<a class="nav-link" href="../02-technology/04-compute-workflow.html">流批计算、数据编排与业务工作流</a>
+<a class="nav-link" href="../02-technology/05-ai-mlops.html">AI、MLOps、GraphRAG 与 Agent 技术</a>
+<a class="nav-link" href="../02-technology/06-security-devsecops.html">安全、DevSecOps 与可观测性技术</a>
+</nav>
+<nav class="nav-section" aria-label="模块设计">
+<h2 class="nav-section-title">模块设计</h2>
+<a class="nav-link" href="00-module-map.html">业务与平台模块全景</a>
+<a class="nav-link" href="01-workspace-data-intelligence.html">统一工作台、数据与资讯</a>
+<a class="nav-link" href="02-quant-active-research.html">量化研究与主动投研</a>
+<a class="nav-link" href="03-portfolio-execution.html">产品、组合、OMS/IMS 与算法执行</a>
+<a class="nav-link" href="04-risk-compliance.html">风险、合规与核对</a>
+<a class="nav-link" href="05-product-reporting.html">产品、渠道与经营报表</a>
+<a class="nav-link is-active" href="06-ontology-automation-operations.html" aria-current="page">本体、自动化、Agent 与平台运维</a>
+</nav>
+<nav class="nav-section" aria-label="本体工程">
+<h2 class="nav-section-title">本体工程</h2>
+<a class="nav-link" href="../04-ontology/00-method-meta-model.html">金融本体方法与元模型</a>
+<a class="nav-link" href="../04-ontology/01-domain-model.html">金融本体逻辑域</a>
+<a class="nav-link" href="../04-ontology/02-object-link-catalog.html">核心对象与链接目录</a>
+<a class="nav-link" href="../04-ontology/03-actions-functions-policies.html">动作、函数、模型、策略与工作流</a>
+<a class="nav-link" href="../04-ontology/04-temporal-provenance-quality.html">时间、来源、证据与质量</a>
+<a class="nav-link" href="../04-ontology/05-security-version-governance.html">本体安全、版本、分支与治理</a>
+<a class="nav-link" href="../04-ontology/06-implementation-mapping.html">本体到数据、API、UI 与运行时的映射</a>
+</nav>
+<nav class="nav-section" aria-label="逻辑域与算法">
+<h2 class="nav-section-title">逻辑域与算法</h2>
+<a class="nav-link" href="../05-algorithms/00-algorithm-framework.html">算法工程总规范</a>
+<a class="nav-link" href="../05-algorithms/01-market-factor-backtest.html">行情、因子与回测算法规范</a>
+<a class="nav-link" href="../05-algorithms/02-execution-tca.html">算法执行与交易成本分析规范</a>
+<a class="nav-link" href="../05-algorithms/03-portfolio-risk.html">组合、净值、风险、流动性与对账算法规范</a>
+<a class="nav-link" href="../05-algorithms/04-graph-ai.html">图算法、证据图、GraphRAG 与文档智能规范</a>
+</nav>
+<nav class="nav-section" aria-label="工程、安全与 SRE">
+<h2 class="nav-section-title">工程、安全与 SRE</h2>
+<a class="nav-link" href="../06-engineering/00-engineering-overview.html">工程实现总纲</a>
+<a class="nav-link" href="../06-engineering/01-api-event-contracts.html">API、事件与分布式一致性契约</a>
+<a class="nav-link" href="../06-engineering/02-security-model.html">安全、权限与审计模型</a>
+<a class="nav-link" href="../06-engineering/03-observability-sre.html">可观测性与 SRE</a>
+<a class="nav-link" href="../06-engineering/04-testing-validation.html">测试、验证与发布质量门</a>
+<a class="nav-link" href="../06-engineering/05-continuity-recovery.html">业务连续性、备份与灾难恢复</a>
+</nav>
+<nav class="nav-section" aria-label="交付与迁移">
+<h2 class="nav-section-title">交付与迁移</h2>
+<a class="nav-link" href="../07-delivery/00-roadmap.html">分期路线图与投资顺序</a>
+<a class="nav-link" href="../07-delivery/01-team-governance.html">团队结构、职责与治理</a>
+<a class="nav-link" href="../07-delivery/02-migration-cutover.html">遗留迁移、双跑与切换</a>
+<a class="nav-link" href="../07-delivery/03-acceptance-risks.html">验收体系与风险登记</a>
+<a class="nav-link" href="../07-delivery/04-decision-register.html">架构决策登记册</a>
+<a class="nav-link" href="../07-delivery/05-open-questions.html">立项前未决问题</a>
+</nav>
+<nav class="nav-section" aria-label="参考与证据">
+<h2 class="nav-section-title">参考与证据</h2>
+<a class="nav-link" href="../08-reference/00-palantir-capability-mapping.html">Palantir 能力体系与本方案映射</a>
+<a class="nav-link" href="../08-reference/01-attachment-audit-summary.html">附件审计摘要</a>
+<a class="nav-link" href="../08-reference/02-source-material-handling.html">源材料处理与证据边界</a>
+<a class="nav-link" href="../08-reference/03-source-register.html">参考资料登记册</a>
+<a class="nav-link" href="../08-reference/04-palantir-document-system-audit.html">Palantir 官方文档体系研究与金融平台本体工程映射</a>
+<a class="nav-link" href="../08-reference/05-glossary.html">术语表</a>
+</nav>
+    </aside>
+    <div class="overlay" aria-hidden="true"></div>
+    <main class="main" id="content">
+      <div class="content-shell">
+        <nav class="breadcrumbs" aria-label="面包屑"><a href="../../index.html">首页</a><span>›</span><span>模块设计</span><span>›</span><span>本体、自动化、Agent 与平台运维</span></nav>
+        <article class="article">
+          <section id="本体自动化agent-与平台运维" class="level1">
+<h1>本体、自动化、Agent 与平台运维</h1>
+<section id="1-ontology-studio" class="level2">
+<h2>1. Ontology Studio</h2>
+<p>面向本体工程师、领域专家和数据 Steward：</p>
+<ul>
+<li>Domain/Namespace；</li>
+<li>ObjectType、InterfaceType、SharedProperty、ValueType；</li>
+<li>LinkType、EventType；</li>
+<li>Metric/Function/Model；</li>
+<li>ActionType、Policy 和 Workflow；</li>
+<li>默认 Object View、搜索和展示元数据；</li>
+<li>数据映射、主键、时间和来源；</li>
+<li>分支、差异、评审、发布和退役；</li>
+<li>下游影响、质量和索引状态。</li>
+</ul>
+<p>编辑器同时提供图形视图、表单和声明文件，不以图形界面为唯一真源。</p>
+</section>
+<section id="2-object-explorer" class="level2">
+<h2>2. Object Explorer</h2>
+<ul>
+<li>全局按类型、属性、关系、时间和空间搜索；</li>
+<li>Token、phrase、prefix、范围和组合过滤；</li>
+<li>保存对象集；</li>
+<li>关系图、时间线、地图和统计；</li>
+<li>对象批量动作；</li>
+<li>证据、血缘、权限和历史；</li>
+<li>将对象集传入研究、工作流或报告。</li>
+</ul>
+<p>查询能力矩阵明确各入口的搜索语义，避免同一过滤器在全局搜索、属性过滤、前端列表和函数 API 中结果不一致。</p>
+</section>
+<section id="3-function--metric-studio" class="level2">
+<h2>3. Function &amp; Metric Studio</h2>
+<ul>
+<li>定义输入/输出类型；</li>
+<li>SQL/Python/Java/表达式/模型适配器；</li>
+<li>点时和缺失语义；</li>
+<li>单元、黄金数据和性能测试；</li>
+<li>版本、所有者、权限和成本；</li>
+<li>发布、弃用和影响；</li>
+<li>同步查询、流、批或异步执行模式。</li>
+</ul>
+</section>
+<section id="4-action--policy-studio" class="level2">
+<h2>4. Action &amp; Policy Studio</h2>
+<ul>
+<li>参数与对象上下文；</li>
+<li>前置/后置条件；</li>
+<li>RBAC/ABAC/ReBAC；</li>
+<li>审批、职责分离和理由；</li>
+<li>外部适配器和副作用；</li>
+<li>幂等、超时、重试和补偿；</li>
+<li>场景预览、历史回放和测试；</li>
+<li>可用 UI 和 Agent 工具暴露；</li>
+<li>审计与结果反馈。</li>
+</ul>
+</section>
+<section id="5-automation-studio" class="level2">
+<h2>5. Automation Studio</h2>
+<p>触发器：</p>
+<ul>
+<li>对象集进入/退出条件；</li>
+<li>领域事件；</li>
+<li>数据资产/质量状态；</li>
+<li>时间/交易日历；</li>
+<li>工作流依赖；</li>
+<li>人工或外部 webhook。</li>
+</ul>
+<p>效果：</p>
+<ul>
+<li>通知/任务；</li>
+<li>函数/模型；</li>
+<li>动作提案；</li>
+<li>受控动作；</li>
+<li>报告/数据运行；</li>
+<li>外部 webhook。</li>
+</ul>
+<p>执行顺序、并行、重试和幂等必须显式；多个效果不可依赖未保证的隐式顺序。该约束也可从 Palantir Automate 文档中得到启发。<a href="https://www.palantir.com/docs/foundry/automate/overview/">Automate overview</a></p>
+</section>
+<section id="6-agent-studio" class="level2">
+<h2>6. Agent Studio</h2>
+<ul>
+<li>选择本体对象、检索源、函数和动作；</li>
+<li>定义角色、用途、预算、会话状态和输出 Schema；</li>
+<li>配置引用、拒答、人工接管和审批；</li>
+<li>构建评测集并比较模型/提示/工具版本；</li>
+<li>预览有效权限；</li>
+<li>影子发布、灰度、监控和回滚；</li>
+<li>查看每轮检索、工具、策略和结果。</li>
+</ul>
+<p>高风险动作默认只允许 <code>CreateActionProposal</code>。</p>
+</section>
+<section id="7-data-operations" class="level2">
+<h2>7. Data Operations</h2>
+<ul>
+<li>Connector Registry：来源、负责人、网络、凭证引用和 SLA；</li>
+<li>Pipeline：流/批资产、版本、运行、回填和成本；</li>
+<li>Data Catalog：Schema、语义、质量、血缘、权限和使用；</li>
+<li>Data Health：新鲜度、完整性、分布、业务与点时检查；</li>
+<li>Lineage：跨数据—对象—函数—应用—报告；</li>
+<li>Quarantine：失败数据、修复和再发布；</li>
+<li>Change Management：Schema、来源和影响。</li>
+</ul>
+</section>
+<section id="8-model-operations" class="level2">
+<h2>8. Model Operations</h2>
+<ul>
+<li>模型/特征/提示/评测集注册；</li>
+<li>训练、批推理、在线推理；</li>
+<li>模型适配器和统一 Gateway；</li>
+<li>准确、漂移、延迟、成本和公平性；</li>
+<li>GPU/CPU 配额；</li>
+<li>发布、灰度、回滚和退役；</li>
+<li>风险等级和人工监督。</li>
+</ul>
+</section>
+<section id="9-security--administration" class="level2">
+<h2>9. Security &amp; Administration</h2>
+<ul>
+<li>用户、团队、组织、角色和服务身份；</li>
+<li>产品/账户/对象/属性/动作范围；</li>
+<li>数据分类、用途、保留和导出；</li>
+<li>权限申请、审批、复核和到期；</li>
+<li>策略模拟与“为什么允许/拒绝”；</li>
+<li>秘密、证书和轮换状态；</li>
+<li>审计搜索与取证导出；</li>
+<li>许可证、外部供应商和数据授权。</li>
+</ul>
+</section>
+<section id="10-system-operations" class="level2">
+<h2>10. System Operations</h2>
+<ul>
+<li>服务目录、依赖、版本和负责人；</li>
+<li>SLO、告警、运行手册和维护窗口；</li>
+<li>环境、配置、Feature Flag 和发布；</li>
+<li>交易日启动/就绪/收盘检查；</li>
+<li>容量、成本和配额；</li>
+<li>备份、恢复和 DR；</li>
+<li>事件管理、复盘和改进任务；</li>
+<li>支持工单与 trace/object/action 深链。</li>
+</ul>
+<p>原附件中的 crontab、screen、手工恢复和加账号命令应转化为：</p>
+<ul>
+<li>声明式计划和服务管理；</li>
+<li>受控运维动作；</li>
+<li>健康检查和启动门；</li>
+<li>审批、审计、自动超时与回滚；</li>
+<li>可演练的运行手册。</li>
+</ul>
+</section>
+<section id="11-验收重点" class="level2">
+<h2>11. 验收重点</h2>
+<ul>
+<li>本体变更能看到数据、函数、应用和 SDK 影响；</li>
+<li>对象、动作和策略在分支中端到端测试；</li>
+<li>自动化重复触发不会产生重复副作用；</li>
+<li>Agent 无法发现或调用未授权资源；</li>
+<li>运维人员不需要共享静态密码或 SSH 进程管理；</li>
+<li>平台健康与业务新鲜度在同一事件上下文中可追踪。</li>
+</ul>
+</section>
+</section>
+
+        </article>
+        <footer class="page-meta">
+          <span>基线 1.0 · 2026-07-27 · Markdown 与 HTML 同源</span>
+          <span><a href="../../../ontology/financial-ontology.yaml">本体 YAML</a> · <a href="../../../contracts/ontology-api.openapi.yaml">OpenAPI</a> · <a href="../../../contracts/events.asyncapi.yaml">AsyncAPI</a></span>
+        </footer>
+      </div>
+    </main>
+  </div>
+  <script src="../../assets/search-index.js"></script>
+  <script src="../../assets/mermaid-11.16.0.min.js"></script>
+  <script src="../../assets/app.js"></script>
+</body>
+</html>

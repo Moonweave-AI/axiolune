@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="金融本体驱动平台总体设计、技术选型、模块、本体、算法与交付规范">
+  <title>图算法、证据图、GraphRAG 与文档智能规范 · 金融本体驱动平台</title>
+  <script>
+    (function() {
+      var saved = localStorage.getItem("finance-design-theme");
+      if (saved) document.documentElement.dataset.theme = saved;
+    }());
+    window.SITE_ROOT = "../../";
+    window.RAW_ROOT = "../../../";
+  </script>
+  <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <header class="topbar">
+    <button class="icon-button menu-button" type="button" data-menu-toggle aria-label="打开文档目录" aria-expanded="false">☰</button>
+    <a class="brand" href="../../index.html">
+      <span class="brand-mark" aria-hidden="true">FO</span>
+      <span class="brand-text">金融本体驱动平台设计</span>
+    </a>
+    <span class="topbar-spacer"></span>
+    <button class="icon-button" type="button" data-theme-toggle aria-label="切换主题">☾</button>
+  </header>
+  <div class="layout">
+    <aside class="sidebar" aria-label="文档目录">
+      <div class="search-wrap">
+        <input class="search-input" type="search" data-search placeholder="搜索全部文档…" aria-label="搜索全部文档">
+        <p class="search-hint">按 Ctrl/⌘ + K 聚焦 · Esc 清除</p>
+        <div class="search-results" data-search-results aria-live="polite"></div>
+      </div>
+      <nav class="nav-section" aria-label="首页">
+<h2 class="nav-section-title">首页</h2>
+<a class="nav-link" href="../../index.html">金融本体驱动平台：总体设计与实施规范</a>
+</nav>
+<nav class="nav-section" aria-label="交付说明">
+<h2 class="nav-section-title">交付说明</h2>
+<a class="nav-link" href="../../PACKAGE-SUMMARY.html">交付包清单与验证记录</a>
+</nav>
+<nav class="nav-section" aria-label="总览与追踪">
+<h2 class="nav-section-title">总览与追踪</h2>
+<a class="nav-link" href="../00-overview/00-executive-summary.html">执行摘要</a>
+<a class="nav-link" href="../00-overview/01-scope-assumptions.html">设计范围、假设与边界</a>
+<a class="nav-link" href="../00-overview/02-design-principles.html">核心设计原则与关键决策</a>
+<a class="nav-link" href="../00-overview/03-requirements-traceability.html">需求—模块—本体—证据追踪矩阵</a>
+</nav>
+<nav class="nav-section" aria-label="总体架构">
+<h2 class="nav-section-title">总体架构</h2>
+<a class="nav-link" href="../01-architecture/00-target-architecture.html">目标总体架构</a>
+<a class="nav-link" href="../01-architecture/01-domain-boundaries.html">领域边界与依赖</a>
+<a class="nav-link" href="../01-architecture/02-data-architecture.html">数据与多模态架构</a>
+<a class="nav-link" href="../01-architecture/03-deployment-topology.html">部署拓扑、环境与灾备</a>
+<a class="nav-link" href="../01-architecture/04-nonfunctional-requirements.html">非功能需求与质量属性</a>
+</nav>
+<nav class="nav-section" aria-label="技术选型">
+<h2 class="nav-section-title">技术选型</h2>
+<a class="nav-link" href="../02-technology/00-selection-summary.html">技术选型总表</a>
+<a class="nav-link" href="../02-technology/01-frontend-design-system.html">前端、视觉与交互设计</a>
+<a class="nav-link" href="../02-technology/02-backend-communication.html">后端、接口与通信</a>
+<a class="nav-link" href="../02-technology/03-databases-storage.html">数据库、搜索、图、向量与媒体存储</a>
+<a class="nav-link" href="../02-technology/04-compute-workflow.html">流批计算、数据编排与业务工作流</a>
+<a class="nav-link" href="../02-technology/05-ai-mlops.html">AI、MLOps、GraphRAG 与 Agent 技术</a>
+<a class="nav-link" href="../02-technology/06-security-devsecops.html">安全、DevSecOps 与可观测性技术</a>
+</nav>
+<nav class="nav-section" aria-label="模块设计">
+<h2 class="nav-section-title">模块设计</h2>
+<a class="nav-link" href="../03-modules/00-module-map.html">业务与平台模块全景</a>
+<a class="nav-link" href="../03-modules/01-workspace-data-intelligence.html">统一工作台、数据与资讯</a>
+<a class="nav-link" href="../03-modules/02-quant-active-research.html">量化研究与主动投研</a>
+<a class="nav-link" href="../03-modules/03-portfolio-execution.html">产品、组合、OMS/IMS 与算法执行</a>
+<a class="nav-link" href="../03-modules/04-risk-compliance.html">风险、合规与核对</a>
+<a class="nav-link" href="../03-modules/05-product-reporting.html">产品、渠道与经营报表</a>
+<a class="nav-link" href="../03-modules/06-ontology-automation-operations.html">本体、自动化、Agent 与平台运维</a>
+</nav>
+<nav class="nav-section" aria-label="本体工程">
+<h2 class="nav-section-title">本体工程</h2>
+<a class="nav-link" href="../04-ontology/00-method-meta-model.html">金融本体方法与元模型</a>
+<a class="nav-link" href="../04-ontology/01-domain-model.html">金融本体逻辑域</a>
+<a class="nav-link" href="../04-ontology/02-object-link-catalog.html">核心对象与链接目录</a>
+<a class="nav-link" href="../04-ontology/03-actions-functions-policies.html">动作、函数、模型、策略与工作流</a>
+<a class="nav-link" href="../04-ontology/04-temporal-provenance-quality.html">时间、来源、证据与质量</a>
+<a class="nav-link" href="../04-ontology/05-security-version-governance.html">本体安全、版本、分支与治理</a>
+<a class="nav-link" href="../04-ontology/06-implementation-mapping.html">本体到数据、API、UI 与运行时的映射</a>
+</nav>
+<nav class="nav-section" aria-label="逻辑域与算法">
+<h2 class="nav-section-title">逻辑域与算法</h2>
+<a class="nav-link" href="00-algorithm-framework.html">算法工程总规范</a>
+<a class="nav-link" href="01-market-factor-backtest.html">行情、因子与回测算法规范</a>
+<a class="nav-link" href="02-execution-tca.html">算法执行与交易成本分析规范</a>
+<a class="nav-link" href="03-portfolio-risk.html">组合、净值、风险、流动性与对账算法规范</a>
+<a class="nav-link is-active" href="04-graph-ai.html" aria-current="page">图算法、证据图、GraphRAG 与文档智能规范</a>
+</nav>
+<nav class="nav-section" aria-label="工程、安全与 SRE">
+<h2 class="nav-section-title">工程、安全与 SRE</h2>
+<a class="nav-link" href="../06-engineering/00-engineering-overview.html">工程实现总纲</a>
+<a class="nav-link" href="../06-engineering/01-api-event-contracts.html">API、事件与分布式一致性契约</a>
+<a class="nav-link" href="../06-engineering/02-security-model.html">安全、权限与审计模型</a>
+<a class="nav-link" href="../06-engineering/03-observability-sre.html">可观测性与 SRE</a>
+<a class="nav-link" href="../06-engineering/04-testing-validation.html">测试、验证与发布质量门</a>
+<a class="nav-link" href="../06-engineering/05-continuity-recovery.html">业务连续性、备份与灾难恢复</a>
+</nav>
+<nav class="nav-section" aria-label="交付与迁移">
+<h2 class="nav-section-title">交付与迁移</h2>
+<a class="nav-link" href="../07-delivery/00-roadmap.html">分期路线图与投资顺序</a>
+<a class="nav-link" href="../07-delivery/01-team-governance.html">团队结构、职责与治理</a>
+<a class="nav-link" href="../07-delivery/02-migration-cutover.html">遗留迁移、双跑与切换</a>
+<a class="nav-link" href="../07-delivery/03-acceptance-risks.html">验收体系与风险登记</a>
+<a class="nav-link" href="../07-delivery/04-decision-register.html">架构决策登记册</a>
+<a class="nav-link" href="../07-delivery/05-open-questions.html">立项前未决问题</a>
+</nav>
+<nav class="nav-section" aria-label="参考与证据">
+<h2 class="nav-section-title">参考与证据</h2>
+<a class="nav-link" href="../08-reference/00-palantir-capability-mapping.html">Palantir 能力体系与本方案映射</a>
+<a class="nav-link" href="../08-reference/01-attachment-audit-summary.html">附件审计摘要</a>
+<a class="nav-link" href="../08-reference/02-source-material-handling.html">源材料处理与证据边界</a>
+<a class="nav-link" href="../08-reference/03-source-register.html">参考资料登记册</a>
+<a class="nav-link" href="../08-reference/04-palantir-document-system-audit.html">Palantir 官方文档体系研究与金融平台本体工程映射</a>
+<a class="nav-link" href="../08-reference/05-glossary.html">术语表</a>
+</nav>
+    </aside>
+    <div class="overlay" aria-hidden="true"></div>
+    <main class="main" id="content">
+      <div class="content-shell">
+        <nav class="breadcrumbs" aria-label="面包屑"><a href="../../index.html">首页</a><span>›</span><span>逻辑域与算法</span><span>›</span><span>图算法、证据图、GraphRAG 与文档智能规范</span></nav>
+        <article class="article">
+          <section id="图算法证据图graphrag-与文档智能规范" class="level1">
+<h1>图算法、证据图、GraphRAG 与文档智能规范</h1>
+<section id="1-目的与系统边界" class="level2">
+<h2>1. 目的与系统边界</h2>
+<p>本章定义图投影、实体链接、风险路径、事件影响、证据图、文档/多媒体抽取、权限感知 GraphRAG 和 LLM/Agent 评测。目标是让每个候选事实、关系、回答和动作建议都能定位到本体对象、有效时间、来源和精确证据。</p>
+<p>图数据库、搜索索引和向量库都是本体权威事实的可重建投影，不是独立真源。LLM 负责抽取候选、检索辅助、解释和 Action 提案；未经验证不得成为金融事实黄金属性，不得无人提交实盘订单、解除风险限制、修改权限或发布法定/合规结论。</p>
+<p>所有预测、评分、图传播和 LLM 输出均需按用例验证，不构成投资建议或收益承诺。</p>
+</section>
+<section id="2-输入对象与投影契约" class="level2">
+<h2>2. 输入对象与投影契约</h2>
+<section id="21-对象" class="level3">
+<h3>2.1 对象</h3>
+<table>
+<thead>
+<tr class="header">
+<th>域</th>
+<th>主要对象</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>主数据</td>
+<td><code>Party</code>、<code>Issuer</code>、<code>Instrument</code>、<code>FundProduct</code>、<code>TradingAccount</code></td>
+</tr>
+<tr class="even">
+<td>交易与风险</td>
+<td><code>ParentOrder</code>、<code>Execution</code>、<code>Position</code>、<code>RiskAlert</code>、<code>WatchlistEntry</code></td>
+</tr>
+<tr class="odd">
+<td>公司与事件</td>
+<td><code>CompanyProfile</code>、<code>Disclosure</code>、<code>CorporateEvent</code>、<code>Theme</code></td>
+</tr>
+<tr class="even">
+<td>证据</td>
+<td><code>Source</code>、<code>Document</code>、<code>MediaItem</code>、<code>EvidenceFragment</code>、<code>Claim</code>、<code>Citation</code></td>
+</tr>
+<tr class="odd">
+<td>研究</td>
+<td><code>ResearchReport</code>、<code>Thesis</code>、<code>FactorVersion</code>、<code>Signal</code></td>
+</tr>
+<tr class="even">
+<td>平台</td>
+<td><code>DatasetSnapshot</code>、<code>FunctionVersion</code>、<code>ModelVersion</code>、<code>PromptVersion</code>、<code>AgentRun</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="22-时间" class="level3">
+<h3>2.2 时间</h3>
+<p>每次图/检索请求必须携带：</p>
+<ul>
+<li><code>as_of_valid</code>：关系/事实在业务世界的有效时点；</li>
+<li><code>as_of_system</code>：平台在何时已知该版本；</li>
+<li><code>query_time</code>：执行查询的实际时间；</li>
+<li><code>purpose</code>、<code>environment</code>、调用主体与委托链。</li>
+</ul>
+<p>边和节点保留 <code>valid_from/to</code>、<code>system_from/to</code>、source、evidence、quality 和 classification。默认“当前”必须在 API/界面明确显示，不允许用今天的关系回答历史问题。</p>
+</section>
+<section id="23-图投影" class="level3">
+<h3>2.3 图投影</h3>
+<p>投影键使用 canonical object ID，不使用供应商内部 ID 作为公开契约。投影事件：</p>
+<pre class="text"><code>ObjectVersionPublished
+LinkVersionPublished
+ObjectVersionRetracted
+PermissionLabelChanged
+EvidenceLinked</code></pre>
+<p>每个投影快照记录 ontology release、数据 snapshot、策略标签版本、构建代码和校验和。图、全文和向量索引必须能从权威快照完全重建。</p>
+</section>
+</section>
+<section id="3-权限感知查询" class="level2">
+<h2>3. 权限感知查询</h2>
+<section id="31-强制规则" class="level3">
+<h3>3.1 强制规则</h3>
+<p>查看一条边需同时满足：</p>
+<ol type="1">
+<li>可查看 link type；</li>
+<li>可查看起点；</li>
+<li>可查看终点；</li>
+<li>可查看返回属性/证据；</li>
+<li>purpose、environment、有效期和地域策略匹配。</li>
+</ol>
+<p>不能先取全图再仅在 LLM 上下文中删除隐藏节点，因为候选数量、路径长度、聚合值和耗时都可能泄露信息。优先在存储查询/候选生成阶段执行同等策略过滤。</p>
+</section>
+<section id="32-聚合防推断" class="level3">
+<h3>3.2 聚合防推断</h3>
+<ul>
+<li>小群体计数设置最小阈值或返回范围；</li>
+<li>禁止通过两次相近过滤做差分反推；</li>
+<li>centrality、community 和风险传播只在调用者可见子图上展示，或发布经审批的预计算脱敏指标；</li>
+<li>缓存键包含主体授权摘要、purpose、as-of、ontology release 和策略版本；</li>
+<li>权限变化使相关缓存和索引文档失效；</li>
+<li><code>WithheldByPolicy</code> 与“无数据”在审计层分开，用户界面按策略呈现。</li>
+</ul>
+</section>
+</section>
+<section id="4-图增强实体解析" class="level2">
+<h2>4. 图增强实体解析</h2>
+<p>通用规范见《算法工程总规范》。图增强阶段用于主键/文本特征不足时利用邻域一致性，但不能让错误边自我强化。</p>
+<section id="41-候选与特征" class="level3">
+<h3>4.1 候选与特征</h3>
+<p>候选阻塞可使用：</p>
+<ul>
+<li>同市场/对象类型/地域；</li>
+<li>规范名称 token、代码前缀、法人后缀；</li>
+<li>共同发行人、董事、地址、账户、持仓或文档上下文；</li>
+<li>历史 <code>ExternalIdentifier</code> 和有效期。</li>
+</ul>
+<p>特征：</p>
+<p>[ features(x,y)= [id,\ name,\ address,\ attributes,\ temporal,\ neighbor,\ source] ]</p>
+<p>评分：</p>
+<p>[ s(x,y)=\sigma(w^\top features(x,y)) ]</p>
+<p>若使用学习模型，训练标签快照、负样本生成、类别不平衡、阈值和校准曲线进入 <code>ModelVersion</code>。</p>
+</section>
+<section id="42-约束" class="level3">
+<h3>4.2 约束</h3>
+<ul>
+<li>同一权威标识在相同有效区间不能映射多个对象；</li>
+<li>证券类型、交易所、法人辖区和有效期冲突形成 penalty 或硬拒绝；</li>
+<li>connected component 不自动等于一个实体；</li>
+<li>一对多/多对一的公司合并、基金份额、证券换码必须用业务关系表达；</li>
+<li>图邻域只使用已确认或满足高质量等级的边；</li>
+<li>人工复核后保留原候选与判定证据。</li>
+</ul>
+</section>
+<section id="43-伪代码" class="level3">
+<h3>4.3 伪代码</h3>
+<pre class="text"><code>resolve(record, as_of):
+  exact = deterministic_identifier_match(record, as_of)
+  if exact.conflict: return BlockedConflict(exact.evidence)
+  if exact.unique: return exact
+
+  candidates = permission_safe_blocking(record, as_of)
+  for c in candidates:
+      base = text_and_attribute_features(record, c)
+      graph = confirmed_neighbor_features(record, c, max_hops=1)
+      score[c] = calibrated_model(base, graph)
+      score[c] = apply_business_constraints(score[c], record, c)
+
+  if top_score &gt;= auto_threshold and margin &gt;= min_margin:
+      return ProposedLink(top, explanation, evidence)
+  if top_score &gt;= review_threshold:
+      return ReviewQueue(ranked_candidates)
+  return Unmatched</code></pre>
+</section>
+<section id="44-质量与验收" class="level3">
+<h3>4.4 质量与验收</h3>
+<ul>
+<li>按对象类型/来源/语言/市场分层的 precision、recall、校准误差；</li>
+<li>自动合并优先满足经批准的高 precision 门；</li>
+<li>代码复用、公司改名、并购拆分、同名实体、跨市场同代码黄金集；</li>
+<li>消融测试验证图特征没有由泄漏标签产生虚高；</li>
+<li>合并对订单、持仓、风险和报告的影响分析；</li>
+<li>权限受限节点不会出现在候选、特征解释或计数中。</li>
+</ul>
+</section>
+</section>
+<section id="5-图算法目录" class="level2">
+<h2>5. 图算法目录</h2>
+<section id="51-邻域与路径" class="level3">
+<h3>5.1 邻域与路径</h3>
+<p>基础操作：</p>
+<ul>
+<li>(k)-hop 邻域；</li>
+<li>有类型、方向和时间限制的最短/低成本路径；</li>
+<li>共同邻居、Jaccard/Adamic-Adar 等候选关系；</li>
+<li>基于规则的风险路径；</li>
+<li>时间切片连通性。</li>
+</ul>
+<p>路径成本可定义：</p>
+<p>[ cost(path)= \sum_{e\in path} \left( w_t typeCost_e+ w_q qualityPenalty_e+ w_a agePenalty_e \right) ]</p>
+<p>只返回白名单关系、最大深度、节点预算和质量阈值内的路径。最短路径不等于最可信或因果路径，结果必须显示每条边的语义和证据。</p>
+</section>
+<section id="52-中心性" class="level3">
+<h3>5.2 中心性</h3>
+<p>可选：</p>
+<ul>
+<li>degree/weighted degree：直接关联规模；</li>
+<li>betweenness：最短路径桥接；</li>
+<li>PageRank：迭代影响；</li>
+<li>eigenvector：与高重要节点连接；</li>
+<li>temporal centrality：时间窗内的动态重要性。</li>
+</ul>
+<p>PageRank 基线：</p>
+<p>[ PR(v)=\frac{1-d}{N} +d\sum_{u\rightarrow v} \frac{w_{uv}}{\sum_z w_{uz}}PR(u) ]</p>
+<p>边权必须有业务含义且归一化。悬挂节点、孤立节点、多关系权重和收敛容差进入版本。中心性是网络结构指标，不等于信用、风险、重要性或违法概率。</p>
+</section>
+<section id="53-社区与聚类" class="level3">
+<h3>5.3 社区与聚类</h3>
+<p>Louvain/Leiden 等可用于发现关系密集群组；运行必须固定：</p>
+<ul>
+<li>图快照、关系白名单和边权；</li>
+<li>resolution、随机种子和实现版本；</li>
+<li>最小社区、稳定性和多次运行一致性；</li>
+<li>已知行业/集团标签只用于评估，不在无声明时作为训练泄漏。</li>
+</ul>
+<p>社区结果为 <code>GraphFinding</code> 候选，需要业务解释与证据，不自动创建 Party 集团或风险名单。</p>
+</section>
+<section id="54-风险路径与传播" class="level3">
+<h3>5.4 风险路径与传播</h3>
+<p>规则型传播优先：</p>
+<pre class="text"><code>propagate(seed_event):
+  frontier = [(seed_object, 1.0, [])]
+  while frontier and budget_not_exceeded:
+    node, score, path = pop(frontier)
+    for edge in allowed_edges(node, as_of, permission):
+      next_score = score * edge.confidence * type_attenuation(edge.type)
+      if next_score &gt;= threshold and not violates_cycle_policy(path, edge):
+        emit_candidate(edge.target, next_score, path + edge)</code></pre>
+<p>传播参数：</p>
+<ul>
+<li>关系类型、方向、最大 hop；</li>
+<li>时间衰减与有效期；</li>
+<li>边质量/证据置信；</li>
+<li>所有权比例、持仓权重或供应依赖等业务权重；</li>
+<li>环路、重复路径和上限；</li>
+<li>事件类型与影响类型映射。</li>
+</ul>
+<p>多路径合并可采用上限和去相关规则；简单相加会重复计算同一证据。输出是 <code>RiskAlert</code>/<code>ImpactCandidate</code> 提案，不是确定因果判断。</p>
+</section>
+</section>
+<section id="6-证据图" class="level2">
+<h2>6. 证据图</h2>
+<section id="61-模型" class="level3">
+<h3>6.1 模型</h3>
+<pre class="mermaid">flowchart LR
+    S["Source / SourceRecord"] --&gt; D["Document / Media"]
+    D --&gt; F["EvidenceFragment"]
+    F --&gt; C["Claim"]
+    C --&gt; O["Object / Property / Event"]
+    C --&gt; K["支持或反对 Claim"]
+    C --&gt; R["ReviewDecision"]</pre>
+<p><code>Claim</code>：</p>
+<p><code>subject + predicate + object/value + valid time + source + evidence + confidence + review state</code></p>
+<p><code>EvidenceFragment</code> 精确到：</p>
+<ul>
+<li>数据集 snapshot/row/column；</li>
+<li>PDF/文档页、段、字符范围；</li>
+<li>图像 bounding box；</li>
+<li>音视频 start/end time；</li>
+<li>API/message ID 与来源序号。</li>
+</ul>
+</section>
+<section id="62-声明状态" class="level3">
+<h3>6.2 声明状态</h3>
+<p><code>Candidate → NeedsReview → Confirmed | Rejected | Conflicting | Unsupported → Obsolete</code></p>
+<ul>
+<li><code>Confirmed</code> 仅表示在指定口径和时点经复核；</li>
+<li>更正/撤回生成新状态与关系，不删除旧证据；</li>
+<li><code>supports</code>、<code>refutes</code>、<code>qualifies</code>、<code>supersedes</code> 分开；</li>
+<li>同一 EvidenceFragment 可支持多个 Claim，但每个绑定具体定位；</li>
+<li>模型生成摘要不是原始证据。</li>
+</ul>
+</section>
+<section id="63-证据排序" class="level3">
+<h3>6.3 证据排序</h3>
+<p>候选排序可组合：</p>
+<p>[ score= w_a authority+ w_r relevance+ w_t temporalFit+ w_q quality+ w_c citationPrecision ]</p>
+<p>来源权威等级、时效与相关性分开呈现。多个相互转载的来源不能当作独立佐证；通过 <code>derivedFrom</code>/内容指纹识别来源依赖。</p>
+<p>置信合并不得假设来源独立。高风险事实优先使用规则：权威源、时间有效、多源一致、人工裁决；统计分数只是排队辅助。</p>
+</section>
+<section id="64-冲突" class="level3">
+<h3>6.4 冲突</h3>
+<p>冲突检测比较：</p>
+<ul>
+<li>同 subject/predicate/time 的互斥值；</li>
+<li>同文档后续更正；</li>
+<li>数值单位/币种/报告期不一致；</li>
+<li>来源发布时间与有效时间；</li>
+<li>Claim 的否定或限定关系。</li>
+</ul>
+<p>输出 <code>ConflictingClaimSet</code>、候选值、来源、差异和 <code>ResolutionPolicy</code>；模型不能静默选择更“像答案”的值。</p>
+</section>
+</section>
+<section id="7-文档与多媒体抽取" class="level2">
+<h2>7. 文档与多媒体抽取</h2>
+<section id="71-接入" class="level3">
+<h3>7.1 接入</h3>
+<p><code>Document</code>/<code>MediaItem</code> 保存：</p>
+<ul>
+<li>原件的受控 <code>MediaReference</code>，不把二进制放入对象 JSON；</li>
+<li>MIME、大小、hash、版本、语言、来源和许可证；</li>
+<li>source/publish/ingest/revision time；</li>
+<li>安全分类、保留和用途；</li>
+<li>解析器/OCR/ASR 可用性。</li>
+</ul>
+<p>接入先进行病毒、宏、压缩炸弹、MIME 欺骗、恶意 PDF、外部链接和资源限制检查。不可信文档在沙箱中处理。</p>
+</section>
+<section id="72-解析流水线" class="level3">
+<h3>7.2 解析流水线</h3>
+<pre class="mermaid">flowchart TB
+    A["受控原件"] --&gt; B["类型识别与安全扫描"]
+    B --&gt; C["解析 / OCR / ASR"]
+    C --&gt; D["版面、表格、段落、时间片"]
+    D --&gt; E["结构化候选抽取"]
+    E --&gt; F["实体链接与单位归一"]
+    F --&gt; G["证据/矛盾校验"]
+    G --&gt; H["人工复核与发布"]</pre>
+<p>步骤：</p>
+<ol type="1">
+<li><strong>解析</strong>：原生文本优先；扫描件 OCR；音视频 ASR 并保留时间片；</li>
+<li><strong>版面</strong>：标题、段落、脚注、表格单元、页码、阅读顺序和图片框；</li>
+<li><strong>切片</strong>：按语义/版面边界，保留父文档和重叠范围，不仅按 token 等长切；</li>
+<li><strong>抽取</strong>：用 Schema 约束实体、事件、指标和 Claim candidate；</li>
+<li><strong>归一</strong>：日期、币种、单位、负号、百分比、报告期和范围；</li>
+<li><strong>链接</strong>：产生 entity candidates，不自动合并；</li>
+<li><strong>验证</strong>：证据跨度、数值复算、跨页表头、否定词、冲突和引用；</li>
+<li><strong>复核</strong>：按风险/置信分级队列；</li>
+<li><strong>发布</strong>：只发布通过门的对象/Claim，保留模型失败和原件引用。</li>
+</ol>
+</section>
+<section id="73-表格与数值" class="level3">
+<h3>7.3 表格与数值</h3>
+<ul>
+<li>表头层级、单位、币种和脚注绑定到单元格；</li>
+<li>括号负数、千/万/亿、百分比和小数点本地化；</li>
+<li>合并单元格、跨页表、重复页眉和空白含义；</li>
+<li>公式值与显示值分开；</li>
+<li>原文值、规范值和转换公式共同保存；</li>
+<li>关键财务数值用规则/第二解析器交叉验证；</li>
+<li>总计与分项守恒、同比/环比可复算时执行检查。</li>
+</ul>
+</section>
+<section id="74-图像音频与视频" class="level3">
+<h3>7.4 图像、音频与视频</h3>
+<ul>
+<li>OCR fragment 保存页/帧、bounding box 和文字置信；</li>
+<li>ASR fragment 保存开始/结束、说话人候选和置信；</li>
+<li>视频关键帧与对应音频时间轴对齐；</li>
+<li>人脸/声纹属于高敏能力，不作为默认实体链接方法；</li>
+<li>无法证明人物身份时只建立候选；</li>
+<li>画面内图表数值抽取需图表专用评测和人工复核；</li>
+<li>所有派生缩略图/转码继承原件权限、许可和保留策略。</li>
+</ul>
+</section>
+<section id="75-提示注入" class="level3">
+<h3>7.5 提示注入</h3>
+<p>文档内容永远视为数据，不是系统指令：</p>
+<ul>
+<li>删除/标记隐藏文本、脚本和外部调用提示；</li>
+<li>模型系统指令明确忽略文档内工具/权限请求；</li>
+<li>工具调用只通过 allowlist、参数 Schema 和 Policy；</li>
+<li>检索片段不能改变主体、purpose 或 as-of；</li>
+<li>用含恶意指令、编码混淆、二维码和跨文档注入的语料回归。</li>
+</ul>
+</section>
+</section>
+<section id="8-权限感知-graphrag" class="level2">
+<h2>8. 权限感知 GraphRAG</h2>
+<section id="81-查询流程" class="level3">
+<h3>8.1 查询流程</h3>
+<pre class="mermaid">flowchart TB
+    Q["问题 + 主体 + 用途 + as-of"] --&gt; I["意图、对象与指标解析"]
+    I --&gt; P["策略与属性裁剪"]
+    P --&gt; H["关键词 / 向量候选"]
+    P --&gt; G["限定类型的图扩展"]
+    H --&gt; R["混合重排"]
+    G --&gt; R
+    R --&gt; T["时间、来源、冲突和证据校验"]
+    T --&gt; C["预算化上下文 + 精确引用"]
+    C --&gt; L["结构化回答 / 拒答 / 提案"]
+    L --&gt; V["引用支持、数值、策略与输出校验"]</pre>
+</section>
+<section id="82-意图与查询计划" class="level3">
+<h3>8.2 意图与查询计划</h3>
+<p>计划至少包含：</p>
+<ul>
+<li>目标 ObjectType/MetricType；</li>
+<li>valid/system time；</li>
+<li>关键词、结构化过滤、向量字段；</li>
+<li>允许扩展的 LinkType、方向、hop 和节点预算；</li>
+<li>来源等级、语言、许可和新鲜度；</li>
+<li>预期输出 Schema；</li>
+<li>是否允许 Action proposal。</li>
+</ul>
+<p>涉及“当前”“最新”时要解析为明确时点并显示数据更新时间。若问题时点不明确且会改变答案，要求用户确认或返回分时点结果。</p>
+</section>
+<section id="83-混合候选" class="level3">
+<h3>8.3 混合候选</h3>
+<p>候选来自：</p>
+<ul>
+<li>结构化对象/指标查询；</li>
+<li>BM25/全文；</li>
+<li>向量语义；</li>
+<li>图邻域；</li>
+<li>精确代码/标识符；</li>
+<li>权威来源优先队列。</li>
+</ul>
+<p>可用 reciprocal rank fusion：</p>
+<p>[ RRF(d)=\sum_m\frac{w_m}{k+rank_m(d)} ]</p>
+<p>随后用 cross-encoder/规则重排，但加入：</p>
+<ul>
+<li>时间匹配；</li>
+<li>来源权威与许可；</li>
+<li>证据定位可用；</li>
+<li>多样性与去重；</li>
+<li>冲突保留；</li>
+<li>权限标签。</li>
+</ul>
+<p>任何学习排序模型需评测对新来源、语言和长尾对象的偏差。</p>
+</section>
+<section id="84-图扩展" class="level3">
+<h3>8.4 图扩展</h3>
+<ul>
+<li>从已授权 canonical objects 出发；</li>
+<li>LinkType 白名单和方向固定；</li>
+<li>默认 1–2 hop，超出需用例批准；</li>
+<li>节点/边/时间/Token 多重预算；</li>
+<li>环路和重复路径去重；</li>
+<li>每条路径保存关系语义、有效期和证据；</li>
+<li>不能将“共同出现”当作所有权、因果或关联交易。</li>
+</ul>
+</section>
+<section id="85-上下文组装" class="level3">
+<h3>8.5 上下文组装</h3>
+<p>上下文单元：</p>
+<pre class="text"><code>ContextItem {
+  object_ids, claim_ids, fragment_id,
+  source_id, source_time, publish_time,
+  valid_interval, system_interval,
+  content, classification, license,
+  retrieval_scores, quality_flags
+}</code></pre>
+<p>按 Claim/证据而非孤立文本拼接；长表提供查询结果和来源行，不把整张表塞入 Prompt。冲突证据并列，缺少高权威来源时明确说明。</p>
+</section>
+<section id="86-生成与验证" class="level3">
+<h3>8.6 生成与验证</h3>
+<p>输出必须符合 JSON/对象 Schema，包括：</p>
+<ul>
+<li><code>answer</code>；</li>
+<li><code>claims[]</code> 与 <code>citations[]</code>；</li>
+<li><code>as_of</code>；</li>
+<li><code>assumptions</code>；</li>
+<li><code>uncertainties/conflicts</code>；</li>
+<li><code>not_found</code>；</li>
+<li><code>action_proposal?</code>。</li>
+</ul>
+<p>验证器：</p>
+<ul>
+<li>每个可验证声明至少有 citation；</li>
+<li>citation fragment 确实包含支持内容；</li>
+<li>对数值重新查询/计算并检查单位；</li>
+<li>不出现不可见对象 ID、属性或计数；</li>
+<li>不把候选 Claim 表述为已确认；</li>
+<li>无证据/冲突无法裁决时拒答或限定；</li>
+<li>Action 参数通过 Schema/Policy，且高风险只创建提案。</li>
+</ul>
+</section>
+</section>
+<section id="9-llm-与-agent-使用边界" class="level2">
+<h2>9. LLM 与 Agent 使用边界</h2>
+<section id="91-允许" class="level3">
+<h3>9.1 允许</h3>
+<ul>
+<li>公告、财报、新闻、研报的实体/事件/Claim 候选；</li>
+<li>证据型对象问答；</li>
+<li>风险告警聚合与处置提案；</li>
+<li>研究/因子质量摘要；</li>
+<li>报告草稿和引用检查；</li>
+<li>数据、本体和运维诊断辅助；</li>
+<li>只读函数调用和受控场景计算。</li>
+</ul>
+</section>
+<section id="92-禁止默认开放" class="level3">
+<h3>9.2 禁止默认开放</h3>
+<ul>
+<li>自主提交实盘订单或改变目标持仓；</li>
+<li>解除/绕过风险和合规限制；</li>
+<li>直接修改生产身份、权限、本体或数据真源；</li>
+<li>无复核发布法定披露、净值或合规结论；</li>
+<li>无证据创建金融事实；</li>
+<li>把用户提示或文档内容提升为系统权限。</li>
+</ul>
+</section>
+<section id="93-agent-运行" class="level3">
+<h3>9.3 Agent 运行</h3>
+<pre class="text"><code>agent_run(request):
+  bind(subject, purpose, environment, as_of)
+  plan = constrained_planner(request, allowed_tools)
+  for step in range(max_steps):
+      if budget_exceeded: return EscalateOrPartial
+      call = validate_tool_call(plan.next, schema, policy)
+      receipt = execute_read_or_scenario(call)
+      append_immutable_tool_call(receipt)
+      if call.proposes_side_effect:
+          return ActionProposal(receipt, required_approvals)
+  return validate_and_cite(final_answer)</code></pre>
+<p>复杂长流程由 Temporal/领域状态机持久化；Agent 是可替换的决策/提案 Activity，不能作为业务工作流真源。</p>
+</section>
+</section>
+<section id="10-评测体系" class="level2">
+<h2>10. 评测体系</h2>
+<section id="101-数据集" class="level3">
+<h3>10.1 数据集</h3>
+<p>评测集按以下维度分层：</p>
+<ul>
+<li>角色、权限、purpose 和环境；</li>
+<li>市场、资产、行业、语言和文档类型；</li>
+<li>历史时点、修订、冲突和撤回；</li>
+<li>常见、长尾和零样本对象；</li>
+<li>图深度、关系类型和来源等级；</li>
+<li>正常、恶意注入、越权、空证据和工具失败；</li>
+<li>高风险数值、动作和合规边界。</li>
+</ul>
+<p>每个样例固定数据/本体/索引快照、预期证据、允许答案范围和拒答条件。生产反馈不能未经去敏、授权和标签复核直接进入训练集。</p>
+</section>
+<section id="102-实体解析" class="level3">
+<h3>10.2 实体解析</h3>
+<ul>
+<li>pair precision/recall/F1；</li>
+<li>cluster precision/recall；</li>
+<li>自动链接 precision；</li>
+<li>未匹配率、人工复核率；</li>
+<li>Expected Calibration Error；</li>
+<li>各来源/市场/语言差异；</li>
+<li>错误合并下游影响。</li>
+</ul>
+</section>
+<section id="103-文档抽取" class="level3">
+<h3>10.3 文档抽取</h3>
+<ul>
+<li>OCR character/word error rate；</li>
+<li>版面/表格结构准确率；</li>
+<li>实体、关系、事件 precision/recall/F1；</li>
+<li>数值、单位、币种、日期准确率；</li>
+<li>evidence span IoU/精确匹配；</li>
+<li>Claim polarity、否定和修订识别；</li>
+<li>跨页表、脚注、扫描件和音视频时间片覆盖。</li>
+</ul>
+<p>关键金融数值以字段级 precision 门为主，不能用总体 token 分数掩盖。</p>
+</section>
+<section id="104-检索与图" class="level3">
+<h3>10.4 检索与图</h3>
+<ul>
+<li>Recall@k、MRR、nDCG；</li>
+<li>权威来源覆盖率；</li>
+<li>时间正确率；</li>
+<li>冲突保留率；</li>
+<li>路径有效/可解释率；</li>
+<li>引用定位准确率；</li>
+<li>权限泄漏率（目标为零）；</li>
+<li>P50/P95/P99 与候选规模/图预算。</li>
+</ul>
+</section>
+<section id="105-生成" class="level3">
+<h3>10.5 生成</h3>
+<ul>
+<li>factual support rate；</li>
+<li>citation completeness/precision；</li>
+<li>数值/单位一致率；</li>
+<li>structured output pass rate；</li>
+<li>正确拒答率与过度拒答率；</li>
+<li>冲突/不确定性披露；</li>
+<li>跨轮/改写稳定性；</li>
+<li>人工修正率。</li>
+</ul>
+<p>“答案看起来合理”不是验收指标。事实支持由证据和独立校验判断，不用同一生成模型自评作为唯一裁判。</p>
+</section>
+<section id="106-工具与-agent" class="level3">
+<h3>10.6 工具与 Agent</h3>
+<ul>
+<li>任务成功率；</li>
+<li>工具选择和参数正确率；</li>
+<li>未授权工具调用率；</li>
+<li>重复副作用率（目标为零）；</li>
+<li>每任务步骤、Token、延迟和成本；</li>
+<li>人工接管率及接管时点；</li>
+<li>Action proposal 的接受/拒绝/修改率；</li>
+<li>策略、超时、依赖失败和补偿正确性。</li>
+</ul>
+</section>
+<section id="107-在线监控" class="level3">
+<h3>10.7 在线监控</h3>
+<ul>
+<li>输入/输出分布、来源和语言漂移；</li>
+<li>检索零结果、低证据和冲突率；</li>
+<li>模型/Prompt/工具/本体版本分层质量；</li>
+<li>引用点击、用户纠正和撤回；</li>
+<li>权限拒绝、可疑查询和注入；</li>
+<li>时延、Token、GPU/CPU、成本和限额；</li>
+<li>模型供应商/端点失败与回退；</li>
+<li>高风险提案和人工审批结果。</li>
+</ul>
+</section>
+</section>
+<section id="11-质量门失败与降级" class="level2">
+<h2>11. 质量门、失败与降级</h2>
+<section id="111-发布门" class="level3">
+<h3>11.1 发布门</h3>
+<table>
+<thead>
+<tr class="header">
+<th>能力</th>
+<th>阻断条件</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>图投影</td>
+<td>与权威对象/边数量、版本或权限标签不一致</td>
+</tr>
+<tr class="even">
+<td>实体链接</td>
+<td>自动阈值 precision 未达标或确定性 ID 冲突</td>
+</tr>
+<tr class="odd">
+<td>文档抽取</td>
+<td>原件 hash/定位缺失，关键字段准确率未达标</td>
+</tr>
+<tr class="even">
+<td>GraphRAG</td>
+<td>权限泄漏非零、时间错误、引用支持率低于阈值</td>
+</tr>
+<tr class="odd">
+<td>Action proposal</td>
+<td>参数/策略/证据/审批链不完整</td>
+</tr>
+<tr class="even">
+<td>模型升级</td>
+<td>关键分层回归、成本或时延超预算且无批准</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="112-失败语义" class="level3">
+<h3>11.2 失败语义</h3>
+<ul>
+<li>图/搜索/向量投影落后：显示 snapshot age；高风险查询切回权威查询或阻断；</li>
+<li>向量服务不可用：降级全文/结构化搜索并标记；</li>
+<li>图服务不可用：关闭关系扩展，不伪造路径；</li>
+<li>OCR/解析失败：保留原件和失败原因，进入人工队列；</li>
+<li>citation verifier 失败：删除未支持声明或拒答；</li>
+<li>LLM 超时/限额：返回已验证的结构化事实或可重试任务；</li>
+<li>模型供应商切换：只有兼容、评测通过的版本可自动回退；</li>
+<li>权限服务不可用：受限数据 fail-closed；</li>
+<li>外部网页/来源变化：固定抓取版本、hash 和时间，不静默替换证据；</li>
+<li>工具外部状态未知：升级，不重放副作用。</li>
+</ul>
+</section>
+<section id="113-边界" class="level3">
+<h3>11.3 边界</h3>
+<ul>
+<li>同名实体且证据不足：保持候选；</li>
+<li>间接关系：明确 hop 与路径，不写成直接关系；</li>
+<li>相关不等于因果；</li>
+<li>来源转载：去重来源家族；</li>
+<li>文档修订：新 Claim 状态，不覆盖旧回答审计；</li>
+<li>权限裁剪后证据不足：拒答而非猜测；</li>
+<li>模型知道但检索未提供的事实：不作为有证据答案；</li>
+<li>数值有多个单位/口径：要求确认或并列；</li>
+<li>图算法在小图/断裂图不稳定：显示覆盖和置信；</li>
+<li>语言/扫描质量超评测范围：降级人工。</li>
+</ul>
+</section>
+</section>
+<section id="12-输出对象与-action" class="level2">
+<h2>12. 输出对象与 Action</h2>
+<table>
+<thead>
+<tr class="header">
+<th>能力</th>
+<th>输出对象</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>实体解析</td>
+<td><code>LinkEntityCandidate</code>、<code>PartyAlias</code> / <code>ExternalIdentifier</code> proposal</td>
+<td><code>MergeEntity</code> / <code>CorrectInstrument</code>，需 steward</td>
+</tr>
+<tr class="even">
+<td>图发现</td>
+<td><code>GraphFinding</code>、<code>ImpactCandidate</code></td>
+<td><code>CreateRiskCase</code> / <code>AddWatchlistEntry</code> 提案</td>
+</tr>
+<tr class="odd">
+<td>文档抽取</td>
+<td><code>ExtractionRun</code>、<code>EvidenceFragment</code>、<code>Claim</code> candidate</td>
+<td><code>ConfirmClaim</code> / <code>RejectClaim</code></td>
+</tr>
+<tr class="even">
+<td>GraphRAG</td>
+<td><code>AgentRun</code>、<code>Citation</code>、结构化 answer artifact</td>
+<td>无副作用或 <code>CreateActionProposal</code></td>
+</tr>
+<tr class="odd">
+<td>风险解释</td>
+<td><code>RiskExplanation</code>、证据包</td>
+<td><code>ProposeMitigation</code></td>
+</tr>
+<tr class="even">
+<td>报告草稿</td>
+<td><code>ReportArtifact</code> draft</td>
+<td><code>PublishReport</code>，需作者/合规复核</td>
+</tr>
+</tbody>
+</table>
+<p>工具调用记录 <code>AgentRun → ToolCall → Function/Action</code>，包含参数摘要、版本、策略判定、结果和成本。</p>
+</section>
+<section id="13-版本与端到端血缘" class="level2">
+<h2>13. 版本与端到端血缘</h2>
+<p>每次结果保存：</p>
+<ul>
+<li>ontology release、对象/边 snapshot、权限策略版本；</li>
+<li>文档原件 hash、解析/OCR/ASR 版本；</li>
+<li>embedding 模型、chunker、索引和向量归一版本；</li>
+<li>搜索分析器、同义词、ranking/RRF/cross-encoder 版本；</li>
+<li>图投影、算法、参数、种子和图快照；</li>
+<li>LLM、adapter、量化、Prompt、输出 Schema；</li>
+<li>工具注册表与每个 Function/Action 版本；</li>
+<li>评测集、守卫和 citation verifier 版本；</li>
+<li>主体、purpose、as-of、检索候选 ID 和权限裁剪摘要；</li>
+<li>输出、证据、人工复核、反馈和后续 Action。</li>
+</ul>
+<p>血缘：</p>
+<p><code>Original Media/Data → Parser/OCR → Fragment → Claim Candidate → Entity Link → Ontology Object/Link → Retrieval/Graph Path → LLM Claim/Citation → Human Decision/Action</code></p>
+</section>
+<section id="14-性能与容量" class="level2">
+<h2>14. 性能与容量</h2>
+<ul>
+<li>图查询强制 max hops、max nodes/edges、timeout 和 cost estimate；</li>
+<li>高复用关系按 ontology snapshot 预物化，实时变化使用增量投影；</li>
+<li>搜索按 tenant/classification/time 分区或过滤，避免应用层全量裁权；</li>
+<li>embedding 异步批处理，内容 hash 去重；模型升级双索引迁移；</li>
+<li>文档解析按页/媒体分片，带 CPU/内存/时长限制和隔离队列；</li>
+<li>GraphRAG 分配检索、图、重排、LLM 与验证各阶段时延预算；</li>
+<li>上下文按证据价值和 Token 预算裁剪，不能以截断丢失引用；</li>
+<li>模型调用有并发、Token、费用和地域配额；</li>
+<li>缓存包含主体授权、purpose、as-of 和完整版本向量；</li>
+<li>压测覆盖高连接节点、长文档、跨页表、多语言、批量问答、权限变化和索引重建。</li>
+</ul>
+<p>服务目标按用例分层：对象/混合检索通常秒级；大图分析、长文档抽取和批量评测为异步作业。不得让在线交易硬风控同步依赖 LLM、向量或大图遍历。</p>
+</section>
+<section id="15-验收清单" class="level2">
+<h2>15. 验收清单</h2>
+<ol type="1">
+<li>图、搜索和向量投影可由指定权威快照重建，并通过对象/边/权限一致性校验；</li>
+<li>历史 as-of 查询不会看到未来关系、修订或当前权限外对象；</li>
+<li>实体解析在同名、改名、代码复用、并购拆分和多语言集上达到分层阈值；</li>
+<li>centrality/community/path 结果固定快照可复现，并显示关系、时间、权重和限制；</li>
+<li>风险传播在环路、多路径和低质量边下不重复放大；</li>
+<li>Claim 能精确定位数据行/文档字符/图片框/音视频时间片；</li>
+<li>表格的单位、币种、负号、脚注和跨页结构通过黄金样本；</li>
+<li>恶意文档指令、隐藏文本、越权工具和提示注入被阻断；</li>
+<li>GraphRAG 的 Recall@k、时间正确、冲突保留、引用支持和拒答达到阈值；</li>
+<li>权限负向集中的对象、属性、边、证据、计数与缓存泄漏率为零；</li>
+<li>数值回答由独立查询/计算验证，候选 Claim 不冒充确认事实；</li>
+<li>模型/Prompt/embedding/本体/工具任一变更触发对应回归；</li>
+<li>Agent 达到最大步数、费用或超时时可安全停止，且不重复副作用；</li>
+<li>所有高风险输出仅形成 Action proposal，审批和审计链完整；</li>
+<li>峰值 P95/P99、吞吐、成本、索引延迟、降级和恢复达到批准 SLO；</li>
+<li>独立验证、局限、漂移监控、回退和复审周期已就绪；</li>
+<li>用户界面明确区分来源事实、模型候选、人工确认和生成摘要；</li>
+<li>任何金融推断均披露适用范围，不提供收益保证。</li>
+</ol>
+</section>
+</section>
+
+        </article>
+        <footer class="page-meta">
+          <span>基线 1.0 · 2026-07-27 · Markdown 与 HTML 同源</span>
+          <span><a href="../../../ontology/financial-ontology.yaml">本体 YAML</a> · <a href="../../../contracts/ontology-api.openapi.yaml">OpenAPI</a> · <a href="../../../contracts/events.asyncapi.yaml">AsyncAPI</a></span>
+        </footer>
+      </div>
+    </main>
+  </div>
+  <script src="../../assets/search-index.js"></script>
+  <script src="../../assets/mermaid-11.16.0.min.js"></script>
+  <script src="../../assets/app.js"></script>
+</body>
+</html>

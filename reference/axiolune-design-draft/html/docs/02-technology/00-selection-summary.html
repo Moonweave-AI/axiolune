@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="金融本体驱动平台总体设计、技术选型、模块、本体、算法与交付规范">
+  <title>技术选型总表 · 金融本体驱动平台</title>
+  <script>
+    (function() {
+      var saved = localStorage.getItem("finance-design-theme");
+      if (saved) document.documentElement.dataset.theme = saved;
+    }());
+    window.SITE_ROOT = "../../";
+    window.RAW_ROOT = "../../../";
+  </script>
+  <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <header class="topbar">
+    <button class="icon-button menu-button" type="button" data-menu-toggle aria-label="打开文档目录" aria-expanded="false">☰</button>
+    <a class="brand" href="../../index.html">
+      <span class="brand-mark" aria-hidden="true">FO</span>
+      <span class="brand-text">金融本体驱动平台设计</span>
+    </a>
+    <span class="topbar-spacer"></span>
+    <button class="icon-button" type="button" data-theme-toggle aria-label="切换主题">☾</button>
+  </header>
+  <div class="layout">
+    <aside class="sidebar" aria-label="文档目录">
+      <div class="search-wrap">
+        <input class="search-input" type="search" data-search placeholder="搜索全部文档…" aria-label="搜索全部文档">
+        <p class="search-hint">按 Ctrl/⌘ + K 聚焦 · Esc 清除</p>
+        <div class="search-results" data-search-results aria-live="polite"></div>
+      </div>
+      <nav class="nav-section" aria-label="首页">
+<h2 class="nav-section-title">首页</h2>
+<a class="nav-link" href="../../index.html">金融本体驱动平台：总体设计与实施规范</a>
+</nav>
+<nav class="nav-section" aria-label="交付说明">
+<h2 class="nav-section-title">交付说明</h2>
+<a class="nav-link" href="../../PACKAGE-SUMMARY.html">交付包清单与验证记录</a>
+</nav>
+<nav class="nav-section" aria-label="总览与追踪">
+<h2 class="nav-section-title">总览与追踪</h2>
+<a class="nav-link" href="../00-overview/00-executive-summary.html">执行摘要</a>
+<a class="nav-link" href="../00-overview/01-scope-assumptions.html">设计范围、假设与边界</a>
+<a class="nav-link" href="../00-overview/02-design-principles.html">核心设计原则与关键决策</a>
+<a class="nav-link" href="../00-overview/03-requirements-traceability.html">需求—模块—本体—证据追踪矩阵</a>
+</nav>
+<nav class="nav-section" aria-label="总体架构">
+<h2 class="nav-section-title">总体架构</h2>
+<a class="nav-link" href="../01-architecture/00-target-architecture.html">目标总体架构</a>
+<a class="nav-link" href="../01-architecture/01-domain-boundaries.html">领域边界与依赖</a>
+<a class="nav-link" href="../01-architecture/02-data-architecture.html">数据与多模态架构</a>
+<a class="nav-link" href="../01-architecture/03-deployment-topology.html">部署拓扑、环境与灾备</a>
+<a class="nav-link" href="../01-architecture/04-nonfunctional-requirements.html">非功能需求与质量属性</a>
+</nav>
+<nav class="nav-section" aria-label="技术选型">
+<h2 class="nav-section-title">技术选型</h2>
+<a class="nav-link is-active" href="00-selection-summary.html" aria-current="page">技术选型总表</a>
+<a class="nav-link" href="01-frontend-design-system.html">前端、视觉与交互设计</a>
+<a class="nav-link" href="02-backend-communication.html">后端、接口与通信</a>
+<a class="nav-link" href="03-databases-storage.html">数据库、搜索、图、向量与媒体存储</a>
+<a class="nav-link" href="04-compute-workflow.html">流批计算、数据编排与业务工作流</a>
+<a class="nav-link" href="05-ai-mlops.html">AI、MLOps、GraphRAG 与 Agent 技术</a>
+<a class="nav-link" href="06-security-devsecops.html">安全、DevSecOps 与可观测性技术</a>
+</nav>
+<nav class="nav-section" aria-label="模块设计">
+<h2 class="nav-section-title">模块设计</h2>
+<a class="nav-link" href="../03-modules/00-module-map.html">业务与平台模块全景</a>
+<a class="nav-link" href="../03-modules/01-workspace-data-intelligence.html">统一工作台、数据与资讯</a>
+<a class="nav-link" href="../03-modules/02-quant-active-research.html">量化研究与主动投研</a>
+<a class="nav-link" href="../03-modules/03-portfolio-execution.html">产品、组合、OMS/IMS 与算法执行</a>
+<a class="nav-link" href="../03-modules/04-risk-compliance.html">风险、合规与核对</a>
+<a class="nav-link" href="../03-modules/05-product-reporting.html">产品、渠道与经营报表</a>
+<a class="nav-link" href="../03-modules/06-ontology-automation-operations.html">本体、自动化、Agent 与平台运维</a>
+</nav>
+<nav class="nav-section" aria-label="本体工程">
+<h2 class="nav-section-title">本体工程</h2>
+<a class="nav-link" href="../04-ontology/00-method-meta-model.html">金融本体方法与元模型</a>
+<a class="nav-link" href="../04-ontology/01-domain-model.html">金融本体逻辑域</a>
+<a class="nav-link" href="../04-ontology/02-object-link-catalog.html">核心对象与链接目录</a>
+<a class="nav-link" href="../04-ontology/03-actions-functions-policies.html">动作、函数、模型、策略与工作流</a>
+<a class="nav-link" href="../04-ontology/04-temporal-provenance-quality.html">时间、来源、证据与质量</a>
+<a class="nav-link" href="../04-ontology/05-security-version-governance.html">本体安全、版本、分支与治理</a>
+<a class="nav-link" href="../04-ontology/06-implementation-mapping.html">本体到数据、API、UI 与运行时的映射</a>
+</nav>
+<nav class="nav-section" aria-label="逻辑域与算法">
+<h2 class="nav-section-title">逻辑域与算法</h2>
+<a class="nav-link" href="../05-algorithms/00-algorithm-framework.html">算法工程总规范</a>
+<a class="nav-link" href="../05-algorithms/01-market-factor-backtest.html">行情、因子与回测算法规范</a>
+<a class="nav-link" href="../05-algorithms/02-execution-tca.html">算法执行与交易成本分析规范</a>
+<a class="nav-link" href="../05-algorithms/03-portfolio-risk.html">组合、净值、风险、流动性与对账算法规范</a>
+<a class="nav-link" href="../05-algorithms/04-graph-ai.html">图算法、证据图、GraphRAG 与文档智能规范</a>
+</nav>
+<nav class="nav-section" aria-label="工程、安全与 SRE">
+<h2 class="nav-section-title">工程、安全与 SRE</h2>
+<a class="nav-link" href="../06-engineering/00-engineering-overview.html">工程实现总纲</a>
+<a class="nav-link" href="../06-engineering/01-api-event-contracts.html">API、事件与分布式一致性契约</a>
+<a class="nav-link" href="../06-engineering/02-security-model.html">安全、权限与审计模型</a>
+<a class="nav-link" href="../06-engineering/03-observability-sre.html">可观测性与 SRE</a>
+<a class="nav-link" href="../06-engineering/04-testing-validation.html">测试、验证与发布质量门</a>
+<a class="nav-link" href="../06-engineering/05-continuity-recovery.html">业务连续性、备份与灾难恢复</a>
+</nav>
+<nav class="nav-section" aria-label="交付与迁移">
+<h2 class="nav-section-title">交付与迁移</h2>
+<a class="nav-link" href="../07-delivery/00-roadmap.html">分期路线图与投资顺序</a>
+<a class="nav-link" href="../07-delivery/01-team-governance.html">团队结构、职责与治理</a>
+<a class="nav-link" href="../07-delivery/02-migration-cutover.html">遗留迁移、双跑与切换</a>
+<a class="nav-link" href="../07-delivery/03-acceptance-risks.html">验收体系与风险登记</a>
+<a class="nav-link" href="../07-delivery/04-decision-register.html">架构决策登记册</a>
+<a class="nav-link" href="../07-delivery/05-open-questions.html">立项前未决问题</a>
+</nav>
+<nav class="nav-section" aria-label="参考与证据">
+<h2 class="nav-section-title">参考与证据</h2>
+<a class="nav-link" href="../08-reference/00-palantir-capability-mapping.html">Palantir 能力体系与本方案映射</a>
+<a class="nav-link" href="../08-reference/01-attachment-audit-summary.html">附件审计摘要</a>
+<a class="nav-link" href="../08-reference/02-source-material-handling.html">源材料处理与证据边界</a>
+<a class="nav-link" href="../08-reference/03-source-register.html">参考资料登记册</a>
+<a class="nav-link" href="../08-reference/04-palantir-document-system-audit.html">Palantir 官方文档体系研究与金融平台本体工程映射</a>
+<a class="nav-link" href="../08-reference/05-glossary.html">术语表</a>
+</nav>
+    </aside>
+    <div class="overlay" aria-hidden="true"></div>
+    <main class="main" id="content">
+      <div class="content-shell">
+        <nav class="breadcrumbs" aria-label="面包屑"><a href="../../index.html">首页</a><span>›</span><span>技术选型</span><span>›</span><span>技术选型总表</span></nav>
+        <article class="article">
+          <section id="技术选型总表" class="level1">
+<h1>技术选型总表</h1>
+<section id="1-选型策略" class="level2">
+<h2>1. 选型策略</h2>
+<p>技术选型遵循五条约束：</p>
+<ol type="1">
+<li>先按负载和业务不变量选型，不按热门程度选型；</li>
+<li>关键交易路径追求确定性与可恢复，分析路径追求吞吐和开放格式；</li>
+<li>尽量使用开放协议和可替代组件，商业产品必须有退出路径；</li>
+<li>首期控制存储、语言和中间件种类，达到明确触发条件再扩展；</li>
+<li>版本在实施启动时以“当前受支持稳定版 + 兼容性测试”冻结，不在长期设计中硬编码易过期的小版本。</li>
+</ol>
+</section>
+<section id="2-推荐基线" class="level2">
+<h2>2. 推荐基线</h2>
+<table>
+<thead>
+<tr class="header">
+<th>能力</th>
+<th>主选</th>
+<th>备选/触发条件</th>
+<th>不建议作为默认</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>前端语言与框架</td>
+<td>TypeScript、React、Vite</td>
+<td>Next.js：确有 SSR/公网门户；Umi：仅用于低风险渐进迁移</td>
+<td>多框架并存、微前端先行</td>
+</tr>
+<tr class="even">
+<td>状态与请求</td>
+<td>TanStack Query、TanStack Router、Zustand</td>
+<td>Redux Toolkit：复杂可回放客户端状态</td>
+<td>把服务端数据全部塞入全局 Store</td>
+</tr>
+<tr class="odd">
+<td>UI 组件</td>
+<td>基于 Ant Design 的自有 Token/组件层</td>
+<td>Radix/Headless：高定制模块</td>
+<td>直接复制默认主题</td>
+</tr>
+<tr class="even">
+<td>数据表格</td>
+<td>AG Grid Enterprise（预算允许）或 TanStack Table + 虚拟化</td>
+<td>Handsontable：电子表格编辑场景</td>
+<td>普通 DOM 表格承载十万行</td>
+</tr>
+<tr class="odd">
+<td>图表</td>
+<td>Apache ECharts</td>
+<td>Vega-Lite：声明式分析；Plotly：科研原型</td>
+<td>每个页面引入不同图库</td>
+</tr>
+<tr class="even">
+<td>K 线/逐笔</td>
+<td>Lightweight Charts；复杂交易图表采购合规授权组件</td>
+<td>ECharts 自研：需求有限</td>
+<td>未授权复制商业 Charting Library</td>
+</tr>
+<tr class="odd">
+<td>图谱/流程/地图</td>
+<td>Cytoscape.js、React Flow、MapLibre GL</td>
+<td>Sigma.js：超大只读图</td>
+<td>用 Canvas 自研全部交互</td>
+</tr>
+<tr class="even">
+<td>核心业务服务</td>
+<td>Java LTS、Spring Boot、Gradle</td>
+<td>Kotlin：团队成熟后；Quarkus：冷启动强需求</td>
+<td>每个服务任选语言</td>
+</tr>
+<tr class="odd">
+<td>研究与 AI 服务</td>
+<td>Python、FastAPI、Pydantic、Polars/PyArrow</td>
+<td>Ray：需要分布式 Python；RAPIDS：GPU 数据处理</td>
+<td>Python 承担低延迟订单核心</td>
+</tr>
+<tr class="even">
+<td>低时延适配器</td>
+<td>Rust 稳定版；已有成熟 C++ 资产可保留</td>
+<td>Java 低延迟调优后达标则不新增语言</td>
+<td>先写 Rust 再找需求</td>
+</tr>
+<tr class="odd">
+<td>外部 API</td>
+<td>REST + OpenAPI</td>
+<td>GraphQL：对象聚合与自助查询</td>
+<td>所有命令都走 GraphQL</td>
+</tr>
+<tr class="even">
+<td>内部 RPC</td>
+<td>gRPC + Protobuf</td>
+<td>HTTP/JSON：低频、跨边界简单服务</td>
+<td>自定义二进制协议</td>
+</tr>
+<tr class="odd">
+<td>事件</td>
+<td>Apache Kafka + Schema Registry</td>
+<td>Redpanda：评估兼容/支持后；Pulsar：多租户跨地域刚需</td>
+<td>Redis Pub/Sub 作为可靠业务总线</td>
+</tr>
+<tr class="even">
+<td>实时推送</td>
+<td>WebSocket；低频通知可用 SSE</td>
+<td>MQTT：边缘设备/专门订阅语义</td>
+<td>浏览器轮询实时订单</td>
+</tr>
+<tr class="odd">
+<td>业务工作流</td>
+<td>Temporal</td>
+<td>Camunda：BPMN/业务建模强刚需</td>
+<td>用 Airflow 跑人工审批</td>
+</tr>
+<tr class="even">
+<td>数据编排</td>
+<td>Airflow 3.x + dbt</td>
+<td>Dagster：团队已具备资产编排经验且通过运维评估</td>
+<td>用 Temporal 跑大数据资产依赖</td>
+</tr>
+<tr class="odd">
+<td>流计算</td>
+<td>Apache Flink</td>
+<td>Kafka Streams：简单单服务聚合</td>
+<td>定时批处理模拟实时风控</td>
+</tr>
+<tr class="even">
+<td>批计算</td>
+<td>Apache Spark、Trino、dbt</td>
+<td>DuckDB：本地/小样本</td>
+<td>每个指标都上 Spark</td>
+</tr>
+<tr class="odd">
+<td>事务数据库</td>
+<td>PostgreSQL 高可用</td>
+<td>分布式 SQL：单库容量/地域写入成为实证瓶颈</td>
+<td>多主写入先行</td>
+</tr>
+<tr class="even">
+<td>湖仓</td>
+<td>S3 兼容存储 + Apache Iceberg</td>
+<td>Delta Lake：已有生态；Hudi：强 upsert 需求</td>
+<td>私有表格式锁定</td>
+</tr>
+<tr class="odd">
+<td>OLAP/时序分析</td>
+<td>ClickHouse</td>
+<td>Apache Druid/Pinot：团队已有专长</td>
+<td>PostgreSQL 承担全部逐笔分析</td>
+</tr>
+<tr class="even">
+<td>搜索</td>
+<td>OpenSearch</td>
+<td>Elasticsearch 商业版：功能/支持明确需要</td>
+<td>数据库 LIKE 代替全文检索</td>
+</tr>
+<tr class="odd">
+<td>向量</td>
+<td>pgvector/OpenSearch 起步</td>
+<td>Milvus：规模、召回、延迟实测触发</td>
+<td>首期同时上三套向量库</td>
+</tr>
+<tr class="even">
+<td>图</td>
+<td>PostgreSQL 保存本体真源；Neo4j Enterprise 或 NebulaGraph 做投影</td>
+<td>JanusGraph：全 OSS 且能承担运维复杂度</td>
+<td>把图数据库内部 Schema 当本体真源</td>
+</tr>
+<tr class="odd">
+<td>缓存</td>
+<td>Valkey</td>
+<td>本地 Caffeine：服务内短缓存</td>
+<td>缓存作为订单/持仓真源</td>
+</tr>
+<tr class="even">
+<td>对象/媒体</td>
+<td>云 S3/OSS/COS/OBS 或 Ceph RGW；统一 S3 接口</td>
+<td>MinIO：许可、支持和路线评估通过后</td>
+<td>DB BLOB 存大媒体</td>
+</tr>
+<tr class="odd">
+<td>数据目录与血缘</td>
+<td>OpenMetadata + OpenLineage 事件</td>
+<td>DataHub：大型组织明确需要可扩展元数据图时</td>
+<td>同时运行两套主目录；与业务本体混成一个图</td>
+</tr>
+<tr class="even">
+<td>数据质量</td>
+<td>Great Expectations/Soda Core + 领域校验</td>
+<td>Deequ：Spark 生态</td>
+<td>只靠人工抽样</td>
+</tr>
+<tr class="odd">
+<td>本体运行层</td>
+<td>自研元模型、解析、动作、策略和 SDK 生成</td>
+<td>采购 Palantir/语义平台：满足预算与主权</td>
+<td>仅部署 RDF 三元组库即宣称完成</td>
+</tr>
+<tr class="even">
+<td>机器学习治理</td>
+<td>MLflow、Feast（确有在线特征）、KServe</td>
+<td>Kubeflow：已有平台团队</td>
+<td>Notebook 文件即生产模型</td>
+</tr>
+<tr class="odd">
+<td>LLM 推理</td>
+<td>统一 Model Gateway；vLLM/TGI 等自托管引擎</td>
+<td>商用模型 API：数据边界允许</td>
+<td>应用直接持有供应商 API Key</td>
+</tr>
+<tr class="even">
+<td>身份</td>
+<td>对接现有企业 IdP；缺失时 Keycloak</td>
+<td>商业 IAM：SLA/合规要求</td>
+<td>自研密码和 MFA</td>
+</tr>
+<tr class="odd">
+<td>授权</td>
+<td>OpenFGA/SpiceDB + OPA</td>
+<td>Cedar：团队/云生态适配</td>
+<td>只用前端菜单权限</td>
+</tr>
+<tr class="even">
+<td>密钥</td>
+<td>Vault + KMS/HSM</td>
+<td>云 Secret Manager</td>
+<td>明文 TOML、CSV、环境镜像</td>
+</tr>
+<tr class="odd">
+<td>容器与发布</td>
+<td>Kubernetes、Argo CD、Helm、OpenTofu</td>
+<td>OpenShift：企业支持/安全基线需要</td>
+<td>手工 SSH + crontab/screen</td>
+</tr>
+<tr class="even">
+<td>制品与供应链</td>
+<td>GitLab/GitHub、Harbor、SBOM、Cosign、Trivy</td>
+<td>商业 SCA/SAST</td>
+<td>未签名镜像直接生产</td>
+</tr>
+<tr class="odd">
+<td>可观测性</td>
+<td>OpenTelemetry、Prometheus/VictoriaMetrics、Grafana、Loki/Tempo</td>
+<td>ClickHouse 日志后端</td>
+<td>各服务私有日志格式</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="3-语言边界" class="level2">
+<h2>3. 语言边界</h2>
+<p>平台最多保留三类生产运行时：</p>
+<ul>
+<li><strong>Java：</strong> 本体、Action、Policy、账户、组合、OMS、RMS、协同和控制面；</li>
+<li><strong>Python：</strong> 数据处理、因子、回测、模型、文档/AI 和离线任务；</li>
+<li><strong>Rust/C++：</strong> 行情或交易适配器中经压测证明需要的低延迟组件。</li>
+</ul>
+<p>TypeScript 主要用于 Web 和生成 SDK。新语言必须通过架构决策记录说明业务收益、运维能力和退出成本。</p>
+</section>
+<section id="4-购买复用与自研" class="level2">
+<h2>4. 购买、复用与自研</h2>
+<section id="41-必须自研或掌握真源" class="level3">
+<h3>4.1 必须自研或掌握真源</h3>
+<ul>
+<li>金融本体元模型及领域类型；</li>
+<li>标识、双时间、证据、质量和权限映射；</li>
+<li>Action/Policy 与领域状态机；</li>
+<li>点时正确的因子、回测、风险和 TCA 规范；</li>
+<li>对外数据和接口契约；</li>
+<li>供应商适配器的规范化层。</li>
+</ul>
+</section>
+<section id="42-适合采购" class="level3">
+<h3>4.2 适合采购</h3>
+<ul>
+<li>交易所/柜台协议与认证连接；</li>
+<li>专业 K 线、Level-2 和大表格组件；</li>
+<li>商业图数据库、IAM、HSM、数据库支持；</li>
+<li>恶意文件检测、DLP、SAST/SCA 和企业监控；</li>
+<li>特定商业行情、财务与一致预期数据。</li>
+</ul>
+</section>
+<section id="43-适合直接使用开源" class="level3">
+<h3>4.3 适合直接使用开源</h3>
+<p>Kafka、Flink、Iceberg、Trino、ClickHouse、PostgreSQL、OpenTelemetry、Prometheus、Grafana、Temporal、OpenMetadata 等基础能力。生产使用仍需明确维护团队、升级策略和商业支持选项。</p>
+</section>
+</section>
+<section id="5-2026-07-调研参考版本" class="level2">
+<h2>5. 2026-07 调研参考版本</h2>
+<p>下列版本用于本设计的兼容性与容量验证起点，不是“自动追新”承诺。项目启动时必须重新核验厂商支持矩阵、依赖兼容性和安全公告，并把实际采用版本写入 ADR 与软件物料清单。</p>
+<table>
+<thead>
+<tr class="header">
+<th>能力</th>
+<th>调研参考基线</th>
+<th>落地策略</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Web</td>
+<td>React 19.2、TypeScript 5.9、Vite 8、Ant Design 6</td>
+<td>TypeScript 6 先在工具包试点；公网门户才考虑 Next.js</td>
+</tr>
+<tr class="even">
+<td>核心后端</td>
+<td>JDK 25 LTS、Spring Boot 4.0.x</td>
+<td>4.1.x 经预生产浸泡后升级；交易核心不跟随短周期版本漂移</td>
+</tr>
+<tr class="odd">
+<td>事件</td>
+<td>Kafka 4.2、Flink 当前稳定版</td>
+<td>以连接器端到端语义、回放和幂等测试决定上线</td>
+</tr>
+<tr class="even">
+<td>数据</td>
+<td>PostgreSQL 18、Iceberg v2、Spark 4.2、Trino 当前稳定版、ClickHouse 当前稳定版</td>
+<td>生产采用受支持补丁版；不把实验性表格式功能纳入首期</td>
+</tr>
+<tr class="odd">
+<td>编排</td>
+<td>Airflow 3.3、Temporal 当前稳定版</td>
+<td>数据 DAG 与业务长事务分别治理</td>
+</tr>
+<tr class="even">
+<td>搜索/向量</td>
+<td>OpenSearch 3、pgvector</td>
+<td>Milvus/Neo4j 仅在容量与查询基准触发后引入</td>
+</tr>
+<tr class="odd">
+<td>平台</td>
+<td>Kubernetes 1.35 起步、containerd 2、Argo CD</td>
+<td>采用 N-1 稳定策略；低抖动链路可用专用节点或裸金属</td>
+</tr>
+<tr class="even">
+<td>AI</td>
+<td>MLflow、KServe、vLLM 0.14</td>
+<td>商用模型与自托管模型统一经过 Model Gateway</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="5-引入新组件的触发门" class="level2">
+<h2>5. 引入新组件的触发门</h2>
+<p>新数据库或中间件需给出：</p>
+<ul>
+<li>现有方案无法达到的量化指标；</li>
+<li>预计三年数据量和并发；</li>
+<li>数据真源、同步和恢复方案；</li>
+<li>安全、备份、监控和升级能力；</li>
+<li>许可、支持和退出成本；</li>
+<li>负载测试与故障演练结果。</li>
+</ul>
+<p>没有这些证据时，优先扩展现有组件而不是增加技术种类。</p>
+</section>
+</section>
+
+        </article>
+        <footer class="page-meta">
+          <span>基线 1.0 · 2026-07-27 · Markdown 与 HTML 同源</span>
+          <span><a href="../../../ontology/financial-ontology.yaml">本体 YAML</a> · <a href="../../../contracts/ontology-api.openapi.yaml">OpenAPI</a> · <a href="../../../contracts/events.asyncapi.yaml">AsyncAPI</a></span>
+        </footer>
+      </div>
+    </main>
+  </div>
+  <script src="../../assets/search-index.js"></script>
+  <script src="../../assets/mermaid-11.16.0.min.js"></script>
+  <script src="../../assets/app.js"></script>
+</body>
+</html>

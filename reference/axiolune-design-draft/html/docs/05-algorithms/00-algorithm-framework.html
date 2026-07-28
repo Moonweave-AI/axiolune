@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="金融本体驱动平台总体设计、技术选型、模块、本体、算法与交付规范">
+  <title>算法工程总规范 · 金融本体驱动平台</title>
+  <script>
+    (function() {
+      var saved = localStorage.getItem("finance-design-theme");
+      if (saved) document.documentElement.dataset.theme = saved;
+    }());
+    window.SITE_ROOT = "../../";
+    window.RAW_ROOT = "../../../";
+  </script>
+  <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <header class="topbar">
+    <button class="icon-button menu-button" type="button" data-menu-toggle aria-label="打开文档目录" aria-expanded="false">☰</button>
+    <a class="brand" href="../../index.html">
+      <span class="brand-mark" aria-hidden="true">FO</span>
+      <span class="brand-text">金融本体驱动平台设计</span>
+    </a>
+    <span class="topbar-spacer"></span>
+    <button class="icon-button" type="button" data-theme-toggle aria-label="切换主题">☾</button>
+  </header>
+  <div class="layout">
+    <aside class="sidebar" aria-label="文档目录">
+      <div class="search-wrap">
+        <input class="search-input" type="search" data-search placeholder="搜索全部文档…" aria-label="搜索全部文档">
+        <p class="search-hint">按 Ctrl/⌘ + K 聚焦 · Esc 清除</p>
+        <div class="search-results" data-search-results aria-live="polite"></div>
+      </div>
+      <nav class="nav-section" aria-label="首页">
+<h2 class="nav-section-title">首页</h2>
+<a class="nav-link" href="../../index.html">金融本体驱动平台：总体设计与实施规范</a>
+</nav>
+<nav class="nav-section" aria-label="交付说明">
+<h2 class="nav-section-title">交付说明</h2>
+<a class="nav-link" href="../../PACKAGE-SUMMARY.html">交付包清单与验证记录</a>
+</nav>
+<nav class="nav-section" aria-label="总览与追踪">
+<h2 class="nav-section-title">总览与追踪</h2>
+<a class="nav-link" href="../00-overview/00-executive-summary.html">执行摘要</a>
+<a class="nav-link" href="../00-overview/01-scope-assumptions.html">设计范围、假设与边界</a>
+<a class="nav-link" href="../00-overview/02-design-principles.html">核心设计原则与关键决策</a>
+<a class="nav-link" href="../00-overview/03-requirements-traceability.html">需求—模块—本体—证据追踪矩阵</a>
+</nav>
+<nav class="nav-section" aria-label="总体架构">
+<h2 class="nav-section-title">总体架构</h2>
+<a class="nav-link" href="../01-architecture/00-target-architecture.html">目标总体架构</a>
+<a class="nav-link" href="../01-architecture/01-domain-boundaries.html">领域边界与依赖</a>
+<a class="nav-link" href="../01-architecture/02-data-architecture.html">数据与多模态架构</a>
+<a class="nav-link" href="../01-architecture/03-deployment-topology.html">部署拓扑、环境与灾备</a>
+<a class="nav-link" href="../01-architecture/04-nonfunctional-requirements.html">非功能需求与质量属性</a>
+</nav>
+<nav class="nav-section" aria-label="技术选型">
+<h2 class="nav-section-title">技术选型</h2>
+<a class="nav-link" href="../02-technology/00-selection-summary.html">技术选型总表</a>
+<a class="nav-link" href="../02-technology/01-frontend-design-system.html">前端、视觉与交互设计</a>
+<a class="nav-link" href="../02-technology/02-backend-communication.html">后端、接口与通信</a>
+<a class="nav-link" href="../02-technology/03-databases-storage.html">数据库、搜索、图、向量与媒体存储</a>
+<a class="nav-link" href="../02-technology/04-compute-workflow.html">流批计算、数据编排与业务工作流</a>
+<a class="nav-link" href="../02-technology/05-ai-mlops.html">AI、MLOps、GraphRAG 与 Agent 技术</a>
+<a class="nav-link" href="../02-technology/06-security-devsecops.html">安全、DevSecOps 与可观测性技术</a>
+</nav>
+<nav class="nav-section" aria-label="模块设计">
+<h2 class="nav-section-title">模块设计</h2>
+<a class="nav-link" href="../03-modules/00-module-map.html">业务与平台模块全景</a>
+<a class="nav-link" href="../03-modules/01-workspace-data-intelligence.html">统一工作台、数据与资讯</a>
+<a class="nav-link" href="../03-modules/02-quant-active-research.html">量化研究与主动投研</a>
+<a class="nav-link" href="../03-modules/03-portfolio-execution.html">产品、组合、OMS/IMS 与算法执行</a>
+<a class="nav-link" href="../03-modules/04-risk-compliance.html">风险、合规与核对</a>
+<a class="nav-link" href="../03-modules/05-product-reporting.html">产品、渠道与经营报表</a>
+<a class="nav-link" href="../03-modules/06-ontology-automation-operations.html">本体、自动化、Agent 与平台运维</a>
+</nav>
+<nav class="nav-section" aria-label="本体工程">
+<h2 class="nav-section-title">本体工程</h2>
+<a class="nav-link" href="../04-ontology/00-method-meta-model.html">金融本体方法与元模型</a>
+<a class="nav-link" href="../04-ontology/01-domain-model.html">金融本体逻辑域</a>
+<a class="nav-link" href="../04-ontology/02-object-link-catalog.html">核心对象与链接目录</a>
+<a class="nav-link" href="../04-ontology/03-actions-functions-policies.html">动作、函数、模型、策略与工作流</a>
+<a class="nav-link" href="../04-ontology/04-temporal-provenance-quality.html">时间、来源、证据与质量</a>
+<a class="nav-link" href="../04-ontology/05-security-version-governance.html">本体安全、版本、分支与治理</a>
+<a class="nav-link" href="../04-ontology/06-implementation-mapping.html">本体到数据、API、UI 与运行时的映射</a>
+</nav>
+<nav class="nav-section" aria-label="逻辑域与算法">
+<h2 class="nav-section-title">逻辑域与算法</h2>
+<a class="nav-link is-active" href="00-algorithm-framework.html" aria-current="page">算法工程总规范</a>
+<a class="nav-link" href="01-market-factor-backtest.html">行情、因子与回测算法规范</a>
+<a class="nav-link" href="02-execution-tca.html">算法执行与交易成本分析规范</a>
+<a class="nav-link" href="03-portfolio-risk.html">组合、净值、风险、流动性与对账算法规范</a>
+<a class="nav-link" href="04-graph-ai.html">图算法、证据图、GraphRAG 与文档智能规范</a>
+</nav>
+<nav class="nav-section" aria-label="工程、安全与 SRE">
+<h2 class="nav-section-title">工程、安全与 SRE</h2>
+<a class="nav-link" href="../06-engineering/00-engineering-overview.html">工程实现总纲</a>
+<a class="nav-link" href="../06-engineering/01-api-event-contracts.html">API、事件与分布式一致性契约</a>
+<a class="nav-link" href="../06-engineering/02-security-model.html">安全、权限与审计模型</a>
+<a class="nav-link" href="../06-engineering/03-observability-sre.html">可观测性与 SRE</a>
+<a class="nav-link" href="../06-engineering/04-testing-validation.html">测试、验证与发布质量门</a>
+<a class="nav-link" href="../06-engineering/05-continuity-recovery.html">业务连续性、备份与灾难恢复</a>
+</nav>
+<nav class="nav-section" aria-label="交付与迁移">
+<h2 class="nav-section-title">交付与迁移</h2>
+<a class="nav-link" href="../07-delivery/00-roadmap.html">分期路线图与投资顺序</a>
+<a class="nav-link" href="../07-delivery/01-team-governance.html">团队结构、职责与治理</a>
+<a class="nav-link" href="../07-delivery/02-migration-cutover.html">遗留迁移、双跑与切换</a>
+<a class="nav-link" href="../07-delivery/03-acceptance-risks.html">验收体系与风险登记</a>
+<a class="nav-link" href="../07-delivery/04-decision-register.html">架构决策登记册</a>
+<a class="nav-link" href="../07-delivery/05-open-questions.html">立项前未决问题</a>
+</nav>
+<nav class="nav-section" aria-label="参考与证据">
+<h2 class="nav-section-title">参考与证据</h2>
+<a class="nav-link" href="../08-reference/00-palantir-capability-mapping.html">Palantir 能力体系与本方案映射</a>
+<a class="nav-link" href="../08-reference/01-attachment-audit-summary.html">附件审计摘要</a>
+<a class="nav-link" href="../08-reference/02-source-material-handling.html">源材料处理与证据边界</a>
+<a class="nav-link" href="../08-reference/03-source-register.html">参考资料登记册</a>
+<a class="nav-link" href="../08-reference/04-palantir-document-system-audit.html">Palantir 官方文档体系研究与金融平台本体工程映射</a>
+<a class="nav-link" href="../08-reference/05-glossary.html">术语表</a>
+</nav>
+    </aside>
+    <div class="overlay" aria-hidden="true"></div>
+    <main class="main" id="content">
+      <div class="content-shell">
+        <nav class="breadcrumbs" aria-label="面包屑"><a href="../../index.html">首页</a><span>›</span><span>逻辑域与算法</span><span>›</span><span>算法工程总规范</span></nav>
+        <article class="article">
+          <section id="算法工程总规范" class="level1">
+<h1>算法工程总规范</h1>
+<section id="1-目的与边界" class="level2">
+<h2>1. 目的与边界</h2>
+<p>本章定义行情、研究、交易、组合风险和图/AI 算法共同遵循的运行契约。算法不是散落在页面、SQL 或 Notebook 中的计算片段，而是本体中的版本化 <code>FunctionVersion</code> 或 <code>ModelVersion</code>；有副作用的结果只能由 <code>ActionType</code> 承载。</p>
+<p>所有金融模型、因子、预测和交易算法都必须经过独立验证、历史回放、样本外检验、容量与极端场景测试，并持续监控。文档中的公式是工程口径与验证基线，不构成收益承诺、投资建议或可直接上线实盘的充分条件。</p>
+</section>
+<section id="2-统一算法对象" class="level2">
+<h2>2. 统一算法对象</h2>
+<table>
+<thead>
+<tr class="header">
+<th>资源</th>
+<th>职责</th>
+<th>不可缺字段</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>FunctionVersion</code></td>
+<td>确定性或统计计算的稳定接口与实现版本</td>
+<td>API 名、输入/输出类型、时点语义、代码提交、镜像、参数 Schema、owner</td>
+</tr>
+<tr class="even">
+<td><code>ModelVersion</code></td>
+<td>拟合、预测、LLM 或其他模型制品</td>
+<td>训练/评测快照、制品哈希、许可证、风险等级、限制、回退</td>
+</tr>
+<tr class="odd">
+<td><code>MetricType</code></td>
+<td>业务可复用指标口径</td>
+<td>粒度、维度、单位、币种、精度、公式、允许聚合、空值语义</td>
+</tr>
+<tr class="even">
+<td><code>ResearchRun</code></td>
+<td>研究或校准过程</td>
+<td>输入快照、代码/环境、随机种子、参数、日志、质量结果</td>
+</tr>
+<tr class="odd">
+<td><code>DatasetSnapshot</code></td>
+<td>不可变的点时输入</td>
+<td>资产/分区、快照 ID、Schema、校验和、有效/系统时间、权限标签</td>
+</tr>
+<tr class="even">
+<td><code>QualityCheckRun</code></td>
+<td>数据与结果的机器质量证据</td>
+<td>规则版本、范围、阈值、实际值、状态、豁免与到期</td>
+</tr>
+<tr class="odd">
+<td><code>ActionRun</code></td>
+<td>发布、审批、下单或处置等副作用</td>
+<td>actor、用途、环境、策略判定、幂等键、前后版本、外部回执</td>
+</tr>
+</tbody>
+</table>
+<p>稳定身份与运行实例必须分离。例如 <code>FactorDefinition</code> 是长期业务身份，<code>FactorVersion</code> 是可发布定义，<code>FactorObservation</code> 是某时点结果，<code>ResearchRun</code> 是一次具体运行。</p>
+</section>
+<section id="3-标准运行契约" class="level2">
+<h2>3. 标准运行契约</h2>
+<p>每个算法在注册中心必须声明以下内容。</p>
+<section id="31-输入契约" class="level3">
+<h3>3.1 输入契约</h3>
+<ul>
+<li>对象类型、属性、关系和基数；</li>
+<li>数据粒度、单位、币种、价格精度和时区；</li>
+<li><code>event_time</code>、<code>source_time</code>、<code>publish_time</code>、<code>ingest_time</code>、<code>valid_time</code>、<code>system_time</code> 的使用规则；</li>
+<li><code>as_of_valid</code> 与 <code>as_of_system</code>，或经审批的明确默认；</li>
+<li>最低新鲜度、完整率、来源等级和点时可得性；</li>
+<li><code>MissingAtSource</code>、<code>NotApplicable</code>、<code>NotYetAvailable</code>、<code>NotCalculated</code>、<code>CalculationFailed</code>、<code>WithheldByPolicy</code>、<code>UnknownConflict</code>、<code>Redacted</code> 的处理；</li>
+<li>权限、用途、地域、许可证和保留限制；</li>
+<li>规模上限、分区、排序键与幂等键。</li>
+</ul>
+</section>
+<section id="32-计算契约" class="level3">
+<h3>3.2 计算契约</h3>
+<ul>
+<li><code>batch</code>、<code>stream</code>、<code>sync</code> 或 <code>async</code>；</li>
+<li>确定性、随机性、随机种子与数值精度；</li>
+<li>窗口边界、市场日历、迟到容忍、水位线和重算规则；</li>
+<li>参数范围、默认值的来源和校准方式；</li>
+<li>CPU/GPU、内存、扫描字节、时延和成本预算；</li>
+<li>超时、重试、缓存、降级和取消语义；</li>
+<li>是否纯函数；任何外部副作用必须剥离为 Action。</li>
+</ul>
+</section>
+<section id="33-输出契约" class="level3">
+<h3>3.3 输出契约</h3>
+<ul>
+<li>输出对象、属性、指标及其单位、精度和正负号口径；</li>
+<li>置信区间、不确定性、适用范围和限制；</li>
+<li>输入快照、函数/模型版本、参数、运行 ID 与质量状态；</li>
+<li>可见性、敏感级别、来源和下游使用限制；</li>
+<li>空结果、部分结果、失败结果和被策略隐藏结果的区分；</li>
+<li>可触发的 Action 仅为建议还是允许执行。</li>
+</ul>
+</section>
+<section id="34-发布契约" class="level3">
+<h3>3.4 发布契约</h3>
+<p><code>Draft → Reproducible → Reviewed → Approved → Published → Deprecated → Retired</code></p>
+<p>只有 <code>Approved</code> 或 <code>Published</code> 版本可用于生产决策。实盘交易、风险限制、权限修改等高风险动作必须再经过 Action Policy；算法输出本身不等于审批。</p>
+</section>
+</section>
+<section id="4-标准执行流水线" class="level2">
+<h2>4. 标准执行流水线</h2>
+<pre class="mermaid">flowchart TB
+    A["固定输入快照"] --&gt; B["身份解析"]
+    B --&gt; C["双时间与市场日历对齐"]
+    C --&gt; D["输入质量门"]
+    D --&gt; E["版本化计算"]
+    E --&gt; F["结果校验与不确定性"]
+    F --&gt; G["发布对象/指标"]
+    G --&gt; H["Action 提案"]
+    D --&gt; X["隔离/阻断/降级"]
+    F --&gt; X</pre>
+<p>伪代码：</p>
+<pre class="text"><code>run(spec, request):
+  authorize(request.subject, request.purpose, spec.input_scope)
+  snapshots = freeze_inputs(spec.assets, request.as_of_valid, request.as_of_system)
+  resolved = resolve_identities(snapshots, spec.identity_policy)
+  aligned = temporal_join(resolved, spec.clock, spec.calendar, spec.lag_policy)
+  input_quality = evaluate_quality(aligned, spec.input_quality_rules)
+  if input_quality.blocking_failure:
+      return FailedRun(reason, snapshots, input_quality)
+
+  result = execute(
+      implementation=spec.immutable_artifact,
+      data=aligned,
+      parameters=validate(request.parameters, spec.parameter_schema),
+      seed=request.seed
+  )
+  output_quality = validate_result(result, spec.output_rules, spec.reference_set)
+  publish_run_and_lineage(result, snapshots, spec.version, input_quality, output_quality)
+
+  if output_quality.passed:
+      publish_typed_objects(result)
+      return result_or_action_proposal(result)
+  return QuarantinedResult(result, output_quality)</code></pre>
+</section>
+<section id="5-身份解析" class="level2">
+<h2>5. 身份解析</h2>
+<section id="51-业务目标" class="level3">
+<h3>5.1 业务目标</h3>
+<p>把来源代码、历史代码、别名和自由文本稳定映射到 canonical <code>Instrument</code>、<code>Party</code>、<code>FundProduct</code>、<code>TradingAccount</code> 或其他对象，同时保留候选、证据、冲突和有效期，避免因误合并污染持仓、风险和研究结果。</p>
+</section>
+<section id="52-输入与时点" class="level3">
+<h3>5.2 输入与时点</h3>
+<ul>
+<li><code>ExternalIdentifier</code>、<code>InstrumentIdentifier</code>、<code>PartyAlias</code>、来源记录；</li>
+<li>市场、证券类型、币种、法人辖区、交易所、有效期；</li>
+<li>名称、简称、历史名称、地址等标准化特征；</li>
+<li>已确认的 <code>SAME_AS</code>、<code>MERGED_INTO</code>、<code>SPLIT_FROM</code> 关系；</li>
+<li>查询的 <code>as_of_valid</code> 和 <code>as_of_system</code>。</li>
+</ul>
+<p>历史代码必须按有效期匹配，禁止用今天的代码映射覆盖历史事实。</p>
+</section>
+<section id="53-分层算法" class="level3">
+<h3>5.3 分层算法</h3>
+<ol type="1">
+<li><strong>规范化</strong>：Unicode、大小写、全半角、空白、法人后缀、市场代码和校验位；原值不可覆盖。</li>
+<li><strong>确定性键</strong>：受信来源 ID、ISIN/LEI/交易所代码组合、内部主键；匹配冲突时立即阻断。</li>
+<li><strong>候选阻塞</strong>：按市场、对象类型、名称 token、发行人、地域等生成有限候选。</li>
+<li><strong>特征评分</strong>：标识符一致、名称相似、属性一致、时间重叠、关系邻域和来源等级。</li>
+<li><strong>约束求解</strong>：应用唯一性、互斥市场、法人/证券类型和有效期约束。</li>
+<li><strong>决策</strong>：高阈值自动链接；灰区建立 <code>LinkEntityCandidate</code>；低阈值保持未匹配。</li>
+<li><strong>人工复核</strong>：复核结果形成新的、可追踪的主数据 Action；不直接改来源记录。</li>
+</ol>
+<p>示例评分仅作可校准基线：</p>
+<p>[ s(x,y)=\sum_k w_k f_k(x,y)-\sum_j \lambda_j c_j(x,y) ]</p>
+<p>其中 (f_k\in[0,1]) 是匹配特征，(c_j\in{0,1}) 是约束冲突。权重、阈值和来源优先级必须按对象类型独立校准，不得跨域复用一个“万能阈值”。</p>
+</section>
+<section id="54-输出与动作" class="level3">
+<h3>5.4 输出与动作</h3>
+<ul>
+<li><code>LinkEntityCandidate</code>：候选对象、分数、特征解释、来源和模型版本；</li>
+<li><code>ExternalIdentifier</code> 到 canonical object 的双时间映射；</li>
+<li><code>QualityAssessment</code>：未匹配率、冲突率、误合并抽检结果；</li>
+<li><code>MergeEntity</code>、<code>CorrectInstrument</code> Action 提案。</li>
+</ul>
+<p>合并必须先输出下游影响清单；已发生的误合并用新版本拆分，不能抹除历史。</p>
+</section>
+<section id="55-质量与验收" class="level3">
+<h3>5.5 质量与验收</h3>
+<ul>
+<li>受信确定性 ID 冲突为阻断级；</li>
+<li>高价值对象按分层样本计算 precision/recall，并对自动合并优先约束 precision；</li>
+<li>验证历史改名、退市后代码复用、跨市场同代码、公司合并/拆分；</li>
+<li>重跑同一快照和版本得到相同映射；</li>
+<li>每个自动链接均能解释关键特征并定位来源证据；</li>
+<li>权限不可通过候选生成或图邻域泄露隐藏对象。</li>
+</ul>
+</section>
+</section>
+<section id="6-点时对齐与可得性" class="level2">
+<h2>6. 点时对齐与可得性</h2>
+<section id="61-统一判断" class="level3">
+<h3>6.1 统一判断</h3>
+<p>一条记录可被某次决策使用，当且仅当：</p>
+<p>[ valid_from \le t_v &lt; valid_to ]</p>
+<p>[ system_from \le t_s &lt; system_to ]</p>
+<p>且 <code>publish_time ≤ decision_time - required_lag</code>，并满足来源许可和质量规则。未声明发布时间的数据默认不可用于严格点时研究。</p>
+</section>
+<section id="62-连接规则" class="level3">
+<h3>6.2 连接规则</h3>
+<pre class="text"><code>point_in_time_join(left, right, decision_time):
+  candidates = right where
+      right.key = left.key
+      and right.valid_interval contains left.business_time
+      and right.system_from &lt;= run.system_as_of
+      and right.publish_time &lt;= decision_time - configured_lag
+  return resolve_by_source_policy(candidates)</code></pre>
+<ul>
+<li>行情以交易所事件时间和序号排序，接收时间用于延迟诊断；</li>
+<li>财务、公告和一致预期以公开可知时间及修订时间为准；</li>
+<li>行业、指数成分、交易状态和费率使用当时有效版本；</li>
+<li>夜盘归属由 <code>TradingCalendar</code>/<code>TradingSession</code> 决定；</li>
+<li>信号时间、下单时间和成交可用价格必须有显式 lag；</li>
+<li>流数据迟到超过水位线进入更正流，不静默改写已发布快照。</li>
+</ul>
+</section>
+<section id="63-边界" class="level3">
+<h3>6.3 边界</h3>
+<ul>
+<li>来源只有日期没有时刻：使用已登记的保守可得时刻并标记精度；</li>
+<li>时钟漂移：超过阈值隔离来源，保留 source/ingest 时间；</li>
+<li>DST、跨市场节假日、半日市、临时休市：只读日历对象，不硬编码；</li>
+<li>修订数据：新版本追加，历史研究默认仍使用当时系统可见版本；</li>
+<li>同时到达冲突：按属性级 <code>ResolutionPolicy</code>，高风险计算可 fail-closed。</li>
+</ul>
+</section>
+</section>
+<section id="7-数据质量门" class="level2">
+<h2>7. 数据质量门</h2>
+<section id="71-质量维度" class="level3">
+<h3>7.1 质量维度</h3>
+<p>完整性、合法性、唯一性、一致性、新鲜度、序列完整性、点时正确性、来源覆盖、对账、异常值和权限覆盖分别评分，不用一个总分掩盖阻断问题。</p>
+<p>可用于展示的加权分数：</p>
+<p>[ Q=\frac{\sum_i w_i q_i}{\sum_i w_i} ]</p>
+<p>但任何 blocking rule 失败都不能被高总分抵消。</p>
+</section>
+<section id="72-三级门" class="level3">
+<h3>7.2 三级门</h3>
+<table>
+<thead>
+<tr class="header">
+<th>级别</th>
+<th>处理</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Block</td>
+<td>不执行或不发布，创建事件</td>
+<td>代码冲突、序号缺口未修复、未来数据、金额不守恒</td>
+</tr>
+<tr class="even">
+<td>Degrade</td>
+<td>使用经批准的替代源/简化算法并醒目标注</td>
+<td>次要行情源延迟、向量服务不可用</td>
+</tr>
+<tr class="odd">
+<td>Warn</td>
+<td>运行并附质量警告</td>
+<td>小比例非关键字段缺失、低流动性样本不足</td>
+</tr>
+</tbody>
+</table>
+<p>质量豁免必须包含对象范围、规则版本、原因、补偿控制、审批人和到期时间。永久“忽略”不合法。</p>
+</section>
+<section id="73-通用检查" class="level3">
+<h3>7.3 通用检查</h3>
+<ul>
+<li>Schema 与单位兼容；</li>
+<li>主键和事件幂等键唯一；</li>
+<li>价格、数量、金额、费率和汇率范围；</li>
+<li><code>filled + remaining + cancelled</code> 与订单状态一致；</li>
+<li>行情序号、时间单调性和交易日覆盖；</li>
+<li>结果中的 NaN、Inf、溢出和数值精度；</li>
+<li>结果规模、分布、漂移和历史基线；</li>
+<li>来源与血缘覆盖率 100%（核心输出）；</li>
+<li>受限输入的敏感标签向输出传播。</li>
+</ul>
+</section>
+</section>
+<section id="8-版本与血缘" class="level2">
+<h2>8. 版本与血缘</h2>
+<p>每次运行生成不可变 <code>RunManifest</code>：</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">run_id</span><span class="kw">:</span><span class="at"> stable-uuid</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">function_or_model_version</span><span class="kw">:</span><span class="at"> immutable-id</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">code_commit</span><span class="kw">:</span><span class="at"> git-sha</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">container_digest</span><span class="kw">:</span><span class="at"> sha256</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">parameters_hash</span><span class="kw">:</span><span class="at"> sha256</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">random_seed</span><span class="kw">:</span><span class="at"> </span><span class="dv">20260727</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">input_snapshots</span><span class="kw">:</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">asset_id</span><span class="kw">:</span><span class="at"> canonical-id</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">snapshot_id</span><span class="kw">:</span><span class="at"> immutable-id</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">schema_version</span><span class="kw">:</span><span class="at"> semver</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">checksum</span><span class="kw">:</span><span class="at"> sha256</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">clocks</span><span class="kw">:</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">as_of_valid</span><span class="kw">:</span><span class="at"> timestamp</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">as_of_system</span><span class="kw">:</span><span class="at"> timestamp</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">calendar_version</span><span class="kw">:</span><span class="at"> immutable-id</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="fu">outputs</span><span class="kw">:</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">object_type</span><span class="kw">:</span><span class="at"> typed-name</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">snapshot_id</span><span class="kw">:</span><span class="at"> immutable-id</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="fu">quality_runs</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">immutable-id</span><span class="kw">]</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="fu">policy_decisions</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">immutable-id</span><span class="kw">]</span></span></code></pre></div>
+<p>血缘至少贯通：</p>
+<p><code>SourceRecord → DatasetSnapshot → Object/Property → Function/Model → Metric/Decision → Action/Report</code></p>
+<p>代码、镜像、依赖锁文件、参数、种子和硬件相关数值库均进入复现记录。使用非确定性 GPU 内核时必须声明容差，不伪称逐位一致。</p>
+</section>
+<section id="9-运行模式与性能" class="level2">
+<h2>9. 运行模式与性能</h2>
+<table>
+<thead>
+<tr class="header">
+<th>模式</th>
+<th>引擎</th>
+<th>典型目标</th>
+<th>核心控制</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>同步判定</td>
+<td>领域服务/编译规则</td>
+<td>按交易关键路径专项预算</td>
+<td>无远程大扫描；预热；fail-closed</td>
+</tr>
+<tr class="even">
+<td>事件流</td>
+<td>Flink</td>
+<td>亚秒至秒级状态更新</td>
+<td>event time、水位线、checkpoint、状态 TTL</td>
+</tr>
+<tr class="odd">
+<td>交互分析</td>
+<td>ClickHouse/Trino/服务</td>
+<td>常用查询秒级</td>
+<td>分区裁剪、物化、配额、取消</td>
+</tr>
+<tr class="even">
+<td>批量研究</td>
+<td>Airflow/dbt/Spark</td>
+<td>按数据量制定窗口</td>
+<td>快照、分区、断点续跑、成本记录</td>
+</tr>
+<tr class="odd">
+<td>长流程</td>
+<td>Temporal</td>
+<td>秒至多日</td>
+<td>幂等 Activity、timeout、补偿、人工事件</td>
+</tr>
+<tr class="even">
+<td>模型推理</td>
+<td>KServe/vLLM/受控 API</td>
+<td>用例分层 SLO</td>
+<td>批处理、缓存、配额、回退</td>
+</tr>
+</tbody>
+</table>
+<p>每个 FunctionVersion 的容量验收需给出数据量、并发、硬件、P50/P95/P99、吞吐、峰值内存、成本和降级点。只报告平均时延不合格。</p>
+</section>
+<section id="10-失败语义与安全降级" class="level2">
+<h2>10. 失败语义与安全降级</h2>
+<ul>
+<li><code>FailedInputQuality</code>：输入不满足门，未计算；</li>
+<li><code>CalculationFailed</code>：实现错误、资源失败或数值异常；</li>
+<li><code>PartialResult</code>：明确列出未覆盖范围，不可冒充完整；</li>
+<li><code>StaleResult</code>：超新鲜度；交易/风险默认阻断，研究可警告；</li>
+<li><code>UnknownConflict</code>：来源冲突未裁决；</li>
+<li><code>WithheldByPolicy</code>：有结果但调用者不可见；</li>
+<li><code>Cancelled</code>：用户或调度取消，保留已完成分区清单。</li>
+</ul>
+<p>自动重试仅适用于确定幂等的阶段。若外部状态未知、输入快照已变化或随机运行未固定种子，不得盲目重试。降级来源、旧模型或缓存结果必须显示其版本和年龄。</p>
+</section>
+<section id="11-测试与验收基线" class="level2">
+<h2>11. 测试与验收基线</h2>
+<section id="111-测试层次" class="level3">
+<h3>11.1 测试层次</h3>
+<ul>
+<li>单元：公式、类型、单位、符号、窗口和边界；</li>
+<li>属性测试：守恒、单调性、状态不变量、换算可逆性；</li>
+<li>黄金样本：经业务/量化/风控共同确认的小数据集；</li>
+<li>回放：正常日、极端日、停牌、熔断、缺口、迟到和修订；</li>
+<li>差分：新旧版本在固定快照上的逐对象差异；</li>
+<li>样本外：时间滚动、市场/行业分层和压力区间；</li>
+<li>权限负向：隐藏对象、属性、证据和聚合反推；</li>
+<li>容量与韧性：峰值、依赖超时、节点失败、重放和恢复。</li>
+</ul>
+</section>
+<section id="112-发布门" class="level3">
+<h3>11.2 发布门</h3>
+<p>一个算法版本只有在以下条件全部满足时才可 <code>Approved</code>：</p>
+<ol type="1">
+<li>输入、时间、公式、单位、缺失和失败语义完整；</li>
+<li>固定快照可复现；</li>
+<li>无点时泄漏，或已明确不适用于历史决策；</li>
+<li>参考实现/黄金集差异在审批容差内；</li>
+<li>风险、偏差、限制、适用范围和回退已评审；</li>
+<li>SLO/容量/成本通过目标负载；</li>
+<li>权限和许可证传播测试通过；</li>
+<li>监控、告警、运行手册、回滚和 owner 已就绪。</li>
+</ol>
+</section>
+</section>
+<section id="12-职责分离" class="level2">
+<h2>12. 职责分离</h2>
+<table>
+<thead>
+<tr class="header">
+<th>角色</th>
+<th>负责</th>
+<th>不得单独完成</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Domain Owner</td>
+<td>业务口径、对象、适用范围</td>
+<td>独立批准自己实现的高风险模型</td>
+</tr>
+<tr class="even">
+<td>Quant/Engineer</td>
+<td>实现、测试、复现和性能</td>
+<td>绕过数据/模型发布门</td>
+</tr>
+<tr class="odd">
+<td>Data Owner/Steward</td>
+<td>数据契约、来源、质量和许可</td>
+<td>修改算法结论</td>
+</tr>
+<tr class="even">
+<td>Independent Validator</td>
+<td>方法、假设、样本外和限制验证</td>
+<td>作为模型唯一开发者</td>
+</tr>
+<tr class="odd">
+<td>Risk/Compliance</td>
+<td>风险等级、政策和使用条件</td>
+<td>替代技术正确性测试</td>
+</tr>
+<tr class="even">
+<td>Platform/SRE</td>
+<td>运行、容量、故障和恢复</td>
+<td>更改业务口径</td>
+</tr>
+</tbody>
+</table>
+<p>生产反馈、漂移、重大数据修订、市场结构变化或监管变化应触发重新验证；历史通过不能视为永久有效。</p>
+</section>
+</section>
+
+        </article>
+        <footer class="page-meta">
+          <span>基线 1.0 · 2026-07-27 · Markdown 与 HTML 同源</span>
+          <span><a href="../../../ontology/financial-ontology.yaml">本体 YAML</a> · <a href="../../../contracts/ontology-api.openapi.yaml">OpenAPI</a> · <a href="../../../contracts/events.asyncapi.yaml">AsyncAPI</a></span>
+        </footer>
+      </div>
+    </main>
+  </div>
+  <script src="../../assets/search-index.js"></script>
+  <script src="../../assets/mermaid-11.16.0.min.js"></script>
+  <script src="../../assets/app.js"></script>
+</body>
+</html>

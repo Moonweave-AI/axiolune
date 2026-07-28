@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="金融本体驱动平台总体设计、技术选型、模块、本体、算法与交付规范">
+  <title>行情、因子与回测算法规范 · 金融本体驱动平台</title>
+  <script>
+    (function() {
+      var saved = localStorage.getItem("finance-design-theme");
+      if (saved) document.documentElement.dataset.theme = saved;
+    }());
+    window.SITE_ROOT = "../../";
+    window.RAW_ROOT = "../../../";
+  </script>
+  <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"></div>
+  <header class="topbar">
+    <button class="icon-button menu-button" type="button" data-menu-toggle aria-label="打开文档目录" aria-expanded="false">☰</button>
+    <a class="brand" href="../../index.html">
+      <span class="brand-mark" aria-hidden="true">FO</span>
+      <span class="brand-text">金融本体驱动平台设计</span>
+    </a>
+    <span class="topbar-spacer"></span>
+    <button class="icon-button" type="button" data-theme-toggle aria-label="切换主题">☾</button>
+  </header>
+  <div class="layout">
+    <aside class="sidebar" aria-label="文档目录">
+      <div class="search-wrap">
+        <input class="search-input" type="search" data-search placeholder="搜索全部文档…" aria-label="搜索全部文档">
+        <p class="search-hint">按 Ctrl/⌘ + K 聚焦 · Esc 清除</p>
+        <div class="search-results" data-search-results aria-live="polite"></div>
+      </div>
+      <nav class="nav-section" aria-label="首页">
+<h2 class="nav-section-title">首页</h2>
+<a class="nav-link" href="../../index.html">金融本体驱动平台：总体设计与实施规范</a>
+</nav>
+<nav class="nav-section" aria-label="交付说明">
+<h2 class="nav-section-title">交付说明</h2>
+<a class="nav-link" href="../../PACKAGE-SUMMARY.html">交付包清单与验证记录</a>
+</nav>
+<nav class="nav-section" aria-label="总览与追踪">
+<h2 class="nav-section-title">总览与追踪</h2>
+<a class="nav-link" href="../00-overview/00-executive-summary.html">执行摘要</a>
+<a class="nav-link" href="../00-overview/01-scope-assumptions.html">设计范围、假设与边界</a>
+<a class="nav-link" href="../00-overview/02-design-principles.html">核心设计原则与关键决策</a>
+<a class="nav-link" href="../00-overview/03-requirements-traceability.html">需求—模块—本体—证据追踪矩阵</a>
+</nav>
+<nav class="nav-section" aria-label="总体架构">
+<h2 class="nav-section-title">总体架构</h2>
+<a class="nav-link" href="../01-architecture/00-target-architecture.html">目标总体架构</a>
+<a class="nav-link" href="../01-architecture/01-domain-boundaries.html">领域边界与依赖</a>
+<a class="nav-link" href="../01-architecture/02-data-architecture.html">数据与多模态架构</a>
+<a class="nav-link" href="../01-architecture/03-deployment-topology.html">部署拓扑、环境与灾备</a>
+<a class="nav-link" href="../01-architecture/04-nonfunctional-requirements.html">非功能需求与质量属性</a>
+</nav>
+<nav class="nav-section" aria-label="技术选型">
+<h2 class="nav-section-title">技术选型</h2>
+<a class="nav-link" href="../02-technology/00-selection-summary.html">技术选型总表</a>
+<a class="nav-link" href="../02-technology/01-frontend-design-system.html">前端、视觉与交互设计</a>
+<a class="nav-link" href="../02-technology/02-backend-communication.html">后端、接口与通信</a>
+<a class="nav-link" href="../02-technology/03-databases-storage.html">数据库、搜索、图、向量与媒体存储</a>
+<a class="nav-link" href="../02-technology/04-compute-workflow.html">流批计算、数据编排与业务工作流</a>
+<a class="nav-link" href="../02-technology/05-ai-mlops.html">AI、MLOps、GraphRAG 与 Agent 技术</a>
+<a class="nav-link" href="../02-technology/06-security-devsecops.html">安全、DevSecOps 与可观测性技术</a>
+</nav>
+<nav class="nav-section" aria-label="模块设计">
+<h2 class="nav-section-title">模块设计</h2>
+<a class="nav-link" href="../03-modules/00-module-map.html">业务与平台模块全景</a>
+<a class="nav-link" href="../03-modules/01-workspace-data-intelligence.html">统一工作台、数据与资讯</a>
+<a class="nav-link" href="../03-modules/02-quant-active-research.html">量化研究与主动投研</a>
+<a class="nav-link" href="../03-modules/03-portfolio-execution.html">产品、组合、OMS/IMS 与算法执行</a>
+<a class="nav-link" href="../03-modules/04-risk-compliance.html">风险、合规与核对</a>
+<a class="nav-link" href="../03-modules/05-product-reporting.html">产品、渠道与经营报表</a>
+<a class="nav-link" href="../03-modules/06-ontology-automation-operations.html">本体、自动化、Agent 与平台运维</a>
+</nav>
+<nav class="nav-section" aria-label="本体工程">
+<h2 class="nav-section-title">本体工程</h2>
+<a class="nav-link" href="../04-ontology/00-method-meta-model.html">金融本体方法与元模型</a>
+<a class="nav-link" href="../04-ontology/01-domain-model.html">金融本体逻辑域</a>
+<a class="nav-link" href="../04-ontology/02-object-link-catalog.html">核心对象与链接目录</a>
+<a class="nav-link" href="../04-ontology/03-actions-functions-policies.html">动作、函数、模型、策略与工作流</a>
+<a class="nav-link" href="../04-ontology/04-temporal-provenance-quality.html">时间、来源、证据与质量</a>
+<a class="nav-link" href="../04-ontology/05-security-version-governance.html">本体安全、版本、分支与治理</a>
+<a class="nav-link" href="../04-ontology/06-implementation-mapping.html">本体到数据、API、UI 与运行时的映射</a>
+</nav>
+<nav class="nav-section" aria-label="逻辑域与算法">
+<h2 class="nav-section-title">逻辑域与算法</h2>
+<a class="nav-link" href="00-algorithm-framework.html">算法工程总规范</a>
+<a class="nav-link is-active" href="01-market-factor-backtest.html" aria-current="page">行情、因子与回测算法规范</a>
+<a class="nav-link" href="02-execution-tca.html">算法执行与交易成本分析规范</a>
+<a class="nav-link" href="03-portfolio-risk.html">组合、净值、风险、流动性与对账算法规范</a>
+<a class="nav-link" href="04-graph-ai.html">图算法、证据图、GraphRAG 与文档智能规范</a>
+</nav>
+<nav class="nav-section" aria-label="工程、安全与 SRE">
+<h2 class="nav-section-title">工程、安全与 SRE</h2>
+<a class="nav-link" href="../06-engineering/00-engineering-overview.html">工程实现总纲</a>
+<a class="nav-link" href="../06-engineering/01-api-event-contracts.html">API、事件与分布式一致性契约</a>
+<a class="nav-link" href="../06-engineering/02-security-model.html">安全、权限与审计模型</a>
+<a class="nav-link" href="../06-engineering/03-observability-sre.html">可观测性与 SRE</a>
+<a class="nav-link" href="../06-engineering/04-testing-validation.html">测试、验证与发布质量门</a>
+<a class="nav-link" href="../06-engineering/05-continuity-recovery.html">业务连续性、备份与灾难恢复</a>
+</nav>
+<nav class="nav-section" aria-label="交付与迁移">
+<h2 class="nav-section-title">交付与迁移</h2>
+<a class="nav-link" href="../07-delivery/00-roadmap.html">分期路线图与投资顺序</a>
+<a class="nav-link" href="../07-delivery/01-team-governance.html">团队结构、职责与治理</a>
+<a class="nav-link" href="../07-delivery/02-migration-cutover.html">遗留迁移、双跑与切换</a>
+<a class="nav-link" href="../07-delivery/03-acceptance-risks.html">验收体系与风险登记</a>
+<a class="nav-link" href="../07-delivery/04-decision-register.html">架构决策登记册</a>
+<a class="nav-link" href="../07-delivery/05-open-questions.html">立项前未决问题</a>
+</nav>
+<nav class="nav-section" aria-label="参考与证据">
+<h2 class="nav-section-title">参考与证据</h2>
+<a class="nav-link" href="../08-reference/00-palantir-capability-mapping.html">Palantir 能力体系与本方案映射</a>
+<a class="nav-link" href="../08-reference/01-attachment-audit-summary.html">附件审计摘要</a>
+<a class="nav-link" href="../08-reference/02-source-material-handling.html">源材料处理与证据边界</a>
+<a class="nav-link" href="../08-reference/03-source-register.html">参考资料登记册</a>
+<a class="nav-link" href="../08-reference/04-palantir-document-system-audit.html">Palantir 官方文档体系研究与金融平台本体工程映射</a>
+<a class="nav-link" href="../08-reference/05-glossary.html">术语表</a>
+</nav>
+    </aside>
+    <div class="overlay" aria-hidden="true"></div>
+    <main class="main" id="content">
+      <div class="content-shell">
+        <nav class="breadcrumbs" aria-label="面包屑"><a href="../../index.html">首页</a><span>›</span><span>逻辑域与算法</span><span>›</span><span>行情、因子与回测算法规范</span></nav>
+        <article class="article">
+          <section id="行情因子与回测算法规范" class="level1">
+<h1>行情、因子与回测算法规范</h1>
+<section id="1-范围与业务目的" class="level2">
+<h2>1. 范围与业务目的</h2>
+<p>本章覆盖从逐笔/Level-2 行情到 K 线与微观结构特征、期货基差、因子清洗与中性化、IC/分组检验、相关性/衰减/容量和事件驱动回测。目标是形成可复现、点时正确、可审计的研究证据，输出 <code>FactorObservation</code>、<code>Signal</code>、<code>ResearchRun</code> 和 <code>BacktestRun</code>，而不是把一段历史拟合直接当成可交易结论。</p>
+<p>所有结果必须经过独立验证和样本外评估；历史表现不代表未来收益，也不得以任何算法指标承诺收益。</p>
+</section>
+<section id="2-输入对象与时点" class="level2">
+<h2>2. 输入对象与时点</h2>
+<table>
+<thead>
+<tr class="header">
+<th>输入对象</th>
+<th>关键字段</th>
+<th>时点规则</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>Instrument</code> / <code>FutureContract</code></td>
+<td>市场、币种、合约乘数、价格精度、上市/到期</td>
+<td>使用当时有效版本</td>
+</tr>
+<tr class="even">
+<td><code>TradingCalendar</code> / <code>TradingSession</code></td>
+<td>时区、阶段、夜盘归属、临时休市</td>
+<td>固定 calendar version</td>
+</tr>
+<tr class="odd">
+<td><code>MarketEvent</code></td>
+<td>trade/quote/order、价格、数量、方向、序号</td>
+<td>交易所 <code>event_time</code> 主序，接收时间仅诊断</td>
+</tr>
+<tr class="even">
+<td><code>OrderBookSnapshot/Delta</code></td>
+<td>档位、价量、序号、快照标志</td>
+<td>按 venue/channel/session 重建</td>
+</tr>
+<tr class="odd">
+<td><code>CorporateAction</code></td>
+<td>除权、分红、拆并、停复牌</td>
+<td>以公开/生效时间点时处理</td>
+</tr>
+<tr class="even">
+<td><code>UniverseMembership</code></td>
+<td>样本、权重、纳入/剔除原因</td>
+<td>双时间，禁止使用今日成分回填历史</td>
+</tr>
+<tr class="odd">
+<td><code>ClassificationMembership</code></td>
+<td>行业、风格、地区</td>
+<td>双时间</td>
+</tr>
+<tr class="even">
+<td><code>FinancialMetric</code> / <code>ConsensusEstimate</code></td>
+<td>值、币种、报告期、发布时间、修订</td>
+<td><code>publish_time</code> 与 <code>revision_time</code></td>
+</tr>
+<tr class="odd">
+<td><code>BorrowAvailability</code></td>
+<td>可借、费率、期限</td>
+<td>当时可得快照</td>
+</tr>
+<tr class="even">
+<td><code>FeeSchedule</code> / <code>MarginProfile</code></td>
+<td>佣金、税、交易所费、保证金</td>
+<td>当时有效版本</td>
+</tr>
+</tbody>
+</table>
+<p>研究请求还必须固定：</p>
+<ul>
+<li><code>as_of_system</code>、研究起止、信号时间与可成交时间；</li>
+<li>Universe、benchmark、频率、持有期、调仓日历；</li>
+<li>价格复权、汇率、退市、停牌、涨跌停和不可成交规则；</li>
+<li>成本/滑点/冲击模型、容量约束；</li>
+<li><code>FactorVersion</code>、代码提交、镜像、依赖、参数和随机种子。</li>
+</ul>
+</section>
+<section id="3-行情接入与序列完整性" class="level2">
+<h2>3. 行情接入与序列完整性</h2>
+<section id="31-规范事件" class="level3">
+<h3>3.1 规范事件</h3>
+<p>来源事件先追加到原始层，再规范为：</p>
+<pre class="text"><code>MarketEvent {
+  venue, channel, instrument_id, event_type,
+  exchange_sequence, source_time, event_time, ingest_time,
+  price, quantity, side, order_id?,
+  trading_date, session_id,
+  source_record_ref, quality_flags
+}</code></pre>
+<p>同一来源的去重键优先使用 <code>venue + channel + session + exchange_sequence</code>；无可靠序号时才使用来源事件 ID 或内容哈希，并标记较低质量。</p>
+</section>
+<section id="32-序号与迟到" class="level3">
+<h3>3.2 序号与迟到</h3>
+<pre class="text"><code>on_event(e):
+  if duplicate(e.key): discard_but_count()
+  if e.sequence == expected:
+      apply(e); drain_buffer()
+  elif e.sequence &gt; expected:
+      buffer(e); request_gap_fill(expected, e.sequence - 1)
+  else:
+      route_to_late_or_correction(e)</code></pre>
+<ul>
+<li>未修复的序号缺口不得生成“完整盘口”；</li>
+<li>水位线只决定实时计算何时闭窗，不改变原始事件；</li>
+<li>超水位线事件进入 correction stream，派生 Bar 生成新版本；</li>
+<li>来源切换保留 source ID、偏差测量和切换 Action；</li>
+<li>交易日结束保存序号范围、缺口、重复、乱序和时钟偏差报告。</li>
+</ul>
+</section>
+</section>
+<section id="4-k-线与-level-2-特征" class="level2">
+<h2>4. K 线与 Level-2 特征</h2>
+<section id="41-ohlcv" class="level3">
+<h3>4.1 OHLCV</h3>
+<p>对窗口 (W=[t_0,t_1)) 内符合交易状态和质量条件的成交：</p>
+<p>[ O=p_{\min event_time},\quad H=\max p_i,\quad L=\min p_i,\quad C=p_{\max event_time} ]</p>
+<p>[ V=\sum_i q_i,\qquad A=\sum_i p_i q_i,\qquad VWAP=\frac{A}{V}\quad(V&gt;0) ]</p>
+<p>需同时记录成交笔数、买卖方向量（若来源可靠）、撤销/更正、窗口完整性和来源。无成交窗口不能伪造 OHLC；根据指标契约输出 <code>NotCalculated</code>，或显式生成 carry-forward quote bar，二者类型必须不同。</p>
+</section>
+<section id="42-复权" class="level3">
+<h3>4.2 复权</h3>
+<p>原始成交价保持不变。研究视图使用时点可得的公司行动生成独立复权因子：</p>
+<p>[ P^{adj}<em>{t}=P^{raw}</em>{t}\times AF_{t}^{(version)} ]</p>
+<p>前复权、后复权和总回报口径分别登记。用于历史决策的复权因子不得包含当时尚未公开的公司行动。</p>
+</section>
+<section id="43-盘口重建" class="level3">
+<h3>4.3 盘口重建</h3>
+<p>每个 <code>venue + instrument + channel + session</code> 维持独立状态：</p>
+<ol type="1">
+<li>载入带序号的全量快照；</li>
+<li>校验快照与增量衔接；</li>
+<li>按序应用新增、修改、删除；</li>
+<li>检查买价递减、卖价递增、数量非负、最优买价小于最优卖价；</li>
+<li>交叉盘、负量、孤立删除或缺口时标记 invalid 并等待重同步；</li>
+<li>checkpoint 包含来源序号和校验和。</li>
+</ol>
+</section>
+<section id="44-微观结构指标" class="level3">
+<h3>4.4 微观结构指标</h3>
+<p>最优买卖 (b_1,a_1)，对应量 (q_b,q_a)：</p>
+<p>[ mid=\frac{a_1+b_1}{2},\qquad spread=a_1-b_1,\qquad spread_{bps}=10^4\frac{a_1-b_1}{mid} ]</p>
+<p>[ imbalance_L= \frac{\sum_{l=1}^{L} q^b_l-\sum_{l=1}^{L}q^a_l} {\sum_{l=1}^{L} q^b_l+\sum_{l=1}^{L}q^a_l} ]</p>
+<p>[ microprice=\frac{a_1q_b+b_1q_a}{q_b+q_a} ]</p>
+<p>分母为零、锁盘/交叉盘、无一侧报价或盘口失效时输出明确缺失状态。订单流不平衡、撤单强度、实现波动率和价差分位数必须声明事件定义、窗口、采样频率和方向判定算法。</p>
+</section>
+<section id="45-输出" class="level3">
+<h3>4.5 输出</h3>
+<ul>
+<li><code>MarketBarObservation</code>、<code>OrderBookSnapshot</code>；</li>
+<li><code>MarketQualityObservation</code>、<code>LatencyObservation</code>；</li>
+<li><code>ExecutionMetricObservation</code> 或研究特征资产；</li>
+<li>序号缺口触发 <code>SwitchSource</code>/<code>QuarantineAsset</code> 提案，而不是算法直接切换生产源。</li>
+</ul>
+</section>
+</section>
+<section id="5-期货基差" class="level2">
+<h2>5. 期货基差</h2>
+<section id="51-定义" class="level3">
+<h3>5.1 定义</h3>
+<p>对可比时点的期货价格 (F_t) 与现货/指数价格 (S_t)：</p>
+<p>[ basis_t=F_t-S_t,\qquad basis_rate_t=\frac{F_t-S_t}{S_t} ]</p>
+<p>若采用年化单利口径：</p>
+<p>[ annualized_basis_t=basis_rate_t\times\frac{Y}{D_t} ]</p>
+<p>其中 (D_t) 是按已登记日历口径计算的剩余天数，(Y) 为 365、360 或交易日年化常数。必须在 <code>MetricType</code> 中固定基差方向、合约乘数、除息/资金成本处理和日历口径。</p>
+<p>滚动 Z-score：</p>
+<p>[ z_t=\frac{x_t-\mu_{t,w}}{\sigma_{t,w}} ]</p>
+<p>窗口只含 (t) 当时可得数据；(\sigma) 过小或有效样本不足时输出 <code>NotCalculated</code>。</p>
+</section>
+<section id="52-连续合约" class="level3">
+<h3>5.2 连续合约</h3>
+<ul>
+<li>原始合约、主力映射和连续序列是不同对象；</li>
+<li>换月规则、成交量/持仓量阈值、切换时刻和回溯偏移版本化；</li>
+<li>回测执行必须落到当时可交易的具体合约；</li>
+<li>换月成本、价差跳变和保证金变化进入成本与风险；</li>
+<li>不允许用全样本事后确定“最优换月日”。</li>
+</ul>
+</section>
+<section id="53-质量门" class="level3">
+<h3>5.3 质量门</h3>
+<ul>
+<li>期现价格时间差不超过用例阈值；</li>
+<li>现货指数成分和计算版本点时正确；</li>
+<li>到期日、合约乘数、币种和交易状态有效；</li>
+<li>临近到期、涨跌停、无报价或交割异常单独标记；</li>
+<li>与独立参考计算在价格精度容差内。</li>
+</ul>
+</section>
+</section>
+<section id="6-因子定义与样本构造" class="level2">
+<h2>6. 因子定义与样本构造</h2>
+<p><code>FactorVersion</code> 至少声明：</p>
+<ul>
+<li>经济/行为假设和预期方向；</li>
+<li>输入资产、字段、频率、窗口和最小历史长度；</li>
+<li>公布滞后、信号可用时刻和交易 lag；</li>
+<li>Universe 与剔除规则；</li>
+<li>缺失、异常、winsorize、标准化、中性化；</li>
+<li>方向、单位、频率和更新策略；</li>
+<li>适用市场、资产类型和已知限制；</li>
+<li>代码/表达式、测试和 owner。</li>
+</ul>
+<p>样本表的最小键为：</p>
+<p><code>instrument_id + observation_time + factor_version + universe_version + input_snapshot</code></p>
+<p>任何研究过滤（上市天数、停牌、特殊处理、流动性等）都必须是点时规则，并输出剔除原因。</p>
+</section>
+<section id="7-因子清洗" class="level2">
+<h2>7. 因子清洗</h2>
+<section id="71-缺失" class="level3">
+<h3>7.1 缺失</h3>
+<p>缺失先按语义分类。默认不进行跨期向未来填充。可选处理必须登记：</p>
+<ul>
+<li>丢弃对象；</li>
+<li>行业/截面中位数填充；</li>
+<li>仅使用过去值的有限前向填充；</li>
+<li>建立 missing indicator；</li>
+<li>对不适用对象保留 <code>NotApplicable</code>。</li>
+</ul>
+<p>填充值和原值使用不同质量标记；敏感性测试比较不同方案。</p>
+</section>
+<section id="72-去极值" class="level3">
+<h3>7.2 去极值</h3>
+<p>稳健 MAD 示例：</p>
+<p>[ m=\operatorname{median}(x),\quad MAD=\operatorname{median}(|x-m|) ]</p>
+<p>[ x'_i=\operatorname{clip}(x_i,m-k\cdot1.4826MAD,m+k\cdot1.4826MAD) ]</p>
+<p>若 MAD 为零，按已登记回退（分位数、IQR 或不处理）。也可使用截面分位数截断，但 (k)/分位点必须校准并记录。所有处理只使用当期截面或过去窗口。</p>
+</section>
+<section id="73-标准化" class="level3">
+<h3>7.3 标准化</h3>
+<p>[ z_i=\frac{x'_i-\mu}{\sigma} ]</p>
+<p>均值/标准差口径、权重和截面范围必须明确；(\sigma) 太小则该截面失败。稳健 z-score 可使用中位数/MAD，但不能混用名称。</p>
+</section>
+<section id="74-中性化" class="level3">
+<h3>7.4 中性化</h3>
+<p>加权最小二乘：</p>
+<p>[ x=X\beta+\epsilon,\qquad \hat{\beta}=(X^\top W X)^{-1}X^\top W x ]</p>
+<p>残差 (\epsilon) 作为中性化因子。(X) 可包含行业哑变量、对数市值、国家/市场和其他获批暴露；(W) 的定义进入版本。</p>
+<p>工程控制：</p>
+<ul>
+<li>行业分类和市值必须 point-in-time；</li>
+<li>共线、空行业和小样本使用 QR/SVD 或正则化，并报告条件数；</li>
+<li>缺失行、权重上限和异常杠杆点可追踪；</li>
+<li>输出残差均值、暴露残余和回归诊断；</li>
+<li>不以中性化结果证明因果关系。</li>
+</ul>
+</section>
+</section>
+<section id="8-ic分组收益与稳健性" class="level2">
+<h2>8. IC、分组收益与稳健性</h2>
+<section id="81-ic" class="level3">
+<h3>8.1 IC</h3>
+<p>横截面 Pearson IC：</p>
+<p>[ IC_t=\operatorname{corr}(f_{i,t},r_{i,t\rightarrow t+h}) ]</p>
+<p>Rank IC 是 Spearman 秩相关。收益窗口必须从信号可交易时刻之后开始，并与持有期、复权和不可成交规则一致。</p>
+<p>[ ICIR=\frac{\overline{IC}}{\sigma(IC)}\sqrt{A} ]</p>
+<p>其中 (A) 是与观测频率一致的年化因子。必须同时报告样本数、均值、中位数、标准差、t 统计的假设、正负比例、自相关和置信区间；不可只展示 ICIR。</p>
+</section>
+<section id="82-分组收益" class="level3">
+<h3>8.2 分组收益</h3>
+<p>每个调仓截面按有效样本排序分成 (G) 组，记录 ties、组内权重和空组。组合收益：</p>
+<p>[ R_{g,t}=\sum_{i\in g}w_{i,t}R_{i,t} ]</p>
+<p>多空收益 (R_{G,t}-R_{1,t}) 的方向随因子定义固定。报告单调性、换手、覆盖、行业/市值暴露、成本前后收益、退市和不可成交贡献。</p>
+</section>
+<section id="83-换手衰减相关和容量" class="level3">
+<h3>8.3 换手、衰减、相关和容量</h3>
+<p>[ turnover_t=\frac{1}{2}\sum_i |w_{i,t}-w^{pre}_{i,t}| ]</p>
+<ul>
+<li>对多个 horizon 计算 IC/收益衰减，避免重叠窗口误用普通独立 t 检验；</li>
+<li>因子相关按相同点时 Universe、频率和缺失规则；</li>
+<li>VIF/聚类只作为冗余诊断，不自动删因子；</li>
+<li>容量测试逐级增加目标规模，应用 ADV/盘口参与率、借券、涨跌停和冲击模型；</li>
+<li>显示参数/样本选择敏感性以及多重检验控制（如 FDR），避免 p-hacking。</li>
+</ul>
+</section>
+</section>
+<section id="9-事件驱动回测" class="level2">
+<h2>9. 事件驱动回测</h2>
+<section id="91-事件顺序" class="level3">
+<h3>9.1 事件顺序</h3>
+<pre class="mermaid">flowchart LR
+    A["当时可得数据"] --&gt; B["生成信号"]
+    B --&gt; C["组合目标"]
+    C --&gt; D["风控与可交易性"]
+    D --&gt; E["订单模拟"]
+    E --&gt; F["成交/拒绝/部分成交"]
+    F --&gt; G["持仓、现金与费用"]
+    G --&gt; H["估值与绩效"]</pre>
+</section>
+<section id="92-核心伪代码" class="level3">
+<h3>9.2 核心伪代码</h3>
+<pre class="text"><code>for event in replay_stream ordered by (event_time, source_sequence):
+  clock.advance(event.time)
+  market_state.apply(event)
+  make_public_only_if(event.publish_time &lt;= clock.time)
+
+  if rebalance_due(clock, calendar_version):
+      features = factor_function(snapshot_as_known(clock))
+      signal = signal_function(features)
+      targets = portfolio_function(signal, positions, constraints)
+      proposals = order_simulator.create(targets, tradability_as_known(clock))
+
+  for proposal in proposals:
+      risk_decision = replay_risk_rules(proposal, state_as_known(clock))
+      if risk_decision.allow:
+          simulated_venue.accept(proposal)
+
+  fills = simulated_venue.process(event, queue_and_impact_model_version)
+  ledger.apply(fills, fees, corporate_actions)
+  valuation.mark(clock, approved_price_policy)</code></pre>
+</section>
+<section id="93-成交与成本" class="level3">
+<h3>9.3 成交与成本</h3>
+<p>至少包含：</p>
+<ul>
+<li>佣金、印花税、交易所/结算费；</li>
+<li>买卖价差；</li>
+<li>延迟和下一个可成交价格；</li>
+<li>参与率/盘口深度约束；</li>
+<li>部分成交、撤单、拒单、停牌、涨跌停；</li>
+<li>最小数量、整手/碎股和价格最小变动；</li>
+<li>借券可得性、费率和召回；</li>
+<li>期货保证金、换月和强平边界。</li>
+</ul>
+<p>冲击模型参数由历史订单或保守基线校准，并提供不同冲击假设的敏感性区间。不得用成交后的全日 VWAP 来决定当时的成交量分配。</p>
+</section>
+</section>
+<section id="10-防前视与数据泄漏" class="level2">
+<h2>10. 防前视与数据泄漏</h2>
+<p>发布前自动执行：</p>
+<ol type="1">
+<li>输入记录 <code>publish_time</code> 不晚于决策时刻减 lag；</li>
+<li>财务、预测和评级使用当时修订版本；</li>
+<li>Universe、行业、指数成分和退市样本 point-in-time；</li>
+<li>标准化、中性化、填充和训练只使用当期或过去数据；</li>
+<li>训练/验证/测试按时间切分，滚动调参不观察未来；</li>
+<li>信号价与成交价错开，处理交易日和时区；</li>
+<li>标签构造没有通过特征窗口泄漏；</li>
+<li>缓存键包含 snapshot/as-of/version，防止复用今日结果；</li>
+<li>多资产相互影响的特征只使用当时已发布横截面；</li>
+<li>手工筛选和排除也纳入运行清单。</li>
+</ol>
+<p>可实现的“时间旅行”负向测试：</p>
+<pre class="text"><code>for every input record used by decision d:
+  assert record.publish_time &lt;= d.time - required_lag
+  assert record.system_from &lt;= run.as_of_system</code></pre>
+<p>任何违反均为 blocking failure，而非提示后继续。</p>
+</section>
+<section id="11-输出对象与-action" class="level2">
+<h2>11. 输出对象与 Action</h2>
+<table>
+<thead>
+<tr class="header">
+<th>结果</th>
+<th>对象</th>
+<th>可触发 Action</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>行情特征</td>
+<td><code>MarketBarObservation</code>、<code>MetricObservation</code></td>
+<td><code>QuarantineAsset</code> / <code>SwitchSource</code> 提案</td>
+</tr>
+<tr class="even">
+<td>基差</td>
+<td><code>MetricObservation</code>、<code>Signal</code>（若批准）</td>
+<td>无直接交易副作用</td>
+</tr>
+<tr class="odd">
+<td>因子截面</td>
+<td><code>FactorObservation</code></td>
+<td><code>PublishFactor</code> 提案</td>
+</tr>
+<tr class="even">
+<td>单因子检验</td>
+<td><code>ResearchRun</code>、<code>BacktestRun</code></td>
+<td><code>ApproveResearchRun</code></td>
+</tr>
+<tr class="odd">
+<td>组合仿真</td>
+<td><code>SimulationPortfolio</code>、<code>BacktestRun</code></td>
+<td><code>CreateRebalanceProposal</code>，仅场景</td>
+</tr>
+<tr class="even">
+<td>报告</td>
+<td><code>ReportRun</code>、<code>ReportArtifact</code></td>
+<td><code>PublishReport</code>，需复核</td>
+</tr>
+</tbody>
+</table>
+<p><code>RunBacktest</code> 是可重放 Function/Workflow；<code>PublishFactor</code> 是带审批的 Action。回测不能直接生成生产订单。</p>
+</section>
+<section id="12-质量门与失败边界" class="level2">
+<h2>12. 质量门与失败边界</h2>
+<section id="121-输入门" class="level3">
+<h3>12.1 输入门</h3>
+<ul>
+<li>行情序号、交易日、价格范围和快照完整性；</li>
+<li>主数据、合约乘数、币种、日历和公司行动有效；</li>
+<li>Universe/分类双时间完整；</li>
+<li>研究输入来源和许可可用于该用途；</li>
+<li>关键字段的缺失率、延迟和冲突低于版本阈值。</li>
+</ul>
+</section>
+<section id="122-结果门" class="level3">
+<h3>12.2 结果门</h3>
+<ul>
+<li>NaN/Inf、样本过小、截面方差为零或回归病态被显式处理；</li>
+<li>持仓、现金和成交金额守恒；</li>
+<li>无成本与有成本结果同时存在；</li>
+<li>与独立参考实现/黄金样本在容差内；</li>
+<li>样本内、样本外、不同市场阶段和敏感性结果完整；</li>
+<li>极端收益由具体数据/事件解释，不允许静默 winsorize 绩效；</li>
+<li>每个图表数字可追溯至运行、快照和版本。</li>
+</ul>
+</section>
+<section id="123-典型失败" class="level3">
+<h3>12.3 典型失败</h3>
+<ul>
+<li>Tick/快照缺口：隔离受影响区间，不插值伪造 Level-2；</li>
+<li>价格源延迟：研究可标记降级，实时风险按政策阻断；</li>
+<li>行业样本过少：合并到预定义上级或跳过，不动态窥视未来；</li>
+<li>新股历史不足：<code>NotYetAvailable</code>；</li>
+<li>合约临近到期：按规则换月或退出，不能外推不存在的报价；</li>
+<li>退市无最终价格：使用获批估值/清算规则并单独披露；</li>
+<li>回测资源中断：按分区恢复，输出未完成，不能发布部分绩效。</li>
+</ul>
+</section>
+</section>
+<section id="13-版本血缘与性能" class="level2">
+<h2>13. 版本、血缘与性能</h2>
+<p>运行清单除通用字段外，还需记录：</p>
+<ul>
+<li>原始行情 topic/文件序号范围；</li>
+<li>市场日历、主数据、公司行动、复权和连续合约版本；</li>
+<li>Universe/行业版本；</li>
+<li>因子表达式 AST/代码、清洗/中性化参数；</li>
+<li>撮合、队列、成本、冲击、借券和风险规则版本；</li>
+<li>所有调参候选与选择规则，不只记录胜出参数。</li>
+</ul>
+<p>性能设计：</p>
+<ul>
+<li>Tick/Level-2 以 instrument/session 分区，防止跨市场热分区；</li>
+<li>Flink 状态有 TTL、checkpoint、savepoint 和重同步指标；</li>
+<li>因子截面按日期/市场分区，Spark/Polars 根据规模选择；</li>
+<li>常用 IC/分组结果物化到 ClickHouse；</li>
+<li>回测支持确定性分区并行，但同一账户/组合事件严格有序；</li>
+<li>容量测试覆盖峰值行情速率、开盘突发、全市场调仓和多年回放。</li>
+</ul>
+</section>
+<section id="14-验收清单" class="level2">
+<h2>14. 验收清单</h2>
+<ol type="1">
+<li>黄金 Tick 能重建相同盘口和 OHLCV，序号缺口被检测；</li>
+<li>迟到/更正事件生成可追踪新版本，不覆盖旧 Bar；</li>
+<li>基差方向、年化、到期和连续合约通过手算样例；</li>
+<li>MAD、标准化和 WLS 对退化截面有确定失败语义；</li>
+<li>IC、RankIC、ICIR、分组收益、换手和成本与独立实现一致；</li>
+<li>在故意注入未来财务、今日成分和同日收盘价时，泄漏门阻断；</li>
+<li>停牌、涨跌停、退市、分红、拆并、换月、借券不足和部分成交均有回放；</li>
+<li>固定快照/镜像/参数/种子重跑在声明容差内；</li>
+<li>结果页能下钻到对象、输入快照、公式、来源、质量和排除原因；</li>
+<li>发布流程完成研究复核、独立验证、风险/使用评审和审批；</li>
+<li>峰值负载的吞吐、延迟、内存、成本和恢复达到已批准 SLO；</li>
+<li>文案清楚披露限制，且无收益承诺。</li>
+</ol>
+</section>
+</section>
+
+        </article>
+        <footer class="page-meta">
+          <span>基线 1.0 · 2026-07-27 · Markdown 与 HTML 同源</span>
+          <span><a href="../../../ontology/financial-ontology.yaml">本体 YAML</a> · <a href="../../../contracts/ontology-api.openapi.yaml">OpenAPI</a> · <a href="../../../contracts/events.asyncapi.yaml">AsyncAPI</a></span>
+        </footer>
+      </div>
+    </main>
+  </div>
+  <script src="../../assets/search-index.js"></script>
+  <script src="../../assets/mermaid-11.16.0.min.js"></script>
+  <script src="../../assets/app.js"></script>
+</body>
+</html>

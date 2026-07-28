@@ -1,0 +1,65 @@
+dataContract:
+  id: market-level2-order-events
+  version: 1.0.0
+  owner: Market Data
+  domain: instruments-markets
+  description: 逐笔委托规范化事实；原始供应商字段保存在 bronze，本文约束 silver 语义层。
+  classification: important
+  purpose:
+    - market-research
+    - execution-analysis
+    - intraday-risk
+  schema:
+    compatibility: backward
+    primaryKey: [venue, instrumentId, tradingDate, sourceSequence]
+    fields:
+      venue: {type: string, nullable: false}
+      instrumentId: {type: string, nullable: false}
+      tradingDate: {type: date, nullable: false}
+      eventTime: {type: timestamp_ns, nullable: false, timeZone: Asia/Shanghai}
+      receiveTime: {type: timestamp_ns, nullable: false, timeZone: UTC}
+      sourceSequence: {type: string, nullable: false}
+      sourceOrderId: {type: string, nullable: true}
+      side: {type: enum, values: [buy, sell, unknown], nullable: false}
+      eventType: {type: enum, values: [new, cancel, trade, status, correction], nullable: false}
+      price: {type: decimal, precision: 30, scale: 12, nullable: true}
+      quantity: {type: decimal, precision: 30, scale: 10, nullable: true}
+      currency: {type: string, pattern: "^[A-Z]{3}$", nullable: true}
+      sourceCode: {type: string, nullable: false}
+      ingestionId: {type: uuid, nullable: false}
+  timing:
+    eventTimeField: eventTime
+    watermark: PT3S
+    allowedLateness: PT30S
+    correctionWindow: P7D
+    calendarRef: cn-equity-calendar
+  quality:
+    quarantineOnFailure: true
+    checks:
+      - {id: unique-sequence, expression: primary_key_is_unique, severity: error}
+      - {id: nonnegative-quantity, expression: quantity >= 0, severity: error}
+      - {id: valid-price, expression: "price > 0 OR eventType IN ('cancel','status')", severity: error}
+      - {id: clock-skew, expression: receiveTime >= eventTime - PT5S, severity: warning}
+      - {id: completeness, expression: instrumentId IS NOT NULL, severity: error}
+  serviceLevel:
+    freshnessP99: PT2S
+    completenessDaily: 0.9999
+    availabilityMonthly: 0.9995
+    reconciliation: per-session
+  lineage:
+    source: licensed-level2-feed
+    bronzeAsset: s3://logical-ref/bronze/market/level2
+    silverAsset: iceberg://logical-ref/silver/market/level2_order_events
+    ontologyObjects: [Instrument, TradingSession]
+  retention:
+    hot: P90D
+    lake: P10Y
+    legalHoldSupported: true
+  access:
+    objectPolicy: market-data-entitlement
+    propertyPolicy: source-license-restrictions
+    exportPolicy: no-external-redistribution
+  change:
+    approvers: [Market Data Owner, Data Governance, Security]
+    deprecationNotice: P90D
+    replayRequired: true
