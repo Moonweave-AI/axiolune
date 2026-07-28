@@ -1,0 +1,508 @@
+# baseURI: http://finregont.com/fro/xbrl/formula/variable.ttl
+# imports: http://finregont.com/fro/xbrl/generic/generic.ttl
+# prefix: variable
+
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix variable: <http://finregont.com/fro/xbrl/formula/variable.ttl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/xbrl/formula/variable.ttl>
+  rdf:type owl:Ontology ;
+  dct:creator "Jurgen Ziemer (of this OWL adaptation - not the XBRL design)"^^xsd:string ;
+  dct:description """An RDF/OWL version of the XBRL variable schema file. The Variable specification provides building blocks for other extension specifications including for XBRL formulae and for assertions about the expected content of XBRL instances. It defines syntax for declaration of two kinds of variables: fact variables that only evaluate to sequences of facts in an XBRL instance and general variables that can evaluate to a broader range of values.
+The ontology defines variable classes for Filter, Function, Parameter, Resource and related classes and properties."""^^xsd:string ;
+  dct:rights "Copyright  © 2002 XBRL International. All Rights Reserved. http://www.XBRL.org/legal/"^^xsd:string ;
+  dct:rights "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only)."^^xsd:string ;
+  rdfs:comment "The ontology is a direct conversion of the XBRL variable schema file (see owl:versionInfo). The purpose is bi-directional for RDF instance files that include an XBRL formula: To read XBRL data files into FinRegOnt and to create XBRL instance data files from the ontology."^^xsd:string ;
+  rdfs:isDefinedBy <https://specifications.xbrl.org/specifications.html> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  rdfs:seeAlso <http://www.xbrl.org/specification/variables/rec-2009-06-22/variables-rec-2009-06-22+corrected-errata-2013-11-18.html> ;
+  owl:imports <http://finregont.com/fro/xbrl/generic/generic.ttl> ;
+  owl:versionInfo "Created with TopBraid Composer from the XML Schema(s) http://xbrl.org/2008/variable, http://xbrl.org/2008/variable"^^xsd:string ;
+.
+variable:EqualityDefinition
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/variable#equalityDefinition" ;
+  rdfs:label "Equality definition"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf variable:Resource ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom variable:ExpressionDatatype ;
+      owl:onProperty variable:test ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty variable:test ;
+    ] ;
+.
+variable:ExpressionDatatype
+  rdf:type rdfs:Datatype ;
+  rdfs:label "Expression datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:string ;
+  owl:equivalentClass [
+      rdf:type rdfs:Datatype ;
+      owl:onDatatype xsd:string ;
+      owl:withRestrictions (
+          [
+            xsd:pattern "[\\s]*[\\S]+[\\s\\S]*"^^xsd:string ;
+          ]
+        ) ;
+    ] ;
+.
+variable:FactVariable
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/variable#factVariable" ;
+  rdfs:label "Fact variable"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf variable:Resource ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf variable:Variable ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom variable:ExpressionDatatype ;
+      owl:onProperty variable:fallbackValue ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:boolean ;
+      owl:onProperty variable:bindAsSequence ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:boolean ;
+      owl:onProperty variable:matches ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:boolean ;
+      owl:onProperty variable:nils ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty variable:bindAsSequence ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty variable:fallbackValue ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty variable:matches ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty variable:nils ;
+    ] ;
+.
+variable:Filter
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/variable#filter" ;
+  rdfs:label "Filter"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf variable:Resource ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+.
+variable:Function
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/variable#function" ;
+  rdfs:label "Function"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf variable:Resource ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom variable:Function-input ;
+      owl:onProperty variable:inputRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:QName ;
+      owl:onProperty variable:name ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:string ;
+      owl:onProperty variable:output ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty variable:inputRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty variable:name ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty variable:output ;
+    ] ;
+.
+variable:Function-input
+  rdf:type owl:Class ;
+  rdfs:label "Function-input"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:string ;
+      owl:onProperty variable:type ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty variable:type ;
+    ] ;
+.
+variable:GeneralVariable
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/variable#generalVariable" ;
+  rdfs:label "General variable"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf variable:Resource ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf variable:Variable ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom variable:ExpressionDatatype ;
+      owl:onProperty variable:select ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:boolean ;
+      owl:onProperty variable:bindAsSequence ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty variable:bindAsSequence ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty variable:select ;
+    ] ;
+.
+<http://finregont.com/fro/xbrl/formula/variable.ttl#Naming.attribute.group>
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/variable#naming.attribute.group" ;
+  rdfs:label "Naming.attribute.group"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom variable:QNameDatatype ;
+      owl:onProperty variable:name ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty variable:name ;
+    ] ;
+.
+variable:Parameter
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/variable#parameter" ;
+  rdfs:label "Parameter"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf variable:Resource ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom variable:ExpressionDatatype ;
+      owl:onProperty variable:select ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:QName ;
+      owl:onProperty variable:as ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:QName ;
+      owl:onProperty variable:name ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:boolean ;
+      owl:onProperty variable:required ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty variable:name ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty variable:as ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty variable:required ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty variable:select ;
+    ] ;
+.
+variable:Precondition
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/variable#precondition" ;
+  rdfs:label "Precondition"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf variable:Resource ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom variable:ExpressionDatatype ;
+      owl:onProperty variable:test ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty variable:test ;
+    ] ;
+.
+variable:QNameDatatype
+  rdf:type rdfs:Datatype ;
+  rdfs:label "QName datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:Name ;
+  owl:equivalentClass [
+      rdf:type rdfs:Datatype ;
+      owl:onDatatype xsd:Name ;
+      owl:withRestrictions (
+          [
+            xsd:pattern "([^:]+:)?[^:]+"^^xsd:string ;
+          ]
+        ) ;
+    ] ;
+.
+variable:Resource
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/variable#resource" ;
+  rdfs:label "Resource"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+.
+<http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type>
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/variable#resource.type" ;
+  rdfs:label "Resource.type"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#ResourceType> ;
+.
+variable:Variable
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/variable#variable" ;
+  rdfs:label "Variable"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf variable:Resource ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+.
+variable:VariableArc
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/variable#variableArc" ;
+  rdfs:label "Variable arc"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Arc> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Naming.attribute.group> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/generic/generic.ttl#GenericArcType> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/generic/generic.ttl#arc> ;
+.
+variable:VariableFilterArc
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/variable#variableFilterArc" ;
+  rdfs:label "Variable filter arc"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Arc> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/generic/generic.ttl#GenericArcType> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/generic/generic.ttl#arc> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:boolean ;
+      owl:onProperty variable:complement ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:boolean ;
+      owl:onProperty variable:cover ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty variable:complement ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty variable:cover ;
+    ] ;
+.
+variable:VariableSet
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/variable#variableSet" ;
+  rdfs:label "Variable set"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf variable:Resource ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#VariableSet.type> ;
+.
+<http://finregont.com/fro/xbrl/formula/variable.ttl#VariableSet.type>
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/variable#variableSet.type" ;
+  rdfs:label "Variable set.type"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:boolean ;
+      owl:onProperty variable:implicitFiltering ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:token ;
+      owl:onProperty variable:aspectModel ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty variable:aspectModel ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty variable:implicitFiltering ;
+    ] ;
+.
+variable:VariableSetFilterArc
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/variable#variableSetFilterArc" ;
+  rdfs:label "Variable set filter arc"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Arc> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/generic/generic.ttl#GenericArcType> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/generic/generic.ttl#arc> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:boolean ;
+      owl:onProperty variable:complement ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty variable:complement ;
+    ] ;
+.
+variable:as
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/variable#as" ;
+  rdfs:label "as"^^xsd:string ;
+.
+variable:aspectModel
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/variable#aspectModel" ;
+  rdfs:label "aspect model"^^xsd:string ;
+.
+variable:bindAsSequence
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/variable#bindAsSequence" ;
+  rdfs:label "bind as sequence"^^xsd:string ;
+.
+variable:complement
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/variable#complement" ;
+  rdfs:label "complement"^^xsd:string ;
+.
+variable:cover
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/variable#cover" ;
+  rdfs:label "cover"^^xsd:string ;
+.
+variable:fallbackValue
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/variable#fallbackValue" ;
+  rdfs:label "fallback value"^^xsd:string ;
+.
+variable:implicitFiltering
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/variable#implicitFiltering" ;
+  rdfs:label "implicit filtering"^^xsd:string ;
+.
+variable:inputRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/variable#input" ;
+  rdfs:label "input ref"^^xsd:string ;
+.
+variable:matches
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/variable#matches" ;
+  rdfs:label "matches"^^xsd:string ;
+.
+variable:name
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/variable#name" ;
+  rdfs:label "name"^^xsd:string ;
+.
+variable:nils
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/variable#nils" ;
+  rdfs:label "nils"^^xsd:string ;
+.
+variable:output
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/variable#output" ;
+  rdfs:label "output"^^xsd:string ;
+.
+variable:required
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/variable#required" ;
+  rdfs:label "required"^^xsd:string ;
+.
+variable:select
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/variable#select" ;
+  rdfs:label "select"^^xsd:string ;
+.
+variable:test
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/variable#test" ;
+  rdfs:label "test"^^xsd:string ;
+.
+variable:type
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/variable#type" ;
+  rdfs:label "type"^^xsd:string ;
+.
+<http://www.w3.org/2004/02/skos/core#prefLabel>
+  rdf:type owl:AnnotationProperty ;
+  rdfs:label "pref label"^^xsd:string ;
+.

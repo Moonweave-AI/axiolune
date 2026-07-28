@@ -1,0 +1,121 @@
+# baseURI: http://finregont.com/fro/xbrl/table/rule-axis.ttl
+# imports: http://finregont.com/fro/xbrl/generic/generic.ttl
+# imports: http://finregont.com/fro/xbrl/table/table.ttl
+# imports: http://topbraid.org/sxsd
+# prefix: rule-axis
+
+@prefix composite: <http://www.topbraid.org/2007/05/composite.owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rule-axis: <http://finregont.com/fro/xbrl/table/rule-axis.ttl#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix sxsd: <http://topbraid.org/sxsd#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/xbrl/table/rule-axis.ttl>
+  rdf:type owl:Ontology ;
+  dct:creator "Jurgen Ziemer (of this OWL adaptation - not the XBRL design)"^^xsd:string ;
+  dct:description "An RDF/OWL version of XBRL table rule-axis. The Table Linkbase provides a mechanism for taxonomy authors to define a tabular layout of facts. The resulting tables can be used for both presentation and data entry."^^xsd:string ;
+  dct:rights "Copyright  © 2002 XBRL International. All Rights Reserved. http://www.XBRL.org/legal/"^^xsd:string ;
+  dct:rights "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only)."^^xsd:string ;
+  rdfs:comment "The ontology is a direct conversion of the XBRL table schema file (rule-axis.xsd). The source XSD is from the EIOPA Solvency taxonomy package. XBRL specification shows rule-axis as depreciated, but we keep it for consitency with Eurofiling.  (rdfs:seeAlso)"^^xsd:string ;
+  rdfs:isDefinedBy <https://specifications.xbrl.org/specifications.html> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  rdfs:seeAlso <http://www.eurofiling.info/solvencyII/index.shtml> ;
+  rdfs:seeAlso <https://eiopa.europa.eu/regulation-supervision/insurance/reporting-format> ;
+  rdfs:seeAlso <https://specifications.xbrl.org/work-product-index-table-linkbase-table-linkbase-1.0.html> ;
+  owl:imports <http://finregont.com/fro/xbrl/generic/generic.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/table/table.ttl> ;
+  owl:imports <http://topbraid.org/sxsd> ;
+.
+rule-axis:Document
+  rdf:type sxml:Document ;
+  sxml:root rule-axis:r ;
+.
+rule-axis:id-element
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "id" ;
+  rdfs:domain sxsd:Element ;
+  rdfs:label "id" ;
+.
+rule-axis:maxOccurs-sequence
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "maxOccurs" ;
+  rdfs:domain sxsd:Sequence ;
+  rdfs:label "maxOccurs" ;
+.
+rule-axis:minOccurs-sequence
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "minOccurs" ;
+  rdfs:domain sxsd:Sequence ;
+  rdfs:label "minOccurs" ;
+.
+rule-axis:mixed-complexContent
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "mixed" ;
+  rdfs:domain sxsd:ComplexContent ;
+  rdfs:label "mixed" ;
+.
+rule-axis:r
+  rdf:type sxsd:Schema ;
+  rule-axis:xmlns-schema "http://www.w3.org/2001/XMLSchema" ;
+  sxml:prefix "formula"^^xsd:string ;
+  sxml:prefix "table"^^xsd:string ;
+  sxsd:elementFormDefault "qualified" ;
+  sxsd:targetNamespace "http://xbrl.org/2011/table" ;
+  composite:child rule-axis:r-0 ;
+  composite:child rule-axis:r-1 ;
+  composite:child rule-axis:r-2 ;
+.
+rule-axis:r-0
+  rdf:type sxsd:Import ;
+  sxsd:namespace "http://xbrl.org/2008/formula" ;
+  sxsd:schemaLocation "http://www.xbrl.org/2008/formula.xsd" ;
+  composite:index "0"^^xsd:int ;
+.
+rule-axis:r-1
+  rdf:type sxsd:ComplexType ;
+  sxsd:name "ruleAxis.type" ;
+  composite:child rule-axis:r-1-0 ;
+  composite:index "1"^^xsd:int ;
+.
+rule-axis:r-1-0
+  rdf:type sxsd:ComplexContent ;
+  rule-axis:mixed-complexContent "true" ;
+  composite:child rule-axis:r-1-0-0 ;
+  composite:index "0"^^xsd:int ;
+.
+rule-axis:r-1-0-0
+  rdf:type sxsd:Extension ;
+  sxsd:base "table:predefinedAxis.type" ;
+  composite:child rule-axis:r-1-0-0-0 ;
+  composite:index "0"^^xsd:int ;
+.
+rule-axis:r-1-0-0-0
+  rdf:type sxsd:Sequence ;
+  rule-axis:maxOccurs-sequence "unbounded" ;
+  rule-axis:minOccurs-sequence "0" ;
+  composite:child rule-axis:r-1-0-0-0-0 ;
+  composite:index "0"^^xsd:int ;
+.
+rule-axis:r-1-0-0-0-0
+  rdf:type sxsd:Element ;
+  sxsd:ref "formula:abstract.aspect" ;
+  composite:index "0"^^xsd:int ;
+.
+rule-axis:r-2
+  rdf:type sxsd:Element ;
+  rule-axis:id-element "xml-rule-axis" ;
+  sxsd:name "ruleAxis" ;
+  sxsd:substitutionGroup "table:predefinedAxis" ;
+  sxsd:type "table:ruleAxis.type" ;
+  composite:index "2"^^xsd:int ;
+.
+rule-axis:xmlns-schema
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "xmlns" ;
+  rdfs:domain sxsd:Schema ;
+  rdfs:label "xmlns" ;
+.

@@ -1,0 +1,98 @@
+# baseURI: http://finregont.com/fro/eurofiling/ext/ef_filing-indicators.ttl
+# imports: http://finregont.com/fro/xbrl/XLink.ttl
+# imports: http://finregont.com/fro/xbrl/instance.ttl
+# imports: http://finregont.com/fro/xbrl/linkbase.ttl
+# imports: http://topbraid.org/sxml
+# imports: http://www.linkedmodel.org/schema/dtype
+# prefix: filing-indicators
+
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dtype: <http://www.linkedmodel.org/schema/dtype#> .
+@prefix filing-indicators: <http://finregont.com/fro/eurofiling/ext/ef_filing-indicators.ttl#> .
+@prefix instance: <http://finregont.com/fro/xbrl/instance.ttl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/eurofiling/ext/ef_filing-indicators.ttl>
+  rdf:type owl:Ontology ;
+  owl:imports <http://finregont.com/fro/xbrl/XLink.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/instance.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/linkbase.ttl> ;
+  owl:imports <http://topbraid.org/sxml> ;
+  owl:imports <http://www.linkedmodel.org/schema/dtype> ;
+  owl:versionInfo "Created with TopBraid Composer from the XML Schema(s) http://www.eurofiling.info/xbrl/ext/filing-indicators, http://www.eurofiling.info/xbrl/ext/filing-indicators, http://www.eurofiling.info/xbrl/ext/filing-indicators, http://www.eurofiling.info/xbrl/ext/filing-indicators, http://www.eurofiling.info/xbrl/ext/filing-indicators, http://www.eurofiling.info/xbrl/ext/filing-indicators, http://www.eurofiling.info/xbrl/ext/filing-indicators, http://www.eurofiling.info/xbrl/ext/filing-indicators, http://www.eurofiling.info/xbrl/ext/filing-indicators, http://www.eurofiling.info/xbrl/ext/filing-indicators, http://www.eurofiling.info/xbrl/ext/filing-indicators, http://www.eurofiling.info/xbrl/ext/filing-indicators, http://www.eurofiling.info/xbrl/ext/filing-indicators, http://www.eurofiling.info/xbrl/ext/filing-indicators, http://www.eurofiling.info/xbrl/ext/filing-indicators, http://www.eurofiling.info/xbrl/ext/filing-indicators, http://www.eurofiling.info/xbrl/ext/filing-indicators, http://www.eurofiling.info/xbrl/ext/filing-indicators"^^xsd:string ;
+.
+filing-indicators:FIndicators
+  rdf:type owl:Class ;
+  sxml:tag "http://www.eurofiling.info/xbrl/ext/filing-indicators#fIndicators" ;
+  rdfs:label "FIndicators"^^xsd:string ;
+  rdfs:subClassOf instance:Tuple ;
+  rdfs:subClassOf instance:TupleAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      instance:periodType "instant"^^xsd:string ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom filing-indicators:FilingIndicator ;
+      owl:onProperty filing-indicators:filingIndicatorRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:minCardinality "1"^^xsd:int ;
+      owl:onProperty filing-indicators:filingIndicatorRef ;
+    ] ;
+.
+filing-indicators:FilingIndicator
+  rdf:type owl:Class ;
+  instance:periodType "instant"^^xsd:string ;
+  sxml:tag "http://www.eurofiling.info/xbrl/ext/filing-indicators#filingIndicator" ;
+  rdfs:label "Filing indicator"^^xsd:string ;
+  rdfs:subClassOf instance:Item ;
+  rdfs:subClassOf instance:StringItemType ;
+.
+filing-indicators:filingIndicatorRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.eurofiling.info/xbrl/ext/filing-indicators#filingIndicator" ;
+  rdfs:label "filing indicator ref"^^xsd:string ;
+.
+filing-indicators:id
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.eurofiling.info/xbrl/ext/filing-indicators#id" ;
+  rdfs:label "id"^^xsd:string ;
+.
+instance:FactAttrs
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#factAttrs" ;
+  rdfs:comment "Attributes for all items and tuples."^^xsd:string ;
+  rdfs:label "Fact attrs"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:ID ;
+      owl:onProperty filing-indicators:id ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty filing-indicators:id ;
+    ] ;
+.
+instance:TupleAttrs
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#tupleAttrs" ;
+  rdfs:comment "Group of attributes for tuples."^^xsd:string ;
+  rdfs:label "Tuple attrs"^^xsd:string ;
+  rdfs:subClassOf instance:FactAttrs ;
+.
+instance:periodType
+  rdf:type owl:AnnotationProperty ;
+  rdfs:label "period type"^^xsd:string ;
+.
+skos:prefLabel
+  rdf:type owl:AnnotationProperty ;
+  rdfs:label "pref label"^^xsd:string ;
+.

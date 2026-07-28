@@ -1,0 +1,81 @@
+# baseURI: http://finregont.com/fro/xbrl/cube/xbrldi.ttl
+# imports: http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl
+# imports: http://topbraid.org/sxml
+# prefix: xbrldi
+
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix xbrldi: <http://finregont.com/fro/xbrl/cube/xbrldi.ttl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/xbrl/cube/xbrldi.ttl>
+  rdf:type owl:Ontology ;
+  dct:creator "Jurgen Ziemer (of this OWL adaptation - not the XBRL design)"^^xsd:string ;
+  dct:description "An RDF/OWL version of the XBRL dimension. The ontology has classes for typed and explicit dimension members."^^xsd:string ;
+  dct:rights "Copyright  © 2002 XBRL International. All Rights Reserved. http://www.XBRL.org/legal/"^^xsd:string ;
+  dct:rights "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only)."^^xsd:string ;
+  rdfs:comment "The ontology is a direct conversion of the XBRL schema file (see owl:versionInfo). The purpose is bi-directional for RDF instance files that include an XBRL taxonomy: To read XBRL data files into FinRegOnt and to create XBRL instance data files from the ontology."^^xsd:string ;
+  rdfs:comment "This schema is used by XBRL instances that use dimensions to define legal segment and scenario element contents."@en ;
+  rdfs:isDefinedBy <https://specifications.xbrl.org/specifications.html> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  owl:imports <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl> ;
+  owl:imports <http://topbraid.org/sxml> ;
+  owl:versionInfo "Created with TopBraid Composer from the XML Schema(s) http://xbrl.org/2006/xbrldi"^^xsd:string ;
+.
+xbrldi:dimension
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2006/xbrldi#dimension" ;
+  rdfs:label "dimension"^^xsd:string ;
+.
+xbrldi:explicitMember
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2006/xbrldi#explicitMember" ;
+  rdfs:comment "This element contains the QName of an item that is a member of an explicit dimension."@en ;
+  rdfs:label "Explicit member"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      owl:allValuesFrom xsd:QName ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:QName ;
+      owl:onProperty xbrldi:dimension ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty xbrldi:dimension ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+xbrldi:typedMember
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2006/xbrldi#typedMember" ;
+  rdfs:comment "This element constains one child of anyType."@en ;
+  rdfs:label "Typed member"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:QName ;
+      owl:onProperty xbrldi:dimension ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty xbrldi:dimension ;
+    ] ;
+.
+<http://www.w3.org/2004/02/skos/core#prefLabel>
+  rdf:type owl:AnnotationProperty ;
+  rdfs:label "pref label"^^xsd:string ;
+.

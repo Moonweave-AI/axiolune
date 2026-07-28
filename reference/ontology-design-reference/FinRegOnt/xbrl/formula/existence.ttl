@@ -1,0 +1,51 @@
+# baseURI: http://finregont.com/fro/xbrl/formula/existence.ttl
+# imports: http://finregont.com/fro/xbrl/formula/validation.ttl
+# imports: http://finregont.com/fro/xbrl/generic/generic.ttl
+# prefix: existence
+
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix existence: <http://finregont.com/fro/xbrl/formula/existence.ttl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/xbrl/formula/existence.ttl>
+  rdf:type owl:Ontology ;
+  dct:creator "Jurgen Ziemer (of this OWL adaptation - not the XBRL design)"^^xsd:string ;
+  dct:description "An RDF/OWL version of the XBRL formula schema file. A XBRL formula specifies validations based on XBRL instance facts and generation of derived data as output XBRL instance facts.  Existence assertions specify the syntax for assertions that facilitate testing for the existence of facts meeting specified criteria. The ontology extends Variable with Existence Assertion subclass of Variable Set Assertion."^^xsd:string ;
+  dct:rights "Copyright  © 2002 XBRL International. All Rights Reserved. http://www.XBRL.org/legal/"^^xsd:string ;
+  dct:rights "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only)."^^xsd:string ;
+  rdfs:comment "The ontology is a direct conversion of the XBRL existence schema (see owl:versionInfo). The purpose is bi-directional for RDF instance files that include an XBRL formula: To read XBRL data files into FinRegOnt and to create XBRL instance data files from the ontology."^^xsd:string ;
+  rdfs:isDefinedBy <https://specifications.xbrl.org/specifications.html> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  rdfs:seeAlso <http://www.xbrl.org/specification/existenceassertions/rec-2009-06-22/existenceassertions-rec-2009-06-22.html> ;
+  owl:imports <http://finregont.com/fro/xbrl/formula/validation.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/generic/generic.ttl> ;
+  owl:versionInfo "Created with TopBraid Composer from the XML Schema(s) http://xbrl.org/2008/assertion/existence"^^xsd:string ;
+.
+existence:ExistenceAssertion
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/assertion/existence#existenceAssertion" ;
+  rdfs:label "Existence assertion"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#VariableSet> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty existence:testRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty existence:testRef ;
+    ] ;
+.
+existence:testRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/assertion/existence#test" ;
+  rdfs:label "test ref"^^xsd:string ;
+.

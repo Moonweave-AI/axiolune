@@ -1,0 +1,21 @@
+SELECT *
+WHERE {
+	?edition a fro-leg-ref:DocumentEdition ;
+			 fro-leg-ref:hasEditionText ?edition_text ;
+     		 lkif-mereo:member ?title .
+	?title a fro-leg-ref:DocumentTitle ; 
+		   fro-leg-ref:hasComponentName ?title_name ;
+		   fro-leg-ref:divided_by ?chapter .
+	?chapter a fro-leg-ref:Chapter .
+	?chapter fro-leg-ref:hasComponentName ?chapter_name .
+	?chapter fro-leg-ref:divided_by ?chapter_div .
+	?chapter_div a fro-leg-ref:ChapterDivision .
+	?chapter_div fro-leg-ref:hasComponentName ?chapter_div_name .
+	?chapter_div fro-leg-ref:divided_by ?section .
+	?section a fro-leg-ref:Section .
+	?section fro-leg-ref:hasComponentName ?section_name .
+	?section fro-leg-ref:divided_by ?paragraph .
+	?paragraph a fro-leg-ref:Paragraph .
+	?paragraph fro-leg-ref:hasComponentText ?paragraph_text .
+
+}

@@ -1,0 +1,624 @@
+# baseURI: http://finregont.com/fro/xbrl/w3/W3_xlink.ttl
+# imports: http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl
+# imports: http://topbraid.org/sxml
+# prefix: w3-xlink
+
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix dtype: <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix w3-xlink: <http://finregont.com/fro/xbrl/w3/W3_xlink.ttl#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+dtype:EnumeratedValue
+  rdf:type owl:Class ;
+.
+dtype:order
+  rdf:type owl:AnnotationProperty ;
+.
+dtype:value
+  rdf:type owl:DatatypeProperty ;
+.
+<http://finregont.com/fro/xbrl/w3/W3_xlink.ttl>
+  rdf:type owl:Ontology ;
+  <http://purl.org/dc/elements/1.1/description> "XLink attribute specification"^^xsd:string ;
+  dct:creator "Jurgen Ziemer (of this OWL adaptation - not the W3 design)"^^xsd:string ;
+  dct:description """An RDF/OWL version of W3 XLink. This specification defines the XML Linking Language (XLink), which allows elements to be inserted into XML documents in order to create and describe links between resources. It uses XML syntax to create structures that can describe links similar to the simple unidirectional hyperlinks of today's HTML, as well as more sophisticated links.
+The ontology defines classes, properties and individuals for Locator, Resource, Type and Arc."""^^xsd:string ;
+  dct:rights "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only)."^^xsd:string ;
+  dct:rights "http://www.w3.org/Consortium/Legal/2015/doc-license"^^xsd:string ;
+  rdfs:comment "The ontology is a direct conversion of the W3 schema file (see owl:versionInfo). The purpose is bi-directional for RDF instance files that include an XBRL taxonomy: To read XBRL data files into FinRegOnt and to create XBRL instance data files from the ontology."^^xsd:string ;
+  rdfs:isDefinedBy <http://www.w3.org/standards/xml/> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  rdfs:seeAlso <http://www.w3.org/TR/xlink/> ;
+  owl:imports <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl> ;
+  owl:imports <http://topbraid.org/sxml> ;
+  owl:versionInfo "Created with TopBraid Composer from the XML Schema(s) http://www.w3.org/1999/xlink"^^xsd:string ;
+.
+w3-xlink:AE_none
+  rdf:type w3-xlink:ActuateEnum ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "3"^^xsd:nonNegativeInteger ;
+  dtype:value "none"^^xsd:string ;
+  rdfs:label "none"^^xsd:string ;
+.
+w3-xlink:AE_onLoad
+  rdf:type w3-xlink:ActuateEnum ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "0"^^xsd:nonNegativeInteger ;
+  dtype:value "onLoad"^^xsd:string ;
+  rdfs:label "on load"^^xsd:string ;
+.
+w3-xlink:AE_onRequest
+  rdf:type w3-xlink:ActuateEnum ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "1"^^xsd:nonNegativeInteger ;
+  dtype:value "onRequest"^^xsd:string ;
+  rdfs:label "on request"^^xsd:string ;
+.
+w3-xlink:AE_other
+  rdf:type w3-xlink:ActuateEnum ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "2"^^xsd:nonNegativeInteger ;
+  dtype:value "other"^^xsd:string ;
+  rdfs:label "other"^^xsd:string ;
+.
+w3-xlink:AT_arc
+  rdf:type w3-xlink:ArcType-type ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "0"^^xsd:nonNegativeInteger ;
+  dtype:value "arc"^^xsd:token ;
+  rdfs:label "arc"^^xsd:string ;
+.
+w3-xlink:ActuateEnum
+  rdf:type owl:Class ;
+  <http://purl.org/dc/elements/1.1/description> "Enumeration of values for the actuate attribute"^^xsd:string ;
+  sxml:tag "http://www.w3.org/1999/xlink#actuateEnum" ;
+  rdfs:label "Actuate enum"^^xsd:string ;
+  rdfs:subClassOf w3-xlink:EnumeratedValue ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:string ;
+      owl:onProperty dtype:value ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty dtype:value ;
+    ] ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:oneOf [
+          rdf:type rdf:List ;
+          rdf:first w3-xlink:AE_none ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first w3-xlink:AE_onLoad ;
+              rdf:rest [
+                  rdf:type rdf:List ;
+                  rdf:first w3-xlink:AE_onRequest ;
+                  rdf:rest [
+                      rdf:type rdf:List ;
+                      rdf:first w3-xlink:AE_other ;
+                      rdf:rest () ;
+                    ] ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+.
+w3-xlink:ArcType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.w3.org/1999/xlink#arcType" ;
+  rdfs:label "Arc type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom w3-xlink:ArcType-type ;
+      owl:onProperty w3-xlink:typeRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty w3-xlink:typeRef ;
+    ] ;
+.
+w3-xlink:ArcType-type
+  rdf:type owl:Class ;
+  rdfs:label "Arc type-type"^^xsd:string ;
+  rdfs:subClassOf w3-xlink:EnumeratedValue ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:token ;
+      owl:onProperty dtype:value ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty dtype:value ;
+    ] ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:oneOf [
+          rdf:type rdf:List ;
+          rdf:first w3-xlink:AT_arc ;
+          rdf:rest () ;
+        ] ;
+    ] ;
+.
+w3-xlink:ET_extended
+  rdf:type w3-xlink:ExtendedType-type ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "0"^^xsd:nonNegativeInteger ;
+  dtype:value "extended"^^xsd:token ;
+  rdfs:label "extended"^^xsd:string ;
+.
+w3-xlink:EnumeratedValue
+  rdf:type owl:Class ;
+  rdfs:label "Enumerated value"^^xsd:string ;
+  rdfs:subClassOf dtype:EnumeratedValue ;
+.
+w3-xlink:ExtendedType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.w3.org/1999/xlink#extendedType" ;
+  rdfs:label "Extended type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom w3-xlink:ExtendedType-type ;
+      owl:onProperty w3-xlink:typeRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty w3-xlink:typeRef ;
+    ] ;
+.
+w3-xlink:ExtendedType-type
+  rdf:type owl:Class ;
+  rdfs:label "Extended type-type"^^xsd:string ;
+  rdfs:subClassOf w3-xlink:EnumeratedValue ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:token ;
+      owl:onProperty dtype:value ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty dtype:value ;
+    ] ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:oneOf [
+          rdf:type rdf:List ;
+          rdf:first w3-xlink:ET_extended ;
+          rdf:rest () ;
+        ] ;
+    ] ;
+.
+w3-xlink:LT_locator
+  rdf:type w3-xlink:LocatorType-type ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "0"^^xsd:nonNegativeInteger ;
+  dtype:value "locator"^^xsd:token ;
+  rdfs:label "locator"^^xsd:string ;
+.
+w3-xlink:LocatorType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.w3.org/1999/xlink#locatorType" ;
+  rdfs:label "Locator type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom w3-xlink:LocatorType-type ;
+      owl:onProperty w3-xlink:typeRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty w3-xlink:typeRef ;
+    ] ;
+.
+w3-xlink:LocatorType-type
+  rdf:type owl:Class ;
+  rdfs:label "Locator type-type"^^xsd:string ;
+  rdfs:subClassOf w3-xlink:EnumeratedValue ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:token ;
+      owl:onProperty dtype:value ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty dtype:value ;
+    ] ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:oneOf [
+          rdf:type rdf:List ;
+          rdf:first w3-xlink:LT_locator ;
+          rdf:rest () ;
+        ] ;
+    ] ;
+.
+w3-xlink:NonEmptyURIDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  <http://purl.org/dc/elements/1.1/description> """A URI type with a minimum length of 1 character.
+      Used on role and arcrole and href elements."""^^xsd:string ;
+  rdfs:label "Non empty URIDatatype"^^xsd:string ;
+  rdfs:subClassOf xsd:anyURI ;
+.
+w3-xlink:RT_resource
+  rdf:type w3-xlink:ResourceType-type ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "0"^^xsd:nonNegativeInteger ;
+  dtype:value "resource"^^xsd:token ;
+  rdfs:label "resource"^^xsd:string ;
+.
+w3-xlink:ResourceType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.w3.org/1999/xlink#resourceType" ;
+  rdfs:label "Resource type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom w3-xlink:ResourceType-type ;
+      owl:onProperty w3-xlink:typeRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty w3-xlink:typeRef ;
+    ] ;
+.
+w3-xlink:ResourceType-type
+  rdf:type owl:Class ;
+  rdfs:label "Resource type-type"^^xsd:string ;
+  rdfs:subClassOf w3-xlink:EnumeratedValue ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:token ;
+      owl:onProperty dtype:value ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty dtype:value ;
+    ] ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:oneOf [
+          rdf:type rdf:List ;
+          rdf:first w3-xlink:RT_resource ;
+          rdf:rest () ;
+        ] ;
+    ] ;
+.
+w3-xlink:SE_embed
+  rdf:type w3-xlink:ShowEnum ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "2"^^xsd:nonNegativeInteger ;
+  dtype:value "embed"^^xsd:string ;
+  rdfs:label "embed"^^xsd:string ;
+.
+w3-xlink:SE_new
+  rdf:type w3-xlink:ShowEnum ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "0"^^xsd:nonNegativeInteger ;
+  dtype:value "new"^^xsd:string ;
+  rdfs:label "new"^^xsd:string ;
+.
+w3-xlink:SE_none
+  rdf:type w3-xlink:ShowEnum ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "4"^^xsd:nonNegativeInteger ;
+  dtype:value "none"^^xsd:string ;
+  rdfs:label "none"^^xsd:string ;
+.
+w3-xlink:SE_other
+  rdf:type w3-xlink:ShowEnum ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "3"^^xsd:nonNegativeInteger ;
+  dtype:value "other"^^xsd:string ;
+  rdfs:label "other"^^xsd:string ;
+.
+w3-xlink:SE_replace
+  rdf:type w3-xlink:ShowEnum ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "1"^^xsd:nonNegativeInteger ;
+  dtype:value "replace"^^xsd:string ;
+  rdfs:label "replace"^^xsd:string ;
+.
+w3-xlink:ST_simple
+  rdf:type w3-xlink:SimpleType-type ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "0"^^xsd:nonNegativeInteger ;
+  dtype:value "simple"^^xsd:token ;
+  rdfs:label "simple"^^xsd:string ;
+.
+w3-xlink:ShowEnum
+  rdf:type owl:Class ;
+  <http://purl.org/dc/elements/1.1/description> "Enumeration of values for the show attribute"^^xsd:string ;
+  sxml:tag "http://www.w3.org/1999/xlink#showEnum" ;
+  rdfs:label "Show enum"^^xsd:string ;
+  rdfs:subClassOf w3-xlink:EnumeratedValue ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:string ;
+      owl:onProperty dtype:value ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty dtype:value ;
+    ] ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:oneOf [
+          rdf:type rdf:List ;
+          rdf:first w3-xlink:SE_embed ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first w3-xlink:SE_new ;
+              rdf:rest [
+                  rdf:type rdf:List ;
+                  rdf:first w3-xlink:SE_none ;
+                  rdf:rest [
+                      rdf:type rdf:List ;
+                      rdf:first w3-xlink:SE_other ;
+                      rdf:rest [
+                          rdf:type rdf:List ;
+                          rdf:first w3-xlink:SE_replace ;
+                          rdf:rest () ;
+                        ] ;
+                    ] ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+.
+w3-xlink:SimpleType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.w3.org/1999/xlink#simpleType" ;
+  rdfs:label "Simple type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom w3-xlink:SimpleType-type ;
+      owl:onProperty w3-xlink:typeRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty w3-xlink:typeRef ;
+    ] ;
+.
+w3-xlink:SimpleType-type
+  rdf:type owl:Class ;
+  rdfs:label "Simple type-type"^^xsd:string ;
+  rdfs:subClassOf w3-xlink:EnumeratedValue ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:token ;
+      owl:onProperty dtype:value ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty dtype:value ;
+    ] ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:oneOf [
+          rdf:type rdf:List ;
+          rdf:first w3-xlink:ST_simple ;
+          rdf:rest () ;
+        ] ;
+    ] ;
+.
+w3-xlink:TE_arc
+  rdf:type w3-xlink:TypeEnum ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "3"^^xsd:nonNegativeInteger ;
+  dtype:value "arc"^^xsd:string ;
+  rdfs:label "arc"^^xsd:string ;
+.
+w3-xlink:TE_extended
+  rdf:type w3-xlink:TypeEnum ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "1"^^xsd:nonNegativeInteger ;
+  dtype:value "extended"^^xsd:string ;
+  rdfs:label "extended"^^xsd:string ;
+.
+w3-xlink:TE_locator
+  rdf:type w3-xlink:TypeEnum ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "2"^^xsd:nonNegativeInteger ;
+  dtype:value "locator"^^xsd:string ;
+  rdfs:label "locator"^^xsd:string ;
+.
+w3-xlink:TE_resource
+  rdf:type w3-xlink:TypeEnum ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "4"^^xsd:nonNegativeInteger ;
+  dtype:value "resource"^^xsd:string ;
+  rdfs:label "resource"^^xsd:string ;
+.
+w3-xlink:TE_simple
+  rdf:type w3-xlink:TypeEnum ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "0"^^xsd:nonNegativeInteger ;
+  dtype:value "simple"^^xsd:string ;
+  rdfs:label "simple"^^xsd:string ;
+.
+w3-xlink:TE_title
+  rdf:type w3-xlink:TypeEnum ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "5"^^xsd:nonNegativeInteger ;
+  dtype:value "title"^^xsd:string ;
+  rdfs:label "title"^^xsd:string ;
+.
+w3-xlink:TT_title
+  rdf:type w3-xlink:TitleType-type ;
+  rdf:type owl:NamedIndividual ;
+  dtype:order "0"^^xsd:nonNegativeInteger ;
+  dtype:value "title"^^xsd:token ;
+  rdfs:label "title"^^xsd:string ;
+.
+w3-xlink:TitleType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.w3.org/1999/xlink#titleType" ;
+  rdfs:label "Title type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom w3-xlink:TitleType-type ;
+      owl:onProperty w3-xlink:typeRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty w3-xlink:typeRef ;
+    ] ;
+.
+w3-xlink:TitleType-type
+  rdf:type owl:Class ;
+  rdfs:label "Title type-type"^^xsd:string ;
+  rdfs:subClassOf w3-xlink:EnumeratedValue ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:token ;
+      owl:onProperty dtype:value ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty dtype:value ;
+    ] ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:oneOf [
+          rdf:type rdf:List ;
+          rdf:first w3-xlink:TT_title ;
+          rdf:rest () ;
+        ] ;
+    ] ;
+.
+w3-xlink:TypeEnum
+  rdf:type owl:Class ;
+  <http://purl.org/dc/elements/1.1/description> "Enumeration of values for the type attribute"^^xsd:string ;
+  sxml:tag "http://www.w3.org/1999/xlink#typeEnum" ;
+  rdfs:label "Type enum"^^xsd:string ;
+  rdfs:subClassOf w3-xlink:EnumeratedValue ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:string ;
+      owl:onProperty dtype:value ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty dtype:value ;
+    ] ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:oneOf [
+          rdf:type rdf:List ;
+          rdf:first w3-xlink:TE_arc ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first w3-xlink:TE_extended ;
+              rdf:rest [
+                  rdf:type rdf:List ;
+                  rdf:first w3-xlink:TE_locator ;
+                  rdf:rest [
+                      rdf:type rdf:List ;
+                      rdf:first w3-xlink:TE_resource ;
+                      rdf:rest [
+                          rdf:type rdf:List ;
+                          rdf:first w3-xlink:TE_simple ;
+                          rdf:rest [
+                              rdf:type rdf:List ;
+                              rdf:first w3-xlink:TE_title ;
+                              rdf:rest () ;
+                            ] ;
+                        ] ;
+                    ] ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+.
+w3-xlink:typeRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.w3.org/1999/xlink#type" ;
+  rdfs:label "type ref"^^xsd:string ;
+.
+<http://purl.org/dc/elements/1.1/description>
+  rdf:type owl:AnnotationProperty ;
+  rdfs:label "description"^^xsd:string ;
+.
+sxml:isAttribute
+  rdf:type owl:AnnotationProperty ;
+.
+sxml:tag
+  rdf:type owl:AnnotationProperty ;
+.
+xsd:anyURI
+  rdf:type owl:Class ;
+.
+xsd:minLength
+  rdf:type owl:AnnotationProperty ;
+.
+<http://www.w3.org/2004/02/skos/core#prefLabel>
+  rdf:type owl:AnnotationProperty ;
+  rdfs:label "pref label"^^xsd:string ;
+.
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "true"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "true"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "true"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "true"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "true"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "true"^^xsd:boolean ;
+].
+[
+  xsd:minLength "1"^^xsd:anyURI ;
+].

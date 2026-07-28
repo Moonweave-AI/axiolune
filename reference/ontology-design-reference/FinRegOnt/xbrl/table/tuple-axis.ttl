@@ -1,0 +1,190 @@
+# baseURI: http://finregont.com/fro/xbrl/table/tuple-axis.ttl
+# imports: http://finregont.com/fro/xbrl/generic/generic.ttl
+# imports: http://finregont.com/fro/xbrl/table/table.ttl
+# imports: http://topbraid.org/sxsd
+# prefix: tuple-axis
+
+@prefix composite: <http://www.topbraid.org/2007/05/composite.owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix sxsd: <http://topbraid.org/sxsd#> .
+@prefix tuple-axis: <http://finregont.com/fro/xbrl/table/tuple-axis.ttl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/xbrl/table/tuple-axis.ttl>
+  rdf:type owl:Ontology ;
+  dct:creator "Jurgen Ziemer (of this OWL adaptation - not the XBRL design)"^^xsd:string ;
+  dct:description "An RDF/OWL version of XBRL table. The Table Linkbase provides a mechanism for taxonomy authors to define a tabular layout of facts. The resulting tables can be used for both presentation and data entry."^^xsd:string ;
+  dct:rights "Copyright  © 2002 XBRL International. All Rights Reserved. http://www.XBRL.org/legal/"^^xsd:string ;
+  dct:rights "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only)."^^xsd:string ;
+  rdfs:comment "The ontology is a direct conversion of the XBRL table composition schema file (tuple-axis.xsd). The source XSD is from the EIOPA Solvency taxonomy package. The schema may be depreciated, but we keep it for consitency with Eurofiling.  "^^xsd:string ;
+  rdfs:isDefinedBy <https://specifications.xbrl.org/specifications.html> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  rdfs:seeAlso <http://www.eurofiling.info/solvencyII/index.shtml> ;
+  rdfs:seeAlso <https://eiopa.europa.eu/regulation-supervision/insurance/reporting-format> ;
+  owl:imports <http://finregont.com/fro/xbrl/generic/generic.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/table/table.ttl> ;
+  owl:imports <http://topbraid.org/sxsd> ;
+.
+tuple-axis:Document
+  rdf:type sxml:Document ;
+  sxml:root tuple-axis:r ;
+.
+tuple-axis:arcroleURI-linkarcroleType
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "arcroleURI" ;
+  rdfs:domain <http://www.xbrl.org/2003/linkbase#arcroleType> ;
+  rdfs:label "arcroleURI" ;
+.
+tuple-axis:cyclesAllowed-linkarcroleType
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "cyclesAllowed" ;
+  rdfs:domain <http://www.xbrl.org/2003/linkbase#arcroleType> ;
+  rdfs:label "cyclesAllowed" ;
+.
+tuple-axis:id-element
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "id" ;
+  rdfs:domain sxsd:Element ;
+  rdfs:label "id" ;
+.
+tuple-axis:id-linkarcroleType
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "id" ;
+  rdfs:domain <http://www.xbrl.org/2003/linkbase#arcroleType> ;
+  rdfs:label "id" ;
+.
+tuple-axis:mixed-complexContent
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "mixed" ;
+  rdfs:domain sxsd:ComplexContent ;
+  rdfs:label "mixed" ;
+.
+tuple-axis:r
+  rdf:type sxsd:Schema ;
+  tuple-axis:xmlns-schema "http://www.w3.org/2001/XMLSchema" ;
+  sxml:prefix "formula"^^xsd:string ;
+  sxml:prefix "link"^^xsd:string ;
+  sxml:prefix "table"^^xsd:string ;
+  sxsd:elementFormDefault "qualified" ;
+  sxsd:targetNamespace "http://xbrl.org/2011/table" ;
+  composite:child tuple-axis:r-0 ;
+  composite:child tuple-axis:r-1 ;
+  composite:child tuple-axis:r-2 ;
+  composite:child tuple-axis:r-3 ;
+.
+tuple-axis:r-0
+  rdf:type sxsd:Import ;
+  sxsd:namespace "http://xbrl.org/2008/formula" ;
+  sxsd:schemaLocation "http://www.xbrl.org/2008/formula.xsd" ;
+  composite:index "0"^^xsd:int ;
+.
+tuple-axis:r-1
+  rdf:type sxsd:ComplexType ;
+  sxsd:name "tupleAxis.type" ;
+  composite:child tuple-axis:r-1-0 ;
+  composite:index "1"^^xsd:int ;
+.
+tuple-axis:r-1-0
+  rdf:type sxsd:ComplexContent ;
+  tuple-axis:mixed-complexContent "true" ;
+  composite:child tuple-axis:r-1-0-0 ;
+  composite:index "0"^^xsd:int ;
+.
+tuple-axis:r-1-0-0
+  rdf:type sxsd:Extension ;
+  sxsd:base "table:ruleAxis.type" ;
+  composite:child tuple-axis:r-1-0-0-2 ;
+  composite:child [
+      rdf:type sxml:Comment ;
+      sxml:text "substitution rule axis aspects are expected to specify a concept aspect"^^xsd:string ;
+      composite:index "1"^^xsd:int ;
+    ] ;
+  composite:child [
+      rdf:type sxml:Comment ;
+      sxml:text "tuple axis must specify a name, so that the tuple can be referred to for a location rule and contents"^^xsd:string ;
+      composite:index "2"^^xsd:int ;
+    ] ;
+  composite:index "0"^^xsd:int ;
+.
+tuple-axis:r-1-0-0-2
+  rdf:type sxsd:Attribute ;
+  sxsd:name "name" ;
+  sxsd:type "QName" ;
+  sxsd:use "required" ;
+  composite:index "2"^^xsd:int ;
+.
+tuple-axis:r-2
+  rdf:type sxsd:Element ;
+  tuple-axis:id-element "xml-tuple-axis" ;
+  sxsd:name "tupleAxis" ;
+  sxsd:substitutionGroup "table:ruleAxis" ;
+  sxsd:type "table:tupleAxis.type" ;
+  composite:index "2"^^xsd:int ;
+.
+tuple-axis:r-3
+  rdf:type sxsd:Annotation ;
+  composite:child tuple-axis:r-3-0 ;
+  composite:index "3"^^xsd:int ;
+.
+tuple-axis:r-3-0
+  rdf:type xsd:appinfo ;
+  composite:child tuple-axis:r-3-0-0 ;
+  composite:index "0"^^xsd:int ;
+.
+tuple-axis:r-3-0-0
+  rdf:type <http://www.xbrl.org/2003/linkbase#arcroleType> ;
+  tuple-axis:arcroleURI-linkarcroleType "http://xbrl.org/arcrole/2011/axis/tuple-content" ;
+  tuple-axis:cyclesAllowed-linkarcroleType "undirected" ;
+  tuple-axis:id-linkarcroleType "tuple-content" ;
+  composite:child tuple-axis:r-3-0-0-0 ;
+  composite:child tuple-axis:r-3-0-0-1 ;
+  composite:index "0"^^xsd:int ;
+.
+tuple-axis:r-3-0-0-0
+  rdf:type <http://www.xbrl.org/2003/linkbase#definition> ;
+  composite:child [
+      rdf:type sxml:TextNode ;
+      sxml:text "relationship to ruleAxis elements that specify tuple contents (nested items and tuples)"^^xsd:string ;
+      composite:index "1"^^xsd:int ;
+    ] ;
+  composite:index "0"^^xsd:int ;
+.
+tuple-axis:r-3-0-0-1
+  rdf:type <http://www.xbrl.org/2003/linkbase#usedOn> ;
+  composite:child [
+      rdf:type sxml:TextNode ;
+      sxml:text "gen:arc"^^xsd:string ;
+      composite:index "1"^^xsd:int ;
+    ] ;
+  composite:index "1"^^xsd:int ;
+.
+tuple-axis:xmlns-schema
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "xmlns" ;
+  rdfs:domain sxsd:Schema ;
+  rdfs:label "xmlns" ;
+.
+xsd:appinfo
+  rdf:type owl:Class ;
+  sxml:element xsd:appinfo ;
+  rdfs:label "appinfo" ;
+.
+<http://www.xbrl.org/2003/linkbase#arcroleType>
+  rdf:type owl:Class ;
+  sxml:element <http://www.xbrl.org/2003/linkbase#arcroleType> ;
+  rdfs:label "link:arcroleType" ;
+.
+<http://www.xbrl.org/2003/linkbase#definition>
+  rdf:type owl:Class ;
+  sxml:element <http://www.xbrl.org/2003/linkbase#definition> ;
+  rdfs:label "link:definition" ;
+.
+<http://www.xbrl.org/2003/linkbase#usedOn>
+  rdf:type owl:Class ;
+  sxml:element <http://www.xbrl.org/2003/linkbase#usedOn> ;
+  rdfs:label "link:usedOn" ;
+.

@@ -1,0 +1,28 @@
+# Financial Regulation Ontology: validation query
+# The "Everything" CFR query contains the main Code of Federal Regulations classes 
+# and data properties. We use the query to validate the data import for FRO resource files.
+#
+SELECT *
+WHERE {
+	?edition fro-leg-ref:hasEditionText ?edition_text .
+	?edition lkif-mereo:member ?title .
+	?title fro-leg-ref:hasTitleText ?title_text .
+	?chapter fro-cfr:hasChapterText ?chapter_text . 
+	?part fro-leg-ref:divides ?chapter .
+    ?part fro-cfr:hasPartText ?part_text .
+	?section fro-leg-ref:divides ?part ;
+    			  fro-leg-ref:hasSequenceNumber ?sectionSequence ;
+     			  fro-cfr:hasSectionNumber ?sectionNumber ;
+	 			  fro-leg-ref:hasSourceInstance ?section_source ;
+     			  fro-cfr:hasSectionSubject ?sectionSubject .
+  	OPTIONAL {?section fro-cfr:hasSectionCitation ?sectionCitation  . } 
+	OPTIONAL { ?section fro-leg-ref:refers_toNote ?note .
+						  ?note a fro-cfr:CFR_Note .
+						  ?note fro-cfr:hasNoteText ?note_text . }	
+	?para fro-leg-ref:divides ?section ;
+     		  fro-leg-ref:hasSequenceNumber ?paraIndex ;
+			  fro-leg-ref:hasSourceInstance ?para_source ;
+     		  fro-cfr:hasParagraphText ?paraText .
+   OPTIONAL {?para fro-cfr:hasParagraphEnumText ?paraEnumText}
+} 
+ORDER BY ?sectionSequence  ?paraSequence

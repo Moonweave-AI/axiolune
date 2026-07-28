@@ -1,0 +1,14 @@
+PREFIX fro-cfr: <http://finregont.com/fro/cfr/Code_Federal_Regulations.ttl#>
+PREFIX fro-leg-ref: <http://finregont.com/fro/ref/LegalReference.ttl#>
+SELECT ?part ?part_text ?section ?sectionIndex ?sectionNumber ?sectionSubject ?sectionCitation 
+FROM <http://finregont.com/fro/cfr/Code_Federal_Regulations.ttl>
+FROM <http://finregont.com/fro/cfr/FRO_CFR_Title_12_Part_252.ttl>
+FROM <http://finregont.com/fro/ref/LegalReference.ttl#>
+WHERE {
+?part fro-cfr:hasPartText ?part_text .
+?section fro-leg-ref:divides ?part .
+?section fro-cfr:hasCompositeIndex ?sectionIndex .
+?section fro-cfr:hasSectionNumber ?sectionNumber .
+?section fro-cfr:hasSectionSubject ?sectionSubject .
+OPTIONAL {?section fro-cfr:hasSectionCitation ?sectionCitation  . } 
+}

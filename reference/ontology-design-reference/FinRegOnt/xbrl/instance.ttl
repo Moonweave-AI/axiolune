@@ -1,0 +1,1682 @@
+# baseURI: http://finregont.com/fro/xbrl/instance.ttl
+# imports: http://finregont.com/fro/xbrl/linkbase.ttl
+# prefix: instance
+
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix instance: <http://finregont.com/fro/xbrl/instance.ttl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/xbrl/instance.ttl>
+  rdf:type owl:Ontology ;
+  dct:creator "Jurgen Ziemer (of this OWL adaptation - not the XBRL design)"^^xsd:string ;
+  dct:description "An RDF/OWL version of the XBRL instance. The instance ontology provides context and attribute classes for XBRL instances."^^xsd:string ;
+  dct:rights "Copyright  © 2002 XBRL International. All Rights Reserved. http://www.XBRL.org/legal/"^^xsd:string ;
+  dct:rights "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only)."^^xsd:string ;
+  rdfs:comment "Elements to use for facts in instances"^^xsd:string ;
+  rdfs:comment "The ontology is a direct conversion of the XBRL schema file (see owl:versionInfo). The purpose is bi-directional for RDF instance files that include an XBRL taxonomy: To read XBRL data files into FinRegOnt and to create XBRL instance data files from the ontology."^^xsd:string ;
+  rdfs:isDefinedBy <https://specifications.xbrl.org/specifications.html> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  owl:imports <http://finregont.com/fro/xbrl/linkbase.ttl> ;
+  owl:versionInfo "Created with TopBraid Composer from the XML Schema(s) http://www.xbrl.org/2003/instance"^^xsd:string ;
+.
+instance:AnyURIItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#anyURIItemType" ;
+  rdfs:label "Any URIItem type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:anyURI ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:Base64BinaryItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#base64BinaryItemType" ;
+  rdfs:label "Base64Binary item type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:base64Binary ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:BooleanItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#booleanItemType" ;
+  rdfs:label "Boolean item type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:boolean ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:ByteItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#byteItemType" ;
+  rdfs:label "Byte item type"^^xsd:string ;
+  rdfs:subClassOf instance:NumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:byte ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:Context
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#context" ;
+  rdfs:comment "Used for an island of context to which facts can be related."^^xsd:string ;
+  rdfs:label "Context"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:ContextEntityType ;
+      owl:onProperty instance:entityRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:ContextPeriodType ;
+      owl:onProperty instance:periodRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:ContextScenarioType ;
+      owl:onProperty instance:scenarioRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:ID ;
+      owl:onProperty instance:id ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:entityRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:id ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:periodRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:scenarioRef ;
+    ] ;
+.
+instance:ContextEntityType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#contextEntityType" ;
+  rdfs:comment """The type for the entity element, used to describe the reporting entity.
+      Note that the scheme attribute is required and cannot be empty."""^^xsd:string ;
+  rdfs:label "Context entity type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:ContextEntityType-identifier ;
+      owl:onProperty instance:identifierRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:Segment ;
+      owl:onProperty instance:segmentRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:identifierRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:segmentRef ;
+    ] ;
+.
+instance:ContextEntityType-identifier
+  rdf:type owl:Class ;
+  rdfs:label "Context entity type-identifier"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:ContextEntityType-identifier-schemeDatatype ;
+      owl:onProperty instance:scheme ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:token ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:scheme ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:ContextEntityType-identifier-schemeDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:label "Context entity type-identifier-scheme datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:anyURI ;
+.
+instance:ContextPeriodType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#contextPeriodType" ;
+  rdfs:comment "The type for the period element, used to describe the reporting date info."^^xsd:string ;
+  rdfs:label "Context period type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:ContextPeriodType-forever ;
+      owl:onProperty instance:foreverRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:DateUnionDatatype ;
+      owl:onProperty instance:endDate ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:DateUnionDatatype ;
+      owl:onProperty instance:instant ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:DateUnionDatatype ;
+      owl:onProperty instance:startDate ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:endDate ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:foreverRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:instant ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:startDate ;
+    ] ;
+.
+instance:ContextPeriodType-forever
+  rdf:type owl:Class ;
+  rdfs:label "Context period type-forever"^^xsd:string ;
+.
+instance:ContextScenarioType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#contextScenarioType" ;
+  rdfs:comment "Used for the scenario under which fact have been reported."^^xsd:string ;
+  rdfs:label "Context scenario type"^^xsd:string ;
+.
+instance:DateItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#dateItemType" ;
+  rdfs:label "Date item type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:date ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:DateTimeItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#dateTimeItemType" ;
+  rdfs:label "Date time item type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:DateUnionDatatype ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:DateUnionDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "The union of the date and dateTime simple types."^^xsd:string ;
+  rdfs:label "Date union datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:anySimpleType ;
+.
+instance:DecimalItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#decimalItemType" ;
+  rdfs:label "Decimal item type"^^xsd:string ;
+  rdfs:subClassOf instance:NumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:decimal ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:DecimalsTypeDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment """This type is used to specify the value of the decimals attribute 
+      on numeric items.  It consists of the union of integer and \"INF\" 
+      (used to signify that a number is expressed to an infinite number 
+      of decimal places or \"exact value\")."""^^xsd:string ;
+  rdfs:label "Decimals type datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:anySimpleType ;
+.
+instance:DenominatorDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:label "Denominator datatype"^^xsd:string ;
+  rdfs:subClassOf instance:NonZeroDecimalDatatype ;
+.
+instance:Divide
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#divide" ;
+  rdfs:comment "Element used to represent division in units"^^xsd:string ;
+  rdfs:label "Divide"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:MeasuresType ;
+      owl:onProperty instance:unitDenominatorRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:MeasuresType ;
+      owl:onProperty instance:unitNumeratorRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:unitDenominatorRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:unitNumeratorRef ;
+    ] ;
+.
+instance:DoubleItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#doubleItemType" ;
+  rdfs:label "Double item type"^^xsd:string ;
+  rdfs:subClassOf instance:NumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:double ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:DurationItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#durationItemType" ;
+  rdfs:label "Duration item type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:duration ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:EssentialNumericItemAttrs
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#essentialNumericItemAttrs" ;
+  rdfs:comment "Attributes for all numeric items (fractional and non-fractional)."^^xsd:string ;
+  rdfs:label "Essential numeric item attrs"^^xsd:string ;
+  rdfs:subClassOf instance:ItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:IDREF ;
+      owl:onProperty instance:unitRefValue ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:unitRefValue ;
+    ] ;
+.
+instance:FactAttrs
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#factAttrs" ;
+  rdfs:comment "Attributes for all items and tuples."^^xsd:string ;
+  rdfs:label "Fact attrs"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:ID ;
+      owl:onProperty instance:id ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:id ;
+    ] ;
+.
+instance:FloatItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#floatItemType" ;
+  rdfs:label "Float item type"^^xsd:string ;
+  rdfs:subClassOf instance:NumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:float ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:FractionItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#fractionItemType" ;
+  rdfs:label "Fraction item type"^^xsd:string ;
+  rdfs:subClassOf instance:EssentialNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:DenominatorDatatype ;
+      owl:onProperty instance:denominator ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:NumeratorDatatype ;
+      owl:onProperty instance:numerator ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:denominator ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:numerator ;
+    ] ;
+.
+instance:GDayItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#gDayItemType" ;
+  rdfs:label "GDay item type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:gDay ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:GMonthDayItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#gMonthDayItemType" ;
+  rdfs:label "GMonth day item type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:gMonthDay ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:GMonthItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#gMonthItemType" ;
+  rdfs:label "GMonth item type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:gMonth ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:GYearItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#gYearItemType" ;
+  rdfs:label "GYear item type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:gYear ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:GYearMonthItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#gYearMonthItemType" ;
+  rdfs:label "GYear month item type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:gYearMonth ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:HexBinaryItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#hexBinaryItemType" ;
+  rdfs:label "Hex binary item type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:hexBinary ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:IntItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#intItemType" ;
+  rdfs:label "Int item type"^^xsd:string ;
+  rdfs:subClassOf instance:NumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:int ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:IntegerItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#integerItemType" ;
+  rdfs:label "Integer item type"^^xsd:string ;
+  rdfs:subClassOf instance:NumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:integer ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:Item
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#item" ;
+  rdfs:comment "Abstract item element used as head of item substitution group"^^xsd:string ;
+  rdfs:label "Item"^^xsd:string ;
+.
+instance:ItemAttrs
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#itemAttrs" ;
+  rdfs:comment "Attributes for all items."^^xsd:string ;
+  rdfs:label "Item attrs"^^xsd:string ;
+  rdfs:subClassOf instance:FactAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:IDREF ;
+      owl:onProperty instance:contextRefValue ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:contextRefValue ;
+    ] ;
+.
+instance:LanguageItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#languageItemType" ;
+  rdfs:label "Language item type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:language ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:LongItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#longItemType" ;
+  rdfs:label "Long item type"^^xsd:string ;
+  rdfs:subClassOf instance:NumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:long ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:MeasureDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:label "Measure datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:QName ;
+.
+instance:MeasuresType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#measuresType" ;
+  rdfs:comment "A collection of sibling measure elements"^^xsd:string ;
+  rdfs:label "Measures type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:MeasureDatatype ;
+      owl:onProperty instance:measure ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:measure ;
+    ] ;
+.
+instance:MonetaryDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment """the monetary type serves as the datatype for those financial 
+      concepts in a taxonomy which denote units in a currency.
+      Instance items with this type must have a unit of measure 
+      from the ISO 4217 namespace of currencies."""^^xsd:string ;
+  rdfs:label "Monetary datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:decimal ;
+.
+instance:MonetaryItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#monetaryItemType" ;
+  rdfs:label "Monetary item type"^^xsd:string ;
+  rdfs:subClassOf instance:NumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:MonetaryDatatype ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:NCNameItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#NCNameItemType" ;
+  rdfs:label "NCName item type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:NCName ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:NameItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#NameItemType" ;
+  rdfs:label "Name item type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:Name ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:NegativeIntegerItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#negativeIntegerItemType" ;
+  rdfs:label "Negative integer item type"^^xsd:string ;
+  rdfs:subClassOf instance:NumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:negativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:NonNegativeIntegerItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#nonNegativeIntegerItemType" ;
+  rdfs:label "Non negative integer item type"^^xsd:string ;
+  rdfs:subClassOf instance:NumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:NonNumericItemAttrs
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#nonNumericItemAttrs" ;
+  rdfs:comment "Group of attributes for non-numeric items"^^xsd:string ;
+  rdfs:label "Non numeric item attrs"^^xsd:string ;
+  rdfs:subClassOf instance:ItemAttrs ;
+.
+instance:NonPositiveIntegerItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#nonPositiveIntegerItemType" ;
+  rdfs:label "Non positive integer item type"^^xsd:string ;
+  rdfs:subClassOf instance:NumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:nonPositiveInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:NonZeroDecimalDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment """As the name implies this is a decimal value that can not take 
+      the value 0 - it is used as the type for the denominator of a 
+      fractionItemType."""^^xsd:string ;
+  rdfs:label "Non zero decimal datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:anySimpleType ;
+.
+instance:NormalizedStringItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#normalizedStringItemType" ;
+  rdfs:label "Normalized string item type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:normalizedString ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:NumeratorDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:label "Numerator datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:decimal ;
+.
+instance:NumericItemAttrs
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#numericItemAttrs" ;
+  rdfs:comment "Group of attributes for non-fractional numeric items"^^xsd:string ;
+  rdfs:label "Numeric item attrs"^^xsd:string ;
+  rdfs:subClassOf instance:EssentialNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:DecimalsTypeDatatype ;
+      owl:onProperty instance:decimals ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:PrecisionTypeDatatype ;
+      owl:onProperty instance:precision ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:decimals ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:precision ;
+    ] ;
+.
+instance:PositiveIntegerItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#positiveIntegerItemType" ;
+  rdfs:label "Positive integer item type"^^xsd:string ;
+  rdfs:subClassOf instance:NumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:positiveInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:PrecisionTypeDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment """This type is used to specify the value of the 
+      precision attribute on numeric items.  It consists 
+      of the union of nonNegativeInteger and \"INF\" (used 
+      to signify infinite precision or \"exact value\")."""^^xsd:string ;
+  rdfs:label "Precision type datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:anySimpleType ;
+.
+instance:PureDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment """This datatype serves as the type for dimensionless numbers 
+      such as percentage change, growth rates, and other ratios 
+      where the numerator and denominator have the same units."""^^xsd:string ;
+  rdfs:label "Pure datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:decimal ;
+.
+instance:PureItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#pureItemType" ;
+  rdfs:label "Pure item type"^^xsd:string ;
+  rdfs:subClassOf instance:NumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:PureDatatype ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:QNameItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#QNameItemType" ;
+  rdfs:label "QName item type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:QName ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:Segment
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#segment" ;
+  rdfs:label "Segment"^^xsd:string ;
+.
+instance:SharesDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment """This datatype serves as the datatype for share based 
+      financial concepts."""^^xsd:string ;
+  rdfs:label "Shares datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:decimal ;
+.
+instance:SharesItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#sharesItemType" ;
+  rdfs:label "Shares item type"^^xsd:string ;
+  rdfs:subClassOf instance:NumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:SharesDatatype ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:ShortItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#shortItemType" ;
+  rdfs:label "Short item type"^^xsd:string ;
+  rdfs:subClassOf instance:NumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:short ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:StringItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#stringItemType" ;
+  rdfs:label "String item type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:string ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:TimeItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#timeItemType" ;
+  rdfs:label "Time item type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:time ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:TokenItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#tokenItemType" ;
+  rdfs:label "Token item type"^^xsd:string ;
+  rdfs:subClassOf instance:NonNumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:token ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:Tuple
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#tuple" ;
+  rdfs:comment "Abstract tuple element used as head of tuple substitution group"^^xsd:string ;
+  rdfs:label "Tuple"^^xsd:string ;
+.
+instance:TupleAttrs
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#tupleAttrs" ;
+  rdfs:comment "Group of attributes for tuples."^^xsd:string ;
+  rdfs:label "Tuple attrs"^^xsd:string ;
+  rdfs:subClassOf instance:FactAttrs ;
+.
+instance:Unit
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#unit" ;
+  rdfs:comment "Element used to represent units information about numeric items"^^xsd:string ;
+  rdfs:label "Unit"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:Divide ;
+      owl:onProperty instance:divideRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:MeasureDatatype ;
+      owl:onProperty instance:measure ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:ID ;
+      owl:onProperty instance:id ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:id ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:divideRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:measure ;
+    ] ;
+.
+instance:UnsignedByteItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#unsignedByteItemType" ;
+  rdfs:label "Unsigned byte item type"^^xsd:string ;
+  rdfs:subClassOf instance:NumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:unsignedByte ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:UnsignedIntItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#unsignedIntItemType" ;
+  rdfs:label "Unsigned int item type"^^xsd:string ;
+  rdfs:subClassOf instance:NumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:unsignedInt ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:UnsignedLongItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#unsignedLongItemType" ;
+  rdfs:label "Unsigned long item type"^^xsd:string ;
+  rdfs:subClassOf instance:NumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:unsignedLong ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:UnsignedShortItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#unsignedShortItemType" ;
+  rdfs:label "Unsigned short item type"^^xsd:string ;
+  rdfs:subClassOf instance:NumericItemAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:unsignedShort ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+.
+instance:Xbrl
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#xbrl" ;
+  rdfs:comment "XBRL instance root element."^^xsd:string ;
+  rdfs:label "Xbrl"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:Context ;
+      owl:onProperty instance:contextRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:Item ;
+      owl:onProperty instance:itemRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:Tuple ;
+      owl:onProperty instance:tupleRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom instance:Unit ;
+      owl:onProperty instance:unitRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/linkbase.ttl#arcroleRef> ;
+      owl:onProperty instance:arcroleRefRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/linkbase.ttl#footnoteLink> ;
+      owl:onProperty instance:footnoteLinkRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/linkbase.ttl#linkbaseRef> ;
+      owl:onProperty instance:linkbaseRefRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/linkbase.ttl#roleRef> ;
+      owl:onProperty instance:roleRefRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/linkbase.ttl#schemaRef> ;
+      owl:onProperty instance:schemaRefRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:ID ;
+      owl:onProperty instance:id ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:contextRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:footnoteLinkRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:itemRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:tupleRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:unitRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:id ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty instance:schemaRefRef ;
+    ] ;
+.
+instance:arcroleRefRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2003/instance#arcroleRef" ;
+  rdfs:label "arcrole ref ref"^^xsd:string ;
+.
+instance:contextRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2003/instance#context" ;
+  rdfs:label "context ref"^^xsd:string ;
+.
+instance:contextRefValue
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/2003/instance#contextRef" ;
+  rdfs:label "context ref value"^^xsd:string ;
+.
+instance:decimals
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:ObjectProperty ;
+  sxml:attribute "http://www.xbrl.org/2003/instance#decimals" ;
+  rdfs:label "decimals"^^xsd:string ;
+.
+instance:denominator
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:ObjectProperty ;
+  sxml:attribute "http://www.xbrl.org/2003/instance#denominator" ;
+  rdfs:label "denominator"^^xsd:string ;
+.
+instance:divideRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2003/instance#divide" ;
+  rdfs:label "divide ref"^^xsd:string ;
+.
+instance:endDate
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:ObjectProperty ;
+  sxml:attribute "http://www.xbrl.org/2003/instance#endDate" ;
+  rdfs:label "end date"^^xsd:string ;
+.
+instance:entityRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2003/instance#entity" ;
+  rdfs:label "entity ref"^^xsd:string ;
+.
+instance:footnoteLinkRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2003/instance#footnoteLink" ;
+  rdfs:label "footnote link ref"^^xsd:string ;
+.
+instance:foreverRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2003/instance#forever" ;
+  rdfs:label "forever ref"^^xsd:string ;
+.
+instance:id
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/2003/instance#id" ;
+  rdfs:label "id"^^xsd:string ;
+.
+instance:identifierRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2003/instance#identifier" ;
+  rdfs:label "identifier ref"^^xsd:string ;
+.
+instance:instant
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:ObjectProperty ;
+  sxml:attribute "http://www.xbrl.org/2003/instance#instant" ;
+  rdfs:label "instant"^^xsd:string ;
+.
+instance:itemRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2003/instance#item" ;
+  rdfs:label "item ref"^^xsd:string ;
+.
+instance:linkbaseRefRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2003/instance#linkbaseRef" ;
+  rdfs:label "linkbase ref ref"^^xsd:string ;
+.
+instance:measure
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:ObjectProperty ;
+  sxml:attribute "http://www.xbrl.org/2003/instance#measure" ;
+  rdfs:label "measure"^^xsd:string ;
+.
+instance:numerator
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:ObjectProperty ;
+  sxml:attribute "http://www.xbrl.org/2003/instance#numerator" ;
+  rdfs:label "numerator"^^xsd:string ;
+.
+instance:periodRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2003/instance#period" ;
+  rdfs:label "period ref"^^xsd:string ;
+.
+instance:precision
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:ObjectProperty ;
+  sxml:attribute "http://www.xbrl.org/2003/instance#precision" ;
+  rdfs:label "precision"^^xsd:string ;
+.
+instance:roleRefRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2003/instance#roleRef" ;
+  rdfs:label "role ref ref"^^xsd:string ;
+.
+instance:scenarioRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2003/instance#scenario" ;
+  rdfs:label "scenario ref"^^xsd:string ;
+.
+instance:schemaRefRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2003/instance#schemaRef" ;
+  rdfs:label "schema ref ref"^^xsd:string ;
+.
+instance:scheme
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:ObjectProperty ;
+  sxml:attribute "http://www.xbrl.org/2003/instance#scheme" ;
+  rdfs:label "scheme"^^xsd:string ;
+.
+instance:segmentRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2003/instance#segment" ;
+  rdfs:label "segment ref"^^xsd:string ;
+.
+instance:startDate
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:ObjectProperty ;
+  sxml:attribute "http://www.xbrl.org/2003/instance#startDate" ;
+  rdfs:label "start date"^^xsd:string ;
+.
+instance:tupleRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2003/instance#tuple" ;
+  rdfs:label "tuple ref"^^xsd:string ;
+.
+instance:unitDenominatorRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2003/instance#unitDenominator" ;
+  rdfs:label "unit denominator ref"^^xsd:string ;
+.
+instance:unitNumeratorRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2003/instance#unitNumerator" ;
+  rdfs:label "unit numerator ref"^^xsd:string ;
+.
+instance:unitRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2003/instance#unit" ;
+  rdfs:label "unit ref"^^xsd:string ;
+.
+instance:unitRefValue
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/2003/instance#unitRef" ;
+  rdfs:label "unit ref value"^^xsd:string ;
+.
+<http://finregont.com/fro/xbrl/linkbase.ttl#arcroleRef>
+  sxml:tag "http://www.xbrl.org/2003/linkbase#arcroleRef" ;
+  rdfs:comment """Definition of the roleRef element - used 
+      to link to resolve xlink:arcrole attribute values to 
+      the arcroleType element declaration."""^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Simple> ;
+.
+<http://finregont.com/fro/xbrl/linkbase.ttl#footnoteLink>
+  sxml:tag "http://www.xbrl.org/2003/linkbase#footnoteLink" ;
+  rdfs:comment "footnote extended link element definition"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Extended> ;
+.
+<http://finregont.com/fro/xbrl/linkbase.ttl#linkbaseRef>
+  sxml:tag "http://www.xbrl.org/2003/linkbase#linkbaseRef" ;
+  rdfs:comment """Definition of the linkbaseRef element - used 
+      to link to XBRL taxonomy extended links from 
+      taxonomy schema documents and from XBRL
+      instances."""^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Simple> ;
+.
+<http://finregont.com/fro/xbrl/linkbase.ttl#roleRef>
+  sxml:tag "http://www.xbrl.org/2003/linkbase#roleRef" ;
+  rdfs:comment """Definition of the roleRef element - used 
+      to link to resolve xlink:role attribute values to 
+      the roleType element declaration."""^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Simple> ;
+.
+<http://finregont.com/fro/xbrl/linkbase.ttl#schemaRef>
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Simple> ;
+.
+xsd:IDREF
+  rdf:type rdfs:Datatype ;
+.
+xsd:decimal
+  rdf:type owl:Class ;
+.
+xsd:duration
+  rdf:type rdfs:Datatype ;
+.
+xsd:gDay
+  rdf:type rdfs:Datatype ;
+.
+xsd:gMonth
+  rdf:type rdfs:Datatype ;
+.
+xsd:gMonthDay
+  rdf:type owl:Class ;
+.
+xsd:gYear
+  rdf:type rdfs:Datatype ;
+.
+xsd:gYearMonth
+  rdf:type rdfs:Datatype ;
+.
+xsd:time
+  rdf:type rdfs:Datatype ;
+.
+<http://www.w3.org/2004/02/skos/core#prefLabel>
+  rdf:type owl:AnnotationProperty ;
+  rdfs:label "pref label"^^xsd:string ;
+.
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "0"^^xsd:int ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "0"^^xsd:int ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "0"^^xsd:int ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "0"^^xsd:int ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "0"^^xsd:int ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "0"^^xsd:int ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "0"^^xsd:int ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "0"^^xsd:int ;
+  rdfs:comment """Definition of the schemaRef element - used 
+      to link to XBRL taxonomy schemas from 
+      XBRL instances."""^^xsd:string ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "1"^^xsd:int ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "1"^^xsd:int ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "1"^^xsd:int ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "1"^^xsd:int ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "1"^^xsd:int ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "1"^^xsd:int ;
+  rdfs:comment """Definition of the linkbaseRef element - used 
+      to link to XBRL taxonomy extended links from 
+      taxonomy schema documents and from XBRL
+      instances."""^^xsd:string ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "1"^^xsd:int ;
+  rdfs:comment "Element used to represent division in units"^^xsd:string ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "2"^^xsd:int ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "2"^^xsd:int ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "2"^^xsd:int ;
+  rdfs:comment """Definition of the roleRef element - used 
+      to link to resolve xlink:role attribute values to 
+      the roleType element declaration."""^^xsd:string ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "3"^^xsd:int ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "3"^^xsd:int ;
+  rdfs:comment """Definition of the roleRef element - used 
+      to link to resolve xlink:arcrole attribute values to 
+      the arcroleType element declaration."""^^xsd:string ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "4"^^xsd:int ;
+  rdfs:comment "Abstract item element used as head of item substitution group"^^xsd:string ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "5"^^xsd:int ;
+  rdfs:comment "Abstract tuple element used as head of tuple substitution group"^^xsd:string ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "6"^^xsd:int ;
+  rdfs:comment "Used for an island of context to which facts can be related."^^xsd:string ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "7"^^xsd:int ;
+  rdfs:comment "Element used to represent units information about numeric items"^^xsd:string ;
+].
+[
+  sxml:isAttribute "false"^^xsd:boolean ;
+  sxml:order "8"^^xsd:int ;
+  rdfs:comment "footnote extended link element definition"^^xsd:string ;
+].
+[
+  sxml:isAttribute "true"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "true"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "true"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "true"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "true"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "true"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "true"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "true"^^xsd:boolean ;
+].
+[
+  sxml:isAttribute "true"^^xsd:boolean ;
+].
+[
+  xsd:minLength "1"^^xsd:anyURI ;
+].

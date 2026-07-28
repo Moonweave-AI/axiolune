@@ -1,0 +1,729 @@
+# baseURI: http://finregont.com/fro/xbrl/formula/formula.ttl
+# imports: http://finregont.com/fro/xbrl/formula/variable.ttl
+# imports: http://finregont.com/fro/xbrl/generic/generic.ttl
+# prefix: formula
+
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix dtype: <http://www.linkedmodel.org/schema/dtype#> .
+@prefix formula: <http://finregont.com/fro/xbrl/formula/formula.ttl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/xbrl/formula/formula.ttl>
+  rdf:type owl:Ontology ;
+  dct:creator "Jurgen Ziemer (of this OWL adaptation - not the XBRL design)"^^xsd:string ;
+  dct:description "An RDF/OWL version of the XBRL formula schema file. A XBRL formula specifies validations based on XBRL instance facts and generation of derived data as output XBRL instance facts. The formula ontology provides classes and properties instance ontologies that include formula."^^xsd:string ;
+  dct:rights "Copyright  © 2002 XBRL International. All Rights Reserved. http://www.XBRL.org/legal/"^^xsd:string ;
+  dct:rights "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only)."^^xsd:string ;
+  rdfs:comment "The ontology is a direct conversion of the XBRL formula schema file (see owl:versionInfo). The purpose is bi-directional for RDF instance files that include an XBRL formula: To read XBRL data files into FinRegOnt and to create XBRL instance data files from the ontology."^^xsd:string ;
+  rdfs:isDefinedBy <https://specifications.xbrl.org/specifications.html> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  rdfs:seeAlso <http://www.xbrl.org/specification/formula/rec-2009-06-22/formula-rec-2009-06-22.html> ;
+  owl:imports <http://finregont.com/fro/xbrl/formula/variable.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/generic/generic.ttl> ;
+  owl:versionInfo "Created with TopBraid Composer from the XML Schema(s) http://xbrl.org/2008/formula, http://xbrl.org/2008/formula, http://xbrl.org/2008/formula, http://xbrl.org/2008/formula"^^xsd:string ;
+.
+formula:A_scenario
+  rdf:type <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.occ.aspect.type-occ> ;
+  dtype:order "1"^^xsd:nonNegativeInteger ;
+  dtype:value "scenario"^^xsd:token ;
+  rdfs:label "A scenario"^^xsd:string ;
+.
+formula:A_segment
+  rdf:type <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.occ.aspect.type-occ> ;
+  dtype:order "0"^^xsd:nonNegativeInteger ;
+  dtype:value "segment"^^xsd:token ;
+  rdfs:label "A segment"^^xsd:string ;
+.
+<http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect>
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/formula#abstract.aspect" ;
+  rdfs:label "Abstract.aspect"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect.type> ;
+.
+<http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect.type>
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/formula#abstract.aspect.type" ;
+  rdfs:label "Abstract.aspect.type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#QName> ;
+      owl:onProperty formula:sourceRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:sourceRef ;
+    ] ;
+.
+<http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.dimension.aspect>
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/formula#abstract.dimension.aspect" ;
+  rdfs:label "Abstract.dimension.aspect"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.dimension.aspect.type> ;
+.
+<http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.dimension.aspect.type>
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/formula#abstract.dimension.aspect.type" ;
+  rdfs:label "Abstract.dimension.aspect.type"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:QName ;
+      owl:onProperty formula:dimension ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty formula:dimension ;
+    ] ;
+.
+<http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.occ.aspect>
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/formula#abstract.occ.aspect" ;
+  rdfs:label "Abstract.occ.aspect"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.occ.aspect.type> ;
+.
+<http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.occ.aspect.type>
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/formula#abstract.occ.aspect.type" ;
+  rdfs:label "Abstract.occ.aspect.type"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.occ.aspect.type-occ> ;
+      owl:onProperty formula:occRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty formula:occRef ;
+    ] ;
+.
+<http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.occ.aspect.type-occ>
+  rdf:type owl:Class ;
+  rdfs:label "Abstract.occ.aspect.type-occ"^^xsd:string ;
+  rdfs:subClassOf formula:EnumeratedValue ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      owl:allValuesFrom xsd:token ;
+      owl:onProperty dtype:value ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty dtype:value ;
+    ] ;
+  owl:oneOf (
+      formula:A_scenario
+      formula:A_segment
+    ) ;
+.
+formula:Aspects
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/formula#aspects" ;
+  rdfs:label "Aspects"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect> ;
+      owl:onProperty <http://finregont.com/fro/xbrl/formula/formula.ttl#abstract.aspectRef> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#QName> ;
+      owl:onProperty formula:sourceRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:sourceRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:minCardinality "1"^^xsd:int ;
+      owl:onProperty <http://finregont.com/fro/xbrl/formula/formula.ttl#abstract.aspectRef> ;
+    ] ;
+.
+formula:EntityIdentifier
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/formula#entityIdentifier" ;
+  rdfs:label "Entity identifier"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty formula:schemeRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty formula:valueRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:schemeRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:valueRef ;
+    ] ;
+.
+formula:EnumeratedValue
+  rdf:type owl:Class ;
+  rdfs:label "Enumerated value"^^xsd:string ;
+  rdfs:subClassOf dtype:EnumeratedValue ;
+.
+formula:ExplicitDimension
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/formula#explicitDimension" ;
+  rdfs:label "Explicit dimension"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.dimension.aspect> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.dimension.aspect.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/formula.ttl#qname.model> ;
+      owl:onProperty formula:memberRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      owl:allValuesFrom formula:ExplicitDimension-omit ;
+      owl:onProperty formula:omitRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:memberRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:omitRef ;
+    ] ;
+.
+formula:ExplicitDimension-omit
+  rdf:type owl:Class ;
+  rdfs:label "Explicit dimension-omit"^^xsd:string ;
+.
+formula:Formula
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/formula#formula" ;
+  rdfs:label "Formula"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#VariableSet> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#VariableSet.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty formula:precisionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty formula:decimalsRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "2"^^xsd:int ;
+      owl:allValuesFrom formula:Aspects ;
+      owl:onProperty formula:aspectsRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty formula:valueRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#QName> ;
+      owl:onProperty formula:sourceRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty formula:decimalsRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty formula:precisionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty formula:valueRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:sourceRef ;
+    ] ;
+.
+formula:OccEmpty
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/formula#occEmpty" ;
+  rdfs:label "Occ empty"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.occ.aspect> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.occ.aspect.type> ;
+.
+formula:OccFragments
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/formula#occFragments" ;
+  rdfs:label "Occ fragments"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.occ.aspect> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.occ.aspect.type> ;
+.
+formula:OccXpath
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/formula#occXpath" ;
+  rdfs:label "Occ xpath"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.occ.aspect> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.occ.aspect.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty formula:selectRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:selectRef ;
+    ] ;
+.
+formula:Period
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/formula#period" ;
+  rdfs:label "Period"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom formula:Period-forever ;
+      owl:onProperty formula:foreverRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      owl:allValuesFrom formula:Period-instant ;
+      owl:onProperty formula:instantRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "2"^^xsd:int ;
+      owl:allValuesFrom formula:Period-duration ;
+      owl:onProperty formula:durationRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:durationRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:foreverRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:instantRef ;
+    ] ;
+.
+formula:Period-duration
+  rdf:type owl:Class ;
+  rdfs:label "Period-duration"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty formula:endRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty formula:startRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:endRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:startRef ;
+    ] ;
+.
+formula:Period-forever
+  rdf:type owl:Class ;
+  rdfs:label "Period-forever"^^xsd:string ;
+.
+formula:Period-instant
+  rdf:type owl:Class ;
+  rdfs:label "Period-instant"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty formula:valueRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:valueRef ;
+    ] ;
+.
+formula:TypedDimension
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/formula#typedDimension" ;
+  rdfs:label "Typed dimension"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.dimension.aspect> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.dimension.aspect.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom xsd:string ;
+      owl:onProperty formula:xpath ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      owl:allValuesFrom formula:TypedDimension-value ;
+      owl:onProperty formula:valueRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "2"^^xsd:int ;
+      owl:allValuesFrom formula:TypedDimension-omit ;
+      owl:onProperty formula:omitRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:omitRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:valueRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:xpath ;
+    ] ;
+.
+formula:TypedDimension-omit
+  rdf:type owl:Class ;
+  rdfs:label "Typed dimension-omit"^^xsd:string ;
+.
+formula:TypedDimension-value
+  rdf:type owl:Class ;
+  rdfs:label "Typed dimension-value"^^xsd:string ;
+.
+formula:Unit
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/formula#unit" ;
+  rdfs:label "Unit"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom formula:Unit-multiplyBy ;
+      owl:onProperty formula:multiplyByRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      owl:allValuesFrom formula:Unit-divideBy ;
+      owl:onProperty formula:divideByRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:boolean ;
+      owl:onProperty formula:augment ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:augment ;
+    ] ;
+.
+formula:Unit-divideBy
+  rdf:type owl:Class ;
+  rdfs:label "Unit-divide by"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty formula:measureRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#QName> ;
+      owl:onProperty formula:sourceRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:measureRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:sourceRef ;
+    ] ;
+.
+formula:Unit-multiplyBy
+  rdf:type owl:Class ;
+  rdfs:label "Unit-multiply by"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty formula:measureRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#QName> ;
+      owl:onProperty formula:sourceRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:measureRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:sourceRef ;
+    ] ;
+.
+<http://finregont.com/fro/xbrl/formula/formula.ttl#abstract.aspectRef>
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#abstract.aspect" ;
+  rdfs:label "abstract.aspect ref"^^xsd:string ;
+.
+formula:aspectsRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#aspects" ;
+  rdfs:label "aspects ref"^^xsd:string ;
+.
+formula:augment
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/formula#augment" ;
+  rdfs:label "augment"^^xsd:string ;
+.
+formula:concept
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/formula#concept" ;
+  rdfs:label "Concept"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/formula.ttl#Abstract.aspect.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom xsd:QName ;
+      owl:onProperty formula:qname ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty formula:qnameExpressionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:qname ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:qnameExpressionRef ;
+    ] ;
+.
+formula:decimalsRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#decimals" ;
+  rdfs:label "decimals ref"^^xsd:string ;
+.
+formula:dimension
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/formula#dimension" ;
+  rdfs:label "dimension"^^xsd:string ;
+.
+formula:divideByRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#divideBy" ;
+  rdfs:label "divide by ref"^^xsd:string ;
+.
+formula:durationRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#duration" ;
+  rdfs:label "duration ref"^^xsd:string ;
+.
+formula:endRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#end" ;
+  rdfs:label "end ref"^^xsd:string ;
+.
+formula:foreverRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#forever" ;
+  rdfs:label "forever ref"^^xsd:string ;
+.
+formula:instantRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#instant" ;
+  rdfs:label "instant ref"^^xsd:string ;
+.
+formula:measureRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#measure" ;
+  rdfs:label "measure ref"^^xsd:string ;
+.
+formula:memberRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#member" ;
+  rdfs:label "member ref"^^xsd:string ;
+.
+formula:multiplyByRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#multiplyBy" ;
+  rdfs:label "multiply by ref"^^xsd:string ;
+.
+formula:occRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#occ" ;
+  rdfs:label "occ ref"^^xsd:string ;
+.
+formula:omitRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#omit" ;
+  rdfs:label "omit ref"^^xsd:string ;
+.
+formula:precisionRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#precision" ;
+  rdfs:label "precision ref"^^xsd:string ;
+.
+formula:qname
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/formula#qname" ;
+  rdfs:label "qname"^^xsd:string ;
+.
+<http://finregont.com/fro/xbrl/formula/formula.ttl#qname.model>
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/formula#qname.model" ;
+  rdfs:label "Qname.model"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom xsd:QName ;
+      owl:onProperty formula:qname ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty formula:qnameExpressionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:qname ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty formula:qnameExpressionRef ;
+    ] ;
+.
+formula:qnameExpressionRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#qnameExpression" ;
+  rdfs:label "qname expression ref"^^xsd:string ;
+.
+formula:schemeRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#scheme" ;
+  rdfs:label "scheme ref"^^xsd:string ;
+.
+formula:selectRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#select" ;
+  rdfs:label "select ref"^^xsd:string ;
+.
+formula:sourceRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#source" ;
+  rdfs:label "source ref"^^xsd:string ;
+.
+formula:startRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#start" ;
+  rdfs:label "start ref"^^xsd:string ;
+.
+formula:valueRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/formula#value" ;
+  rdfs:label "value ref"^^xsd:string ;
+.
+formula:xpath
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/formula#xpath" ;
+  rdfs:label "xpath"^^xsd:string ;
+.

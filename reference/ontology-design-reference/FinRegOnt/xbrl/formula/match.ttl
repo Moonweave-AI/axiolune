@@ -1,0 +1,165 @@
+# baseURI: http://finregont.com/fro/xbrl/formula/match.ttl
+# imports: http://finregont.com/fro/xbrl/formula/variable.ttl
+# imports: http://finregont.com/fro/xbrl/generic/generic.ttl
+# prefix: match
+
+@prefix match: <http://finregont.com/fro/xbrl/formula/match.ttl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/xbrl/formula/match.ttl>
+  rdf:type owl:Ontology ;
+  <http://purl.org/dc/terms/creator> "Jurgen Ziemer (of this OWL adaptation - not the XBRL design)"^^xsd:string ;
+  <http://purl.org/dc/terms/description> """An RDF/OWL version of the XBRL formula schema file. A XBRL formula specifies validations based on XBRL instance facts and generation of derived data as output XBRL instance facts. The Match Filter defines XML syntax [XML] for filters that condition upon matching the value of an aspect of a fact to the same aspect of other facts. 
+The ontology defines Match model as a subclass of Variable Resource Type. Several subclasses of Match model define the possible building blocks: location, entity Id, period, segment, unit, XDT and non-XDT."""^^xsd:string ;
+  <http://purl.org/dc/terms/rights> "Copyright  © 2002 XBRL International. All Rights Reserved. http://www.XBRL.org/legal/"^^xsd:string ;
+  <http://purl.org/dc/terms/rights> "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only)."^^xsd:string ;
+  rdfs:comment "The ontology is a direct conversion of the XBRL match filter schema (see owl:versionInfo). The purpose is bi-directional for RDF instance files that include an XBRL formula: To read XBRL data files into FinRegOnt and to create XBRL instance data files from the ontology."^^xsd:string ;
+  rdfs:isDefinedBy <https://specifications.xbrl.org/specifications.html> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  rdfs:seeAlso <http://www.xbrl.org/specification/matchfilters/rec-2009-06-22/matchFilters-REC-2009-06-22+corrected-errata-2014-05-28.html> ;
+  owl:imports <http://finregont.com/fro/xbrl/formula/variable.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/generic/generic.ttl> ;
+  owl:versionInfo "Created with TopBraid Composer from the XML Schema(s) http://xbrl.org/2008/filter/match"^^xsd:string ;
+.
+<http://finregont.com/fro/xbrl/formula/match.ttl#Dimension.match.model>
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/match#dimension.match.model" ;
+  rdfs:label "Dimension.match.model"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/match.ttl#Match.model> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:QName ;
+      owl:onProperty match:dimension ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty match:dimension ;
+    ] ;
+.
+<http://finregont.com/fro/xbrl/formula/match.ttl#Match.model>
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/match#match.model" ;
+  rdfs:label "Match.model"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#QName> ;
+      owl:onProperty match:variableRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty match:variableRef ;
+    ] ;
+.
+match:MatchConcept
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/match#matchConcept" ;
+  rdfs:label "Match concept"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/match.ttl#Match.model> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+.
+match:MatchDimension
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/match#matchDimension" ;
+  rdfs:label "Match dimension"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/match.ttl#Dimension.match.model> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+.
+match:MatchEntityIdentifier
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/match#matchEntityIdentifier" ;
+  rdfs:label "Match entity identifier"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/match.ttl#Match.model> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+.
+match:MatchLocation
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/match#matchLocation" ;
+  rdfs:label "Match location"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/match.ttl#Match.model> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+.
+match:MatchNonXDTScenario
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/match#matchNonXDTScenario" ;
+  rdfs:label "Match non XDTScenario"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/match.ttl#Match.model> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+.
+match:MatchNonXDTSegment
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/match#matchNonXDTSegment" ;
+  rdfs:label "Match non XDTSegment"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/match.ttl#Match.model> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+.
+match:MatchPeriod
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/match#matchPeriod" ;
+  rdfs:label "Match period"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/match.ttl#Match.model> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+.
+match:MatchScenario
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/match#matchScenario" ;
+  rdfs:label "Match scenario"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/match.ttl#Match.model> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+.
+match:MatchSegment
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/match#matchSegment" ;
+  rdfs:label "Match segment"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/match.ttl#Match.model> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+.
+match:MatchUnit
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/match#matchUnit" ;
+  rdfs:label "Match unit"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/match.ttl#Match.model> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+.
+match:dimension
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/filter/match#dimension" ;
+  rdfs:label "dimension"^^xsd:string ;
+.
+match:variableRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/match#variable" ;
+  rdfs:label "variable ref"^^xsd:string ;
+.
+<http://www.w3.org/2004/02/skos/core#prefLabel>
+  rdf:type owl:AnnotationProperty ;
+  rdfs:label "pref label"^^xsd:string ;
+.

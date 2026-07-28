@@ -1,0 +1,295 @@
+# baseURI: http://finregont.com/fro/xbrl/formula/dimension.ttl
+# imports: http://finregont.com/fro/xbrl/formula/variable.ttl
+# imports: http://finregont.com/fro/xbrl/generic/generic.ttl
+# prefix: dimension
+
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix dimension: <http://finregont.com/fro/xbrl/formula/dimension.ttl#> .
+@prefix dtype: <http://www.linkedmodel.org/schema/dtype#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/xbrl/formula/dimension.ttl>
+  rdf:type owl:Ontology ;
+  dct:creator "Jurgen Ziemer (of this OWL adaptation - not the XBRL design)"^^xsd:string ;
+  dct:description """An RDF/OWL version of the XBRL dimension filter schema. A XBRL formula specifies validations based on XBRL instance facts and generation of derived data as output XBRL instance facts. The dimension filter extends Variables schema with syntax to filter XBRL instance fact based on instance dimensions.
+The ontology defines classes for explicit and typed dimensions, model and axis."""^^xsd:string ;
+  dct:rights "Copyright  © 2002 XBRL International. All Rights Reserved. http://www.XBRL.org/legal/"^^xsd:string ;
+  dct:rights "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only)."^^xsd:string ;
+  rdfs:comment "The ontology is a direct conversion of the XBRL dimension filter file (see owl:versionInfo). The purpose is bi-directional for RDF instance files that include an XBRL formula: To read XBRL data files into FinRegOnt and to create XBRL instance data files from the ontology."^^xsd:string ;
+  rdfs:isDefinedBy <https://specifications.xbrl.org/specifications.html> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  rdfs:seeAlso <http://www.xbrl.org/specification/dimensionfilters/rec-2009-06-22/dimensionfilters-rec-2009-06-22+corrected-errata-2011-03-10.html> ;
+  owl:imports <http://finregont.com/fro/xbrl/formula/variable.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/generic/generic.ttl> ;
+  owl:versionInfo "Created with TopBraid Composer from the XML Schema(s) http://xbrl.org/2008/filter/dimension"^^xsd:string ;
+.
+<http://finregont.com/fro/xbrl/formula/dimension.ttl#Dimension.model>
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/dimension#dimension.model" ;
+  rdfs:label "Dimension.model"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom xsd:QName ;
+      owl:onProperty dimension:qname ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty dimension:qnameExpressionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty dimension:qname ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty dimension:qnameExpressionRef ;
+    ] ;
+.
+dimension:EnumeratedValue
+  rdf:type owl:Class ;
+  rdfs:label "Enumerated value"^^xsd:string ;
+  rdfs:subClassOf dtype:EnumeratedValue ;
+.
+dimension:ExplicitDimension
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/dimension#explicitDimension" ;
+  rdfs:label "Explicit dimension"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/dimension.ttl#Dimension.model> ;
+      owl:onProperty dimension:dimensionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/dimension.ttl#Member.model> ;
+      owl:onProperty dimension:memberRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty dimension:dimensionRef ;
+    ] ;
+.
+dimension:M_child
+  rdf:type <http://finregont.com/fro/xbrl/formula/dimension.ttl#Member.model-axis> ;
+  dtype:order "1"^^xsd:nonNegativeInteger ;
+  dtype:value "child"^^xsd:token ;
+  rdfs:label "M child"^^xsd:string ;
+.
+dimension:M_child-or-self
+  rdf:type <http://finregont.com/fro/xbrl/formula/dimension.ttl#Member.model-axis> ;
+  dtype:order "0"^^xsd:nonNegativeInteger ;
+  dtype:value "child-or-self"^^xsd:token ;
+  rdfs:label "M child-or-self"^^xsd:string ;
+.
+dimension:M_descendant
+  rdf:type <http://finregont.com/fro/xbrl/formula/dimension.ttl#Member.model-axis> ;
+  dtype:order "2"^^xsd:nonNegativeInteger ;
+  dtype:value "descendant"^^xsd:token ;
+  rdfs:label "M descendant"^^xsd:string ;
+.
+dimension:M_descendant-or-self
+  rdf:type <http://finregont.com/fro/xbrl/formula/dimension.ttl#Member.model-axis> ;
+  dtype:order "3"^^xsd:nonNegativeInteger ;
+  dtype:value "descendant-or-self"^^xsd:token ;
+  rdfs:label "M descendant-or-self"^^xsd:string ;
+.
+<http://finregont.com/fro/xbrl/formula/dimension.ttl#Member.model>
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/dimension#member.model" ;
+  rdfs:label "Member.model"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#QName> ;
+      owl:onProperty dimension:variableRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      owl:allValuesFrom xsd:QName ;
+      owl:onProperty dimension:qname ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "2"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty dimension:qnameExpressionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "3"^^xsd:int ;
+      owl:allValuesFrom xsd:anyURI ;
+      owl:onProperty dimension:linkrole ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "4"^^xsd:int ;
+      owl:allValuesFrom xsd:anyURI ;
+      owl:onProperty dimension:arcrole ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "5"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/dimension.ttl#Member.model-axis> ;
+      owl:onProperty dimension:axisRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty dimension:arcrole ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty dimension:axisRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty dimension:linkrole ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty dimension:qname ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty dimension:qnameExpressionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty dimension:variableRef ;
+    ] ;
+.
+<http://finregont.com/fro/xbrl/formula/dimension.ttl#Member.model-axis>
+  rdf:type owl:Class ;
+  rdfs:label "Member.model-axis"^^xsd:string ;
+  rdfs:subClassOf dimension:EnumeratedValue ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      owl:allValuesFrom xsd:token ;
+      owl:onProperty dtype:value ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty dtype:value ;
+    ] ;
+  owl:oneOf (
+      dimension:M_child
+      dimension:M_child-or-self
+      dimension:M_descendant
+      dimension:M_descendant-or-self
+    ) ;
+.
+dimension:TypedDimension
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/dimension#typedDimension" ;
+  rdfs:label "Typed dimension"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/dimension.ttl#Dimension.model> ;
+      owl:onProperty dimension:dimensionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty dimension:testRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty dimension:dimensionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty dimension:testRef ;
+    ] ;
+.
+dimension:arcrole
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/filter/dimension#arcrole" ;
+  rdfs:label "arcrole"^^xsd:string ;
+.
+dimension:axisRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/dimension#axis" ;
+  rdfs:label "axis ref"^^xsd:string ;
+.
+dimension:dimensionRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/dimension#dimension" ;
+  rdfs:label "dimension ref"^^xsd:string ;
+.
+dimension:linkrole
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/filter/dimension#linkrole" ;
+  rdfs:label "linkrole"^^xsd:string ;
+.
+dimension:memberRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/dimension#member" ;
+  rdfs:label "member ref"^^xsd:string ;
+.
+dimension:qname
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/filter/dimension#qname" ;
+  rdfs:label "qname"^^xsd:string ;
+.
+dimension:qnameExpressionRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/dimension#qnameExpression" ;
+  rdfs:label "qname expression ref"^^xsd:string ;
+.
+dimension:testRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/dimension#test" ;
+  rdfs:label "test ref"^^xsd:string ;
+.
+dimension:variableRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/dimension#variable" ;
+  rdfs:label "variable ref"^^xsd:string ;
+.
+<http://www.w3.org/2004/02/skos/core#prefLabel>
+  rdf:type owl:AnnotationProperty ;
+  rdfs:label "pref label"^^xsd:string ;
+.

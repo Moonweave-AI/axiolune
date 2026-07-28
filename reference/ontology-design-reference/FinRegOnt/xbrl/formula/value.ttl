@@ -1,0 +1,54 @@
+# baseURI: http://finregont.com/fro/xbrl/formula/value.ttl
+# imports: http://finregont.com/fro/xbrl/formula/validation.ttl
+# imports: http://finregont.com/fro/xbrl/generic/generic.ttl
+# prefix: value
+
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix value: <http://finregont.com/fro/xbrl/formula/value.ttl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/xbrl/formula/value.ttl>
+  rdf:type owl:Ontology ;
+  <http://purl.org/dc/terms/creator> "Jurgen Ziemer (of this OWL adaptation - not the XBRL design)"^^xsd:string ;
+  <http://purl.org/dc/terms/description> "An RDF/OWL version of the XBRL formula schema file. A XBRL formula specifies validations based on XBRL instance facts and generation of derived data as output XBRL instance facts. The formula ontology provides classes and properties instance ontologies that include formula."^^xsd:string ;
+  <http://purl.org/dc/terms/rights> "Copyright  © 2002 XBRL International. All Rights Reserved. http://www.XBRL.org/legal/"^^xsd:string ;
+  <http://purl.org/dc/terms/rights> "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only)."^^xsd:string ;
+  rdfs:comment "The ontology is a direct conversion of the XBRL value XSD file (see owl:versionInfo). The purpose is bi-directional for RDF instance files that include an XBRL formula: To read XBRL data files into FinRegOnt and to create XBRL instance data files from the ontology."^^xsd:string ;
+  rdfs:isDefinedBy <https://specifications.xbrl.org/specifications.html> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  rdfs:seeAlso <http://www.xbrl.org/specification/valueassertions/rec-2009-06-22/valueassertions-rec-2009-06-22.html> ;
+  owl:imports <http://finregont.com/fro/xbrl/formula/validation.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/generic/generic.ttl> ;
+  owl:versionInfo "Created with TopBraid Composer from the XML Schema(s) http://xbrl.org/2008/assertion/value"^^xsd:string ;
+.
+value:ValueAssertion
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/assertion/value#valueAssertion" ;
+  rdfs:label "Value assertion"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#VariableSet> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty value:testRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty value:testRef ;
+    ] ;
+.
+value:testRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/assertion/value#test" ;
+  rdfs:label "test ref"^^xsd:string ;
+.
+<http://www.w3.org/2004/02/skos/core#prefLabel>
+  rdf:type owl:AnnotationProperty ;
+  rdfs:label "pref label"^^xsd:string ;
+.

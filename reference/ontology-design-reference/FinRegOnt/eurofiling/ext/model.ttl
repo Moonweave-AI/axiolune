@@ -1,0 +1,215 @@
+# baseURI: http://finregont.com/fro/eurofiling/ext/model.ttl
+# imports: http://finregont.com/fro/xbrl/XLink.ttl
+# imports: http://finregont.com/fro/xbrl/cube/xbrldt.ttl
+# imports: http://finregont.com/fro/xbrl/instance.ttl
+# imports: http://finregont.com/fro/xbrl/linkbase.ttl
+# imports: http://topbraid.org/sxml
+# imports: http://www.linkedmodel.org/schema/dtype
+# prefix: model
+
+@prefix XLink: <http://finregont.com/fro/xbrl/XLink.ttl#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dtype: <http://www.linkedmodel.org/schema/dtype#> .
+@prefix instance: <http://finregont.com/fro/xbrl/instance.ttl#> .
+@prefix model: <http://finregont.com/fro/eurofiling/ext/model.ttl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/eurofiling/ext/model.ttl>
+  rdf:type owl:Ontology ;
+  rdfs:comment "Schema for definitions of the model"^^xsd:string ;
+  owl:imports <http://finregont.com/fro/xbrl/XLink.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/cube/xbrldt.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/instance.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/linkbase.ttl> ;
+  owl:imports <http://topbraid.org/sxml> ;
+  owl:imports <http://www.linkedmodel.org/schema/dtype> ;
+  owl:versionInfo "Created with TopBraid Composer from the XML Schema(s) http://www.eurofiling.info/xbrl/ext/model, http://www.eurofiling.info/xbrl/ext/model, http://www.eurofiling.info/xbrl/ext/model, http://www.eurofiling.info/xbrl/ext/model, http://www.eurofiling.info/xbrl/ext/model, http://www.eurofiling.info/xbrl/ext/model, http://www.eurofiling.info/xbrl/ext/model, http://www.eurofiling.info/xbrl/ext/model, http://www.eurofiling.info/xbrl/ext/model, http://www.eurofiling.info/xbrl/ext/model, http://www.eurofiling.info/xbrl/ext/model, http://www.eurofiling.info/xbrl/ext/model, http://www.eurofiling.info/xbrl/ext/model, http://www.eurofiling.info/xbrl/ext/model, http://www.eurofiling.info/xbrl/ext/model, http://www.eurofiling.info/xbrl/ext/model, http://www.eurofiling.info/xbrl/ext/model, http://www.eurofiling.info/xbrl/ext/model"^^xsd:string ;
+.
+model:DictionaryElementAttrs
+  rdf:type owl:Class ;
+  sxml:tag "http://www.eurofiling.info/xbrl/ext/model#dictionaryElementAttrs" ;
+  rdfs:label "Dictionary element attrs"^^xsd:string ;
+  rdfs:subClassOf model:PublicElementAttrs ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:date ;
+      owl:onProperty model:fromDate ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:date ;
+      owl:onProperty model:toDate ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty model:fromDate ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty model:toDate ;
+    ] ;
+.
+model:ExplicitDomainType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.eurofiling.info/xbrl/ext/model#explicitDomainType" ;
+  rdfs:comment """Type for elements that represent the set of elements in an explicit domain. These elements are not domain
+				items and thus, cannot appear in instance documents. Domain items are represented using the standard type defined in the type registry."""@en ;
+  rdfs:label "Explicit domain type"^^xsd:string ;
+  rdfs:subClassOf instance:StringItemType ;
+.
+model:FamilyType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.eurofiling.info/xbrl/ext/model#familyType" ;
+  rdfs:comment """Families are items used only for presentation purposes of the dimensions in the dictionary (not involved
+			in rendering of tables). They will enable a proper organization of the dimensions of the model as they are expected to grow in the future"""@en ;
+  rdfs:label "Family type"^^xsd:string ;
+  rdfs:subClassOf instance:StringItemType ;
+.
+model:FrameworkType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.eurofiling.info/xbrl/ext/model#frameworkType" ;
+  rdfs:comment "A framework represents a functional area described by taxonomy files"@en ;
+  rdfs:label "Framework type"^^xsd:string ;
+  rdfs:subClassOf instance:StringItemType ;
+.
+model:Hyp
+  rdf:type owl:Class ;
+  instance:periodType "instant"^^xsd:string ;
+  sxml:tag "http://www.eurofiling.info/xbrl/ext/model#hyp" ;
+  rdfs:label "Hyp"^^xsd:string ;
+  rdfs:subClassOf instance:Item ;
+  rdfs:subClassOf instance:StringItemType ;
+  rdfs:subClassOf <http://xbrl.org/2005/xbrldt#HypercubeItem> ;
+.
+model:Met
+  rdf:type owl:Class ;
+  instance:periodType "instant"^^xsd:string ;
+  sxml:tag "http://www.eurofiling.info/xbrl/ext/model#met" ;
+  rdfs:label "Met"^^xsd:string ;
+  rdfs:subClassOf instance:Item ;
+  rdfs:subClassOf instance:StringItemType ;
+.
+model:ModuleType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.eurofiling.info/xbrl/ext/model#moduleType" ;
+  rdfs:comment "A module represents a set of tables in the model (part of a taxonomy)."@en ;
+  rdfs:label "Module type"^^xsd:string ;
+  rdfs:subClassOf instance:StringItemType ;
+.
+model:Null-dimension
+  rdf:type owl:Class ;
+  model:creationDate "2016-01-01"^^xsd:string ;
+  model:fromDate "2016-01-01"^^xsd:string ;
+  instance:periodType "instant"^^xsd:string ;
+  sxml:tag "http://www.eurofiling.info/xbrl/ext/model#null-dimension" ;
+  rdfs:label "Null-dimension"^^xsd:string ;
+  rdfs:subClassOf instance:Item ;
+  rdfs:subClassOf instance:StringItemType ;
+  rdfs:subClassOf <http://xbrl.org/2005/xbrldt#DimensionItem> ;
+.
+model:PercentDatatype
+  rdf:type rdfs:Datatype ;
+  rdfs:comment """This data type is created to enable the definition of domains of percent type, consistently with
+			the data types available for primary items"""@en ;
+  rdfs:label "Percent datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:decimal ;
+  owl:equivalentClass [
+      rdf:type rdfs:Datatype ;
+      owl:onDatatype xsd:decimal ;
+    ] ;
+.
+model:Properties
+  rdf:type owl:Class ;
+  sxml:tag "http://www.eurofiling.info/xbrl/ext/model#properties" ;
+  rdfs:label "Properties"^^xsd:string ;
+  rdfs:subClassOf model:DictionaryElementAttrs ;
+  rdfs:subClassOf XLink:Resource ;
+  rdfs:subClassOf XLink:ResourceType ;
+.
+model:PublicElementAttrs
+  rdf:type owl:Class ;
+  sxml:tag "http://www.eurofiling.info/xbrl/ext/model#publicElementAttrs" ;
+  rdfs:label "Public element attrs"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:date ;
+      owl:onProperty model:creationDate ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:date ;
+      owl:onProperty model:modificationDate ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty model:creationDate ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty model:modificationDate ;
+    ] ;
+.
+model:TableGroupType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.eurofiling.info/xbrl/ext/model#tableGroupType" ;
+  rdfs:comment """A table group is a helper concept to arrange tables. Sometimes, tables defined in templates are modelled
+			as multiple normalizaed tables. A table group in this case can be used to represent the original table in the template"""@en ;
+  rdfs:label "Table group type"^^xsd:string ;
+  rdfs:subClassOf instance:StringItemType ;
+.
+model:TaxonomyType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.eurofiling.info/xbrl/ext/model#taxonomyType" ;
+  rdfs:comment """A taxonomy represets a specific version of a framework. It represents a sets of data requirements of a functional area
+			in time"""@en ;
+  rdfs:label "Taxonomy type"^^xsd:string ;
+  rdfs:subClassOf instance:StringItemType ;
+.
+model:creationDate
+  rdf:type owl:AnnotationProperty ;
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.eurofiling.info/xbrl/ext/model#creationDate" ;
+  rdfs:comment "Attribute to provide information about the time of creation of an element"^^xsd:string ;
+  rdfs:label "creation date"^^xsd:string ;
+.
+model:fromDate
+  rdf:type owl:AnnotationProperty ;
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.eurofiling.info/xbrl/ext/model#fromDate" ;
+  rdfs:comment "Establish the start date of the validity period of an element"^^xsd:string ;
+  rdfs:label "from date"^^xsd:string ;
+.
+model:modificationDate
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.eurofiling.info/xbrl/ext/model#modificationDate" ;
+  rdfs:comment """Attribute to provide information about the last time when an element was
+				modified. If not included, the element has not been modified since it was created"""^^xsd:string ;
+  rdfs:label "modification date"^^xsd:string ;
+.
+model:toDate
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.eurofiling.info/xbrl/ext/model#toDate" ;
+  rdfs:comment "Establish the end date of the validity period of an element"^^xsd:string ;
+  rdfs:label "to date"^^xsd:string ;
+.
+instance:periodType
+  rdf:type owl:AnnotationProperty ;
+  rdfs:label "period type"^^xsd:string ;
+.
+skos:prefLabel
+  rdf:type owl:AnnotationProperty ;
+  rdfs:label "pref label"^^xsd:string ;
+.

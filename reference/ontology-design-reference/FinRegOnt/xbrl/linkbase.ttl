@@ -1,0 +1,889 @@
+# baseURI: http://finregont.com/fro/xbrl/linkbase.ttl
+# imports: http://finregont.com/fro/xbrl/XLink.ttl
+# prefix: linkbase
+
+@prefix linkbase: <http://finregont.com/fro/xbrl/linkbase.ttl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/xbrl/XLink.ttl#NonEmptyURI>
+  rdf:type owl:Class ;
+.
+<http://finregont.com/fro/xbrl/linkbase.ttl>
+  rdf:type owl:Ontology ;
+  <http://purl.org/dc/terms/creator> "Jurgen Ziemer (of this OWL adaptation - not the XBRL design)"^^xsd:string ;
+  <http://purl.org/dc/terms/description> "An RDF/OWL version of the XBRL linkbase. The linkbase ontology provides classes and properties for presentation, calculation, label, reference and other specialized instance ontologies that include linkbase."^^xsd:string ;
+  <http://purl.org/dc/terms/rights> "Copyright  © 2002 XBRL International. All Rights Reserved. http://www.XBRL.org/legal/"^^xsd:string ;
+  <http://purl.org/dc/terms/rights> "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only). "^^xsd:string ;
+  rdfs:comment "The ontology is a conversion of the XBRL schema file (see owl:versionInfo). The purpose is bi-directional for RDF instance files that include an XBRL taxonomy: To read XBRL data files into FinRegOnt and to create XBRL instance data files from the ontology.  "^^xsd:string ;
+  rdfs:comment "XBRL simple and extended link schema constructs"^^xsd:string ;
+  rdfs:isDefinedBy <https://specifications.xbrl.org/specifications.html> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  owl:imports <http://finregont.com/fro/xbrl/XLink.ttl> ;
+  owl:versionInfo "Created with TopBraid Composer from the XML Schema(s) http://www.xbrl.org/2003/linkbase, "^^xsd:string ;
+.
+linkbase:ATA_any
+  rdf:type linkbase:ArcroleType-cyclesAllowed ;
+  rdf:type owl:NamedIndividual ;
+  <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#order> "0"^^xsd:nonNegativeInteger ;
+  <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> "any"^^xsd:NMTOKEN ;
+  rdfs:label "any"^^xsd:string ;
+.
+linkbase:ATA_none
+  rdf:type linkbase:ArcroleType-cyclesAllowed ;
+  rdf:type owl:NamedIndividual ;
+  <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#order> "2"^^xsd:nonNegativeInteger ;
+  <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> "none"^^xsd:NMTOKEN ;
+  rdfs:label "none"^^xsd:string ;
+.
+linkbase:ATA_undirected
+  rdf:type linkbase:ArcroleType-cyclesAllowed ;
+  rdf:type owl:NamedIndividual ;
+  <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#order> "1"^^xsd:nonNegativeInteger ;
+  <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> "undirected"^^xsd:NMTOKEN ;
+  rdfs:label "undirected"^^xsd:string ;
+.
+linkbase:ArcroleType-cyclesAllowed
+  rdf:type owl:Class ;
+  rdfs:label "Arcrole type-cycles allowed"^^xsd:string ;
+  rdfs:subClassOf linkbase:EnumeratedValue ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:NMTOKEN ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#value> ;
+    ] ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:oneOf [
+          rdf:type rdf:List ;
+          rdf:first linkbase:ATA_any ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first linkbase:ATA_none ;
+              rdf:rest [
+                  rdf:type rdf:List ;
+                  rdf:first linkbase:ATA_undirected ;
+                  rdf:rest () ;
+                ] ;
+            ] ;
+        ] ;
+    ] ;
+.
+linkbase:DefinitionDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment """The element to use for human-readable definition 
+      of custom roles and arc roles."""^^xsd:string ;
+  rdfs:label "Definition datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:string ;
+.
+linkbase:Documentation
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#documentation" ;
+  rdfs:comment """Concrete element to use for documentation of 
+      extended links and linkbases."""^^xsd:string ;
+  rdfs:label "Documentation"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Documentation> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#DocumentationType> ;
+.
+linkbase:EnumeratedValue
+  rdf:type owl:Class ;
+  rdfs:label "Enumerated value"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/dtype/SCHEMA_dtype-v1.2.ttl#EnumeratedValue> ;
+.
+linkbase:LinkbaseRef-arcroleDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "A URI with a minimum length of 1 character."^^xsd:string ;
+  rdfs:label "Linkbase ref-arcrole datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:anyURI ;
+.
+linkbase:PartDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "Definition of the reference  part element - for use in reference  resources."^^xsd:string ;
+  rdfs:label "Part datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:anySimpleType ;
+.
+linkbase:PresentationArc-preferredLabelDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:label "Presentation arc-preferred label datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:anyURI ;
+.
+linkbase:UsedOnDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment """Definition of the usedOn element - used
+      to identify what elements may use a 
+      taxonomy defined role or arc role value."""^^xsd:string ;
+  rdfs:label "Used on datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:QName ;
+.
+linkbase:arcrole
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#attribute> "http://www.xbrl.org/2003/linkbase#arcrole" ;
+  rdfs:comment """This attribute must have the value:
+              http://www.w3.org/1999/xlink/properties/linkbase"""^^xsd:string ;
+  rdfs:label "arcrole"^^xsd:string ;
+.
+linkbase:arcroleRef
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#arcroleRef" ;
+  rdfs:comment """Definition of the roleRef element - used 
+      to link to resolve xlink:arcrole attribute values to 
+      the arcroleType element declaration."""^^xsd:string ;
+  rdfs:label "Arcrole ref"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Simple> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#SimpleType> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/XLink.ttl#NonEmptyURI> ;
+      owl:onProperty linkbase:arcroleURIRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty linkbase:arcroleURIRef ;
+    ] ;
+.
+linkbase:arcroleRefRef
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#arcroleRef" ;
+  rdfs:label "arcrole ref ref"^^xsd:string ;
+.
+linkbase:arcroleType
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#arcroleType" ;
+  rdfs:comment """The  arcroleType element definition - used to define custom
+      arc role values in XBRL extended links."""^^xsd:string ;
+  rdfs:label "Arcrole type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/XLink.ttl#NonEmptyURI> ;
+      owl:onProperty linkbase:arcroleURIRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:ArcroleType-cyclesAllowed ;
+      owl:onProperty linkbase:cyclesAllowedRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:DefinitionDatatype ;
+      owl:onProperty linkbase:definition ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:UsedOnDatatype ;
+      owl:onProperty linkbase:usedOn ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:ID ;
+      owl:onProperty linkbase:id ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty linkbase:arcroleURIRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty linkbase:cyclesAllowedRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty linkbase:definition ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty linkbase:id ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty linkbase:usedOn ;
+    ] ;
+.
+linkbase:arcroleURIRef
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#arcroleURI" ;
+  rdfs:label "arcrole URIRef"^^xsd:string ;
+.
+linkbase:calculationArc
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#calculationArc" ;
+  rdfs:comment """Extension of the extended link arc type for calculation arcs.
+        Adds a weight attribute to track weights on contributions to 
+        summations."""^^xsd:string ;
+  rdfs:label "Calculation arc"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Arc> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#ArcType> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:decimal ;
+      owl:onProperty linkbase:weight ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty linkbase:weight ;
+    ] ;
+.
+linkbase:calculationArcRef
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#calculationArc" ;
+  rdfs:label "calculation arc ref"^^xsd:string ;
+.
+linkbase:calculationLink
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#calculationLink" ;
+  rdfs:comment "calculation  extended link element definition"^^xsd:string ;
+  rdfs:label "Calculation link"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Extended> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#ExtendedType> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:calculationArc ;
+      owl:onProperty linkbase:calculationArcRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:loc ;
+      owl:onProperty linkbase:locRef ;
+    ] ;
+.
+linkbase:cyclesAllowedRef
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#cyclesAllowed" ;
+  rdfs:label "cycles allowed ref"^^xsd:string ;
+.
+linkbase:definition
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#attribute> "http://www.xbrl.org/2003/linkbase#definition" ;
+  rdfs:label "definition"^^xsd:string ;
+.
+linkbase:definitionArc
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#definitionArc" ;
+  rdfs:comment "Concrete arc for use in definition extended links."^^xsd:string ;
+  rdfs:label "Definition arc"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Arc> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#ArcType> ;
+.
+linkbase:definitionArcRef
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#definitionArc" ;
+  rdfs:label "definition arc ref"^^xsd:string ;
+.
+linkbase:definitionLink
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#definitionLink" ;
+  rdfs:comment "definition extended link element definition"^^xsd:string ;
+  rdfs:label "Definition link"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Extended> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#ExtendedType> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:definitionArc ;
+      owl:onProperty linkbase:definitionArcRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:loc ;
+      owl:onProperty linkbase:locRef ;
+    ] ;
+.
+linkbase:documentationRef
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#documentation" ;
+  rdfs:label "documentation ref"^^xsd:string ;
+.
+linkbase:extendedRef
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#extended" ;
+  rdfs:label "extended ref"^^xsd:string ;
+.
+linkbase:footnote
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#footnote" ;
+  rdfs:comment "Definition of the reference  resource element"^^xsd:string ;
+  rdfs:label "Footnote"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#ResourceType> ;
+.
+linkbase:footnoteArc
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#footnoteArc" ;
+  rdfs:comment "Concrete arc for use in footnote extended links."^^xsd:string ;
+  rdfs:label "Footnote arc"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Arc> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#ArcType> ;
+.
+linkbase:footnoteArcRef
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#footnoteArc" ;
+  rdfs:label "footnote arc ref"^^xsd:string ;
+.
+linkbase:footnoteLink
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#footnoteLink" ;
+  rdfs:comment "footnote extended link element definition"^^xsd:string ;
+  rdfs:label "Footnote link"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Extended> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#ExtendedType> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:footnote ;
+      owl:onProperty linkbase:footnoteRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:footnoteArc ;
+      owl:onProperty linkbase:footnoteArcRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:loc ;
+      owl:onProperty linkbase:locRef ;
+    ] ;
+.
+linkbase:footnoteRef
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#footnote" ;
+  rdfs:label "footnote ref"^^xsd:string ;
+.
+linkbase:id
+  rdf:type owl:DatatypeProperty ;
+  <http://topbraid.org/sxml#attribute> "http://www.xbrl.org/2003/linkbase#id" ;
+  rdfs:label "id"^^xsd:string ;
+.
+linkbase:label
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#label" ;
+  rdfs:comment "Definition of the label  resource element."^^xsd:string ;
+  rdfs:label "Label"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#ResourceType> ;
+.
+linkbase:labelArc
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#labelArc" ;
+  rdfs:comment "Concrete arc for use in label extended links."^^xsd:string ;
+  rdfs:label "Label arc"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Arc> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#ArcType> ;
+.
+linkbase:labelArcRef
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#labelArc" ;
+  rdfs:label "label arc ref"^^xsd:string ;
+.
+linkbase:labelLink
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#labelLink" ;
+  rdfs:comment "label extended link element definition"^^xsd:string ;
+  rdfs:label "Label link"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Extended> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#ExtendedType> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:label ;
+      owl:onProperty linkbase:labelRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:labelArc ;
+      owl:onProperty linkbase:labelArcRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:loc ;
+      owl:onProperty linkbase:locRef ;
+    ] ;
+.
+linkbase:labelRef
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#label" ;
+  rdfs:label "label ref"^^xsd:string ;
+.
+linkbase:linkbase
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#linkbase" ;
+  rdfs:comment """Definition of the linkbase element.  Used to 
+      contain a set of zero or more extended link elements."""^^xsd:string ;
+  rdfs:label "Linkbase"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/XLink.ttl#Extended> ;
+      owl:onProperty linkbase:extendedRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:Documentation ;
+      owl:onProperty linkbase:documentationRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:arcroleRef ;
+      owl:onProperty linkbase:arcroleRefRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:roleRef ;
+      owl:onProperty linkbase:roleRefRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:ID ;
+      owl:onProperty linkbase:id ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty linkbase:id ;
+    ] ;
+.
+linkbase:linkbaseRef
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#linkbaseRef" ;
+  rdfs:comment """Definition of the linkbaseRef element - used 
+      to link to XBRL taxonomy extended links from 
+      taxonomy schema documents and from XBRL
+      instances."""^^xsd:string ;
+  rdfs:label "Linkbase ref"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Simple> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#SimpleType> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:LinkbaseRef-arcroleDatatype ;
+      owl:onProperty linkbase:arcrole ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty linkbase:arcrole ;
+    ] ;
+.
+linkbase:loc
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#loc" ;
+  rdfs:comment """Concrete locator element.  The loc element is the 
+      XLink locator element for all extended links in XBRL."""^^xsd:string ;
+  rdfs:label "Loc"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Locator> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#LocatorType> ;
+.
+linkbase:locRef
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#loc" ;
+  rdfs:label "loc ref"^^xsd:string ;
+.
+linkbase:part
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#attribute> "http://www.xbrl.org/2003/linkbase#part" ;
+  rdfs:label "part"^^xsd:string ;
+.
+linkbase:preferredLabel
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#attribute> "http://www.xbrl.org/2003/linkbase#preferredLabel" ;
+  rdfs:label "preferred label"^^xsd:string ;
+.
+linkbase:presentationArc
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#presentationArc" ;
+  rdfs:comment """Extension of the extended link arc type for presentation arcs.
+        Adds a preferredLabel attribute that documents the role attribute
+        value of preferred labels (as they occur in label extended links)."""^^xsd:string ;
+  rdfs:label "Presentation arc"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Arc> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#ArcType> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:PresentationArc-preferredLabelDatatype ;
+      owl:onProperty linkbase:preferredLabel ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty linkbase:preferredLabel ;
+    ] ;
+.
+linkbase:presentationArcRef
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#presentationArc" ;
+  rdfs:label "presentation arc ref"^^xsd:string ;
+.
+linkbase:presentationLink
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#presentationLink" ;
+  rdfs:comment "presentation extended link element definition."^^xsd:string ;
+  rdfs:label "Presentation link"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Extended> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#ExtendedType> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:loc ;
+      owl:onProperty linkbase:locRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:presentationArc ;
+      owl:onProperty linkbase:presentationArcRef ;
+    ] ;
+.
+linkbase:reference
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#reference" ;
+  rdfs:comment "Definition of the reference  resource element."^^xsd:string ;
+  rdfs:label "Reference"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#ResourceType> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:PartDatatype ;
+      owl:onProperty linkbase:part ;
+    ] ;
+.
+linkbase:referenceArc
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#referenceArc" ;
+  rdfs:comment "Concrete arc for use in reference extended links."^^xsd:string ;
+  rdfs:label "Reference arc"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Arc> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#ArcType> ;
+.
+linkbase:referenceArcRef
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#referenceArc" ;
+  rdfs:label "reference arc ref"^^xsd:string ;
+.
+linkbase:referenceLink
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#referenceLink" ;
+  rdfs:comment "reference extended link element definition"^^xsd:string ;
+  rdfs:label "Reference link"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Extended> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#ExtendedType> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:loc ;
+      owl:onProperty linkbase:locRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:reference ;
+      owl:onProperty linkbase:referenceRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:referenceArc ;
+      owl:onProperty linkbase:referenceArcRef ;
+    ] ;
+.
+linkbase:referenceRef
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#reference" ;
+  rdfs:label "reference ref"^^xsd:string ;
+.
+linkbase:roleRef
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#roleRef" ;
+  rdfs:comment """Definition of the roleRef element - used 
+      to link to resolve xlink:role attribute values to 
+      the roleType element declaration."""^^xsd:string ;
+  rdfs:label "Role ref"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Simple> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#SimpleType> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/XLink.ttl#NonEmptyURI> ;
+      owl:onProperty linkbase:roleURIRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty linkbase:roleURIRef ;
+    ] ;
+.
+linkbase:roleRefRef
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#roleRef" ;
+  rdfs:label "role ref ref"^^xsd:string ;
+.
+linkbase:roleType
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#roleType" ;
+  rdfs:comment """The roleType element definition - used to define custom
+      role values in XBRL extended links."""^^xsd:string ;
+  rdfs:label "Role type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/XLink.ttl#NonEmptyURI> ;
+      owl:onProperty linkbase:roleURIRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:DefinitionDatatype ;
+      owl:onProperty linkbase:definition ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom linkbase:UsedOnDatatype ;
+      owl:onProperty linkbase:usedOn ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:allValuesFrom xsd:ID ;
+      owl:onProperty linkbase:id ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty linkbase:roleURIRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty linkbase:definition ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty linkbase:id ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:minCardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty linkbase:usedOn ;
+    ] ;
+.
+linkbase:roleURIRef
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#roleURI" ;
+  rdfs:label "role URIRef"^^xsd:string ;
+.
+linkbase:schemaRef
+  rdf:type owl:Class ;
+  <http://topbraid.org/sxml#tag> "http://www.xbrl.org/2003/linkbase#schemaRef" ;
+  rdfs:comment """Definition of the schemaRef element - used 
+      to link to XBRL taxonomy schemas from 
+      XBRL instances."""^^xsd:string ;
+  rdfs:label "Schema ref"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Simple> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#SimpleType> ;
+.
+linkbase:usedOn
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:ObjectProperty ;
+  <http://topbraid.org/sxml#attribute> "http://www.xbrl.org/2003/linkbase#usedOn" ;
+  rdfs:label "used on"^^xsd:string ;
+.
+linkbase:weight
+  rdf:type owl:DatatypeProperty ;
+  <http://topbraid.org/sxml#attribute> "http://www.xbrl.org/2003/linkbase#weight" ;
+  rdfs:label "weight"^^xsd:string ;
+.
+xsd:QName
+  rdf:type owl:Class ;
+.
+xsd:anySimpleType
+  rdf:type owl:Class ;
+.
+xsd:string
+  rdf:type owl:Class ;
+.
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "0"^^xsd:int ;
+  rdfs:comment """Concrete element to use for documentation of 
+      extended links and linkbases."""^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "0"^^xsd:int ;
+  rdfs:comment """Concrete locator element.  The loc element is the 
+      XLink locator element for all extended links in XBRL."""^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "0"^^xsd:int ;
+  rdfs:comment """Concrete locator element.  The loc element is the 
+      XLink locator element for all extended links in XBRL."""^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "0"^^xsd:int ;
+  rdfs:comment """Concrete locator element.  The loc element is the 
+      XLink locator element for all extended links in XBRL."""^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "0"^^xsd:int ;
+  rdfs:comment """Concrete locator element.  The loc element is the 
+      XLink locator element for all extended links in XBRL."""^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "0"^^xsd:int ;
+  rdfs:comment """Concrete locator element.  The loc element is the 
+      XLink locator element for all extended links in XBRL."""^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "0"^^xsd:int ;
+  rdfs:comment """Concrete locator element.  The loc element is the 
+      XLink locator element for all extended links in XBRL."""^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "0"^^xsd:int ;
+  rdfs:comment "Definition of the reference  part element - for use in reference  resources."^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "0"^^xsd:int ;
+  rdfs:comment """The element to use for human-readable definition 
+      of custom roles and arc roles."""^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "0"^^xsd:int ;
+  rdfs:comment """The element to use for human-readable definition 
+      of custom roles and arc roles."""^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "1"^^xsd:int ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "1"^^xsd:int ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "1"^^xsd:int ;
+  rdfs:comment "Concrete arc for use in definition extended links."^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "1"^^xsd:int ;
+  rdfs:comment "Concrete arc for use in footnote extended links."^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "1"^^xsd:int ;
+  rdfs:comment "Concrete arc for use in label extended links."^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "1"^^xsd:int ;
+  rdfs:comment "Concrete arc for use in reference extended links."^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "1"^^xsd:int ;
+  rdfs:comment """Definition of the roleRef element - used 
+      to link to resolve xlink:role attribute values to 
+      the roleType element declaration."""^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "1"^^xsd:int ;
+  rdfs:comment """Definition of the usedOn element - used
+      to identify what elements may use a 
+      taxonomy defined role or arc role value."""^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "1"^^xsd:int ;
+  rdfs:comment """Definition of the usedOn element - used
+      to identify what elements may use a 
+      taxonomy defined role or arc role value."""^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "2"^^xsd:int ;
+  rdfs:comment "Definition of the label  resource element."^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "2"^^xsd:int ;
+  rdfs:comment "Definition of the reference  resource element"^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "2"^^xsd:int ;
+  rdfs:comment "Definition of the reference  resource element."^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "2"^^xsd:int ;
+  rdfs:comment """Definition of the roleRef element - used 
+      to link to resolve xlink:arcrole attribute values to 
+      the arcroleType element declaration."""^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "false"^^xsd:boolean ;
+  <http://topbraid.org/sxml#order> "3"^^xsd:int ;
+  rdfs:comment "Abstract extended link element at head of extended link substitution group."^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "true"^^xsd:boolean ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "true"^^xsd:boolean ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "true"^^xsd:boolean ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "true"^^xsd:boolean ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "true"^^xsd:boolean ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "true"^^xsd:boolean ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "true"^^xsd:boolean ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "true"^^xsd:boolean ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "true"^^xsd:boolean ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "true"^^xsd:boolean ;
+  rdfs:comment "This attribute contains the arc role name."^^xsd:string ;
+].
+[
+  <http://topbraid.org/sxml#isAttribute> "true"^^xsd:boolean ;
+  rdfs:comment "This attribute contains the role name."^^xsd:string ;
+].
+[
+  xsd:minLength "1"^^xsd:anyURI ;
+].
+[
+  xsd:minLength "1"^^xsd:anyURI ;
+].

@@ -1,0 +1,184 @@
+# baseURI: http://finregont.com/fro/xbrl/formula/tuple.ttl
+# imports: http://finregont.com/fro/xbrl/formula/variable.ttl
+# imports: http://finregont.com/fro/xbrl/generic/generic.ttl
+# prefix: tuple
+
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix tuple: <http://finregont.com/fro/xbrl/formula/tuple.ttl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/xbrl/formula/tuple.ttl>
+  rdf:type owl:Ontology ;
+  dct:creator "Jurgen Ziemer (of this OWL adaptation - not the XBRL design)"^^xsd:string ;
+  dct:description """An RDF/OWL version of the XBRL formula schema file. A XBRL formula specifies validations based on XBRL instance facts and generation of derived data as output XBRL instance facts. The Tuple extends Variable with filters for ordered lists in XBRL instances.
+The ontology defines subclasses of Variable Resource-type for Ancestor, Location, Parent and Sibling filter."""^^xsd:string ;
+  dct:rights "Copyright  © 2002 XBRL International. All Rights Reserved. http://www.XBRL.org/legal/"^^xsd:string ;
+  dct:rights "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only)."^^xsd:string ;
+  rdfs:comment "The ontology is a direct conversion of the XBRL  tuple schema (see owl:versionInfo). The purpose is bi-directional for RDF instance files that include an XBRL formula: To read XBRL data files into FinRegOnt and to create XBRL instance data files from the ontology."^^xsd:string ;
+  rdfs:isDefinedBy <https://specifications.xbrl.org/specifications.html> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  rdfs:seeAlso <http://www.xbrl.org/specification/tuplefilters/rec-2009-06-22/tuplefilters-rec-2009-06-22.html> ;
+  owl:imports <http://finregont.com/fro/xbrl/formula/variable.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/generic/generic.ttl> ;
+  owl:versionInfo "Created with TopBraid Composer from the XML Schema(s) http://xbrl.org/2008/filter/tuple"^^xsd:string ;
+.
+tuple:AncestorFilter
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/tuple#ancestorFilter" ;
+  rdfs:label "Ancestor filter"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/tuple.ttl#Qname.model> ;
+      owl:onProperty tuple:ancestorRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty tuple:ancestorRef ;
+    ] ;
+.
+tuple:LocationFilter
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/tuple#locationFilter" ;
+  rdfs:label "Location filter"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty tuple:locationRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#QName> ;
+      owl:onProperty tuple:variableRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty tuple:locationRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty tuple:variableRef ;
+    ] ;
+.
+tuple:ParentFilter
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/tuple#parentFilter" ;
+  rdfs:label "Parent filter"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/tuple.ttl#Qname.model> ;
+      owl:onProperty tuple:parentRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty tuple:parentRef ;
+    ] ;
+.
+<http://finregont.com/fro/xbrl/formula/tuple.ttl#Qname.model>
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/tuple#qname.model" ;
+  rdfs:label "Qname.model"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom xsd:QName ;
+      owl:onProperty tuple:qname ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty tuple:qnameExpressionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty tuple:qname ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty tuple:qnameExpressionRef ;
+    ] ;
+.
+tuple:SiblingFilter
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/tuple#siblingFilter" ;
+  rdfs:label "Sibling filter"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#QName> ;
+      owl:onProperty tuple:variableRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty tuple:variableRef ;
+    ] ;
+.
+tuple:ancestorRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/tuple#ancestor" ;
+  rdfs:label "ancestor ref"^^xsd:string ;
+.
+tuple:locationRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/tuple#location" ;
+  rdfs:label "location ref"^^xsd:string ;
+.
+tuple:parentRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/tuple#parent" ;
+  rdfs:label "parent ref"^^xsd:string ;
+.
+tuple:qname
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/filter/tuple#qname" ;
+  rdfs:label "qname"^^xsd:string ;
+.
+tuple:qnameExpressionRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/tuple#qnameExpression" ;
+  rdfs:label "qname expression ref"^^xsd:string ;
+.
+tuple:variableRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/tuple#variable" ;
+  rdfs:label "variable ref"^^xsd:string ;
+.
+<http://www.w3.org/2004/02/skos/core#prefLabel>
+  rdf:type owl:AnnotationProperty ;
+  rdfs:label "pref label"^^xsd:string ;
+.

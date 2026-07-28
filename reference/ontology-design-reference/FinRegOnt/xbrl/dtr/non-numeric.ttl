@@ -1,0 +1,94 @@
+# baseURI: http://finregont.com/fro/xbrl/dtr/non-numeric.ttl
+# imports: http://finregont.com/fro/xbrl/instance.ttl
+# prefix: non-numeric
+
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix non-numeric: <http://finregont.com/fro/xbrl/dtr/non-numeric.ttl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/xbrl/dtr/non-numeric.ttl>
+  rdf:type owl:Ontology ;
+  dct:creator "Jurgen Ziemer (of this OWL adaptation - not the XBRL design)"^^xsd:string ;
+  dct:description "An RDF/OWL version of  XBRL non-numeric. The ontology adds subclasses to instance:ItemAttrs."^^xsd:string ;
+  dct:rights "Copyright  © 2002 XBRL International. All Rights Reserved. http://www.XBRL.org/legal/"^^xsd:string ;
+  dct:rights "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only)."^^xsd:string ;
+  rdfs:comment "Schema for non-numeric types."^^xsd:string ;
+  rdfs:comment "The ontology is a direct conversion of the XBRL schema file (see owl:versionInfo). The purpose is bi-directional for RDF instance files that include an XBRL taxonomy: To read XBRL data files into FinRegOnt and to create XBRL instance data files from the ontology."^^xsd:string ;
+  rdfs:isDefinedBy <https://specifications.xbrl.org/specifications.html> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  owl:imports <http://finregont.com/fro/xbrl/instance.ttl> ;
+  owl:versionInfo "Created with TopBraid Composer from the XML Schema(s) http://www.xbrl.org/dtr/type/non-numeric"^^xsd:string ;
+.
+non-numeric:DomainItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/dtr/type/non-numeric#domainItemType" ;
+  rdfs:comment """The domain item type indicates that an element is a domain or domain member. Domain item types
+        may or may not have attribute abstract=\"true\"."""@en ;
+  rdfs:label "Domain item type"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/instance.ttl#StringItemType> ;
+.
+non-numeric:EscapedItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/dtr/type/non-numeric#escapedItemType" ;
+  rdfs:comment """escapedItemType specializes string. There is no constraint on whether the content resulting
+        from XML un-escaping is well-formed or not. It is a suitable base type for (say) a data type whose unescaped content must
+        conform to an SGML DTD."""@en ;
+  rdfs:label "Escaped item type"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/instance.ttl#NonNumericItemAttrs> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/instance.ttl#StringItemType> ;
+.
+non-numeric:TextBlockItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/dtr/type/non-numeric#textBlockItemType" ;
+  rdfs:comment """textBlockItemType specializes xmlNodesItemType. The unescaped content MUST have mixed content
+        containing a simple string, or a fragment of XHTML or a mixture of both."""@en ;
+  rdfs:label "Text block item type"^^xsd:string ;
+  rdfs:subClassOf non-numeric:XmlNodesItemType ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/instance.ttl#NonNumericItemAttrs> ;
+.
+non-numeric:XmlItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/dtr/type/non-numeric#xmlItemType" ;
+  rdfs:comment """xmlItemType specializes xmlNodesItemType. The unescaped content MUST be well formed XML. This
+        is a suitable base type for elements whose content must conform to a specific XML Schema or DTD. This content constraint
+        cannot be captured by a finite length regular expression, other than that \"<\" must be the first non-whitespace
+        character and \">\" the last non-whitespace character."""@en ;
+  rdfs:label "Xml item type"^^xsd:string ;
+  rdfs:subClassOf non-numeric:XmlNodesItemType ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/instance.ttl#NonNumericItemAttrs> ;
+.
+non-numeric:XmlNodesItemType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/dtr/type/non-numeric#xmlNodesItemType" ;
+  rdfs:comment """xmlNodesItemType specializes escapedItemType. The unescaped content MUST be a sequence of XML
+        text and well-formed XML nodes. This content constraint cannot be captured by a finite length regular
+        expression."""@en ;
+  rdfs:label "Xml nodes item type"^^xsd:string ;
+  rdfs:subClassOf non-numeric:EscapedItemType ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/instance.ttl#NonNumericItemAttrs> ;
+.
+non-numeric:contextRefValue
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/dtr/type/non-numeric#contextRef" ;
+  rdfs:label "context ref value"^^xsd:string ;
+.
+non-numeric:id
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/dtr/type/non-numeric#id" ;
+  rdfs:label "id"^^xsd:string ;
+.
+<http://finregont.com/fro/xbrl/instance.ttl#NonNumericItemAttrs>
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2003/instance#nonNumericItemAttrs" ;
+  rdfs:comment "Group of attributes for non-numeric items"^^xsd:string ;
+  rdfs:label "Non numeric item attrs"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/instance.ttl#ItemAttrs> ;
+.
+<http://www.w3.org/2004/02/skos/core#prefLabel>
+  rdf:type owl:AnnotationProperty ;
+  rdfs:label "pref label"^^xsd:string ;
+.

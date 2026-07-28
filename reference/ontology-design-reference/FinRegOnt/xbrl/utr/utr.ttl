@@ -1,0 +1,882 @@
+# baseURI: http://finregont.com/fro/xbrl/utr/utr.ttl
+# imports: http://finregont.com/fro/xbrl/w3/MathML.ttl
+# prefix: utr
+
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix dtype: <http://www.linkedmodel.org/schema/dtype#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix utr: <http://finregont.com/fro/xbrl/utr/utr.ttl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/xbrl/utr/utr.ttl>
+  rdf:type owl:Ontology ;
+  dct:creator "Jurgen Ziemer (of this OWL adaptation - not the XBRL design)"^^xsd:string ;
+  dct:description "An RDF/OWL version of XBRL 2009 utr schema. The ontology has classes that extend  the W3 MathML schema with datatypes, numerator/denominator, units and expressions."^^xsd:string ;
+  dct:rights "Copyright  © 2002 XBRL International. All Rights Reserved. http://www.XBRL.org/legal/"^^xsd:string ;
+  dct:rights "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only)."^^xsd:string ;
+  rdfs:comment "The ontology is a direct conversion of the XBRL utility schema file (utr.xsd). The source XSD is from the EIOPA Solvency taxonomy package. The schema doesn't show on XBRL specifications, but we keep it for consitency with Eurofiling.  "^^xsd:string ;
+  rdfs:isDefinedBy <https://specifications.xbrl.org/specifications.html> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  rdfs:seeAlso <http://www.eurofiling.info/solvencyII/index.shtml> ;
+  rdfs:seeAlso <https://eiopa.europa.eu/regulation-supervision/insurance/reporting-format> ;
+  owl:imports <http://finregont.com/fro/xbrl/w3/MathML.ttl> ;
+  owl:versionInfo "Created with TopBraid Composer from the XML Schema(s) http://www.xbrl.org/2009/utr"^^xsd:string ;
+.
+utr:BS_
+  rdf:type utr:BaseStandard ;
+  dtype:order "5"^^xsd:nonNegativeInteger ;
+  dtype:value ""^^xsd:string ;
+  rdfs:label "BS "^^xsd:string ;
+.
+utr:BS_Customary
+  rdf:type utr:BaseStandard ;
+  dtype:order "2"^^xsd:nonNegativeInteger ;
+  dtype:value "Customary"^^xsd:string ;
+  rdfs:label "Customary"^^xsd:string ;
+.
+utr:BS_ISO4217
+  rdf:type utr:BaseStandard ;
+  dtype:order "0"^^xsd:nonNegativeInteger ;
+  dtype:value "ISO4217"^^xsd:string ;
+  rdfs:label "ISO4217"^^xsd:string ;
+.
+utr:BS_Non-SI
+  rdf:type utr:BaseStandard ;
+  dtype:order "3"^^xsd:nonNegativeInteger ;
+  dtype:value "Non-SI"^^xsd:string ;
+  rdfs:label "Non-SI"^^xsd:string ;
+.
+utr:BS_SI
+  rdf:type utr:BaseStandard ;
+  dtype:order "1"^^xsd:nonNegativeInteger ;
+  dtype:value "SI"^^xsd:string ;
+  rdfs:label "SI"^^xsd:string ;
+.
+utr:BS_XBRL
+  rdf:type utr:BaseStandard ;
+  dtype:order "4"^^xsd:nonNegativeInteger ;
+  dtype:value "XBRL"^^xsd:string ;
+  rdfs:label "XBRL"^^xsd:string ;
+.
+utr:BaseStandard
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2009/utr#baseStandard" ;
+  rdfs:comment """A token indicating the authority or source of the unit definition: Customary, ISO4217, Non-SI,
+        SI, XBRL."""^^xsd:string ;
+  rdfs:label "Base standard"^^xsd:string ;
+  rdfs:subClassOf utr:EnumeratedValue ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      owl:allValuesFrom xsd:string ;
+      owl:onProperty dtype:value ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty dtype:value ;
+    ] ;
+  owl:oneOf (
+      utr:BS_
+      utr:BS_Customary
+      utr:BS_ISO4217
+      utr:BS_Non-SI
+      utr:BS_SI
+      utr:BS_XBRL
+    ) ;
+.
+utr:ConversionContent
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2009/utr#conversionContent" ;
+  rdfs:comment """MathML definition using elements such as mrow and msup to present a formula for conversion into
+        standard international base units, if such a conversion exists."""^^xsd:string ;
+  rdfs:label "Conversion content"^^xsd:string ;
+  rdfs:subClassOf utr:MathExpression ;
+.
+utr:ConversionPresentation
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2009/utr#conversionPresentation" ;
+  rdfs:comment """MathML definition using elements such as mrow and msup to present a formula for conversion into
+        standard international base units, if such a conversion exists."""^^xsd:string ;
+  rdfs:label "Conversion presentation"^^xsd:string ;
+  rdfs:subClassOf utr:MathExpression ;
+.
+utr:Definition
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2009/utr#definition" ;
+  rdfs:comment "The meaning of the unit, in English."^^xsd:string ;
+  rdfs:label "Definition"^^xsd:string ;
+  rdfs:subClassOf utr:DocumentationType ;
+.
+utr:DenominatorGroup
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2009/utr#denominatorGroup" ;
+  rdfs:label "Denominator group"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      rdfs:comment """When present, then the unit denominator must be for a unit that is compatible with this item
+        type."""^^xsd:string ;
+      owl:allValuesFrom utr:DenominatorItemTypeDatatype ;
+      owl:onProperty utr:denominatorItemType ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      rdfs:comment """If the namespace of the denominator item type is constrained, then it is provided
+            here."""^^xsd:string ;
+      owl:allValuesFrom utr:NsDenominatorItemTypeDatatype ;
+      owl:onProperty utr:nsDenominatorItemType ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty utr:denominatorItemType ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty utr:nsDenominatorItemType ;
+    ] ;
+.
+utr:DenominatorItemTypeDatatype
+  rdf:type rdfs:Datatype ;
+  rdfs:comment """When present, then the unit denominator must be for a unit that is compatible with this item
+        type."""^^xsd:string ;
+  rdfs:label "Denominator item type datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:NCName ;
+  owl:equivalentClass [
+      rdf:type rdfs:Datatype ;
+      owl:onDatatype xsd:NCName ;
+    ] ;
+.
+utr:DocumentationType
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2009/utr#DocumentationType" ;
+  rdfs:comment "Element type that may contain mixed text and XHTML markup"^^xsd:string ;
+  rdfs:label "Documentation type"^^xsd:string ;
+.
+utr:EnumeratedValue
+  rdf:type owl:Class ;
+  rdfs:label "Enumerated value"^^xsd:string ;
+  rdfs:subClassOf dtype:EnumeratedValue ;
+.
+utr:ItemTypeDatatype
+  rdf:type rdfs:Datatype ;
+  sxml:tag "http://www.xbrl.org/2009/utr#itemType" ;
+  rdfs:comment "The local-name of a type with which this unit may be used."^^xsd:string ;
+  rdfs:label "Item type datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:NCName ;
+  owl:equivalentClass [
+      rdf:type rdfs:Datatype ;
+      owl:onDatatype xsd:NCName ;
+    ] ;
+.
+utr:ItemTypeDateDatatype
+  rdf:type rdfs:Datatype ;
+  rdfs:comment """Version date of the XBRL specification or data type registry in which the item type first
+        appears, or empty if the type is not (yet) present."""^^xsd:string ;
+  rdfs:label "Item type date datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:date ;
+  owl:equivalentClass [
+      rdf:type rdfs:Datatype ;
+      owl:onDatatype xsd:date ;
+    ] ;
+.
+utr:MathExpression
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2009/utr#mathExpression" ;
+  rdfs:label "Math expression"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/w3/MathML.ttl#Math> ;
+      owl:onProperty utr:mathRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty utr:mathRef ;
+    ] ;
+.
+utr:NsDenominatorItemTypeDatatype
+  rdf:type rdfs:Datatype ;
+  rdfs:label "Ns denominator item type datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:anyURI ;
+  owl:equivalentClass [
+      rdf:type rdfs:Datatype ;
+      owl:onDatatype xsd:anyURI ;
+    ] ;
+.
+utr:NsItemTypeDatatype
+  rdf:type rdfs:Datatype ;
+  sxml:tag "http://www.xbrl.org/2009/utr#nsItemType" ;
+  rdfs:comment "Item type namespace; absent if the namespace does not matter."^^xsd:string ;
+  rdfs:label "Ns item type datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:anyURI ;
+  owl:equivalentClass [
+      rdf:type rdfs:Datatype ;
+      owl:onDatatype xsd:anyURI ;
+    ] ;
+.
+utr:NsNumeratorItemTypeDatatype
+  rdf:type rdfs:Datatype ;
+  rdfs:label "Ns numerator item type datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:anyURI ;
+  owl:equivalentClass [
+      rdf:type rdfs:Datatype ;
+      owl:onDatatype xsd:anyURI ;
+    ] ;
+.
+utr:NsUnitDatatype
+  rdf:type rdfs:Datatype ;
+  rdfs:label "Ns unit datatype"^^xsd:string ;
+  rdfs:subClassOf utr:NsUnitTypeDatatype ;
+  owl:equivalentClass [
+      rdf:type rdfs:Datatype ;
+      owl:onDatatype utr:NsUnitTypeDatatype ;
+    ] ;
+.
+utr:NsUnitEmptyTypeDatatype
+  rdf:type rdfs:Datatype ;
+  rdfs:comment """The namespace in which the unit is declared in a xbrli:measure element. If the content is
+        empty, it means that the unit is not a simple measure. The combination of Unit ID and Unit Namespace and status
+        must be unique within the scope of the registry."""^^xsd:string ;
+  rdfs:label "Ns unit empty type datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:string ;
+  owl:equivalentClass [
+      rdf:type rdfs:Datatype ;
+      owl:onDatatype xsd:string ;
+      owl:withRestrictions (
+          [
+            xsd:length "0"^^xsd:string ;
+          ]
+        ) ;
+    ] ;
+.
+utr:NsUnitTypeDatatype
+  rdf:type rdfs:Datatype ;
+  rdfs:comment """The namespace in which the unit is declared in a xbrli:measure element. If the content is
+        empty, it means that the unit is not a simple measure. The combination of Unit ID and Unit Namespace and status
+        must be unique within the scope of the registry."""^^xsd:string ;
+  rdfs:label "Ns unit type datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:anyURI ;
+  owl:equivalentClass [
+      rdf:type rdfs:Datatype ;
+      owl:onDatatype xsd:anyURI ;
+    ] ;
+.
+utr:NumeratorGroup
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2009/utr#numeratorGroup" ;
+  rdfs:label "Numerator group"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      rdfs:comment """When present, then the unit numerator must be for a unit that is compatible with this item
+        type."""^^xsd:string ;
+      owl:allValuesFrom utr:NumeratorItemTypeDatatype ;
+      owl:onProperty utr:numeratorItemType ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      rdfs:comment """If the namespace of the numerator item type is constrained, then it is provided
+            here."""^^xsd:string ;
+      owl:allValuesFrom utr:NsNumeratorItemTypeDatatype ;
+      owl:onProperty utr:nsNumeratorItemType ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty utr:numeratorItemType ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty utr:nsNumeratorItemType ;
+    ] ;
+.
+utr:NumeratorItemTypeDatatype
+  rdf:type rdfs:Datatype ;
+  rdfs:comment """When present, then the unit numerator must be for a unit that is compatible with this item
+        type."""^^xsd:string ;
+  rdfs:label "Numerator item type datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:NCName ;
+  owl:equivalentClass [
+      rdf:type rdfs:Datatype ;
+      owl:onDatatype xsd:NCName ;
+    ] ;
+.
+utr:S_ACK
+  rdf:type utr:Status ;
+  dtype:order "6"^^xsd:nonNegativeInteger ;
+  dtype:value "ACK"^^xsd:token ;
+  rdfs:comment "Acknowledged"^^xsd:string ;
+  rdfs:label "S ACK"^^xsd:string ;
+.
+utr:S_CR
+  rdf:type utr:Status ;
+  dtype:order "1"^^xsd:nonNegativeInteger ;
+  dtype:value "CR"^^xsd:token ;
+  rdfs:comment "Candidate Recommendation"^^xsd:string ;
+  rdfs:label "S CR"^^xsd:string ;
+.
+utr:S_IWD
+  rdf:type utr:Status ;
+  dtype:order "5"^^xsd:nonNegativeInteger ;
+  dtype:value "IWD"^^xsd:token ;
+  rdfs:comment "Internal Working Draft"^^xsd:string ;
+  rdfs:label "S IWD"^^xsd:string ;
+.
+utr:S_NIE
+  rdf:type utr:Status ;
+  dtype:order "3"^^xsd:nonNegativeInteger ;
+  dtype:value "NIE"^^xsd:token ;
+  rdfs:comment "Not In Effect"^^xsd:string ;
+  rdfs:label "S NIE"^^xsd:string ;
+.
+utr:S_PROPOSED
+  rdf:type utr:Status ;
+  dtype:order "4"^^xsd:nonNegativeInteger ;
+  dtype:value "PROPOSED"^^xsd:token ;
+  rdfs:comment "Proposed"^^xsd:string ;
+  rdfs:label "S PROPOSED"^^xsd:string ;
+.
+utr:S_PWD
+  rdf:type utr:Status ;
+  dtype:order "0"^^xsd:nonNegativeInteger ;
+  dtype:value "PWD"^^xsd:token ;
+  rdfs:comment "Public Working Draft"^^xsd:string ;
+  rdfs:label "S PWD"^^xsd:string ;
+.
+utr:S_REC
+  rdf:type utr:Status ;
+  dtype:order "2"^^xsd:nonNegativeInteger ;
+  dtype:value "REC"^^xsd:token ;
+  rdfs:comment "Recommendation"^^xsd:string ;
+  rdfs:label "S REC"^^xsd:string ;
+.
+utr:S_RR
+  rdf:type utr:Status ;
+  dtype:order "7"^^xsd:nonNegativeInteger ;
+  dtype:value "RR"^^xsd:token ;
+  rdfs:comment "Rescinded Recommendation"^^xsd:string ;
+  rdfs:label "S RR"^^xsd:string ;
+.
+utr:Status
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2009/utr#status" ;
+  rdfs:comment """The XBRL International status of this unit: CR, PWD, REC, NIE, PROPOSED, IWD, ACK,
+        RR"""^^xsd:string ;
+  rdfs:label "Status"^^xsd:string ;
+  rdfs:subClassOf utr:EnumeratedValue ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      owl:allValuesFrom xsd:token ;
+      owl:onProperty dtype:value ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty dtype:value ;
+    ] ;
+  owl:oneOf (
+      utr:S_ACK
+      utr:S_CR
+      utr:S_IWD
+      utr:S_NIE
+      utr:S_PROPOSED
+      utr:S_PWD
+      utr:S_REC
+      utr:S_RR
+    ) ;
+.
+utr:SymbolDatatype
+  rdf:type rdfs:Datatype ;
+  sxml:tag "http://www.xbrl.org/2009/utr#symbol" ;
+  rdfs:comment """The symbol used when rendering figures measured in the unit. This may be unicode such as a
+        currency symbol. Monetary symbols are conventionally displayed before a number; other symbols conventionally
+        displayed after."""^^xsd:string ;
+  rdfs:label "Symbol datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:string ;
+  owl:equivalentClass [
+      rdf:type rdfs:Datatype ;
+      owl:onDatatype xsd:string ;
+    ] ;
+.
+utr:UnitDivisionGroup
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2009/utr#unitDivisionGroup" ;
+  rdfs:label "Unit division group"^^xsd:string ;
+  rdfs:subClassOf utr:DenominatorGroup ;
+  rdfs:subClassOf utr:NumeratorGroup ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      rdfs:comment "The local-name of a type with which this unit may be used."^^xsd:string ;
+      owl:allValuesFrom utr:ItemTypeDatatype ;
+      owl:onProperty utr:itemType ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      rdfs:comment "Item type namespace; absent if the namespace does not matter."^^xsd:string ;
+      owl:allValuesFrom utr:NsItemTypeDatatype ;
+      owl:onProperty utr:nsItemType ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "2"^^xsd:int ;
+      rdfs:comment """Version date of the XBRL specification or data type registry in which the item type first
+        appears, or empty if the type is not (yet) present."""^^xsd:string ;
+      owl:allValuesFrom utr:ItemTypeDateDatatype ;
+      owl:onProperty utr:itemTypeDate ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty utr:itemType ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty utr:itemTypeDate ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty utr:nsItemType ;
+    ] ;
+.
+utr:UnitIdDatatype
+  rdf:type rdfs:Datatype ;
+  sxml:tag "http://www.xbrl.org/2009/utr#unitId" ;
+  rdfs:comment """The NCName to be used in the measure element of occurrences of simple units with any numerator
+        or denominator measure; nsUnit must be empty. In either case, this This need not be unique in the scope of the
+        UTR because there could be (for example) a REC definition of a unit, and an IWD version of it."""^^xsd:string ;
+  rdfs:label "Unit id datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:NCName ;
+  owl:equivalentClass [
+      rdf:type rdfs:Datatype ;
+      owl:onDatatype xsd:NCName ;
+    ] ;
+.
+utr:UnitNameDatatype
+  rdf:type rdfs:Datatype ;
+  sxml:tag "http://www.xbrl.org/2009/utr#unitName" ;
+  rdfs:comment """The name of the unit being defined, which may have embedded spaces and other characters and is
+        conventionally in Proper Case."""^^xsd:string ;
+  rdfs:label "Unit name datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:string ;
+  owl:equivalentClass [
+      rdf:type rdfs:Datatype ;
+      owl:onDatatype xsd:string ;
+      owl:withRestrictions (
+          [
+            xsd:pattern "[^\\s].*[^\\s]"^^xsd:string ;
+          ]
+        ) ;
+    ] ;
+.
+utr:UnitSimpleGroup
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2009/utr#unitSimpleGroup" ;
+  rdfs:label "Unit simple group"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom utr:NsUnitTypeDatatype ;
+      owl:onProperty utr:nsUnit ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      rdfs:comment "The local-name of a type with which this unit may be used."^^xsd:string ;
+      owl:allValuesFrom utr:ItemTypeDatatype ;
+      owl:onProperty utr:itemType ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "2"^^xsd:int ;
+      rdfs:comment "Item type namespace; absent if the namespace does not matter."^^xsd:string ;
+      owl:allValuesFrom utr:NsItemTypeDatatype ;
+      owl:onProperty utr:nsItemType ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "3"^^xsd:int ;
+      rdfs:comment """Version date of the XBRL specification or data type registry in which the item type first
+        appears, or empty if the type is not (yet) present."""^^xsd:string ;
+      owl:allValuesFrom utr:ItemTypeDateDatatype ;
+      owl:onProperty utr:itemTypeDate ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "4"^^xsd:int ;
+      rdfs:comment """The symbol used when rendering figures measured in the unit. This may be unicode such as a
+        currency symbol. Monetary symbols are conventionally displayed before a number; other symbols conventionally
+        displayed after."""^^xsd:string ;
+      owl:allValuesFrom utr:SymbolDatatype ;
+      owl:onProperty utr:symbol ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty utr:itemType ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty utr:nsUnit ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty utr:itemTypeDate ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty utr:nsItemType ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty utr:symbol ;
+    ] ;
+.
+utr:Utr
+  rdf:type owl:Class ;
+  sxml:tag "http://www.xbrl.org/2009/utr#utr" ;
+  rdfs:comment "Root element of the XBRL Data Type Registry"^^xsd:string ;
+  rdfs:label "Utr"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom utr:Utr-units ;
+      owl:onProperty utr:unitsRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      rdfs:comment "Date of this version of the registry."^^xsd:string ;
+      owl:allValuesFrom xsd:date ;
+      owl:onProperty utr:lastUpdated ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      rdfs:comment "Version of the Unit Type Registry specification."^^xsd:string ;
+      owl:allValuesFrom xsd:string ;
+      owl:onProperty utr:version ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty utr:unitsRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty utr:lastUpdated ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty utr:version ;
+    ] ;
+.
+utr:Utr-units
+  rdf:type owl:Class ;
+  rdfs:label "Utr-units"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom utr:Utr-units-unit ;
+      owl:onProperty utr:unitRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty utr:unitRef ;
+    ] ;
+.
+utr:Utr-units-unit
+  rdf:type owl:Class ;
+  rdfs:label "Utr-units-unit"^^xsd:string ;
+  rdfs:subClassOf utr:UnitDivisionGroup ;
+  rdfs:subClassOf utr:UnitSimpleGroup ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      rdfs:comment """The NCName to be used in the measure element of occurrences of simple units with any numerator
+        or denominator measure; nsUnit must be empty. In either case, this This need not be unique in the scope of the
+        UTR because there could be (for example) a REC definition of a unit, and an IWD version of it."""^^xsd:string ;
+      owl:allValuesFrom utr:UnitIdDatatype ;
+      owl:onProperty utr:unitId ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      rdfs:comment """The name of the unit being defined, which may have embedded spaces and other characters and is
+        conventionally in Proper Case."""^^xsd:string ;
+      owl:allValuesFrom utr:UnitNameDatatype ;
+      owl:onProperty utr:unitName ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "2"^^xsd:int ;
+      rdfs:comment "The meaning of the unit, in English."^^xsd:string ;
+      owl:allValuesFrom utr:Definition ;
+      owl:onProperty utr:definitionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "3"^^xsd:int ;
+      rdfs:comment """A token indicating the authority or source of the unit definition: Customary, ISO4217, Non-SI,
+        SI, XBRL."""^^xsd:string ;
+      owl:allValuesFrom utr:BaseStandard ;
+      owl:onProperty utr:baseStandardRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "4"^^xsd:int ;
+      rdfs:comment """MathML definition using elements such as mrow and msup to present a formula for conversion into
+        standard international base units, if such a conversion exists."""^^xsd:string ;
+      owl:allValuesFrom utr:ConversionPresentation ;
+      owl:onProperty utr:conversionPresentationRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "5"^^xsd:int ;
+      rdfs:comment """MathML definition using elements such as mrow and msup to present a formula for conversion into
+        standard international base units, if such a conversion exists."""^^xsd:string ;
+      owl:allValuesFrom utr:ConversionContent ;
+      owl:onProperty utr:conversionContentRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "6"^^xsd:int ;
+      rdfs:comment """The XBRL International status of this unit: CR, PWD, REC, NIE, PROPOSED, IWD, ACK,
+        RR"""^^xsd:string ;
+      owl:allValuesFrom utr:Status ;
+      owl:onProperty utr:statusRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "7"^^xsd:int ;
+      rdfs:comment """Effective date of this version of the unit; all versions of the same uhit with earlier dates are
+        superseded"""^^xsd:string ;
+      owl:allValuesFrom utr:VersionDateDatatype ;
+      owl:onProperty utr:versionDate ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:ID ;
+      owl:onProperty utr:id ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty utr:baseStandardRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty utr:definitionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty utr:statusRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty utr:unitId ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty utr:unitName ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty utr:versionDate ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty utr:conversionContentRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty utr:conversionPresentationRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty utr:id ;
+    ] ;
+.
+utr:VersionDateDatatype
+  rdf:type rdfs:Datatype ;
+  rdfs:comment """Effective date of this version of the unit; all versions of the same uhit with earlier dates are
+        superseded"""^^xsd:string ;
+  rdfs:label "Version date datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:date ;
+  owl:equivalentClass [
+      rdf:type rdfs:Datatype ;
+      owl:onDatatype xsd:date ;
+    ] ;
+.
+utr:baseStandardRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2009/utr#baseStandard" ;
+  rdfs:label "base standard ref"^^xsd:string ;
+.
+utr:conversionContentRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2009/utr#conversionContent" ;
+  rdfs:label "conversion content ref"^^xsd:string ;
+.
+utr:conversionPresentationRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2009/utr#conversionPresentation" ;
+  rdfs:label "conversion presentation ref"^^xsd:string ;
+.
+utr:definitionRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2009/utr#definition" ;
+  rdfs:label "definition ref"^^xsd:string ;
+.
+utr:denominatorItemType
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/2009/utr#denominatorItemType" ;
+  rdfs:label "denominator item type"^^xsd:string ;
+.
+utr:id
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/2009/utr#id" ;
+  rdfs:label "id"^^xsd:string ;
+.
+utr:itemType
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/2009/utr#itemType" ;
+  rdfs:label "item type"^^xsd:string ;
+.
+utr:itemTypeDate
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/2009/utr#itemTypeDate" ;
+  rdfs:label "item type date"^^xsd:string ;
+.
+utr:lastUpdated
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/2009/utr#lastUpdated" ;
+  rdfs:label "last updated"^^xsd:string ;
+.
+utr:mathRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2009/utr#math" ;
+  rdfs:label "math ref"^^xsd:string ;
+.
+utr:nsDenominatorItemType
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/2009/utr#nsDenominatorItemType" ;
+  rdfs:label "ns denominator item type"^^xsd:string ;
+.
+utr:nsItemType
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/2009/utr#nsItemType" ;
+  rdfs:label "ns item type"^^xsd:string ;
+.
+utr:nsNumeratorItemType
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/2009/utr#nsNumeratorItemType" ;
+  rdfs:label "ns numerator item type"^^xsd:string ;
+.
+utr:nsUnit
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/2009/utr#nsUnit" ;
+  rdfs:label "ns unit"^^xsd:string ;
+.
+utr:numeratorItemType
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/2009/utr#numeratorItemType" ;
+  rdfs:label "numerator item type"^^xsd:string ;
+.
+utr:statusRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2009/utr#status" ;
+  rdfs:label "status ref"^^xsd:string ;
+.
+utr:symbol
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/2009/utr#symbol" ;
+  rdfs:label "symbol"^^xsd:string ;
+.
+utr:unitId
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/2009/utr#unitId" ;
+  rdfs:label "unit id"^^xsd:string ;
+.
+utr:unitName
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/2009/utr#unitName" ;
+  rdfs:label "unit name"^^xsd:string ;
+.
+utr:unitRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2009/utr#unit" ;
+  rdfs:label "unit ref"^^xsd:string ;
+.
+utr:unitsRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://www.xbrl.org/2009/utr#units" ;
+  rdfs:label "units ref"^^xsd:string ;
+.
+utr:version
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/2009/utr#version" ;
+  rdfs:label "version"^^xsd:string ;
+.
+utr:versionDate
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://www.xbrl.org/2009/utr#versionDate" ;
+  rdfs:label "version date"^^xsd:string ;
+.
+<http://www.w3.org/2004/02/skos/core#prefLabel>
+  rdf:type owl:AnnotationProperty ;
+  rdfs:label "pref label"^^xsd:string ;
+.

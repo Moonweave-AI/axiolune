@@ -1,0 +1,413 @@
+# baseURI: http://finregont.com/fro/xbrl/ref/ref.ttl
+# imports: http://finregont.com/fro/xbrl/linkbase.ttl
+
+@prefix : <http://finregont.com/fro/xbrl/ref/ref.ttl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/xbrl/ref/ref.ttl>
+  rdf:type owl:Ontology ;
+  dct:creator "Jurgen Ziemer (of this OWL adaptation - not the XBRL design)"^^xsd:string ;
+  dct:description """An RDF/OWL version of the XBRL Ref schema. Ref defines string substitution Groups for linkbase part. This is to link elements to their documentation type (appendic, article, footnote etc). Ref must not be confused with the 2008 specification for Generic Reference, which is to link elements within the taxonomy. 
+The ontology implements the Ref types as defined classes equivalent to xsd:string AND linkbase:PartDatatype."""^^xsd:string ;
+  dct:rights "Copyright  © 2002 XBRL International. All Rights Reserved. http://www.XBRL.org/legal/"^^xsd:string ;
+  dct:rights "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only)."^^xsd:string ;
+  rdfs:comment "The ontology is a direct conversion of the XBRL ref schema file (see owl:versionInfo). The purpose is bi-directional for RDF instance files that include an XBRL taxonomy: To read XBRL data files into FinRegOnt and to create XBRL instance data files from the ontology."^^xsd:string ;
+  rdfs:isDefinedBy <https://specifications.xbrl.org/specifications.html> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  owl:imports <http://finregont.com/fro/xbrl/linkbase.ttl> ;
+  owl:versionInfo "Created with TopBraid Composer from the XML Schema(s) http://www.xbrl.org/2004/ref"^^xsd:string ;
+.
+:AppendixDatatype
+  rdf:type rdfs:Datatype ;
+  rdfs:comment "Refers to the name of an Appendix, which could be a number or text."@en ;
+  rdfs:label "Appendix datatype"^^xsd:string ;
+.
+:ArticleDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "Article refers to a statutory article in legal material."@en ;
+  rdfs:label "Article datatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+:ChapterDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "For a publication that uses chapters, this part should be used to capture this information.  Because chapters are not necessarily numbers, this is a string."@en ;
+  rdfs:label "Chapter datatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+:ClauseDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "Sub component of a sub paragraph."@en ;
+  rdfs:label "Clause datatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+:ExampleDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "Example captures examples used in reference documentation; there is a separate element for Exhibits."@en ;
+  rdfs:label "Example datatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+:ExhibitDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "Exhibit refers to exhibits in reference documentation; examples have a separate element."@en ;
+  rdfs:label "Exhibit datatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+:FootnoteDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "Footnote is used to reference footnotes that appear in reference information."@en ;
+  rdfs:label "Footnote datatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+:IssueDateDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "The issue date of the specific reference.  The format is CCYY-MM-DD."@en ;
+  rdfs:label "Issue date datatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+:NameDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "Name refers to the specific publication.  For example, \"Statement of Financial Standards\", \"Statement of Position\" or \"IFRS\".  It does not include the number."@en ;
+  rdfs:label "Name datatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+:NoteDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "Notes can contain reference material; use this element when the note is published as a standalone document.  There is a separate element for footnotes within other references."@en ;
+  rdfs:label "Note datatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+:NumberDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "Number is used to record the actual number of the specific publication.  For example, the number for FAS 133 would be 133."@en ;
+  rdfs:label "Number datatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+:PageDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "Page number of the reference material."@en ;
+  rdfs:label "Page datatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+:ParagraphDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "Paragraph is used to refer to specific paragraphs in a document."@en ;
+  rdfs:label "Paragraph datatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+:PublisherDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "Publisher of the reference material, such as SEC, FASB, or AICPA."@en ;
+  rdfs:label "Publisher datatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+:SectionDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "Section is used to capture information typically captured in sections of legislation or reference documents."@en ;
+  rdfs:label "Section datatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+:SentenceDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "In some reference material individual sentences can be referred to, and  this element allows them to be referenced."@en ;
+  rdfs:label "Sentence datatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+:SubclauseDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "Subcomponent of a clause in a paragraph."@en ;
+  rdfs:label "Subclause datatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+:SubparagraphDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "Subparagraph of a paragraph."@en ;
+  rdfs:label "Subparagraph datatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+:SubsectionDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "Subsection is a subsection of the section part."@en ;
+  rdfs:label "Subsection datatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+:URIDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "Full URI of the reference such as \"http://www.fasb.org/fas133\"."@en ;
+  rdfs:label "URIDatatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+:URIDateDatatype
+  rdf:type rdfs:Datatype ;
+  rdf:type owl:Class ;
+  rdfs:comment "Date that the URI was valid, in CCYY-MM-DD format."@en ;
+  rdfs:label "URIDate datatype"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+  owl:equivalentClass [
+      rdf:type owl:Class ;
+      owl:intersectionOf [
+          rdf:type rdf:List ;
+          rdf:first <http://finregont.com/fro/xbrl/linkbase.ttl#PartDatatype> ;
+          rdf:rest [
+              rdf:type rdf:List ;
+              rdf:first xsd:string ;
+              rdf:rest () ;
+            ] ;
+        ] ;
+    ] ;
+.
+<http://www.w3.org/2004/02/skos/core#prefLabel>
+  rdf:type owl:AnnotationProperty ;
+  rdfs:label "pref label"^^xsd:string ;
+.

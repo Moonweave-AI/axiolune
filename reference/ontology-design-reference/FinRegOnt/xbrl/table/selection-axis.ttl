@@ -1,0 +1,200 @@
+# baseURI: http://finregont.com/fro/xbrl/table/selection-axis.ttl
+# imports: http://finregont.com/fro/xbrl/generic/generic.ttl
+# imports: http://finregont.com/fro/xbrl/table/table.ttl
+# imports: http://topbraid.org/sxsd
+# prefix: sel-axis
+
+@prefix composite: <http://www.topbraid.org/2007/05/composite.owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sel-axis: <http://finregont.com/fro/xbrl/table/selection-axis.ttl#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix sxsd: <http://topbraid.org/sxsd#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/xbrl/table/selection-axis.ttl>
+  rdf:type owl:Ontology ;
+  dct:creator "Jurgen Ziemer (of this OWL adaptation - not the XBRL design)"^^xsd:string ;
+  dct:description "An RDF/OWL version of XBRL table. The Table Linkbase provides a mechanism for taxonomy authors to define a tabular layout of facts. The resulting tables can be used for both presentation and data entry."^^xsd:string ;
+  dct:rights "Copyright  © 2002 XBRL International. All Rights Reserved. http://www.XBRL.org/legal/"^^xsd:string ;
+  dct:rights "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only)."^^xsd:string ;
+  rdfs:comment "The ontology is a direct conversion of the XBRL table schema file (selection-axis.xsd). The source XSD is from the EIOPA Solvency taxonomy package. XBRL specification shows selection-axis as depreciated, but we keep it for consitency with Eurofiling.  (rdfs:seeAlso)"^^xsd:string ;
+  rdfs:isDefinedBy <https://specifications.xbrl.org/specifications.html> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  rdfs:seeAlso <http://www.eurofiling.info/solvencyII/index.shtml> ;
+  rdfs:seeAlso <https://eiopa.europa.eu/regulation-supervision/insurance/reporting-format> ;
+  rdfs:seeAlso <https://specifications.xbrl.org/work-product-index-table-linkbase-table-linkbase-1.0.html> ;
+  owl:imports <http://finregont.com/fro/xbrl/generic/generic.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/table/table.ttl> ;
+  owl:imports <http://topbraid.org/sxsd> ;
+.
+sel-axis:Document
+  rdf:type sxml:Document ;
+  sxml:root sel-axis:r ;
+.
+sel-axis:id-element
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "id" ;
+  rdfs:domain sxsd:Element ;
+  rdfs:label "id" ;
+.
+sel-axis:memberTypes-union
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "memberTypes" ;
+  rdfs:domain xsd:union ;
+  rdfs:label "memberTypes" ;
+.
+sel-axis:mixed-complexContent
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "mixed" ;
+  rdfs:domain sxsd:ComplexContent ;
+  rdfs:label "mixed" ;
+.
+sel-axis:r
+  rdf:type sxsd:Schema ;
+  sel-axis:xmlns-schema "http://www.w3.org/2001/XMLSchema" ;
+  sxml:prefix "table"^^xsd:string ;
+  sxml:prefix "variable"^^xsd:string ;
+  sxsd:elementFormDefault "qualified" ;
+  sxsd:targetNamespace "http://xbrl.org/2011/table" ;
+  composite:child sel-axis:r-0 ;
+  composite:child sel-axis:r-1 ;
+  composite:child sel-axis:r-2 ;
+.
+sel-axis:r-0
+  rdf:type sxsd:Import ;
+  sxsd:namespace "http://xbrl.org/2008/variable" ;
+  sxsd:schemaLocation "http://www.xbrl.org/2008/variable.xsd" ;
+  composite:index "0"^^xsd:int ;
+.
+sel-axis:r-1
+  rdf:type sxsd:ComplexType ;
+  sxsd:name "selectionAxis.type" ;
+  composite:child sel-axis:r-1-0 ;
+  composite:index "1"^^xsd:int ;
+.
+sel-axis:r-1-0
+  rdf:type sxsd:ComplexContent ;
+  sel-axis:mixed-complexContent "true" ;
+  composite:child sel-axis:r-1-0-0 ;
+  composite:index "0"^^xsd:int ;
+.
+sel-axis:r-1-0-0
+  rdf:type sxsd:Extension ;
+  sxsd:base "table:openAxis.type" ;
+  composite:child sel-axis:r-1-0-0-0 ;
+  composite:child sel-axis:r-1-0-0-1 ;
+  composite:child sel-axis:r-1-0-0-2 ;
+  composite:index "0"^^xsd:int ;
+.
+sel-axis:r-1-0-0-0
+  rdf:type sxsd:Attribute ;
+  sxsd:name "name" ;
+  sxsd:type "QName" ;
+  sxsd:use "required" ;
+  composite:index "0"^^xsd:int ;
+.
+sel-axis:r-1-0-0-1
+  rdf:type sxsd:Attribute ;
+  sxsd:name "select" ;
+  sxsd:type "variable:expression" ;
+  sxsd:use "required" ;
+  composite:index "1"^^xsd:int ;
+.
+sel-axis:r-1-0-0-2
+  rdf:type sxsd:Attribute ;
+  sxsd:name "coveredAspect" ;
+  sxsd:use "optional" ;
+  composite:child sel-axis:r-1-0-0-2-0 ;
+  composite:index "2"^^xsd:int ;
+.
+sel-axis:r-1-0-0-2-0
+  rdf:type sxsd:SimpleType ;
+  composite:child sel-axis:r-1-0-0-2-0-0 ;
+  composite:index "0"^^xsd:int ;
+.
+sel-axis:r-1-0-0-2-0-0
+  rdf:type xsd:union ;
+  sel-axis:memberTypes-union "QName" ;
+  composite:child sel-axis:r-1-0-0-2-0-0-0 ;
+  composite:index "0"^^xsd:int ;
+.
+sel-axis:r-1-0-0-2-0-0-0
+  rdf:type sxsd:SimpleType ;
+  composite:child sel-axis:r-1-0-0-2-0-0-0-0 ;
+  composite:index "0"^^xsd:int ;
+.
+sel-axis:r-1-0-0-2-0-0-0-0
+  rdf:type sxsd:Restriction ;
+  sxsd:base "token" ;
+  composite:child sel-axis:r-1-0-0-2-0-0-0-0-0 ;
+  composite:child sel-axis:r-1-0-0-2-0-0-0-0-1 ;
+  composite:child sel-axis:r-1-0-0-2-0-0-0-0-2 ;
+  composite:child sel-axis:r-1-0-0-2-0-0-0-0-3 ;
+  composite:child sel-axis:r-1-0-0-2-0-0-0-0-4 ;
+  composite:child sel-axis:r-1-0-0-2-0-0-0-0-5 ;
+  composite:child sel-axis:r-1-0-0-2-0-0-0-0-6 ;
+  composite:child sel-axis:r-1-0-0-2-0-0-0-0-7 ;
+  composite:index "0"^^xsd:int ;
+.
+sel-axis:r-1-0-0-2-0-0-0-0-0
+  rdf:type sxsd:Enumeration ;
+  sxsd:value "concept" ;
+  composite:index "0"^^xsd:int ;
+.
+sel-axis:r-1-0-0-2-0-0-0-0-1
+  rdf:type sxsd:Enumeration ;
+  sxsd:value "entity-identifier" ;
+  composite:index "1"^^xsd:int ;
+.
+sel-axis:r-1-0-0-2-0-0-0-0-2
+  rdf:type sxsd:Enumeration ;
+  sxsd:value "period-start" ;
+  composite:index "2"^^xsd:int ;
+.
+sel-axis:r-1-0-0-2-0-0-0-0-3
+  rdf:type sxsd:Enumeration ;
+  sxsd:value "period-end" ;
+  composite:index "3"^^xsd:int ;
+.
+sel-axis:r-1-0-0-2-0-0-0-0-4
+  rdf:type sxsd:Enumeration ;
+  sxsd:value "period-instant" ;
+  composite:index "4"^^xsd:int ;
+.
+sel-axis:r-1-0-0-2-0-0-0-0-5
+  rdf:type sxsd:Enumeration ;
+  sxsd:value "period-instant-end" ;
+  composite:index "5"^^xsd:int ;
+.
+sel-axis:r-1-0-0-2-0-0-0-0-6
+  rdf:type sxsd:Enumeration ;
+  sxsd:value "unit" ;
+  composite:index "6"^^xsd:int ;
+.
+sel-axis:r-1-0-0-2-0-0-0-0-7
+  rdf:type sxsd:Enumeration ;
+  sxsd:value "dimension" ;
+  composite:index "7"^^xsd:int ;
+.
+sel-axis:r-2
+  rdf:type sxsd:Element ;
+  sel-axis:id-element "xml-selection-axis" ;
+  sxsd:name "selectionAxis" ;
+  sxsd:substitutionGroup "table:openAxis" ;
+  sxsd:type "table:selectionAxis.type" ;
+  composite:index "2"^^xsd:int ;
+.
+sel-axis:xmlns-schema
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "xmlns" ;
+  rdfs:domain sxsd:Schema ;
+  rdfs:label "xmlns" ;
+.
+xsd:union
+  rdf:type owl:Class ;
+  sxml:element xsd:union ;
+  rdfs:label "union" ;
+.

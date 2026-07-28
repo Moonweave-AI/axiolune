@@ -1,0 +1,518 @@
+# baseURI: http://finregont.com/fro/xbrl/tax/taxonomy-package.ttl
+# imports: http://topbraid.org/sxml
+# imports: http://www.linkedmodel.org/schema/dtype
+# prefix: taxon-pkg
+
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix taxon-pkg: <http://finregont.com/fro/xbrl/tax/taxonomy-package.ttl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/xbrl/tax/taxonomy-package.ttl>
+  rdf:type owl:Ontology ;
+  dct:creator "Jurgen Ziemer (of this OWL adaptation - not the XBRL design)"^^xsd:string ;
+  dct:description """An RDF/OWL version of XBRL taxonomy package. XBRL taxonomies are typically distributed as ZIP files, with accompanying human-readable documentation describing which of the component files should be considered entry points. This specification defines a standard format and location for a manifest file that can be included in such ZIP files that allows compliant tools to identify the entry points automatically. 
+The ontology defines classes and properties to descripte the package: Entry points (for XBRL-tools), country, document, package type, license and version information."""^^xsd:string ;
+  dct:rights "Copyright  © 2002 XBRL International. All Rights Reserved. http://www.XBRL.org/legal/"^^xsd:string ;
+  dct:rights "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only)."^^xsd:string ;
+  rdfs:comment "The ontology is a direct conversion of the XBRL table schema file (see owl:versionInfo). The purpose is bi-directional for RDF instance files that include an XBRL taxonomy: To read XBRL data files into FinRegOnt and to create XBRL instance data files from the ontology."^^xsd:string ;
+  rdfs:isDefinedBy <https://specifications.xbrl.org/specifications.html> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  rdfs:seeAlso <https://www.xbrl.org/Specification/taxonomy-package/REC-2016-04-19/taxonomy-package-REC-2016-04-19.html> ;
+  owl:imports <http://topbraid.org/sxml> ;
+  owl:imports <http://www.linkedmodel.org/schema/dtype> ;
+  owl:versionInfo "Created with TopBraid Composer from the XML Schema(s) http://xbrl.org/2016/taxonomy-package"^^xsd:string ;
+.
+taxon-pkg:CountrySimpleTypeDatatype
+  rdf:type rdfs:Datatype ;
+  rdfs:label "Country simple type datatype"^^xsd:string ;
+  rdfs:subClassOf xsd:string ;
+  owl:equivalentClass [
+      rdf:type rdfs:Datatype ;
+      owl:onDatatype xsd:string ;
+      owl:withRestrictions (
+          [
+            xsd:length "2"^^xsd:string ;
+          ]
+          [
+            xsd:pattern "[A-Z]{2}"^^xsd:string ;
+          ]
+        ) ;
+    ] ;
+.
+taxon-pkg:CountryType
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#countryType" ;
+  rdfs:label "Country type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      owl:allValuesFrom taxon-pkg:CountrySimpleTypeDatatype ;
+      owl:onProperty <http://www.linkedmodel.org/schema/dtype#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty <http://www.linkedmodel.org/schema/dtype#value> ;
+    ] ;
+.
+taxon-pkg:DateType
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#dateType" ;
+  rdfs:label "Date type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      owl:allValuesFrom xsd:date ;
+      owl:onProperty <http://www.linkedmodel.org/schema/dtype#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty <http://www.linkedmodel.org/schema/dtype#value> ;
+    ] ;
+.
+taxon-pkg:DocumentReferenceType
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#documentReferenceType" ;
+  rdfs:label "Document reference type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:anyURI ;
+      owl:onProperty taxon-pkg:href ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty taxon-pkg:href ;
+    ] ;
+.
+taxon-pkg:DocumentationGroup
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#documentationGroup" ;
+  rdfs:label "Documentation group"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom taxon-pkg:StringType ;
+      owl:onProperty taxon-pkg:nameRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      owl:allValuesFrom taxon-pkg:StringType ;
+      owl:onProperty taxon-pkg:descriptionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty taxon-pkg:descriptionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty taxon-pkg:nameRef ;
+    ] ;
+.
+taxon-pkg:EntryPointType
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#entryPointType" ;
+  rdfs:label "Entry point type"^^xsd:string ;
+  rdfs:subClassOf taxon-pkg:DocumentationGroup ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom taxon-pkg:StringType ;
+      owl:onProperty taxon-pkg:versionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      owl:allValuesFrom taxon-pkg:DocumentReferenceType ;
+      owl:onProperty taxon-pkg:entryPointDocumentRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "2"^^xsd:int ;
+      owl:allValuesFrom taxon-pkg:LanguagesType ;
+      owl:onProperty taxon-pkg:languagesRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty taxon-pkg:languagesRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty taxon-pkg:versionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:minCardinality "1"^^xsd:int ;
+      owl:onProperty taxon-pkg:entryPointDocumentRef ;
+    ] ;
+.
+taxon-pkg:EntryPointsType
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#entryPointsType" ;
+  rdfs:label "Entry points type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom taxon-pkg:EntryPointType ;
+      owl:onProperty taxon-pkg:entryPointRef ;
+    ] ;
+.
+taxon-pkg:LanguageType
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#languageType" ;
+  rdfs:label "Language type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      owl:allValuesFrom xsd:language ;
+      owl:onProperty <http://www.linkedmodel.org/schema/dtype#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty <http://www.linkedmodel.org/schema/dtype#value> ;
+    ] ;
+.
+taxon-pkg:LanguagesType
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#languagesType" ;
+  rdfs:label "Languages type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom taxon-pkg:LanguageType ;
+      owl:onProperty taxon-pkg:languageRef ;
+    ] ;
+.
+taxon-pkg:LicenseType
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#licenseType" ;
+  rdfs:label "License type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:anyURI ;
+      owl:onProperty taxon-pkg:href ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:string ;
+      owl:onProperty taxon-pkg:name ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty taxon-pkg:href ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty taxon-pkg:name ;
+    ] ;
+.
+taxon-pkg:StringType
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#stringType" ;
+  rdfs:label "String type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      owl:allValuesFrom xsd:string ;
+      owl:onProperty <http://www.linkedmodel.org/schema/dtype#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty <http://www.linkedmodel.org/schema/dtype#value> ;
+    ] ;
+.
+taxon-pkg:SupersededTaxonomyPackagesType
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#supersededTaxonomyPackagesType" ;
+  rdfs:label "Superseded taxonomy packages type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom taxon-pkg:UriType ;
+      owl:onProperty taxon-pkg:taxonomyPackageRefRef ;
+    ] ;
+.
+taxon-pkg:TaxonomyPackage
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#taxonomyPackage" ;
+  rdfs:label "Taxonomy package"^^xsd:string ;
+  rdfs:subClassOf taxon-pkg:TaxonomyPackageType ;
+.
+taxon-pkg:TaxonomyPackageType
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#taxonomyPackageType" ;
+  rdfs:label "Taxonomy package type"^^xsd:string ;
+  rdfs:subClassOf taxon-pkg:DocumentationGroup ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom taxon-pkg:UriType ;
+      owl:onProperty taxon-pkg:identifierRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      owl:allValuesFrom taxon-pkg:StringType ;
+      owl:onProperty taxon-pkg:versionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "2"^^xsd:int ;
+      owl:allValuesFrom taxon-pkg:LicenseType ;
+      owl:onProperty taxon-pkg:licenseRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "3"^^xsd:int ;
+      owl:allValuesFrom taxon-pkg:StringType ;
+      owl:onProperty taxon-pkg:publisherRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "4"^^xsd:int ;
+      owl:allValuesFrom taxon-pkg:UriType ;
+      owl:onProperty taxon-pkg:publisherURLRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "5"^^xsd:int ;
+      owl:allValuesFrom taxon-pkg:CountryType ;
+      owl:onProperty taxon-pkg:publisherCountryRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "6"^^xsd:int ;
+      owl:allValuesFrom taxon-pkg:DateType ;
+      owl:onProperty taxon-pkg:publicationDateRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "7"^^xsd:int ;
+      owl:allValuesFrom taxon-pkg:EntryPointsType ;
+      owl:onProperty taxon-pkg:entryPointsRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "8"^^xsd:int ;
+      owl:allValuesFrom taxon-pkg:SupersededTaxonomyPackagesType ;
+      owl:onProperty taxon-pkg:supersededTaxonomyPackagesRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "9"^^xsd:int ;
+      owl:allValuesFrom taxon-pkg:VersioningReportsType ;
+      owl:onProperty taxon-pkg:versioningReportsRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty taxon-pkg:identifierRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty taxon-pkg:entryPointsRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty taxon-pkg:licenseRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty taxon-pkg:publicationDateRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty taxon-pkg:publisherCountryRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty taxon-pkg:publisherURLRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty taxon-pkg:supersededTaxonomyPackagesRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty taxon-pkg:versionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty taxon-pkg:versioningReportsRef ;
+    ] ;
+.
+taxon-pkg:UriType
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#uriType" ;
+  rdfs:label "Uri type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      owl:allValuesFrom xsd:anyURI ;
+      owl:onProperty <http://www.linkedmodel.org/schema/dtype#value> ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty <http://www.linkedmodel.org/schema/dtype#value> ;
+    ] ;
+.
+taxon-pkg:VersioningReportsType
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#versioningReportsType" ;
+  rdfs:label "Versioning reports type"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom taxon-pkg:DocumentReferenceType ;
+      owl:onProperty taxon-pkg:versioningReportRef ;
+    ] ;
+.
+taxon-pkg:descriptionRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#description" ;
+  rdfs:label "description ref"^^xsd:string ;
+.
+taxon-pkg:entryPointDocumentRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#entryPointDocument" ;
+  rdfs:label "entry point document ref"^^xsd:string ;
+.
+taxon-pkg:entryPointRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#entryPoint" ;
+  rdfs:label "entry point ref"^^xsd:string ;
+.
+taxon-pkg:entryPointsRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#entryPoints" ;
+  rdfs:label "entry points ref"^^xsd:string ;
+.
+taxon-pkg:href
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2016/taxonomy-package#href" ;
+  rdfs:label "href"^^xsd:string ;
+.
+taxon-pkg:identifierRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#identifier" ;
+  rdfs:label "identifier ref"^^xsd:string ;
+.
+taxon-pkg:languageRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#language" ;
+  rdfs:label "language ref"^^xsd:string ;
+.
+taxon-pkg:languagesRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#languages" ;
+  rdfs:label "languages ref"^^xsd:string ;
+.
+taxon-pkg:licenseRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#license" ;
+  rdfs:label "license ref"^^xsd:string ;
+.
+taxon-pkg:name
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2016/taxonomy-package#name" ;
+  rdfs:label "name"^^xsd:string ;
+.
+taxon-pkg:nameRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#name" ;
+  rdfs:label "name ref"^^xsd:string ;
+.
+taxon-pkg:publicationDateRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#publicationDate" ;
+  rdfs:label "publication date ref"^^xsd:string ;
+.
+taxon-pkg:publisherCountryRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#publisherCountry" ;
+  rdfs:label "publisher country ref"^^xsd:string ;
+.
+taxon-pkg:publisherRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#publisher" ;
+  rdfs:label "publisher ref"^^xsd:string ;
+.
+taxon-pkg:publisherURLRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#publisherURL" ;
+  rdfs:label "publisher URLRef"^^xsd:string ;
+.
+taxon-pkg:supersededTaxonomyPackagesRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#supersededTaxonomyPackages" ;
+  rdfs:label "superseded taxonomy packages ref"^^xsd:string ;
+.
+taxon-pkg:taxonomyPackageRefRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#taxonomyPackageRef" ;
+  rdfs:label "taxonomy package ref ref"^^xsd:string ;
+.
+taxon-pkg:versionRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#version" ;
+  rdfs:label "version ref"^^xsd:string ;
+.
+taxon-pkg:versioningReportRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#versioningReport" ;
+  rdfs:label "versioning report ref"^^xsd:string ;
+.
+taxon-pkg:versioningReportsRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2016/taxonomy-package#versioningReports" ;
+  rdfs:label "versioning reports ref"^^xsd:string ;
+.
+<http://www.w3.org/2004/02/skos/core#prefLabel>
+  rdf:type owl:AnnotationProperty ;
+  rdfs:label "pref label"^^xsd:string ;
+.

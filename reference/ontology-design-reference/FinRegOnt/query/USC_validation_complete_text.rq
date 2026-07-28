@@ -1,0 +1,88 @@
+SELECT 
+ 	?title ?title_seq ?title_ident ?title_heading ?title_number
+ 	?chapter ?chapter_seq ?chapter_ident ?chapter_heading ?chapter_number
+ 	?subchapter ?subchapter_seq ?subchapter_ident ?subchapter_heading ?subchapter_number
+ 	?section ?section_seq ?section_ident ?section_heading ?section_number ?section_text
+ 	?section_para ?section_para_seq ?section_para_ident ?section_para_heading ?section_para_number ?section_para_text
+ 	?subsection ?subsection_seq ?subsection_ident ?subsection_heading ?subsection_number ?subsection_text
+ 	?subsection_para ?subsection_para_seq ?subsection_para_ident ?subsection_para_heading ?subsection_para_number ?subsection_para_text
+ 	?subsection_subpara ?subsection_subpara_seq ?subsection_subpara_ident ?subsection_subpara_heading ?subsection_subpara_number ?subsection_subpara_text
+	?clause ?clause_seq ?clause_ident ?clause_number ?clause_text
+	?subclause ?subclause_seq ?subclause_ident ?subclause_number ?subclause_text
+WHERE {
+# Ttile properties
+	?title a fro-usc:USC_Title .
+	?title fro-usc:hasSequenceNumber ?title_seq .
+	?title fro-usc:hasIdentifierText ?title_ident .
+	?title fro-usc:hasHeading ?title_heading .
+	?title fro-usc:hasNumberText ?title_number .
+# Chapter properties
+	?chapter fro-leg-ref:divides ?title .
+	?chapter fro-usc:hasSequenceNumber ?chapter_seq .
+	?chapter fro-usc:hasIdentifierText ?chapter_ident .
+	?chapter fro-usc:hasHeading ?chapter_heading .
+	?chapter fro-usc:hasNumberText ?chapter_number .
+# Subchapter properties
+	?subchapter fro-leg-ref:divides ?chapter .
+	?subchapter fro-usc:hasSequenceNumber ?subchapter_seq .
+	?subchapter fro-usc:hasIdentifierText ?subchapter_ident .
+	?subchapter fro-usc:hasHeading ?subchapter_heading .
+	?subchapter fro-usc:hasNumberText ?subchapter_number .
+# Section properties
+	?section fro-leg-ref:divides ?subchapter .
+	?section fro-usc:hasSequenceNumber ?section_seq .
+	?section fro-usc:hasIdentifierText ?section_ident .
+	?section fro-usc:hasHeading ?section_heading .
+	?section fro-usc:hasNumberText ?section_number .
+	OPTIONAL { ?section fro-usc:hasContentText ?section_text . }
+# Section Paragraph (sone sections have a paragraph directly underneith)
+	OPTIONAL {
+		?section_para fro-leg-ref:divides ?section .
+		?section_para fro-usc:hasSequenceNumber ?section_para_seq .
+		?section_para fro-usc:hasIdentifierText ?section_para_ident .
+		?section_para fro-usc:hasHeading ?section_para_heading .
+		?section_para fro-usc:hasNumberText ?section_para_number .
+		OPTIONAL {?section_para fro-usc:hasContentText ?section_para_text .}
+	}
+# Subsection properties - (not every section has a subsection)
+	OPTIONAL {
+		?subsection fro-leg-ref:divides ?section .
+		?subsection fro-usc:hasSequenceNumber ?subsection_seq .
+		?subsection fro-usc:hasIdentifierText ?subsection_ident .
+		?subsection fro-usc:hasHeading ?subsection_heading .
+		?subsection fro-usc:hasNumberText ?subsection_number .
+		OPTIONAL { ?subsection fro-usc:hasContentText ?subsection_text . }	
+		# Subection Paragraph (not all subsections habe a paragrah)
+		OPTIONAL {
+			?subsection_para fro-leg-ref:divides ?subsection .
+			?subsection_para fro-usc:hasSequenceNumber ?subsection_para_seq .
+			?subsection_para fro-usc:hasIdentifierText ?subsection_para_ident .
+			?subsection_para fro-usc:hasHeading ?subsection_para_heading .
+			?subsection_para fro-usc:hasNumberText ?subsection_para_number .
+			OPTIONAL {?subsection_para fro-usc:hasContentText ?subsection_para_text .}
+			OPTIONAL {
+				?subsection_para lkif-mereo:contains ?subsection_subpara .
+				?subsection_subpara fro-usc:hasSequenceNumber ?subsection_subpara_seq .
+				?subsection_subpara fro-usc:hasIdentifierText ?subsection_subpara_ident .
+ 				?subsection_subpara fro-usc:hasHeading ?subsection_subpara_heading .
+				?subsection_subpara fro-usc:hasNumberText ?subsection_subpara_number .
+ 				OPTIONAL {?subsection_subpara fro-usc:hasContentText ?subsection_subpara_text . }
+				OPTIONAL {
+					?subsection_subpara lkif-mereo:contains ?clause .
+					?clause fro-usc:hasSequenceNumber ?clause_seq .
+					?clause fro-usc:hasIdentifierText ?clause_ident .
+					?clause fro-usc:hasNumberText ?clause_number .
+ 					OPTIONAL {?clause fro-usc:hasContentText ?clause_text . }
+					OPTIONAL {
+						?clause lkif-mereo:component ?subclause .
+						?subclause fro-usc:hasSequenceNumber ?subclause_seq .
+						?subclause fro-usc:hasIdentifierText ?subclause_ident .
+						?subclause fro-usc:hasNumberText ?subclause_number .
+ 						OPTIONAL {?subclause fro-usc:hasContentText ?subclause_text . }
+					}
+				}	
+			}
+		}
+	}
+}
+ORDER BY ?title_seq ?chapter_seq ?subchapter_seq ?section_seq ?section_para_seq ?subsection_seq ?subsection_para_seq ?subsection_subpara_seq ?clause_seq

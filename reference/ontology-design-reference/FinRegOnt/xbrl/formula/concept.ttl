@@ -1,0 +1,344 @@
+# baseURI: http://finregont.com/fro/xbrl/formula/concept.ttl
+# imports: http://finregont.com/fro/xbrl/formula/variable.ttl
+# imports: http://finregont.com/fro/xbrl/generic/generic.ttl
+# prefix: concept
+
+@prefix concept: <http://finregont.com/fro/xbrl/formula/concept.ttl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix dtype: <http://www.linkedmodel.org/schema/dtype#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/xbrl/formula/concept.ttl>
+  rdf:type owl:Ontology ;
+  dct:creator "Jurgen Ziemer (of this OWL adaptation - not the XBRL design)"^^xsd:string ;
+  dct:description "An RDF/OWL version of the XBRL formula schema file. A XBRL formula specifies validations based on XBRL instance facts and generation of derived data as output XBRL instance facts. The concept filter ontology extends Variable with classes to filter element-name, period type, balance, schema datatype and substitution group."^^xsd:string ;
+  dct:rights "Copyright  © 2002 XBRL International. All Rights Reserved. http://www.XBRL.org/legal/"^^xsd:string ;
+  dct:rights "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only)."^^xsd:string ;
+  rdfs:comment "The ontology is a direct conversion of the XBRL formula concept schema file (see owl:versionInfo). The purpose is bi-directional for RDF instance files that include an XBRL formula: To read XBRL data files into FinRegOnt and to create XBRL instance data files from the ontology."^^xsd:string ;
+  rdfs:isDefinedBy <https://specifications.xbrl.org/specifications.html> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  rdfs:seeAlso <http://www.xbrl.org/specification/conceptfilters/rec-2009-06-22/conceptfilters-rec-2009-06-22.html> ;
+  owl:imports <http://finregont.com/fro/xbrl/formula/variable.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/generic/generic.ttl> ;
+  owl:versionInfo "Created with TopBraid Composer from the XML Schema(s) http://xbrl.org/2008/filter/concept"^^xsd:string ;
+.
+concept:CB_credit
+  rdf:type concept:ConceptBalance-balance ;
+  dtype:order "1"^^xsd:nonNegativeInteger ;
+  dtype:value "credit"^^xsd:token ;
+  rdfs:label "credit"^^xsd:string ;
+.
+concept:CB_debit
+  rdf:type concept:ConceptBalance-balance ;
+  dtype:order "0"^^xsd:nonNegativeInteger ;
+  dtype:value "debit"^^xsd:token ;
+  rdfs:label "debit"^^xsd:string ;
+.
+concept:CB_none
+  rdf:type concept:ConceptBalance-balance ;
+  dtype:order "2"^^xsd:nonNegativeInteger ;
+  dtype:value "none"^^xsd:token ;
+  rdfs:label "none"^^xsd:string ;
+.
+concept:CPTT_duration
+  rdf:type concept:ConceptPeriodType-periodType ;
+  dtype:order "1"^^xsd:nonNegativeInteger ;
+  dtype:value "duration"^^xsd:token ;
+  rdfs:label "duration"^^xsd:string ;
+.
+concept:CPTT_instant
+  rdf:type concept:ConceptPeriodType-periodType ;
+  dtype:order "0"^^xsd:nonNegativeInteger ;
+  dtype:value "instant"^^xsd:token ;
+  rdfs:label "instant"^^xsd:string ;
+.
+concept:ConceptBalance
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/concept#conceptBalance" ;
+  rdfs:label "Concept balance"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom concept:ConceptBalance-balance ;
+      owl:onProperty concept:balanceRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty concept:balanceRef ;
+    ] ;
+.
+concept:ConceptBalance-balance
+  rdf:type owl:Class ;
+  rdfs:label "Concept balance-balance"^^xsd:string ;
+  rdfs:subClassOf concept:EnumeratedValue ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      owl:allValuesFrom xsd:token ;
+      owl:onProperty dtype:value ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty dtype:value ;
+    ] ;
+  owl:oneOf (
+      concept:CB_credit
+      concept:CB_debit
+      concept:CB_none
+    ) ;
+.
+concept:ConceptCustomAttribute
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/concept#conceptCustomAttribute" ;
+  rdfs:label "Concept custom attribute"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/concept.ttl#Qname.model> ;
+      owl:onProperty concept:attributeRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty concept:valueRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty concept:attributeRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty concept:valueRef ;
+    ] ;
+.
+concept:ConceptDataType
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/concept#conceptDataType" ;
+  rdfs:label "Concept data type"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/concept.ttl#Qname.model> ;
+      owl:onProperty concept:typeRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:boolean ;
+      owl:onProperty concept:strict ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty concept:strict ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty concept:typeRef ;
+    ] ;
+.
+concept:ConceptName
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/concept#conceptName" ;
+  rdfs:label "Concept name"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/concept.ttl#Qname.model> ;
+      owl:onProperty concept:conceptRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty concept:conceptRef ;
+    ] ;
+.
+concept:ConceptPeriodType
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/concept#conceptPeriodType" ;
+  rdfs:label "Concept period type"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom concept:ConceptPeriodType-periodType ;
+      owl:onProperty concept:periodTypeRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty concept:periodTypeRef ;
+    ] ;
+.
+concept:ConceptPeriodType-periodType
+  rdf:type owl:Class ;
+  rdfs:label "Concept period type-period type"^^xsd:string ;
+  rdfs:subClassOf concept:EnumeratedValue ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      owl:allValuesFrom xsd:token ;
+      owl:onProperty dtype:value ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty dtype:value ;
+    ] ;
+  owl:oneOf (
+      concept:CPTT_duration
+      concept:CPTT_instant
+    ) ;
+.
+concept:ConceptSubstitutionGroup
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/concept#conceptSubstitutionGroup" ;
+  rdfs:label "Concept substitution group"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/concept.ttl#Qname.model> ;
+      owl:onProperty concept:substitutionGroupRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom xsd:boolean ;
+      owl:onProperty concept:strict ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty concept:strict ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty concept:substitutionGroupRef ;
+    ] ;
+.
+concept:EnumeratedValue
+  rdf:type owl:Class ;
+  rdfs:label "Enumerated value"^^xsd:string ;
+  rdfs:subClassOf dtype:EnumeratedValue ;
+.
+<http://finregont.com/fro/xbrl/formula/concept.ttl#Qname.model>
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/concept#qname.model" ;
+  rdfs:label "Qname.model"^^xsd:string ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "0"^^xsd:int ;
+      owl:allValuesFrom xsd:QName ;
+      owl:onProperty concept:qname ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      sxml:order "1"^^xsd:int ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty concept:qnameExpressionRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty concept:qname ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty concept:qnameExpressionRef ;
+    ] ;
+.
+concept:attributeRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/concept#attribute" ;
+  rdfs:label "attribute ref"^^xsd:string ;
+.
+concept:balanceRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/concept#balance" ;
+  rdfs:label "balance ref"^^xsd:string ;
+.
+concept:conceptRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/concept#concept" ;
+  rdfs:label "concept ref"^^xsd:string ;
+.
+concept:periodTypeRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/concept#periodType" ;
+  rdfs:label "period type ref"^^xsd:string ;
+.
+concept:qname
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/filter/concept#qname" ;
+  rdfs:label "qname"^^xsd:string ;
+.
+concept:qnameExpressionRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/concept#qnameExpression" ;
+  rdfs:label "qname expression ref"^^xsd:string ;
+.
+concept:strict
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "http://xbrl.org/2008/filter/concept#strict" ;
+  rdfs:label "strict"^^xsd:string ;
+.
+concept:substitutionGroupRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/concept#substitutionGroup" ;
+  rdfs:label "substitution group ref"^^xsd:string ;
+.
+concept:typeRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/concept#type" ;
+  rdfs:label "type ref"^^xsd:string ;
+.
+concept:valueRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/concept#value" ;
+  rdfs:label "value ref"^^xsd:string ;
+.
+<http://www.w3.org/2004/02/skos/core#prefLabel>
+  rdf:type owl:AnnotationProperty ;
+  rdfs:label "pref label"^^xsd:string ;
+.

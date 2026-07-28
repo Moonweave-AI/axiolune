@@ -1,0 +1,285 @@
+# baseURI: http://finregont.com/fro/eurofiling/func/extra-functions.ttl
+# imports: http://finregont.com/fro/eurofiling/func/func.ttl
+# imports: http://finregont.com/fro/xbrl/XLink.ttl
+# imports: http://finregont.com/fro/xbrl/formula/custom-function.ttl
+# imports: http://finregont.com/fro/xbrl/generic/generic.ttl
+# imports: http://finregont.com/fro/xbrl/instance.ttl
+# imports: http://finregont.com/fro/xbrl/linkbase.ttl
+# imports: http://finregont.com/fro/xbrl/w3/W3_xlink.ttl
+# imports: http://topbraid.org/sxml
+# prefix: efn
+
+@prefix composite: <http://www.topbraid.org/2007/05/composite.owl#> .
+@prefix custom-function: <http://finregont.com/fro/xbrl/formula/custom-function.ttl#> .
+@prefix efn: <http://finregont.com/fro/eurofiling/func/extra-functions.ttl#> .
+@prefix linkbase: <http://finregont.com/fro/xbrl/linkbase.ttl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix variable: <http://finregont.com/fro/xbrl/formula/variable.ttl#> .
+@prefix w3-xlink: <http://finregont.com/fro/xbrl/w3/W3_xlink.ttl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/eurofiling/func/extra-functions.ttl>
+  rdf:type owl:Ontology ;
+  owl:imports <http://finregont.com/fro/eurofiling/func/func.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/XLink.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/formula/custom-function.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/generic/generic.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/instance.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/linkbase.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/w3/W3_xlink.ttl> ;
+  owl:imports <http://topbraid.org/sxml> ;
+.
+efn:Document
+  rdf:type sxml:Document ;
+  sxml:root efn:r ;
+.
+efn:name-cfiinput
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "name" ;
+  rdfs:domain custom-function:input ;
+  rdfs:label "name" ;
+.
+efn:name-variablefunction
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "name" ;
+  rdfs:domain variable:function ;
+  rdfs:label "name" ;
+.
+efn:order-genarc
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "order" ;
+  rdfs:label "order" ;
+.
+efn:output-variablefunction
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "output" ;
+  rdfs:domain variable:function ;
+  rdfs:label "output" ;
+.
+efn:r
+  rdf:type linkbase:linkbase ;
+  linkbase:arcroleRefRef efn:r-1 ;
+  sxml:prefix "cfi"^^xsd:string ;
+  sxml:prefix "efn"^^xsd:string ;
+  sxml:prefix "gen"^^xsd:string ;
+  sxml:prefix "link"^^xsd:string ;
+  sxml:prefix "variable"^^xsd:string ;
+  sxml:prefix "xbrli"^^xsd:string ;
+  sxml:prefix "xfi"^^xsd:string ;
+  sxml:prefix "xs"^^xsd:string ;
+  sxml:prefix "xsi"^^xsd:string ;
+  composite:child [
+      rdf:type sxml:Comment ;
+      sxml:text "Library with general purpose extra functions"^^xsd:string ;
+      composite:index "1"^^xsd:int ;
+    ] ;
+  <http://www.w3.org/2001/XMLSchema-instance#schemaLocation-linklinkbase> "http://www.xbrl.org/2003/linkbase http://www.xbrl.org/2003/xbrl-linkbase-2003-12-31.xsd http://xbrl.org/2008/generic http://www.xbrl.org/2008/generic-link.xsd http://xbrl.org/2008/variable http://www.xbrl.org/2008/variable.xsd http://xbrl.org/2010/custom-function http://www.xbrl.org/2010/custom-function-implementation.xsd" ;
+.
+efn:r-1
+  rdf:type linkbase:arcroleRef ;
+  w3-xlink:href-linkarcroleRef "http://www.xbrl.org/2010/custom-function-implementation.xsd#cfi-implementation" ;
+  w3-xlink:type-linkarcroleRef "simple" ;
+  composite:index "1"^^xsd:int ;
+.
+efn:r-2-1
+  rdf:type variable:function ;
+  efn:name-variablefunction "efn:iff" ;
+  efn:output-variablefunction "xs:boolean" ;
+  w3-xlink:label-variablefunction "function_iff" ;
+  w3-xlink:type-variablefunction "resource" ;
+  composite:child efn:r-2-1-0 ;
+  composite:child efn:r-2-1-1 ;
+  composite:index "1"^^xsd:int ;
+.
+efn:r-2-1-0
+  rdf:type variable:input ;
+  efn:type-variableinput "xs:boolean" ;
+  composite:index "0"^^xsd:int ;
+.
+efn:r-2-1-1
+  rdf:type variable:input ;
+  efn:type-variableinput "xs:boolean" ;
+  composite:index "1"^^xsd:int ;
+.
+efn:r-2-2
+  rdf:type custom-function:Implementation ;
+  w3-xlink:label-cfiimplementation "implementation_iff" ;
+  w3-xlink:type-cfiimplementation "resource" ;
+  composite:child efn:r-2-2-0 ;
+  composite:child efn:r-2-2-1 ;
+  composite:child efn:r-2-2-2 ;
+  composite:index "2"^^xsd:int ;
+.
+efn:r-2-2-0
+  rdf:type custom-function:input ;
+  efn:name-cfiinput "cond1" ;
+  composite:index "0"^^xsd:int ;
+.
+efn:r-2-2-1
+  rdf:type custom-function:input ;
+  efn:name-cfiinput "cond2" ;
+  composite:index "1"^^xsd:int ;
+.
+efn:r-2-2-2
+  rdf:type custom-function:output ;
+  composite:child [
+      rdf:type sxml:TextNode ;
+      sxml:text "if ($cond1) then $cond2 else not($cond2)"^^xsd:string ;
+      composite:index "1"^^xsd:int ;
+    ] ;
+  composite:index "2"^^xsd:int ;
+.
+efn:r-2-5
+  rdf:type variable:function ;
+  efn:name-variablefunction "efn:imp" ;
+  efn:output-variablefunction "xs:boolean" ;
+  w3-xlink:label-variablefunction "function_imp" ;
+  w3-xlink:type-variablefunction "resource" ;
+  composite:child efn:r-2-5-0 ;
+  composite:child efn:r-2-5-1 ;
+  composite:index "5"^^xsd:int ;
+.
+efn:r-2-5-0
+  rdf:type variable:input ;
+  efn:type-variableinput "xs:boolean" ;
+  composite:index "0"^^xsd:int ;
+.
+efn:r-2-5-1
+  rdf:type variable:input ;
+  efn:type-variableinput "xs:boolean" ;
+  composite:index "1"^^xsd:int ;
+.
+efn:r-2-6
+  rdf:type custom-function:implementation ;
+  w3-xlink:label-cfiimplementation "implementation_imp" ;
+  w3-xlink:type-cfiimplementation "resource" ;
+  composite:child efn:r-2-6-0 ;
+  composite:child efn:r-2-6-1 ;
+  composite:child efn:r-2-6-2 ;
+  composite:index "6"^^xsd:int ;
+.
+efn:r-2-6-0
+  rdf:type custom-function:input ;
+  efn:name-cfiinput "precond" ;
+  composite:index "0"^^xsd:int ;
+.
+efn:r-2-6-1
+  rdf:type custom-function:input ;
+  efn:name-cfiinput "test" ;
+  composite:index "1"^^xsd:int ;
+.
+efn:r-2-6-2
+  rdf:type custom-function:output ;
+  composite:child [
+      rdf:type sxml:TextNode ;
+      sxml:text "if ($precond) then $test else true()"^^xsd:string ;
+      composite:index "1"^^xsd:int ;
+    ] ;
+  composite:index "2"^^xsd:int ;
+.
+efn:type-variableinput
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "type" ;
+  rdfs:domain variable:input ;
+  rdfs:label "type" ;
+.
+custom-function:implementation
+  rdf:type owl:Class ;
+  sxml:element custom-function:implementation ;
+  rdfs:label "cfi:implementation" ;
+.
+custom-function:input
+  rdf:type owl:Class ;
+  sxml:element custom-function:input ;
+  rdfs:label "cfi:input" ;
+.
+custom-function:output
+  rdf:type owl:Class ;
+  sxml:element custom-function:output ;
+  rdfs:label "cfi:output" ;
+.
+variable:function
+  rdf:type owl:Class ;
+  sxml:element variable:function ;
+  rdfs:label "variable:function" ;
+.
+variable:input
+  rdf:type owl:Class ;
+  sxml:element variable:input ;
+  rdfs:label "variable:input" ;
+.
+w3-xlink:arcrole-genarc
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "xlink:arcrole" ;
+  rdfs:label "xlink:arcrole" ;
+.
+w3-xlink:from-genarc
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "xlink:from" ;
+  rdfs:label "xlink:from" ;
+.
+w3-xlink:href-linkarcroleRef
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "xlink:href" ;
+  rdfs:domain linkbase:arcroleRef ;
+  rdfs:label "xlink:href" ;
+.
+w3-xlink:label-cfiimplementation
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "xlink:label" ;
+  rdfs:domain custom-function:implementation ;
+  rdfs:label "xlink:label" ;
+.
+w3-xlink:label-variablefunction
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "xlink:label" ;
+  rdfs:domain variable:function ;
+  rdfs:label "xlink:label" ;
+.
+w3-xlink:role-genlink
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "xlink:role" ;
+  rdfs:label "xlink:role" ;
+.
+w3-xlink:to-genarc
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "xlink:to" ;
+  rdfs:label "xlink:to" ;
+.
+w3-xlink:type-cfiimplementation
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "xlink:type" ;
+  rdfs:domain custom-function:implementation ;
+  rdfs:label "xlink:type" ;
+.
+w3-xlink:type-genarc
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "xlink:type" ;
+  rdfs:label "xlink:type" ;
+.
+w3-xlink:type-genlink
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "xlink:type" ;
+  rdfs:label "xlink:type" ;
+.
+w3-xlink:type-linkarcroleRef
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "xlink:type" ;
+  rdfs:domain linkbase:arcroleRef ;
+  rdfs:label "xlink:type" ;
+.
+w3-xlink:type-variablefunction
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "xlink:type" ;
+  rdfs:domain variable:function ;
+  rdfs:label "xlink:type" ;
+.
+<http://www.w3.org/2001/XMLSchema-instance#schemaLocation-linklinkbase>
+  rdf:type owl:DatatypeProperty ;
+  sxml:attribute "xsi:schemaLocation" ;
+  rdfs:domain linkbase:linkbase ;
+  rdfs:label "xsi:schemaLocation" ;
+.

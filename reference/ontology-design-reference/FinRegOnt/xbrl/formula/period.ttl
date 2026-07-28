@@ -1,0 +1,210 @@
+# baseURI: http://finregont.com/fro/xbrl/formula/period.ttl
+# imports: http://finregont.com/fro/xbrl/formula/variable.ttl
+# imports: http://finregont.com/fro/xbrl/generic/generic.ttl
+# prefix: period
+
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix dtype: <http://www.linkedmodel.org/schema/dtype#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix period: <http://finregont.com/fro/xbrl/formula/period.ttl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sxml: <http://topbraid.org/sxml#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://finregont.com/fro/xbrl/formula/period.ttl>
+  rdf:type owl:Ontology ;
+  dct:creator "Jurgen Ziemer (of this OWL adaptation - not the XBRL design)"^^xsd:string ;
+  dct:description """An RDF/OWL version of the XBRL period schema file. A XBRL formula specifies validations based on XBRL instance facts and generation of derived data as output XBRL instance facts. Period Filter is an extension to Variables that defines syntax for filters that condition upon the features of the period at which or over which facts have been measured. 
+The ontology creates subclasses of Variable Resource-type for period, duration, start and end date."""^^xsd:string ;
+  dct:rights "Copyright  © 2002 XBRL International. All Rights Reserved. http://www.XBRL.org/legal/"^^xsd:string ;
+  dct:rights "Jayzed Data Models Inc. (adaptation for RDF/OWL in this OWL file only)."^^xsd:string ;
+  rdfs:comment "The ontology is a direct conversion of the XBRL period filter schema (see owl:versionInfo). The purpose is bi-directional for RDF instance files that include an XBRL formula: To read XBRL data files into FinRegOnt and to create XBRL instance data files from the ontology."^^xsd:string ;
+  rdfs:isDefinedBy <https://specifications.xbrl.org/specifications.html> ;
+  rdfs:seeAlso <http://finregont.com/xbrl/> ;
+  rdfs:seeAlso <http://www.xbrl.org/specification/periodfilters/rec-2009-06-22/periodfilters-rec-2009-06-22.html> ;
+  owl:imports <http://finregont.com/fro/xbrl/formula/variable.ttl> ;
+  owl:imports <http://finregont.com/fro/xbrl/generic/generic.ttl> ;
+  owl:versionInfo "Created with TopBraid Composer from the XML Schema(s) http://xbrl.org/2008/filter/period"^^xsd:string ;
+.
+<http://finregont.com/fro/xbrl/formula/period.ttl#Date-time.model>
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/period#date-time.model" ;
+  rdfs:label "Date-time.model"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty period:dateRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty period:timeRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty period:dateRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty period:timeRef ;
+    ] ;
+.
+period:EnumeratedValue
+  rdf:type owl:Class ;
+  rdfs:label "Enumerated value"^^xsd:string ;
+  rdfs:subClassOf dtype:EnumeratedValue ;
+.
+period:Forever
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/period#forever" ;
+  rdfs:label "Forever"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+.
+period:ID_end
+  rdf:type period:InstantDuration-boundary ;
+  dtype:order "1"^^xsd:nonNegativeInteger ;
+  dtype:value "end"^^xsd:token ;
+  rdfs:label "end"^^xsd:string ;
+.
+period:ID_start
+  rdf:type period:InstantDuration-boundary ;
+  dtype:order "0"^^xsd:nonNegativeInteger ;
+  dtype:value "start"^^xsd:token ;
+  rdfs:label "start"^^xsd:string ;
+.
+period:InstantDuration
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/period#instantDuration" ;
+  rdfs:label "Instant duration"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom period:InstantDuration-boundary ;
+      owl:onProperty period:boundaryRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#QName> ;
+      owl:onProperty period:variableRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty period:boundaryRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty period:variableRef ;
+    ] ;
+.
+period:InstantDuration-boundary
+  rdf:type owl:Class ;
+  rdfs:label "Instant duration-boundary"^^xsd:string ;
+  rdfs:subClassOf period:EnumeratedValue ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "false"^^xsd:boolean ;
+      owl:allValuesFrom xsd:token ;
+      owl:onProperty dtype:value ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:maxCardinality "1"^^xsd:int ;
+      owl:onProperty dtype:value ;
+    ] ;
+  owl:oneOf (
+      period:ID_end
+      period:ID_start
+    ) ;
+.
+period:Period
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/period#period" ;
+  rdfs:label "Period"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource.type> ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      sxml:isAttribute "true"^^xsd:boolean ;
+      owl:allValuesFrom <http://finregont.com/fro/xbrl/formula/variable.ttl#Expression> ;
+      owl:onProperty period:testRef ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:int ;
+      owl:onProperty period:testRef ;
+    ] ;
+.
+period:PeriodEnd
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/period#periodEnd" ;
+  rdfs:label "Period end"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/period.ttl#Date-time.model> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+.
+period:PeriodInstant
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/period#periodInstant" ;
+  rdfs:label "Period instant"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/period.ttl#Date-time.model> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+.
+period:PeriodStart
+  rdf:type owl:Class ;
+  sxml:tag "http://xbrl.org/2008/filter/period#periodStart" ;
+  rdfs:label "Period start"^^xsd:string ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/XLink.ttl#Resource> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/period.ttl#Date-time.model> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Filter> ;
+  rdfs:subClassOf <http://finregont.com/fro/xbrl/formula/variable.ttl#Resource> ;
+.
+period:boundaryRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/period#boundary" ;
+  rdfs:label "boundary ref"^^xsd:string ;
+.
+period:dateRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/period#date" ;
+  rdfs:label "date ref"^^xsd:string ;
+.
+period:testRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/period#test" ;
+  rdfs:label "test ref"^^xsd:string ;
+.
+period:timeRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/period#time" ;
+  rdfs:label "time ref"^^xsd:string ;
+.
+period:variableRef
+  rdf:type owl:ObjectProperty ;
+  sxml:tag "http://xbrl.org/2008/filter/period#variable" ;
+  rdfs:label "variable ref"^^xsd:string ;
+.
+<http://www.w3.org/2004/02/skos/core#prefLabel>
+  rdf:type owl:AnnotationProperty ;
+  rdfs:label "pref label"^^xsd:string ;
+.
