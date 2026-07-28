@@ -1,0 +1,564 @@
+# Axiolune Ontology Meta-Model - Layer 3: Platform Behavior
+# Version: 0.2.0
+# Date: 2026-07-28
+# Governance: Follows ADR-001 architecture decisions
+
+PlatformBehavior:
+  version: "0.2.0"
+  description: "Meta-model for platform capabilities: queries, functions, actions, and policies"
+  layer: 3
+  dependencies:
+    - "ontology/meta/core-meta-model.yaml"
+    - "ontology/meta/cross-domain-patterns.yaml"
+
+  note: |
+    Layer 3 defines WHAT OPERATIONS the platform can perform, distinct from:
+    - Layer 1: WHAT entities exist (ontology semantics)
+    - Layer 2: HOW facts are structured (time, provenance, evidence)
+    - Layer 4: HOW data maps to ontology (physical bindings)
+
+  # ==================== Query Type ====================
+  QueryType:
+    definition: "a meta-classifier for read-only data access operations with typed parameters and return values"
+    purpose: "Defines queryable capabilities without side effects"
+
+    requiredFields:
+      iri: {type: uri, unique: true}
+      namespace: {type: string, required: true}
+      localName: {type: string, required: true}
+      label: {type: string, required: true}
+
+      definition:
+        type: string
+        required: true
+        iso704: true
+        example: "query operation that retrieves the market price of an instrument at a specific point in time"
+
+      targetType:
+        type: uri
+        required: true
+        description: "ObjectType or AssociationType this query operates on"
+        example: "fin:Instrument"
+
+      parameters:
+        type: "list[ParameterDefinition]"
+        description: "typed input parameters"
+        example:
+          - name: asOf
+            type: instant
+            required: true
+            description: "timestamp for Point-in-Time query"
+
+      returnType:
+        type: string
+        required: true
+        description: "return value type (ValueType, ObjectType, AssociationType, or collection)"
+        example: "fin:MoneyType"
+
+    optionalFields:
+      returnCardinality:
+        type: enum
+        values: [single, optional, list]
+        default: single
+        description: "single=exactly one, optional=zero or one, list=zero or more"
+
+      implementation:
+        language: {type: enum, values: [sparql, sql, python, external]}
+        artifactRef: {type: string, description: "path to implementation"}
+        entrypoint: {type: string, description: "function or query name"}
+
+      authorization:
+        type: "list[PolicyType]"
+        description: "access control policies required to execute this query"
+
+      performance:
+        estimatedComplexity: {type: enum, values: [O(1), O(log n), O(n), O(n^2)]}
+        typicalLatency: {type: duration, example: "PT0.1S"}
+        cacheable: {type: boolean, default: false}
+        cacheTTL: {type: duration, example: "PT5M"}
+
+      examples:
+        type: "list[QueryExample]"
+
+    structures:
+      ParameterDefinition:
+        name: {type: string, required: true}
+        type: {type: string, required: true, description: "ValueType or ObjectType IRI"}
+        required: {type: boolean, default: true}
+        default: {type: string, description: "default value expression"}
+        description: {type: string}
+        constraint: {type: string, description: "validation expression"}
+
+      QueryExample:
+        description: {type: string}
+        parameters: {type: dict}
+        expectedResult: {type: string}
+
+    examples:
+      getPriceAt:
+        iri: "fin:query:GetPriceAt"
+        targetType: "fin:Instrument"
+        parameters:
+          - {name: instrument, type: "fin:Instrument", required: true}
+          - {name: asOf, type: instant, required: true}
+          - {name: market, type: "fin:Market", required: false}
+        returnType: "fin:MoneyType"
+        returnCardinality: optional
+        implementation:
+          language: sparql
+          artifactRef: "queries/get-price-at.rq"
+
+      listActiveOrders:
+        iri: "fin:query:ListActiveOrders"
+        targetType: "fin:Order"
+        parameters:
+          - {name: account, type: "fin:Account", required: true}
+          - {name: asOf, type: instant, required: false, default: "now()"}
+        returnType: "fin:Order"
+        returnCardinality: list
+        implementation:
+          language: sql
+          artifactRef: "queries/list-active-orders.sql"
+
+  # ==================== Function Type ====================
+  FunctionType:
+    definition: "a meta-classifier for side-effect-free computational operations"
+    purpose: "Defines pure functions for calculations, transformations, and derivations"
+    note: "Functions are deterministic, referentially transparent, and idempotent"
+
+    requiredFields:
+      iri: {type: uri, unique: true}
+      namespace: {type: string, required: true}
+      localName: {type: string, required: true}
+      label: {type: string, required: true}
+      definition: {type: string, required: true, iso704: true}
+
+      parameters:
+        type: "list[ParameterDefinition]"
+        minSize: 0
+        description: "typed input parameters"
+
+      returnType:
+        type: string
+        required: true
+        description: "output type"
+
+    optionalFields:
+      purity:
+        type: enum
+        values: [pure, observationallyPure, impure]
+        default: pure
+        description: |
+          pure: no side effects, deterministic
+          observationallyPure: may use memoization/cache but behaviorally pure
+          impure: may depend on external state (use QueryType instead)
+
+      implementation:
+        language: {type: enum, values: [python, javascript, r, julia, external]}
+        artifactRef: {type: string}
+        entrypoint: {type: string}
+        dependencies: {type: "list[string]", description: "required libraries with version locks"}
+
+      testSuite:
+        type: "list[FunctionTest]"
+
+    structures:
+      FunctionTest:
+        description: {type: string}
+        inputs: {type: dict}
+        expectedOutput: {type: string}
+        tolerance: {type: decimal, description: "for floating-point comparisons"}
+
+    examples:
+      calculateYieldToMaturity:
+        iri: "fin:function:CalculateYTM"
+        parameters:
+          - {name: price, type: "fin:MoneyType", required: true}
+          - {name: faceValue, type: "fin:MoneyType", required: true}
+          - {name: couponRate, type: decimal, required: true}
+          - {name: yearsToMaturity, type: decimal, required: true}
+        returnType: decimal
+        purity: pure
+        implementation:
+          language: python
+          artifactRef: "functions/ytm.py"
+          entrypoint: "calculate_ytm"
+        testSuite:
+          - inputs: {price: 950, faceValue: 1000, couponRate: 0.05, yearsToMaturity: 5}
+            expectedOutput: 0.0619
+            tolerance: 0.0001
+
+      computePortfolioValue:
+        iri: "fin:function:ComputePortfolioValue"
+        parameters:
+          - {name: holdings, type: "list[fin:Holding]", required: true}
+          - {name: asOf, type: instant, required: true}
+        returnType: "fin:MoneyType"
+        purity: observationallyPure
+        note: "May cache price lookups but output depends only on inputs"
+
+  # ==================== Action Type ====================
+  ActionType:
+    definition: "a meta-classifier for stateful operations that modify system state or interact with external systems"
+    purpose: "Defines trading actions, workflow operations, and state-changing commands with full governance"
+    note: "Actions require authorization, preconditions, audit trails, and compensation/rollback semantics"
+
+    requiredFields:
+      iri: {type: uri, unique: true}
+      namespace: {type: string, required: true}
+      localName: {type: string, required: true}
+      label: {type: string, required: true}
+
+      definition:
+        type: string
+        required: true
+        iso704: true
+        example: "action that submits a trading order to a market venue after validation and approval"
+
+      effectDomain:
+        type: enum
+        required: true
+        values:
+          - internal        # modifies platform state only
+          - external        # interacts with external systems (broker, exchange)
+          - distributed     # spans multiple systems
+        description: "scope of action effects"
+
+      parameters:
+        type: "list[ParameterDefinition]"
+        description: "typed input parameters"
+
+      effects:
+        type: "list[EffectSpecification]"
+        minSize: 1
+        description: "declared state changes or external interactions"
+
+    optionalFields:
+      authorization:
+        type: "list[AuthorizationRequirement]"
+        description: "required permissions, roles, or policies"
+
+      approval:
+        type: ApprovalWorkflow
+        description: "approval workflow requirements"
+
+      preconditions:
+        type: "list[Precondition]"
+        description: "conditions that must hold before execution"
+
+      postconditions:
+        type: "list[Postcondition]"
+        description: "conditions guaranteed after successful execution"
+
+      idempotency:
+        type: enum
+        values: [idempotent, conditionallyIdempotent, nonIdempotent]
+        default: nonIdempotent
+        description: |
+          idempotent: safe to retry; duplicate calls have no additional effect
+          conditionallyIdempotent: idempotent when using idempotency key
+          nonIdempotent: each call has distinct effects
+
+      idempotencyKeyField:
+        type: string
+        description: "parameter name for idempotency key (when conditionallyIdempotent)"
+
+      compensation:
+        type: CompensationSpec
+        description: "rollback or compensation action"
+
+      auditRequirements:
+        captureInputs: {type: boolean, default: true}
+        captureOutputs: {type: boolean, default: true}
+        captureIntermediateState: {type: boolean, default: false}
+        retentionPeriod: {type: duration, example: "P7Y"}
+
+      riskAssessment:
+        level: {type: enum, values: [low, medium, high, critical]}
+        categories: {type: "list[enum]", values: [financial, operational, compliance, reputational]}
+        requiresReview: {type: boolean}
+
+      implementation:
+        language: {type: enum, values: [python, java, external-api]}
+        artifactRef: {type: string}
+        entrypoint: {type: string}
+        timeout: {type: duration, default: "PT30S"}
+        retryPolicy: {type: RetryPolicy}
+
+      examples:
+        type: "list[ActionExample]"
+
+    structures:
+      EffectSpecification:
+        type: {type: enum, values: [create, update, delete, send, receive, execute]}
+        target: {type: uri, description: "affected ObjectType or external system"}
+        description: {type: string}
+
+      AuthorizationRequirement:
+        type: {type: enum, values: [permission, role, policy, approval]}
+        resource: {type: string}
+        action: {type: string}
+        description: {type: string}
+
+      ApprovalWorkflow:
+        required: {type: boolean, default: false}
+        approvers: {type: "list[string]", description: "required approver roles"}
+        minimumApprovals: {type: integer, default: 1}
+        timeoutAction: {type: enum, values: [reject, escalate, auto-approve]}
+
+      Precondition:
+        id: {type: string}
+        expression: {type: string, description: "constraint expression"}
+        failureMessage: {type: string}
+        severity: {type: enum, values: [blocking, warning]}
+
+      Postcondition:
+        id: {type: string}
+        expression: {type: string}
+        verificationStrategy: {type: enum, values: [immediate, eventual, manual]}
+
+      CompensationSpec:
+        strategy: {type: enum, values: [none, rollback, compensatingAction, manual]}
+        compensatingAction: {type: uri, description: "ActionType IRI for compensation"}
+        automaticTrigger: {type: boolean, default: false}
+
+      RetryPolicy:
+        maxAttempts: {type: integer, default: 3}
+        backoffStrategy: {type: enum, values: [fixed, exponential, jittered]}
+        initialDelay: {type: duration, default: "PT1S"}
+        maxDelay: {type: duration, default: "PT30S"}
+        retryableErrors: {type: "list[string]", description: "error codes that trigger retry"}
+
+      ActionExample:
+        description: {type: string}
+        parameters: {type: dict}
+        expectedEffects: {type: "list[string]"}
+        expectedAuditEvents: {type: "list[string]"}
+
+    examples:
+      SubmitOrder:
+        iri: "fin:action:SubmitOrder"
+        effectDomain: external
+        parameters:
+          - {name: order, type: "fin:Order", required: true}
+          - {name: account, type: "fin:Account", required: true}
+          - {name: idempotencyKey, type: string, required: false}
+        effects:
+          - {type: update, target: "fin:Order", description: "transition order state to 'submitted'"}
+          - {type: send, target: "external:BrokerAPI", description: "transmit order to broker"}
+          - {type: create, target: "fin:AuditEvent", description: "record submission event"}
+        authorization:
+          - {type: permission, resource: "trading", action: "submit-order"}
+          - {type: policy, resource: "fin:RiskLimitPolicy", description: "order must pass risk checks"}
+        approval:
+          required: true
+          approvers: ["TradingDesk", "RiskManager"]
+          minimumApprovals: 1
+          timeoutAction: reject
+        preconditions:
+          - id: orderValid
+            expression: "order.state == 'approved'"
+            failureMessage: "Order must be in approved state"
+            severity: blocking
+          - id: accountActive
+            expression: "account.status == 'active'"
+            failureMessage: "Account must be active"
+            severity: blocking
+          - id: sufficientBalance
+            expression: "account.balance >= order.estimatedCost"
+            failureMessage: "Insufficient account balance"
+            severity: blocking
+        postconditions:
+          - id: orderSubmitted
+            expression: "order.state == 'submitted'"
+            verificationStrategy: immediate
+          - id: brokerAcknowledged
+            expression: "exists(order.brokerConfirmation)"
+            verificationStrategy: eventual
+        idempotency: conditionallyIdempotent
+        idempotencyKeyField: idempotencyKey
+        compensation:
+          strategy: compensatingAction
+          compensatingAction: "fin:action:CancelOrder"
+          automaticTrigger: false
+        auditRequirements:
+          captureInputs: true
+          captureOutputs: true
+          captureIntermediateState: true
+          retentionPeriod: "P7Y"
+        riskAssessment:
+          level: high
+          categories: [financial, operational, compliance]
+          requiresReview: true
+        implementation:
+          language: python
+          artifactRef: "actions/submit_order.py"
+          entrypoint: "submit_order"
+          timeout: "PT30S"
+          retryPolicy:
+            maxAttempts: 3
+            backoffStrategy: exponential
+            initialDelay: "PT1S"
+            maxDelay: "PT10S"
+            retryableErrors: ["NETWORK_TIMEOUT", "BROKER_UNAVAILABLE"]
+
+      CancelOrder:
+        iri: "fin:action:CancelOrder"
+        effectDomain: external
+        parameters:
+          - {name: order, type: "fin:Order", required: true}
+          - {name: reason, type: string, required: true}
+        effects:
+          - {type: update, target: "fin:Order", description: "transition order state to 'cancelled'"}
+          - {type: send, target: "external:BrokerAPI", description: "request order cancellation"}
+        authorization:
+          - {type: permission, resource: "trading", action: "cancel-order"}
+        preconditions:
+          - id: orderCancellable
+            expression: "order.state IN ['submitted', 'partiallyFilled']"
+            failureMessage: "Order cannot be cancelled in current state"
+            severity: blocking
+        idempotency: idempotent
+        note: "Cancelling an already-cancelled order is a no-op"
+
+      PublishResearchReport:
+        iri: "fin:action:PublishResearchReport"
+        effectDomain: internal
+        parameters:
+          - {name: report, type: "fin:ResearchReport", required: true}
+          - {name: distribution, type: "list[string]", required: true}
+        effects:
+          - {type: update, target: "fin:ResearchReport", description: "mark as published"}
+          - {type: send, target: "internal:NotificationService", description: "notify subscribers"}
+        authorization:
+          - {type: role, resource: "ResearchAnalyst"}
+        approval:
+          required: true
+          approvers: ["ComplianceOfficer"]
+          minimumApprovals: 1
+        preconditions:
+          - id: reportApproved
+            expression: "report.reviewStatus == 'approved'"
+            failureMessage: "Report must be approved by compliance"
+            severity: blocking
+        idempotency: conditionallyIdempotent
+        compensation:
+          strategy: compensatingAction
+          compensatingAction: "fin:action:RetractResearchReport"
+
+  # ==================== Policy Type ====================
+  PolicyType:
+    definition: "a meta-classifier for authorization, compliance, and governance rules"
+    purpose: "Defines access control, risk limits, compliance constraints, and approval workflows"
+
+    requiredFields:
+      iri: {type: uri, unique: true}
+      namespace: {type: string, required: true}
+      localName: {type: string, required: true}
+      label: {type: string, required: true}
+      definition: {type: string, required: true}
+
+      policyType:
+        type: enum
+        required: true
+        values:
+          - authorization   # who can do what
+          - riskLimit       # quantitative risk constraints
+          - compliance      # regulatory or business rule compliance
+          - workflow        # approval and escalation rules
+          - dataGovernance  # data access and retention rules
+
+      scope:
+        type: enum
+        required: true
+        values: [global, module, type, instance]
+        description: "where this policy applies"
+
+    optionalFields:
+      applicability:
+        targetTypes: {type: "list[uri]", description: "ObjectTypes or ActionTypes this policy applies to"}
+        conditions: {type: "list[string]", description: "when this policy is active"}
+
+      rules:
+        type: "list[PolicyRule]"
+        description: "individual policy rules"
+
+      enforcement:
+        mode: {type: enum, values: [blocking, auditing, advisory], default: blocking}
+        phase: {type: enum, values: [compile, runtime, post-execution]}
+
+      owner:
+        type: string
+        description: "team or role responsible for this policy"
+
+      effectiveDate:
+        type: instant
+
+      expirationDate:
+        type: instant
+
+    structures:
+      PolicyRule:
+        id: {type: string}
+        expression: {type: string, description: "rule logic"}
+        failureMessage: {type: string}
+        severity: {type: enum, values: [deny, warn, log]}
+        exceptions: {type: "list[string]", description: "conditions under which rule does not apply"}
+
+    examples:
+      RiskLimitPolicy:
+        iri: "fin:policy:SingleOrderLimit"
+        policyType: riskLimit
+        scope: global
+        applicability:
+          targetTypes: ["fin:action:SubmitOrder"]
+        rules:
+          - id: maxOrderSize
+            expression: "order.notionalValue <= account.maxSingleOrderLimit"
+            failureMessage: "Order exceeds maximum single order limit"
+            severity: deny
+          - id: concentrationLimit
+            expression: "portfolio.positionConcentration(order.instrument) <= 0.10"
+            failureMessage: "Order would exceed 10% concentration limit"
+            severity: deny
+        enforcement:
+          mode: blocking
+          phase: runtime
+
+      DataRetentionPolicy:
+        iri: "fin:policy:AuditDataRetention"
+        policyType: dataGovernance
+        scope: global
+        applicability:
+          targetTypes: ["fin:AuditEvent", "fin:Order", "fin:Execution"]
+        rules:
+          - id: retainSevenYears
+            expression: "retentionPeriod >= P7Y"
+            failureMessage: "Audit data must be retained for at least 7 years"
+            severity: deny
+        enforcement:
+          mode: blocking
+          phase: post-execution
+
+  # ==================== Validation Rules ====================
+  ValidationRules:
+    - "QueryType must be side-effect free (no state modifications)"
+    - "FunctionType with purity=pure must be deterministic and referentially transparent"
+    - "ActionType must declare all effects explicitly"
+    - "ActionType with effectDomain=external must have compensation or rollback strategy"
+    - "ActionType with riskAssessment.level=high must have approval workflow"
+    - "ActionType preconditions must be checkable before execution"
+    - "ActionType postconditions must be verifiable after execution"
+    - "PolicyType with enforcement.mode=blocking must fail-fast on rule violation"
+    - "Idempotent actions must produce same result when called multiple times with same inputs"
+
+  # ==================== Implementation Notes ====================
+  ImplementationNotes:
+    - "QueryType implements Layer 2 temporal queries (asOf, validAt, asOfValidAt)"
+    - "ActionType preconditions can reference Layer 2 Lifecycle state machines"
+    - "ActionType audit events stored with Layer 2 Provenance and Evidence patterns"
+    - "PolicyType enforcement hooks into ActionType execution pipeline"
+    - "Compensation actions form sagas for distributed transaction management"
+    - "Order is an ObjectType (Layer 1); SubmitOrder is an ActionType (Layer 3)"
+    - "Functions can be composed into queries and actions"
+    - "All platform behavior elements must have governance metadata"

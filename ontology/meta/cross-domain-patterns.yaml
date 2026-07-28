@@ -1,0 +1,507 @@
+# Axiolune Ontology Meta-Model - Layer 2: Cross-Domain Fact Patterns
+# Version: 0.2.0
+# Date: 2026-07-28
+# Governance: Follows ADR-001 architecture decisions
+
+CrossDomainPatterns:
+  version: "0.2.0"
+  description: "Reusable patterns for identity, time, provenance, evidence, and lifecycle that apply across domain objects"
+  layer: 2
+  dependencies:
+    - "ontology/meta/core-meta-model.yaml"
+
+  # ==================== Identity Pattern ====================
+  Identity:
+    definition: "pattern for uniquely identifying entities with stable IRIs and namespace management"
+    purpose: "Ensures global uniqueness and federation support for distributed ontologies"
+
+    appliesTo: [ObjectType, AssociationType]
+
+    injectedAttributes:
+      iri:
+        type: uri
+        minCount: 1
+        maxCount: 1
+        immutable: true
+        description: "globally unique, dereferenceable identifier"
+        constraint: "must remain stable across versions"
+
+      namespace:
+        type: string
+        minCount: 1
+        maxCount: 1
+        description: "module namespace prefix"
+        pattern: "^[a-z][a-z0-9-]*$"
+
+      localName:
+        type: string
+        minCount: 1
+        maxCount: 1
+        description: "identifier within namespace"
+        constraint: "unique within namespace"
+
+    validation:
+      - constraint: "iri must match pattern: {namespace-base-uri}/{localName}"
+      - constraint: "iri must be dereferenceable (return 303 redirect or content)"
+
+    fiboAlignment:
+      note: "FIBO uses namespace-based identification; all FIBO entities have stable IRIs"
+
+  # ==================== Classification Pattern ====================
+  Classification:
+    definition: "pattern for attaching controlled vocabulary codes and taxonomic classifications to entities"
+    purpose: "Links entities to external code lists, industry taxonomies, and classification schemes"
+
+    appliesTo: [ObjectType, AssociationType]
+
+    injectedAttributes:
+      classificationScheme:
+        type: uri
+        description: "reference to CodeListType or external taxonomy"
+        example: "iso:10383"  # Market Identifier Codes
+
+      classificationCode:
+        type: string
+        description: "code value within the scheme"
+        example: "XNAS"  # NASDAQ
+
+      classificationVersion:
+        type: string
+        description: "version of the classification scheme"
+        example: "2026-Q1"
+
+      effectiveDate:
+        type: instant
+        description: "when this classification became effective"
+
+    validation:
+      - constraint: "classificationScheme must reference valid CodeListType or external taxonomy"
+      - constraint: "classificationCode must exist in specified scheme and version"
+
+    examples:
+      - entity: "fin:Equity instance"
+        scheme: "iso:10962"  # CFI (Classification of Financial Instruments)
+        code: "ESVUFR"       # Common shares, voting, unrestricted
+        version: "2019"
+
+  # ==================== Temporal Pattern ====================
+  Temporal:
+    definition: "pattern for bi-temporal semantics distinguishing business time from system time"
+    purpose: "Enables Point-in-Time queries and backtest correctness (Qlib requirement)"
+    reference: "Qlib Point-in-Time database design, FIBO temporal semantics"
+
+    variants:
+      TemporalFact:
+        description: "full bi-temporal semantics for facts that change over time"
+        appliesTo: [ObjectType, AssociationType]
+
+        injectedAttributes:
+          validFrom:
+            type: instant
+            minCount: 1
+            maxCount: 1
+            description: "when this fact became true in the real world (business time start)"
+            example: "2024-01-01T00:00:00Z"
+
+          validTo:
+            type: instant
+            minCount: 0
+            maxCount: 1
+            description: "when this fact ceased to be true in the real world (business time end); null means still valid"
+            example: "2025-12-31T23:59:59Z"
+            default: null
+
+          recordedAt:
+            type: instant
+            minCount: 1
+            maxCount: 1
+            immutable: true
+            description: "when this version was recorded in the system (system time / knowledge time)"
+            example: "2024-01-02T08:30:00Z"
+            note: "Critical for Point-in-Time correctness: 'what did we know at time T?'"
+
+        constraints:
+          - expression: "validFrom <= validTo (when validTo is not null)"
+            message: "Business time interval must be valid"
+
+          - expression: "recordedAt >= validFrom (typically)"
+            severity: warning
+            message: "System usually records facts after they become valid (but backdating is allowed)"
+
+        queries:
+          asOf:
+            description: "retrieve fact state as known at specific system time"
+            params:
+              systemTime: instant
+            logic: "SELECT version WHERE recordedAt <= systemTime ORDER BY recordedAt DESC LIMIT 1"
+
+          validAt:
+            description: "retrieve fact valid at specific business time"
+            params:
+              businessTime: instant
+            logic: "SELECT version WHERE validFrom <= businessTime AND (validTo IS NULL OR validTo > businessTime)"
+
+          asOfValidAt:
+            description: "retrieve fact as-known-at system time AND valid-at business time (full bi-temporal query)"
+            params:
+              systemTime: instant
+              businessTime: instant
+            logic: "Point-in-Time query combining both temporal dimensions"
+
+      TemporalObservation:
+        description: "single timestamp for observations without explicit validity period"
+        appliesTo: [AssociationType]
+
+        injectedAttributes:
+          observedAt:
+            type: instant
+            minCount: 1
+            maxCount: 1
+            description: "when the measurement or observation was made"
+            example: "2024-01-15T14:30:00Z"
+
+          recordedAt:
+            type: instant
+            minCount: 1
+            maxCount: 1
+            description: "when the observation was recorded in the system"
+
+        note: "Use for market data snapshots, sensor readings, event timestamps"
+
+      TemporalEvent:
+        description: "point-in-time events without duration"
+        appliesTo: [ObjectType, AssociationType]
+
+        injectedAttributes:
+          occurredAt:
+            type: instant
+            minCount: 1
+            maxCount: 1
+            description: "when the event occurred"
+            example: "2024-01-15T09:30:00Z"  # market open
+
+          recordedAt:
+            type: instant
+            minCount: 1
+            maxCount: 1
+            description: "when the event was recorded"
+
+    fiboAlignment:
+      - concept: "fibo-fnd-dt-fd:DatePeriod"
+        note: "FIBO uses start/end date periods for business time"
+      - concept: "fibo-fnd-dt-fd:hasStartDate"
+        mapsTo: validFrom
+      - concept: "fibo-fnd-dt-fd:hasEndDate"
+        mapsTo: validTo
+
+    qlib_alignment:
+      note: "Qlib requires recordedAt for Point-in-Time correctness in backtesting"
+      reference: "Qlib's CalendarProvider and InstrumentProvider use system timestamp to reconstruct historical knowledge state"
+
+  # ==================== Provenance Pattern ====================
+  Provenance:
+    definition: "pattern for tracking the origin, authority, and confidence of information"
+    purpose: "Enables data lineage, source attribution, audit trails, and confidence scoring"
+    reference: "W3C PROV-O, FIBO provenance model"
+
+    variants:
+      ProvenancedFact:
+        description: "full provenance tracking for facts requiring source attribution"
+        appliesTo: [ObjectType, AssociationType]
+
+        injectedAttributes:
+          source:
+            type: uri
+            minCount: 1
+            maxCount: 1
+            description: "originating data source or provider"
+            example: "source:Bloomberg"
+
+          sourceVersion:
+            type: string
+            description: "version or snapshot of the source"
+            example: "2024-01-15-daily"
+
+          confidence:
+            type: decimal
+            minCount: 0
+            maxCount: 1
+            constraint: "0.0 <= confidence <= 1.0"
+            description: "confidence score or probability"
+            example: 0.95
+
+          revision:
+            type: integer
+            minCount: 0
+            maxCount: 1
+            description: "revision number for this fact (increments on updates)"
+            default: 1
+
+          publishedAt:
+            type: instant
+            description: "when the source published this information"
+
+          receivedAt:
+            type: instant
+            description: "when the platform received this information"
+
+          derivedFrom:
+            type: "list[uri]"
+            description: "IRIs of facts this was derived from (for computed/transformed data)"
+
+        constraints:
+          - expression: "publishedAt <= receivedAt"
+            message: "Source publication must precede platform receipt"
+
+      LightweightProvenance:
+        description: "minimal provenance for internal or low-risk data"
+        appliesTo: [ObjectType, AssociationType]
+
+        injectedAttributes:
+          source: {type: uri, minCount: 1}
+          recordedAt: {type: instant, minCount: 1}
+
+    fiboAlignment:
+      - concept: "fibo-fnd-rel-rel:isProvidedBy"
+        mapsTo: source
+      - concept: "fibo-fnd-dt-fd:hasObservationDate"
+        mapsTo: publishedAt
+
+  # ==================== Evidence Pattern ====================
+  Evidence:
+    definition: "pattern for linking facts to supporting evidence, documents, and data artifacts"
+    purpose: "Supports auditing, regulatory compliance, research reproducibility, and model explainability"
+
+    appliesTo: [ObjectType, AssociationType]
+
+    injectedAttributes:
+      evidenceType:
+        type: enum
+        values: [document, dataset, calculation, modelRun, humanJudgment, externalAPI]
+        description: "category of evidence"
+
+      evidenceRef:
+        type: uri
+        description: "reference to evidence artifact"
+        example: "artifact:report-2024-Q1-earnings.pdf"
+
+      evidenceDigest:
+        type: string
+        description: "cryptographic hash of evidence artifact (for immutability)"
+        pattern: "^(sha256|sha512):[a-f0-9]+$"
+        example: "sha256:abc123..."
+
+      evidenceTimestamp:
+        type: instant
+        description: "when the evidence was created or captured"
+
+      evidenceDescription:
+        type: string
+        description: "human-readable description of the evidence"
+
+    relations:
+      supportedBy:
+        domain: "ObjectType | AssociationType"
+        range: "Evidence"
+        description: "links a fact to its supporting evidence"
+
+    constraints:
+      - constraint: "evidenceRef must be resolvable or stored in artifact repository"
+      - constraint: "evidenceDigest must match artifact content when verified"
+
+    examples:
+      - fact: "ResearchAssertion: Stock XYZ undervalued"
+        evidence:
+          - type: calculation
+            ref: "model:dcf-valuation-run-2024-01-15"
+            digest: "sha256:..."
+          - type: dataset
+            ref: "data:financial-statements-2023"
+            digest: "sha256:..."
+
+  # ==================== Lifecycle Pattern ====================
+  Lifecycle:
+    definition: "pattern for state machines governing entity status transitions"
+    purpose: "Enforces valid state transitions, captures status history, supports workflow automation"
+
+    appliesTo: [ObjectType, AssociationType]
+
+    injectedAttributes:
+      currentState:
+        type: enum
+        minCount: 1
+        maxCount: 1
+        description: "current lifecycle state"
+        note: "Enum values are domain-specific (e.g., Order: pending, submitted, filled, cancelled)"
+
+      stateEnteredAt:
+        type: instant
+        minCount: 1
+        maxCount: 1
+        description: "when current state was entered"
+
+      stateHistory:
+        type: "list[StateTransition]"
+        description: "ordered history of state transitions"
+
+    structures:
+      StateTransition:
+        fromState: {type: string, required: true}
+        toState: {type: string, required: true}
+        transitionedAt: {type: instant, required: true}
+        triggeredBy: {type: uri, description: "user or system that triggered transition"}
+        reason: {type: string, description: "justification for transition"}
+
+      StateMachine:
+        states:
+          type: "list[State]"
+          description: "valid states in this lifecycle"
+
+        transitions:
+          type: "list[Transition]"
+          description: "allowed state transitions"
+
+        initialState:
+          type: string
+          required: true
+
+        finalStates:
+          type: "list[string]"
+          description: "terminal states"
+
+      State:
+        id: {type: string, required: true}
+        label: {type: string}
+        description: {type: string}
+        isFinal: {type: boolean, default: false}
+
+      Transition:
+        from: {type: string, required: true}
+        to: {type: string, required: true}
+        label: {type: string, description: "transition name"}
+        guard: {type: string, description: "precondition expression"}
+        effect: {type: string, description: "side effects of transition"}
+
+    constraints:
+      - constraint: "currentState must be in stateMachine.states"
+      - constraint: "state transitions must follow stateMachine.transitions"
+      - constraint: "stateHistory must be ordered by transitionedAt"
+      - constraint: "cannot transition out of final states"
+
+    examples:
+      OrderLifecycle:
+        states:
+          - {id: draft, label: "Draft"}
+          - {id: pending, label: "Pending Approval"}
+          - {id: approved, label: "Approved"}
+          - {id: submitted, label: "Submitted to Market"}
+          - {id: partiallyFilled, label: "Partially Filled"}
+          - {id: filled, label: "Filled", isFinal: true}
+          - {id: cancelled, label: "Cancelled", isFinal: true}
+          - {id: rejected, label: "Rejected", isFinal: true}
+
+        transitions:
+          - {from: draft, to: pending, label: "Submit for Approval"}
+          - {from: pending, to: approved, label: "Approve"}
+          - {from: pending, to: rejected, label: "Reject"}
+          - {from: approved, to: submitted, label: "Submit to Market"}
+          - {from: submitted, to: partiallyFilled, label: "Partial Fill"}
+          - {from: submitted, to: filled, label: "Complete Fill"}
+          - {from: partiallyFilled, to: filled, label: "Complete Fill"}
+          - {from: submitted, to: cancelled, label: "Cancel"}
+          - {from: partiallyFilled, to: cancelled, label: "Cancel Remaining"}
+
+        initialState: draft
+        finalStates: [filled, cancelled, rejected]
+
+  # ==================== Versioning Pattern ====================
+  Versioning:
+    definition: "pattern for managing multiple versions of entities with semantic versioning"
+    purpose: "Supports schema evolution, backward compatibility, deprecation management"
+
+    appliesTo: [OntologyModule, ObjectType, AttributeType, RelationType, AssociationType]
+
+    injectedAttributes:
+      version:
+        type: string
+        minCount: 1
+        maxCount: 1
+        pattern: "^\\d+\\.\\d+\\.\\d+$"
+        description: "semantic version (major.minor.patch)"
+        example: "2.1.0"
+
+      versionStatus:
+        type: enum
+        values: [draft, released, deprecated, retired]
+        minCount: 1
+
+      deprecatedAt:
+        type: instant
+        description: "when this version was deprecated"
+
+      retiredAt:
+        type: instant
+        description: "when this version was retired (no longer supported)"
+
+      supersededBy:
+        type: uri
+        description: "IRI of the version that supersedes this one"
+
+      breakingChanges:
+        type: "list[string]"
+        description: "list of breaking changes in this version"
+
+    constraints:
+      - constraint: "deprecated versions must have deprecatedAt set"
+      - constraint: "retired versions must have retiredAt set"
+      - constraint: "retiredAt >= deprecatedAt"
+
+  # ==================== Pattern Composition ====================
+  PatternComposition:
+    note: "Patterns can be combined on a single entity"
+
+    examples:
+      PriceObservation:
+        type: AssociationType
+        patterns:
+          - Identity           # iri, namespace, localName
+          - TemporalObservation # observedAt, recordedAt
+          - ProvenancedFact    # source, confidence, publishedAt, receivedAt
+          - Evidence           # evidenceRef for audit trail
+
+      Order:
+        type: ObjectType
+        patterns:
+          - Identity
+          - TemporalFact       # validFrom, validTo, recordedAt
+          - Lifecycle          # currentState, stateHistory (draft → submitted → filled)
+          - ProvenancedFact    # source (strategy), confidence
+
+      ResearchAssertion:
+        type: ObjectType
+        patterns:
+          - Identity
+          - TemporalFact
+          - ProvenancedFact    # source (researcher), confidence
+          - Evidence           # evidenceRef (model run, datasets)
+
+  # ==================== Validation Rules ====================
+  ValidationRules:
+    - "Pattern bindings must reference valid pattern IRIs from this module"
+    - "Temporal: validFrom <= validTo when validTo is not null"
+    - "Temporal: recordedAt should be immutable once set"
+    - "Provenance: confidence must be in range [0.0, 1.0]"
+    - "Provenance: publishedAt <= receivedAt"
+    - "Evidence: evidenceDigest must match artifact content when verified"
+    - "Lifecycle: currentState must be in defined state machine"
+    - "Lifecycle: state transitions must follow allowed transitions"
+    - "Versioning: semantic version must follow major.minor.patch format"
+    - "Multiple patterns can be bound to the same entity (composition)"
+
+  # ==================== Implementation Notes ====================
+  ImplementationNotes:
+    - "Patterns inject attributes via AttributeUse mechanism from Layer 1"
+    - "Pattern bindings generate SHACL shapes for validation, not OWL inheritance"
+    - "Temporal queries (asOf, validAt) implemented in Layer 3 QueryType"
+    - "Lifecycle state machines enforced by Layer 3 ActionType preconditions"
+    - "Evidence artifacts stored in content-addressable storage with digest verification"
