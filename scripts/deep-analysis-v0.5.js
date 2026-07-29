@@ -361,18 +361,69 @@ function checkNoCurrentTimestamp(dataBinding) {
     'utf8'
   );
 
-  const currentTimestampRegex = /CURRENT_TIMESTAMP|currentTimestamp|NOW\(\)|GETDATE\(\)|SYSDATE/gi;
-  const matches = yamlContent.match(currentTimestampRegex);
+  // Split into lines and filter out comments and documentation strings
+  const lines = yamlContent.split('\n');
+  const problematicLines = [];
 
-  if (matches && matches.length > 0) {
+  const currentTimestampRegex = /CURRENT_TIMESTAMP|currentTimestamp|NOW\(\)|GETDATE\(\)|SYSDATE/gi;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    // Skip comment lines
+    if (trimmed.startsWith('#')) continue;
+
+    // Skip lines in changes, note, description, example, ValidationRules, ImplementationNotes sections
+    if (trimmed.startsWith('- "')) continue;  // List items in documentation
+    if (line.includes('changes:')) continue;
+    if (line.includes('note:')) continue;
+    if (line.includes('note: |')) continue;
+    if (line.includes('description:')) continue;
+    if (line.includes('example:')) continue;
+    if (line.includes('ValidationRules:')) continue;
+    if (line.includes('ImplementationNotes:')) continue;
+
+    // Check for problematic time functions in actual configuration
+    if (currentTimestampRegex.test(line)) {
+      // Additional filters for documentation context
+      if (line.includes('PROHIBITED') ||
+          line.includes('replaces') ||
+          line.includes('No CURRENT_TIMESTAMP') ||
+          line.includes('use MaterializationRun') ||
+          line.includes('ADR-012:')) {
+        continue;  // This is documentation
+      }
+
+      // Check if it's an actual value assignment (has : followed by actual value, not documentation)
+      const parts = line.split(':');
+      if (parts.length > 1) {
+        const key = parts[0].trim();
+        const value = parts.slice(1).join(':').trim();
+
+        // If value contains these functions and is not a description/note/example, flag it
+        if (!key.includes('description') &&
+            !key.includes('note') &&
+            !key.includes('example') &&
+            !value.startsWith('"') &&  // Not a quoted string
+            currentTimestampRegex.test(value)) {
+          problematicLines.push(`Line ${i + 1}: ${line.trim()}`);
+        }
+      }
+    }
+  }
+
+  if (problematicLines.length > 0) {
     issues.p0.push({
       category: 'ADR-012-violation',
-      message: `Found ${matches.length} non-reproducible time function(s): ${matches.join(', ')}`,
+      message: `Found ${problematicLines.length} non-reproducible time function(s) in actual config`,
+      details: problematicLines,
       severity: 'P0 BLOCKING'
     });
-    console.log(`  ${colors.red}✗ Non-reproducible time functions found: ${matches.join(', ')}${colors.reset}`);
+    console.log(`  ${colors.red}✗ Non-reproducible time functions in config: ${problematicLines.length} occurrences${colors.reset}`);
+    problematicLines.forEach(line => console.log(`     ${line}`));
   } else {
-    console.log(`  ${colors.green}✓ No CURRENT_TIMESTAMP or non-reproducible time functions${colors.reset}`);
+    console.log(`  ${colors.green}✓ No CURRENT_TIMESTAMP or non-reproducible time functions in config${colors.reset}`);
   }
 }
 

@@ -1,20 +1,20 @@
 # Axiolune Ontology Meta-Model - Layer 4: Data Binding
-# Version: 0.4.0
-# Date: 2026-07-28
-# Governance: Follows ADR-001, ADR-003, ADR-004, ADR-007 architecture decisions
+# Version: 0.5.0
+# Date: 2026-07-29
+# Governance: ADR-011 (Canonical Data Binding Truth Source), ADR-012 (Three-Axis Temporal Semantics)
 
 module:
   moduleIri: "https://axiolune.ai/ontology/meta/data-binding"
   baseIri: "https://axiolune.ai/ontology/meta/data-binding/"
   preferredPrefix: "ax-binding"
-  version: "0.4.0"
+  version: "0.5.0"
   imports:
     - moduleIri: "https://axiolune.ai/ontology/meta/core#sha256:6a3861b3861fc2301deddd55965f23030f9fae653755c0568fa1ea2f4d634592"
-      version: "0.3.0"
+      version: "0.4.0"
       artifactDigest: "sha256:6a3861b3861fc2301deddd55965f23030f9fae653755c0568fa1ea2f4d634592"
       importMode: All
     - moduleIri: "https://axiolune.ai/ontology/meta/patterns#sha256:654ecf0d6e55e5a2437da1e8cf1e6732bb19c34cecac470a9c32c357a63c7796"
-      version: "0.3.0"
+      version: "0.4.0"
       artifactDigest: "sha256:654ecf0d6e55e5a2437da1e8cf1e6732bb19c34cecac470a9c32c357a63c7796"
       importMode: All
     - moduleIri: "https://axiolune.ai/ontology/meta/behavior#sha256:93e690b6261a52fd42627178114edb94cb7f80f372539f6eed6258233b2d2962"
@@ -24,10 +24,20 @@ module:
   exports: []
 
 DataBinding:
-  version: "0.4.0"
-  description: "Meta-model for mapping physical data sources (tables, files, APIs) to ontology concepts"
+  version: "0.5.0"
+  description: "Meta-model for mapping physical data sources to ontology concepts (ADR-011, ADR-012 compliant)"
   layer: 4
   changes:
+    - "v0.5.0: BREAKING - Implement ADR-011 single truth source architecture"
+    - "v0.5.0: REMOVED Field.semanticMapping and SemanticFieldMapping (violated single truth source)"
+    - "v0.5.0: SemanticMappingDefinition is now canonical truth source with complete mapping capabilities"
+    - "v0.5.0: Added SourceBinding, RowSetSpec, IdentitySpec for row-level semantics"
+    - "v0.5.0: Renamed fieldMappings to slotMappings (supports attributes, roles, relations, pattern fields)"
+    - "v0.5.0: Added MaterializationRun for immutable runtime state (separated from static definitions)"
+    - "v0.5.0: Implement ADR-012 three-axis temporal model (valid/knowledge/availability)"
+    - "v0.5.0: Added TemporalMappingSpec with explicit source bindings for all three time axes"
+    - "v0.5.0: REMOVED MaterializationPlanDefinition.watermark (moved to MaterializationRun)"
+    - "v0.5.0: All transformations require explicit named inputs, version, digest, test cases"
     - "v0.4.0: Removed Dataset.semanticMappings (ADR-007), Field.semanticMapping now sole truth source"
     - "v0.4.0: Added TransformationDefinition with typed references (ADR-007)"
     - "v0.4.0: Removed standalone FieldMappingDefinition (ADR-007)"
@@ -37,9 +47,19 @@ DataBinding:
     - "v0.3.0: Created MaterializationPlanDefinition, deprecated IngestionPipelineDefinition"
 
   note: |
-    Layer 4 maps PHYSICAL data artifacts to SEMANTIC ontology concepts without polluting
-    the conceptual layer. A single ObjectTypeDefinition may map to multiple tables; a single table
-    may map to multiple ObjectTypes.
+    Layer 4 maps PHYSICAL data artifacts to SEMANTIC ontology concepts.
+
+    ADR-011 COMPLIANCE:
+    - SemanticMappingDefinition is the ONLY structure for semantic mappings
+    - Physical structure (FieldDefinition) contains NO semantic annotations
+    - All row-level and dataset-level semantics expressible (joins, filters, identity, provenance, temporal)
+    - Static definitions (plans) separated from runtime state (runs)
+
+    ADR-012 COMPLIANCE:
+    - Three-axis temporal model: valid time, knowledge time, availability time
+    - All time sources explicitly declared in TemporalMappingSpec
+    - No CURRENT_TIMESTAMP or non-reproducible time functions
+    - MaterializationRun provides immutable runtime context for reproducible queries
 
   # ==================== Data Source ====================
   DataSource:
@@ -269,87 +289,270 @@ DataBinding:
         type: string
         description: "partial index predicate expression"
 
-  # ==================== Field ====================
-  Field:
-    definition: "a meta-classifier for individual columns, properties, or fields in a dataset"
-    purpose: "Defines physical data fields and their types"
+  # ==================== Source Binding (ADR-011) ====================
+  SourceBinding:
+    definition: "specification of physical data sources and row-set operations for semantic mapping according to genus-differentia form"
+    purpose: "Enables multi-table joins, filtering, and aggregation before field mapping"
 
     requiredFields:
-      name:
-        type: string
+      datasets:
+        type: "list[DatasetReference]"
         required: true
-        description: "physical field name"
-        example: "close_price"
-
-      dataType:
-        type: string
-        required: true
-        description: "native data type in source system"
-        example: "DECIMAL(18,4)"
+        minCount: 1
+        description: "physical datasets to read from"
 
     optionalFields:
-      nullable:
-        type: boolean
-        default: true
+      rowSet:
+        type: RowSetSpec
+        description: "row-level operations applied before mapping to slots"
 
-      defaultValue:
-        type: string
+    structures:
+      DatasetReference:
+        dataset:
+          type: uri
+          required: true
+          description: "DatasetDefinition IRI"
 
-      constraints:
-        type: "list[string]"
-        description: "physical constraints (NOT NULL, UNIQUE, CHECK)"
+        alias:
+          type: string
+          required: true
+          description: "alias for use in field references and expressions"
 
-      description:
-        type: string
-        example: "closing price in local currency"
+  # ==================== Row Set Spec (ADR-011) ====================
+  RowSetSpec:
+    definition: "row-level operations applied to source datasets before slot mapping according to genus-differentia form"
+    purpose: "Expresses joins, filters, and aggregations that field-level mappings cannot express"
 
-      semanticMapping:
-        type: SemanticFieldMapping
-        description: "semantic mapping for this field (inline, single truth source per ADR-007)"
+    optionalFields:
+      filters:
+        type: "list[FilterExpression]"
+        description: "row filtering conditions"
 
-  # ==================== Semantic Field Mapping ====================
-  SemanticFieldMapping:
-    definition: "inline semantic mapping for a single field"
-    purpose: "Maps physical field to ontology attribute with optional transformation"
-    note: "Replaces Dataset.semanticMappings and standalone FieldMappingDefinition per ADR-007"
+      joins:
+        type: "list[JoinExpression]"
+        description: "multi-table join specifications"
+
+      grouping:
+        type: GroupingSpec
+        description: "aggregation specification for derived entities"
+
+    structures:
+      FilterExpression:
+        dataset:
+          type: string
+          required: true
+          description: "dataset alias from SourceBinding"
+
+        field:
+          type: string
+          required: true
+          description: "field name in dataset"
+
+        operator:
+          type: enum
+          required: true
+          values: ["=", "!=", ">", "<", ">=", "<=", "IN", "NOT IN", "LIKE", "IS NULL", "IS NOT NULL"]
+
+        value:
+          type: any
+          description: "comparison value (null for IS NULL / IS NOT NULL)"
+
+      JoinExpression:
+        leftDataset:
+          type: string
+          required: true
+          description: "left dataset alias"
+
+        rightDataset:
+          type: string
+          required: true
+          description: "right dataset alias"
+
+        joinType:
+          type: enum
+          required: true
+          values: [inner, left, right, full]
+          default: inner
+
+        conditions:
+          type: "list[JoinCondition]"
+          required: true
+          minCount: 1
+
+      JoinCondition:
+        leftField:
+          type: string
+          required: true
+          description: "field name in left dataset"
+
+        operator:
+          type: string
+          required: true
+          default: "="
+          description: "comparison operator"
+
+        rightField:
+          type: string
+          required: true
+          description: "field name in right dataset"
+
+      GroupingSpec:
+        groupBy:
+          type: "list[FieldReference]"
+          required: true
+          minCount: 1
+          description: "fields to group by"
+
+        aggregations:
+          type: "list[AggregationSpec]"
+          required: true
+          minCount: 1
+          description: "aggregation functions to apply"
+
+      AggregationSpec:
+        function:
+          type: enum
+          required: true
+          values: [count, sum, avg, min, max, first, last]
+
+        sourceField:
+          type: FieldReference
+          description: "source field (null for count)"
+
+        targetField:
+          type: string
+          required: true
+          description: "name for aggregated result"
+
+      FieldReference:
+        dataset:
+          type: string
+          required: true
+          description: "dataset alias from SourceBinding"
+
+        field:
+          type: string
+          required: true
+          description: "field name in dataset"
+
+  # ==================== Identity Spec (ADR-011) ====================
+  IdentitySpec:
+    definition: "specification of entity identity determination and IRI construction according to genus-differentia form"
+    purpose: "Defines logical keys, version keys, and IRI generation strategy for stable entity references"
 
     requiredFields:
-      targetAttribute:
+      logicalKey:
+        type: "list[FieldReference]"
+        required: true
+        minCount: 1
+        description: "fields that uniquely identify entity across all versions"
+
+      iriTemplate:
         type: string
         required: true
-        description: "attribute IRI or field path (e.g., 'fin:quotedPrice.amount' for nested fields)"
-        example: "fin:hasISIN"
+        description: "template for constructing entity IRI with {field} placeholders"
+        example: "https://axiolune.ai/data/instruments/{isin}"
 
     optionalFields:
-      transformation:
-        type: TransformationReference
-        description: "typed reference to transformation definition"
+      versionKey:
+        type: "list[FieldReference]"
+        description: "fields that distinguish versions of same logical entity"
 
-  # ==================== Transformation Reference ====================
-  TransformationReference:
-    definition: "typed reference to a transformation with parameters"
-    purpose: "Replaces free-string transformationExpression with typed IRI reference per ADR-007"
+      namespace:
+        type: string
+        description: "namespace prefix for generated IRIs"
+        example: "fin-inst"
+
+  # ==================== Value Binding (ADR-011) ====================
+  ValueBinding:
+    definition: "specification of value computation for slot population according to genus-differentia form"
+    purpose: "Union type supporting direct fields, transformations, literals, and runtime context"
+
+    discriminator: bindingType
+
+    variants:
+      DirectFieldBinding:
+        description: "value sourced directly from physical field"
+        fields:
+          bindingType:
+            type: literal
+            value: "directField"
+
+          source:
+            type: FieldReference
+            required: true
+            description: "source field reference"
+
+      TransformationBinding:
+        description: "value computed via versioned transformation"
+        fields:
+          bindingType:
+            type: literal
+            value: "transformation"
+
+          transformationRef:
+            type: uri
+            required: true
+            description: "TransformationDefinition IRI with version"
+
+          inputs:
+            type: "map[string, ValueBinding]"
+            required: true
+            description: "named inputs to transformation (keys match transformation.inputs)"
+
+      LiteralBinding:
+        description: "static literal value"
+        fields:
+          bindingType:
+            type: literal
+            value: "literal"
+
+          value:
+            type: any
+            required: true
+            description: "literal value of any type"
+
+      RuntimeContextBinding:
+        description: "value from immutable MaterializationRun context"
+        fields:
+          bindingType:
+            type: literal
+            value: "runtimeContext"
+
+          contextField:
+            type: string
+            required: true
+            description: "field from MaterializationRun (assertionTime, referenceTime, runId)"
+            example: "assertionTime"
+
+  # ==================== Slot Mapping (ADR-011) ====================
+  SlotMapping:
+    definition: "specification of target slot population according to genus-differentia form"
+    purpose: "Maps source data to ontology slots (attributes, participant roles, relations, pattern fields)"
 
     requiredFields:
-      transformationIri:
-        type: uri
+      target:
+        type: TargetSlot
         required: true
-        description: "IRI of TransformationDefinition"
-        example: "data:TickerToISIN"
+        description: "slot to populate"
 
-    optionalFields:
-      parameters:
-        type: "map[string,any]"
-        description: "transformation-specific parameters"
+      value:
+        type: ValueBinding
+        required: true
+        description: "value computation specification"
 
-  # ==================== Transformation Definition ====================
+  # ==================== Transformation Definition (Enhanced for ADR-011) ====================
   TransformationDefinition:
-    definition: "reusable transformation logic for data mapping"
-    purpose: "Defines how to transform source values to target semantic values"
+    definition: "versioned reusable transformation logic for data mapping according to genus-differentia form"
+    purpose: "Defines reproducible transformations with explicit inputs, outputs, version, digest, and test cases"
 
     requiredFields:
-      iri: {type: uri, unique: true}
-      definition: {type: string, required: true}
+      iri: {type: uri, unique: true, required: true}
+
+      definition:
+        type: string
+        required: true
+        description: "clear definition of transformation purpose and behavior"
 
       kind:
         type: enum
@@ -357,30 +560,71 @@ DataBinding:
         values: [LookupTransformation, MappingTransformation, ExpressionTransformation, ScriptTransformation]
         description: "type of transformation"
 
-      sourceType:
-        type: string
+      inputs:
+        type: "map[string, TypeReference]"
         required: true
-        description: "TypeRef of source value"
+        description: "named input parameters with explicit types"
+        example: {isin: "string", sourceSystem: "string"}
 
-      targetType:
+      outputs:
+        type: TypeReference
+        required: true
+        description: "output type specification"
+
+      version:
         type: string
         required: true
-        description: "TypeRef of target value"
+        description: "semantic version (MAJOR.MINOR.PATCH)"
+        example: "1.2.0"
+
+      implementationDigest:
+        type: string
+        required: true
+        description: "SHA-256 digest of implementation artifact for reproducibility"
+        example: "sha256:a3b2c1d4e5f6..."
+
+      testCases:
+        type: "list[TransformationTestCase]"
+        required: true
+        minCount: 1
+        description: "test cases demonstrating correct behavior"
 
     optionalFields:
       implementation:
         type: TransformationImplementation
         description: "implementation details specific to transformation kind"
 
-      version:
-        type: string
-        description: "transformation version for change tracking"
-
-      testCases:
-        type: "list[TransformationTestCase]"
-        description: "test cases for validation"
-
     structures:
+      TypeReference:
+        definition: "type specification for transformation inputs and outputs"
+
+        discriminator: typeKind
+
+        variants:
+          PrimitiveType:
+            fields:
+              typeKind: {type: literal, value: "primitive"}
+              primitiveType:
+                type: enum
+                required: true
+                values: [string, integer, decimal, boolean, instant, duration, uri]
+
+          StructuredType:
+            fields:
+              typeKind: {type: literal, value: "structured"}
+              typeRef:
+                type: uri
+                required: true
+                description: "ObjectTypeDefinition or ValueTypeDefinition IRI"
+
+          ListType:
+            fields:
+              typeKind: {type: literal, value: "list"}
+              elementType:
+                type: TypeReference
+                required: true
+                description: "type of list elements"
+
       TransformationImplementation:
         # For LookupTransformation
         lookupTable:
@@ -449,20 +693,88 @@ DataBinding:
           targetPattern: {type: uri, required: true, description: "PatternDefinition IRI"}
           targetField: {type: string, required: true, description: "injected attribute local name"}
 
-  # ==================== Semantic Mapping ====================
-  SemanticMappingDefinition:
-    definition: "a meta-classifier for mappings between physical data structures and ontology concepts"
-    purpose: "Bridges the gap between how data is stored and what it means"
-    note: "A DatasetDefinition can map to multiple ObjectTypes; an ObjectTypeDefinition can source from multiple Datasets"
+  # ==================== Time Axis Binding (ADR-012) ====================
+  TimeAxisBinding:
+    definition: "binding specification for one temporal axis (from/to intervals) according to genus-differentia form"
+    purpose: "Expresses how to populate one of three time axes per ADR-012"
 
     requiredFields:
-      iri: {type: uri, unique: true}
-      label: {type: string, required: true}
+      from:
+        type: ValueBinding
+        required: true
+        description: "start of time interval (inclusive)"
 
-      sourceDataset:
+    optionalFields:
+      to:
+        type: ValueBinding
+        description: "end of time interval (exclusive); null means unbounded"
+
+      closePolicy:
+        type: enum
+        values: [closePreviousVersion, explicitOnly]
+        description: "how to set knowledgeTo for superseded versions (knowledgeTime axis only)"
+        default: closePreviousVersion
+
+  # ==================== Provenance Binding (ADR-011) ====================
+  ProvenanceBinding:
+    definition: "specification of data provenance metadata capture according to genus-differentia form"
+    purpose: "Maps physical fields to Layer 2 provenance pattern fields"
+
+    optionalFields:
+      sourceSystem:
+        type: ValueBinding
+        description: "identifier of originating system"
+
+      acquisitionTime:
+        type: ValueBinding
+        description: "when data was acquired from source"
+
+      responsibleAgent:
+        type: ValueBinding
+        description: "agent responsible for data acquisition"
+
+      confidence:
+        type: ValueBinding
+        description: "confidence score or quality metric"
+
+  # ==================== Temporal Mapping Spec (ADR-012) ====================
+  TemporalMappingSpec:
+    definition: "specification of three-axis temporal semantics mapping according to genus-differentia form and ADR-012"
+    purpose: "Maps physical time fields to valid time, knowledge time, and availability time axes"
+
+    requiredFields:
+      patternRef:
         type: uri
         required: true
-        description: "DatasetDefinition IRI"
+        description: "temporal pattern IRI (e.g., ax-pattern:TemporalFact)"
+
+    optionalFields:
+      validTime:
+        type: TimeAxisBinding
+        description: "when fact holds true in reality (business time)"
+
+      knowledgeTime:
+        type: TimeAxisBinding
+        description: "when platform knows/retracts this version (transaction time)"
+
+      availabilityTime:
+        type: TimeAxisBinding
+        description: "when consumers can use this data (regulatory/access control time)"
+
+  # ==================== Semantic Mapping (ADR-011 Compliant) ====================
+  SemanticMappingDefinition:
+    definition: "canonical specification of mapping between physical data and ontology concepts according to genus-differentia form"
+    purpose: "Single truth source for all semantic mappings per ADR-011"
+    note: "Replaces all field-level, dataset-level, and inline mappings with unified structure"
+
+    requiredFields:
+      iri: {type: uri, unique: true, required: true}
+      label: {type: string, required: true}
+
+      source:
+        type: SourceBinding
+        required: true
+        description: "physical data sources with row-set operations"
 
       targetType:
         type: uri
@@ -482,39 +794,25 @@ DataBinding:
           - denormalized       # one table contains multiple related entity types
 
     optionalFields:
-      fieldMappings:
-        type: "list[FieldMapping]"
-        description: "attribute-level mappings"
+      slotMappings:
+        type: "list[SlotMapping]"
+        description: "mappings to attributes, participant roles, relations, and pattern fields"
 
-      filters:
-        type: "list[FilterCondition]"
-        description: "conditions to select rows representing this entity type"
-        example:
-          - {field: "security_type", operator: "=", value: "EQUITY"}
+      identity:
+        type: IdentitySpec
+        description: "entity identity and IRI construction specification"
 
-      joins:
-        type: "list[JoinSpec]"
-        description: "tables to join (for joinedTables mapping)"
-
-      transformation:
-        type: TransformationSpec
-        description: "transformation logic (for transformation mapping)"
-
-      identityMapping:
-        type: IdentityMappingSpec
-        description: "how to construct entity IRI from physical data"
-
-      temporalMapping:
+      temporal:
         type: TemporalMappingSpec
-        description: "how temporal fields map to Layer 2 Temporal pattern"
+        description: "three-axis temporal semantics per ADR-012"
 
-      provenanceMapping:
-        type: ProvenanceMappingSpec
-        description: "how provenance fields map to Layer 2 Provenance pattern"
+      provenance:
+        type: ProvenanceBinding
+        description: "provenance metadata capture specification"
 
       validationRules:
         type: "list[ValidationRule]"
-        description: "data quality checks applied during ingestion"
+        description: "data quality checks applied during materialization"
 
       priority:
         type: integer
@@ -530,128 +828,131 @@ DataBinding:
         description: "when this mapping should no longer be used"
 
     structures:
-      FieldMapping:
-        sourceField:
-          type: string
-          required: true
-          description: "physical field name"
-          example: "isin_code"
-
-        target:
-          type: TargetSlot
-          required: true
-          description: "mapping target (attribute, participant role, relation, or pattern field)"
-          note: "Replaces targetAttribute to support all target types"
-
-        transformation:
-          type: enum
-          values: [direct, cast, lookup, function, expression]
-          default: direct
-
-        transformationExpression:
-          type: string
-          description: "transformation logic when transformation != direct"
-          example: "UPPER(TRIM(isin_code))"
-
-        nullHandling:
-          type: enum
-          values: [preserve, defaultValue, skip, fail]
-          default: preserve
-
-        defaultValue:
-          type: string
-          description: "value when source is null and nullHandling=defaultValue"
-
-      FilterCondition:
-        field: {type: string, required: true}
-        operator: {type: enum, values: ["=", "!=", ">", "<", ">=", "<=", "IN", "NOT IN", "LIKE", "IS NULL", "IS NOT NULL"], required: true}
-        value: {type: string}
-        description: {type: string}
-
-      JoinSpec:
-        dataset: {type: uri, required: true, description: "DatasetDefinition IRI to join"}
-        joinType: {type: enum, values: [inner, left, right, full], default: inner}
-        conditions: {type: "list[JoinCondition]"}
-
-      JoinCondition:
-        leftField: {type: string, required: true}
-        operator: {type: string, default: "="}
-        rightField: {type: string, required: true}
-
-      TransformationSpec:
-        language: {type: enum, values: [sql, python, spark, dbt]}
-        artifactRef: {type: string, description: "path to transformation code"}
-        entrypoint: {type: string}
-        dependencies: {type: "list[string]"}
-        testSuite: {type: uri, description: "reference to test cases"}
-
-      IdentityMappingSpec:
-        strategy:
-          type: enum
-          values:
-            - naturalKey         # use natural identifier from data
-            - syntheticKey       # generate UUID or sequential ID
-            - compositeKey       # combine multiple fields
-            - uriTemplate        # apply template to construct IRI
-          required: true
-
-        keyFields:
-          type: "list[string]"
-          description: "fields used to construct identity"
-          example: ["isin_code"]
-
-        uriTemplate:
-          type: string
-          description: "template for IRI construction"
-          example: "https://axiolune.ai/ontology/meta/data-binding/finance/instrument/equity/{isin_code}"
-          note: "IRI namespace strategy pending ADR-002"
-
-        namespace:
-          type: string
-          description: "namespace prefix for generated IRIs"
-
-      TemporalMappingSpec:
-        pattern:
-          type: enum
-          values: [TemporalFact, TemporalObservation, TemporalEvent, none]
-          required: true
-
-        validFromField: {type: string, description: "source field for validFrom"}
-        validToField: {type: string, description: "source field for validTo"}
-        recordedAtField: {type: string, description: "source field for recordedAt"}
-        observedAtField: {type: string, description: "source field for observedAt"}
-        occurredAtField: {type: string, description: "source field for occurredAt"}
-
-        defaultValidTo:
-          type: string
-          description: "value when validTo is not provided"
-          example: "null"  # ongoing validity
-
-        recordedAtSource:
-          type: enum
-          values: [sourceField, ingestionTimestamp, currentTimestamp]
-          description: "how to determine recordedAt"
-
-      ProvenanceMappingSpec:
-        sourceField: {type: string, description: "field containing source identifier"}
-        sourceIriTemplate: {type: string, example: "https://moonweave.ai/source/{source_id}"}
-        confidenceField: {type: string}
-        revisionField: {type: string}
-        publishedAtField: {type: string}
-        receivedAtSource: {type: enum, values: [sourceField, ingestionTimestamp]}
-
       ValidationRule:
-        id: {type: string}
-        type: {type: enum, values: [required, format, range, uniqueness, referentialIntegrity, custom]}
-        expression: {type: string}
-        failureAction: {type: enum, values: [reject, quarantine, accept-with-warning]}
-        severity: {type: enum, values: [error, warning, info]}
+        id: {type: string, required: true}
+        type: {type: enum, values: [required, format, range, uniqueness, referentialIntegrity, custom], required: true}
+        expression: {type: string, required: true}
+        failureAction: {type: enum, values: [reject, quarantine, accept-with-warning], required: true}
+        severity: {type: enum, values: [error, warning, info], default: error}
 
-  # ==================== Materialization Plan ====================
+  # ==================== Materialization Run (ADR-011, ADR-012) ====================
+  MaterializationRun:
+    definition: "immutable record of one materialization execution according to genus-differentia form"
+    purpose: "Separates runtime state from static definitions (ADR-011); provides immutable time context (ADR-012)"
+
+    requiredFields:
+      iri: {type: uri, unique: true, required: true}
+
+      runId:
+        type: string
+        required: true
+        unique: true
+        description: "unique identifier for this run"
+        example: "mr_2026-07-29_093000_abc123"
+
+      planRef:
+        type: uri
+        required: true
+        description: "MaterializationPlanDefinition IRI"
+
+      assertionTime:
+        type: instant
+        required: true
+        description: "when this run asserted knowledge (immutable, used for knowledgeFrom in ADR-012)"
+
+      referenceTime:
+        type: instant
+        required: true
+        description: "reference point for time-based queries (immutable, replaces CURRENT_TIMESTAMP)"
+
+      inputSnapshotDigest:
+        type: string
+        required: true
+        description: "SHA-256 digest of input dataset versions for reproducibility"
+
+      inputDatasets:
+        type: "list[InputDatasetSnapshot]"
+        required: true
+        minCount: 1
+        description: "snapshot of input datasets at run time"
+
+    optionalFields:
+      status:
+        type: enum
+        values: [pending, running, completed, failed, partial]
+        description: "execution status"
+
+      startedAt: {type: instant, description: "when execution started"}
+      completedAt: {type: instant, description: "when execution completed"}
+      outputRowCount: {type: integer, description: "number of entity instances materialized"}
+
+      watermark:
+        type: any
+        description: "watermark value for next incremental run (moved from plan per ADR-011)"
+
+      errors:
+        type: "list[ExecutionError]"
+        description: "errors encountered during execution"
+
+      metrics:
+        type: ExecutionMetrics
+        description: "performance and quality metrics"
+
+    structures:
+      InputDatasetSnapshot:
+        dataset:
+          type: uri
+          required: true
+          description: "DatasetDefinition IRI"
+
+        versionDigest:
+          type: string
+          required: true
+          description: "SHA-256 digest of dataset version"
+
+        rowCount:
+          type: integer
+          description: "number of rows in snapshot"
+
+        snapshotTime:
+          type: instant
+          required: true
+          description: "when snapshot was taken"
+
+      ExecutionError:
+        severity:
+          type: enum
+          required: true
+          values: [error, warning, info]
+
+        code: {type: string}
+
+        message:
+          type: string
+          required: true
+          description: "error message"
+
+        sourceRow:
+          type: integer
+          description: "row number that caused error"
+
+        context:
+          type: "map[string,any]"
+          description: "additional error context"
+
+      ExecutionMetrics:
+        rowsRead: {type: integer}
+        rowsProcessed: {type: integer}
+        rowsSkipped: {type: integer}
+        rowsFailed: {type: integer}
+        duration: {type: duration}
+        throughput: {type: decimal, description: "rows per second"}
+
+  # ==================== Materialization Plan (ADR-011 Compliant) ====================
   MaterializationPlanDefinition:
-    definition: "a declarative specification of how to materialize ontology instances from physical data sources"
-    purpose: "Defines WHAT should be materialized and HOW data maps to ontology, without specifying runtime orchestration (scheduling, retries, monitoring)"
-    note: "Runtime orchestration (schedule, retry, monitoring) moved to separate orchestration/runtime layer per ADR-003"
+    definition: "declarative specification of ontology instance materialization from physical data sources according to genus-differentia form"
+    purpose: "Defines WHAT should be materialized and HOW data maps to ontology (static configuration only per ADR-011)"
+    note: "Runtime state moved to MaterializationRun per ADR-011; orchestration moved to external layer"
 
     requiredFields:
       iri: {type: uri, unique: true, required: true}
@@ -703,10 +1004,6 @@ DataBinding:
       incrementalKey:
         type: string
         description: "field name for incremental updates (e.g., updated_at timestamp)"
-
-      watermark:
-        type: string
-        description: "current watermark value for incremental processing"
 
       targetGraphUri:
         type: uri
@@ -830,64 +1127,111 @@ DataBinding:
           latency: {type: duration, example: "PT10M"}
           recordsProcessed: {type: integer, example: 1000}
 
-  # ==================== Examples ====================
+  # ==================== Examples (Updated for ADR-011/012) ====================
   Examples:
 
     EquityPriceMapping:
       semanticMapping:
         iri: "fin:mapping:EquityEODPrice"
         label: "Equity End-of-Day Price Observation Mapping"
-        sourceDataset: "datasource:bloomberg/equity_prices_eod"
-        targetType: "fin:PriceObservation"  # AssociationTypeDefinition
+
+        source:
+          datasets:
+            - {dataset: "datasource:bloomberg/equity_prices_eod", alias: "prices"}
+          rowSet:
+            filters:
+              - {dataset: "prices", field: "security_type", operator: "=", value: "EQUITY"}
+
+        targetType: "fin:PriceObservation"
         mappingType: directTable
 
-        fieldMappings:
-          - sourceField: "isin"
-            target:
+        slotMappings:
+          - target:
               slotType: participantRole
               targetAssociation: "fin:PriceObservation"
               targetRole: "observedInstrument"
-            transformation: lookup
-            transformationExpression: "lookup_instrument_by_isin(isin)"
+            value:
+              bindingType: transformation
+              transformationRef: "data:LookupInstrumentByISIN#v1.0.0"
+              inputs:
+                isin:
+                  bindingType: directField
+                  source: {dataset: "prices", field: "isin"}
 
-          - sourceField: "exchange_code"
-            target:
+          - target:
               slotType: participantRole
               targetAssociation: "fin:PriceObservation"
               targetRole: "venue"
-            transformation: lookup
-            transformationExpression: "lookup_market_by_mic(exchange_code)"
+            value:
+              bindingType: transformation
+              transformationRef: "data:LookupMarketByMIC#v1.0.0"
+              inputs:
+                mic:
+                  bindingType: directField
+                  source: {dataset: "prices", field: "exchange_code"}
 
-          - sourceField: "close_price"
-            target:
+          - target:
               slotType: attribute
               targetAttribute: "fin:quotedPrice"
-            transformation: function
-            transformationExpression: "create_money(close_price, currency_code)"
+            value:
+              bindingType: transformation
+              transformationRef: "data:CreateMoney#v2.1.0"
+              inputs:
+                amount:
+                  bindingType: directField
+                  source: {dataset: "prices", field: "close_price"}
+                currency:
+                  bindingType: directField
+                  source: {dataset: "prices", field: "currency_code"}
 
-          - sourceField: "volume"
-            target:
+          - target:
               slotType: attribute
               targetAttribute: "fin:tradedVolume"
-            transformation: function
-            transformationExpression: "create_quantity(volume, 'shares')"
+            value:
+              bindingType: transformation
+              transformationRef: "data:CreateQuantity#v1.0.0"
+              inputs:
+                value:
+                  bindingType: directField
+                  source: {dataset: "prices", field: "volume"}
+                unit:
+                  bindingType: literal
+                  value: "shares"
 
-        identityMapping:
-          strategy: compositeKey
-          keyFields: ["isin", "exchange_code", "trade_date"]
-          uriTemplate: "https://moonweave.ai/observation/price/{isin}/{exchange_code}/{trade_date}"
+        identity:
+          logicalKey:
+            - {dataset: "prices", field: "isin"}
+            - {dataset: "prices", field: "exchange_code"}
+            - {dataset: "prices", field: "trade_date"}
+          iriTemplate: "https://moonweave.ai/observation/price/{isin}/{exchange_code}/{trade_date}"
           namespace: "fin-obs"
 
-        temporalMapping:
-          pattern: TemporalObservation
-          observedAtField: "trade_date_close"  # end of trading day
-          recordedAtSource: ingestionTimestamp
+        temporal:
+          patternRef: "ax-pattern:TemporalObservation"
+          validTime:
+            from:
+              bindingType: directField
+              source: {dataset: "prices", field: "trade_date_close"}
+            to:
+              bindingType: literal
+              value: null
+          knowledgeTime:
+            from:
+              bindingType: runtimeContext
+              contextField: "assertionTime"
+            closePolicy: closePreviousVersion
+          availabilityTime:
+            from:
+              bindingType: directField
+              source: {dataset: "prices", field: "publish_timestamp"}
 
-        provenanceMapping:
-          sourceIriTemplate: "https://moonweave.ai/source/bloomberg"
-          confidenceField: null  # Bloomberg is authoritative
-          publishedAtField: "publish_timestamp"
-          receivedAtSource: ingestionTimestamp
+        provenance:
+          sourceSystem:
+            bindingType: literal
+            value: "Bloomberg BPIPE"
+          acquisitionTime:
+            bindingType: runtimeContext
+            contextField: "referenceTime"
 
         validationRules:
           - id: isinRequired
@@ -902,84 +1246,159 @@ DataBinding:
             failureAction: reject
             severity: error
 
-    HoldingMapping:
+    HoldingMappingWithJoin:
       semanticMapping:
-        iri: "fin:mapping:PortfolioHolding"
-        label: "Portfolio Holding Mapping"
-        sourceDataset: "datasource:internal/portfolio_positions"
-        targetType: "fin:Holding"  # AssociationTypeDefinition
-        mappingType: directTable
+        iri: "fin:mapping:PortfolioHoldingJoined"
+        label: "Portfolio Holding with Account Details (Multi-Table Join)"
 
-        fieldMappings:
-          - sourceField: "account_id"
-            target:
+        source:
+          datasets:
+            - {dataset: "datasource:internal/portfolio_positions", alias: "pos"}
+            - {dataset: "datasource:internal/accounts", alias: "acc"}
+          rowSet:
+            joins:
+              - leftDataset: "pos"
+                rightDataset: "acc"
+                joinType: inner
+                conditions:
+                  - {leftField: "account_id", operator: "=", rightField: "account_id"}
+
+        targetType: "fin:Holding"
+        mappingType: joinedTables
+
+        slotMappings:
+          - target:
               slotType: participantRole
               targetAssociation: "fin:Holding"
               targetRole: "account"
-            transformation: lookup
+            value:
+              bindingType: transformation
+              transformationRef: "data:LookupAccountByID#v1.0.0"
+              inputs:
+                accountId:
+                  bindingType: directField
+                  source: {dataset: "pos", field: "account_id"}
 
-          - sourceField: "isin"
-            target:
+          - target:
               slotType: participantRole
               targetAssociation: "fin:Holding"
               targetRole: "instrument"
-            transformation: lookup
+            value:
+              bindingType: transformation
+              transformationRef: "data:LookupInstrumentByISIN#v1.0.0"
+              inputs:
+                isin:
+                  bindingType: directField
+                  source: {dataset: "pos", field: "isin"}
 
-          - sourceField: "quantity"
-            target:
+          - target:
               slotType: attribute
               targetAttribute: "fin:quantity"
-            transformation: direct
+            value:
+              bindingType: directField
+              source: {dataset: "pos", field: "quantity"}
 
-          - sourceField: "avg_cost"
-            target:
+          - target:
               slotType: attribute
               targetAttribute: "fin:costBasis"
-            transformation: function
-            transformationExpression: "create_money(avg_cost, account_currency)"
+            value:
+              bindingType: transformation
+              transformationRef: "data:CreateMoney#v2.1.0"
+              inputs:
+                amount:
+                  bindingType: directField
+                  source: {dataset: "pos", field: "avg_cost"}
+                currency:
+                  bindingType: directField
+                  source: {dataset: "acc", field: "base_currency"}
 
-        identityMapping:
-          strategy: compositeKey
-          keyFields: ["account_id", "isin", "effective_date"]
-          uriTemplate: "https://moonweave.ai/holding/{account_id}/{isin}/{effective_date}"
+        identity:
+          logicalKey:
+            - {dataset: "pos", field: "account_id"}
+            - {dataset: "pos", field: "isin"}
+          versionKey:
+            - {dataset: "pos", field: "effective_date"}
+          iriTemplate: "https://moonweave.ai/holding/{account_id}/{isin}"
 
-        temporalMapping:
-          pattern: TemporalFact
-          validFromField: "effective_date"
-          validToField: "expiration_date"
-          recordedAtField: "updated_at"
+        temporal:
+          patternRef: "ax-pattern:TemporalFact"
+          validTime:
+            from:
+              bindingType: directField
+              source: {dataset: "pos", field: "effective_date"}
+            to:
+              bindingType: directField
+              source: {dataset: "pos", field: "expiration_date"}
+          knowledgeTime:
+            from:
+              bindingType: directField
+              source: {dataset: "pos", field: "updated_at"}
+            closePolicy: explicitOnly
+          availabilityTime:
+            from:
+              bindingType: directField
+              source: {dataset: "pos", field: "updated_at"}
 
-  # ==================== Validation Rules ====================
+  # ==================== Validation Rules (ADR-011/012 Compliant) ====================
   ValidationRules:
+    - "SemanticMappingDefinition.source must be SourceBinding (not sourceDataset uri)"
+    - "SemanticMappingDefinition.slotMappings (not fieldMappings) required for attribute mapping"
     - "SemanticMappingDefinition must reference valid DatasetDefinition and ObjectTypeDefinition/AssociationTypeDefinition"
-    - "FieldMapping.target must be a valid TargetSlot variant (attribute, participantRole, relation, patternField)"
+    - "SlotMapping.target must be valid TargetSlot variant (attribute, participantRole, relation, patternField)"
+    - "SlotMapping.value must be valid ValueBinding variant (directField, transformation, literal, runtimeContext)"
     - "TargetSlot.targetAttribute must reference valid AttributeTypeDefinition from Layer 1"
     - "TargetSlot.targetAssociation must reference valid AssociationTypeDefinition from Layer 1"
-    - "TargetSlot.targetRole must match a ParticipantRole.id in the referenced AssociationTypeDefinition"
+    - "TargetSlot.targetRole must match ParticipantRole.id in referenced AssociationTypeDefinition"
     - "TargetSlot.targetRelation must reference valid RelationTypeDefinition from Layer 1"
     - "TargetSlot.targetPattern must reference valid PatternDefinition from Layer 2"
-    - "IdentityMappingSpec.syntheticKey must use deterministic UUID generation for reproducibility"
-    - "IdentityMappingSpec.uriTemplate must produce stable, reproducible IRIs"
-    - "TemporalMappingSpec.pattern must reference valid pattern from Layer 2"
-    - "TransformationExpression must declare language, input fields, output type, version, and test cases"
-    - "Multiple FieldMappings targeting same attribute must have conflict resolution strategy"
-    - "MaterializationPlanDefinition.semanticMappings must all target the same OntologyModuleDefinition"
+    - "IdentitySpec.logicalKey must use FieldReference with dataset alias from SourceBinding"
+    - "IdentitySpec.iriTemplate must produce stable, reproducible IRIs"
+    - "TemporalMappingSpec must use TimeAxisBinding (not recordedAtSource: currentTimestamp)"
+    - "TemporalMappingSpec.patternRef must reference valid temporal pattern from Layer 2"
+    - "TimeAxisBinding.from and TimeAxisBinding.to must use ValueBinding (no CURRENT_TIMESTAMP)"
+    - "RuntimeContextBinding.contextField must reference valid MaterializationRun field (assertionTime, referenceTime, runId)"
+    - "TransformationDefinition.version required (semantic versioning)"
+    - "TransformationDefinition.implementationDigest required (SHA-256)"
+    - "TransformationDefinition.inputs required (map[string, TypeReference])"
+    - "TransformationDefinition.outputs required (TypeReference)"
+    - "TransformationDefinition.testCases required with minCount >= 1"
+    - "TransformationBinding.inputs keys must match TransformationDefinition.inputs keys"
+    - "MaterializationPlanDefinition.semanticMappings must all target same OntologyModuleDefinition"
+    - "MaterializationPlanDefinition must NOT contain watermark field (moved to MaterializationRun)"
+    - "MaterializationRun.assertionTime and referenceTime required for reproducible queries"
+    - "MaterializationRun.inputSnapshotDigest required for reproducibility"
+    - "Field.semanticMapping PROHIBITED (deleted in v0.5)"
+    - "SemanticFieldMapping type PROHIBITED (deleted in v0.5)"
+    - "TransformationReference type PROHIBITED (deleted in v0.5)"
+    - "FieldMapping type PROHIBITED (replaced by SlotMapping in v0.5)"
+    - "SemanticMappingDefinition.sourceDataset PROHIBITED (replaced by source: SourceBinding in v0.5)"
+    - "SemanticMappingDefinition.fieldMappings PROHIBITED (renamed to slotMappings in v0.5)"
+    - "TemporalMappingSpec.recordedAtSource: currentTimestamp PROHIBITED per ADR-012"
+    - "Multiple SlotMappings targeting same attribute must have conflict resolution strategy in plan"
     - "IngestionPipelineDefinition is deprecated; use MaterializationPlanDefinition + external orchestration"
     - "TemporalMapping field references must exist in source dataset schema"
-    - "IdentityMapping must produce globally unique IRIs"
     - "Multiple SemanticMappings for same targetType must have non-overlapping filters or priority"
     - "Transformation artifacts must be version-controlled and reproducible"
     - "DataSource credentials must never be stored in mapping definitions (use credentialsRef)"
-    - "Ingestion pipelines must emit audit events for Layer 2 Provenance tracking"
+    - "Materialization must emit audit events for Layer 2 Provenance tracking"
 
   # ==================== Implementation Notes ====================
   ImplementationNotes:
+    - "ADR-011: SemanticMappingDefinition is the ONLY truth source for semantic mappings"
+    - "ADR-011: Field-level mappings (Field.semanticMapping) deleted - violated single truth source"
+    - "ADR-011: SourceBinding enables multi-table joins, filters, aggregations"
+    - "ADR-011: Static definitions (plans) separated from runtime state (runs)"
+    - "ADR-012: Three-axis temporal model (valid/knowledge/availability) with explicit bindings"
+    - "ADR-012: No CURRENT_TIMESTAMP - use MaterializationRun.assertionTime or referenceTime"
+    - "ADR-012: MaterializationRun provides immutable time context for reproducible queries"
     - "Layer 4 is the ONLY layer that references physical data structures"
     - "Layers 1-3 remain independent of data storage choices"
     - "SemanticMappingDefinition enables multiple physical representations of same concept"
-    - "IdentityMapping ensures stable IRIs across ingestion runs"
-    - "TemporalMapping ensures Point-in-Time correctness (Qlib requirement)"
+    - "IdentitySpec ensures stable IRIs across materialization runs"
+    - "TemporalMappingSpec ensures Point-in-Time query correctness"
     - "ValidationRules enforce data quality before materializing ontology instances"
     - "DataLineage enables impact analysis and debugging"
-    - "Transformation code should be testable, version-controlled, and have rollback capability"
-    - "Future: integrate with dbt, Airflow, Dagster for pipeline orchestration"
+    - "Transformation code must be testable, version-controlled, with rollback capability"
+    - "All transformations require explicit version, digest, inputs, outputs, and test cases"
+    - "ValueBinding union type supports direct fields, transformations, literals, and runtime context"
+    - "SlotMapping replaces FieldMapping to support attributes, roles, relations, and pattern fields"
