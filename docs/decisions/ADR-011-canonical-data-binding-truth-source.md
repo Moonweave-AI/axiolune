@@ -1,7 +1,11 @@
 # ADR-011: Canonical Data Binding Truth Source
 
 ## Status
-**Draft** | 2026-07-29
+**Accepted** | 2026-07-29
+
+Implementation: data-binding-meta-model v0.5.0  
+Validation: All 10 acceptance criteria pass  
+Digest: sha256:f16924434185d5074c5c3a2327c0092618fed619469997ed87b98a17a9ff611e
 
 ## Context
 
