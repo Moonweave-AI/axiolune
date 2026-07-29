@@ -94,19 +94,26 @@ async function validate(data, label) {
 
   // ---- Per-pattern TemporalFactShape enforcement (Tier 1) ----
   console.log('\n=== Per-pattern shape enforcement (TemporalFact) ===');
-  // good: a TemporalFact instance WITH validFrom + knowledgeFrom
+  // good: a TemporalFact instance WITH validFrom + knowledgeFrom + availableFrom (all 3 axes required, fail-closed)
   const tfGood = dataGraph({
     validFrom: ['2026-07-29T09:30:00Z', 'dateTime'], knowledgeFrom: ['2026-07-29T09:30:00Z', 'dateTime'],
+    availableFrom: ['2026-07-29T09:35:00Z', 'dateTime'],
   }, 'TemporalFact');
   const rtg = await validate(tfGood, 'tf-good');
-  if (rtg.conforms) ok('TemporalFact with validFrom+knowledgeFrom conforms');
+  if (rtg.conforms) ok('TemporalFact with validFrom+knowledgeFrom+availableFrom conforms');
   else bad(`TemporalFact good should conform; violations on: ${rtg.paths.join(', ')}`);
 
   // bad: a TemporalFact instance MISSING validFrom (TemporalFactShape requires minCount 1)
-  const tfBad = dataGraph({ knowledgeFrom: ['2026-07-29T09:30:00Z', 'dateTime'] }, 'TemporalFact');
+  const tfBad = dataGraph({ knowledgeFrom: ['2026-07-29T09:30:00Z', 'dateTime'], availableFrom: ['2026-07-29T09:35:00Z', 'dateTime'] }, 'TemporalFact');
   const rtb = await validate(tfBad, 'tf-bad-missing-validFrom');
   if (!rtb.conforms && rtb.paths.some(p => p.includes('validFrom'))) ok('TemporalFact missing validFrom correctly rejected (TemporalFactShape requires validFrom)');
   else bad(`TemporalFact missing validFrom should be rejected on validFrom; conforms=${rtb.conforms} paths=${rtb.paths.join(',')}`);
+
+  // bad: a TemporalFact instance MISSING availableFrom (fail-closed: minCount 1 after review fix)
+  const tfBadAvail = dataGraph({ validFrom: ['2026-07-29T09:30:00Z', 'dateTime'], knowledgeFrom: ['2026-07-29T09:30:00Z', 'dateTime'] }, 'TemporalFact');
+  const rtba = await validate(tfBadAvail, 'tf-bad-missing-availableFrom');
+  if (!rtba.conforms && rtba.paths.some(p => p.includes('availableFrom'))) ok('TemporalFact missing availableFrom correctly rejected (fail-closed PIT)');
+  else bad(`TemporalFact missing availableFrom should be rejected (fail-closed); conforms=${rtba.conforms} paths=${rtba.paths.join(',')}`);
 
   console.log('\n' + '='.repeat(60));
   if (fail === 0) { console.log(`✅ PROJECTION VERIFIED (${pass} assertions)`); process.exit(0); }

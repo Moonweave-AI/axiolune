@@ -13,9 +13,9 @@ module:
       version: "0.4.0"
       artifactDigest: "sha256:df6c5aa670df2d1bc5444c283132d3142a54a44fe97a88b6a70220e8731e8821"
       importMode: All
-    - moduleIri: "https://axiolune.ai/ontology/meta/patterns#sha256:c03298a22caa07942caca8d0cafadec3c087ff64c8d92b4737fd0b26f213d40d"
+    - moduleIri: "https://axiolune.ai/ontology/meta/patterns#sha256:7c06c28d73f1f989470bf995efc66ed3e50d91913068e35e3e464ccd41e0d411"
       version: "0.4.0"
-      artifactDigest: "sha256:c03298a22caa07942caca8d0cafadec3c087ff64c8d92b4737fd0b26f213d40d"
+      artifactDigest: "sha256:7c06c28d73f1f989470bf995efc66ed3e50d91913068e35e3e464ccd41e0d411"
       importMode: All
   exports: []
 
@@ -160,7 +160,9 @@ PlatformBehavior:
         targetType: "fin:Instrument"
         parameters:
           - {name: instrument, type: "fin:Instrument", required: true}
-          - {name: asOf, type: instant, required: true}
+          - {name: asOfKnowledge, type: instant, required: true, description: "knowledge-time pivot; explicit (ADR-012)"}
+          - {name: asOfValid, type: instant, required: true, description: "valid-time pivot; explicit (ADR-012)"}
+          - {name: asOfAvailable, type: instant, required: true, description: "availability-time pivot; explicit, prevents look-ahead bias (ADR-012)"}
           - {name: market, type: "fin:Market", required: false}
         returnType: "fin:MoneyTypeDefinition"
         returnCardinality: optional
@@ -259,7 +261,9 @@ PlatformBehavior:
         iri: "fin:function:ComputePortfolioValue"
         parameters:
           - {name: holdings, type: "list[fin:Holding]", required: true}
-          - {name: asOf, type: instant, required: true}
+          - {name: asOfKnowledge, type: instant, required: true, description: "knowledge-time pivot (ADR-012)"}
+          - {name: asOfValid, type: instant, required: true, description: "valid-time pivot (ADR-012)"}
+          - {name: asOfAvailable, type: instant, required: true, description: "availability-time pivot (ADR-012)"}
         returnType: "fin:MoneyTypeDefinition"
         purity: observationallyPure
         note: "May cache price lookups but output depends only on inputs"
@@ -848,7 +852,7 @@ PlatformBehavior:
 
   # ==================== Implementation Notes ====================
   ImplementationNotes:
-    - "QueryTypeDefinition implements Layer 2 temporal queries (asOf, validAt, asOfValidAt)"
+    - "QueryTypeDefinition implements Layer 2 temporal queries via three-axis PIT (asOfKnowledge, asOfValid, asOfAvailable per ADR-012)"
     - "ActionTypeDefinition preconditions can reference Layer 2 Lifecycle state machines"
     - "ActionTypeDefinition audit events stored with Layer 2 Provenance and Evidence patterns"
     - "PolicyType enforcement hooks into ActionTypeDefinition execution pipeline"

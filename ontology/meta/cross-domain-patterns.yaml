@@ -21,6 +21,11 @@ CrossDomainPatterns:
   description: "Reusable patterns for identity, time, provenance, evidence, and lifecycle that apply across domain objects"
   layer: 2
   changes:
+    - "v0.4.0: All 10 constraints migrated to ConstraintDefinition grammar (expression structure, scope, capitalized enums)"
+    - "v0.4.0: NoFutureKnowledge severity raised to Error (production-blocking)"
+    - "v0.4.0: AvailabilityBeforeUse made fail-closed (availableFrom required, OR NULL escape removed)"
+    - "v0.4.0: Added AvailabilityIntervalConsistency constraint (availableFrom <= availableTo)"
+    - "v0.4.0: TemporalFact availableFrom injection minCount raised to 1 (fail-closed for PIT)"
     - "v0.4.0: NoFutureKnowledge uses $referenceTime instead of CURRENT_TIMESTAMP (ADR-012 reproducibility)"
     - "v0.4.0: Added AvailabilityBeforeUse constraint (ADR-012)"
     - "v0.4.0: TemporalFact injects availableFrom/availableTo (three-axis availability, ADR-012)"
@@ -221,16 +226,26 @@ CrossDomainPatterns:
   # Added to complete constraint closure (P0-2 fix)
 
   constraints:
+    # All constraints conform to ConstraintDefinition (core Layer 1):
+    #   required: iri, namespace, localName, label, definition, constraintType,
+    #             scope, expression {language, expression}, severity, message
+    #   pattern-extension: targetElement (the attribute this constraint validates)
+    #   runtime-parameterized: $referenceTime / $queryTime bound by PIT validator
+    #     (not static SHACL; enforced by the PIT validator per ADR-012)
+
     PublishBeforeReceive:
       iri: "https://axiolune.ai/ontology/meta/patterns/constraints/PublishBeforeReceive"
       namespace: "pattern"
       localName: "PublishBeforeReceive"
       label: "Publish Before Receive Constraint"
       definition: "validation rule ensuring that the publication timestamp of information does not occur after its reception timestamp"
-      constraintType: "validation"
-      formalExpression: 'publishedAt <= receivedAt OR receivedAt IS NULL'
+      constraintType: "Logical"
+      scope: "Attribute"
+      expression:
+        language: "Custom"
+        expression: 'publishedAt <= receivedAt OR receivedAt IS NULL'
       targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/publishedAt"
-      severity: "error"
+      severity: "Error"
       message: "Publication time must not be after reception time"
       note: "Allows null receivedAt for unpublished drafts; enforces causal consistency"
 
@@ -240,10 +255,13 @@ CrossDomainPatterns:
       localName: "ValidIntervalConsistency"
       label: "Valid Interval Consistency Constraint"
       definition: "validation rule ensuring that the start of a business validity interval does not occur after its end"
-      constraintType: "validation"
-      formalExpression: 'validFrom <= validTo OR validTo IS NULL'
+      constraintType: "Logical"
+      scope: "Attribute"
+      expression:
+        language: "Custom"
+        expression: 'validFrom <= validTo OR validTo IS NULL'
       targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/validFrom"
-      severity: "error"
+      severity: "Error"
       message: "Valid interval start must not be after end"
       note: "Allows open-ended intervals (null validTo); enforces temporal coherence"
 
@@ -253,10 +271,13 @@ CrossDomainPatterns:
       localName: "KnowledgeIntervalConsistency"
       label: "Knowledge Interval Consistency Constraint"
       definition: "validation rule ensuring that the start of a knowledge time interval does not occur after its end"
-      constraintType: "validation"
-      formalExpression: 'knowledgeFrom <= knowledgeTo OR knowledgeTo IS NULL'
+      constraintType: "Logical"
+      scope: "Attribute"
+      expression:
+        language: "Custom"
+        expression: 'knowledgeFrom <= knowledgeTo OR knowledgeTo IS NULL'
       targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom"
-      severity: "error"
+      severity: "Error"
       message: "Knowledge interval start must not be after end"
       note: "Allows open-ended knowledge (null knowledgeTo); critical for bi-temporal queries"
 
@@ -266,12 +287,20 @@ CrossDomainPatterns:
       localName: "NoFutureKnowledge"
       label: "No Future Knowledge Constraint"
       definition: "validation rule ensuring that knowledge acquisition time does not occur in the future relative to the immutable reference time of the materialization run"
-      constraintType: "validation"
-      formalExpression: 'knowledgeFrom <= $referenceTime'
+      constraintType: "Logical"
+      scope: "Attribute"
+      expression:
+        language: "Custom"
+        expression: 'knowledgeFrom <= $referenceTime'
+      parameters:
+        - name: referenceTime
+          type: instant
+          required: true
+          description: "immutable reference time from MaterializationRun (ADR-012); bound by PIT validator, not static SHACL"
       targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom"
-      severity: "warning"
+      severity: "Error"
       message: "Knowledge time must not be in the future relative to the run reference time"
-      note: "Reproducible (ADR-012): $referenceTime is bound to MaterializationRun.referenceTime, an immutable value captured at run start. Replaces the prior CURRENT_TIMESTAMP form which made historical replay non-deterministic."
+      note: "Reproducible (ADR-012): $referenceTime is bound to MaterializationRun.referenceTime, an immutable value captured at run start. Severity is Error (production-blocking) for financial PIT integrity. Enforced by the PIT validator, not static SHACL."
 
     ObservationBeforeRecording:
       iri: "https://axiolune.ai/ontology/meta/patterns/constraints/ObservationBeforeRecording"
@@ -279,10 +308,13 @@ CrossDomainPatterns:
       localName: "ObservationBeforeRecording"
       label: "Observation Before Recording Constraint"
       definition: "validation rule ensuring that the observation timestamp does not occur after the recording timestamp"
-      constraintType: "validation"
-      formalExpression: 'observedAt <= recordedAt'
+      constraintType: "Logical"
+      scope: "Attribute"
+      expression:
+        language: "Custom"
+        expression: 'observedAt <= recordedAt'
       targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/observedAt"
-      severity: "error"
+      severity: "Error"
       message: "Observation time must not be after recording time"
       note: "Used by TemporalObservation pattern; enforces causal ordering"
 
@@ -292,10 +324,13 @@ CrossDomainPatterns:
       localName: "ConfidenceRange"
       label: "Confidence Range Constraint"
       definition: "validation rule ensuring that confidence values are bounded within the closed interval from zero to one"
-      constraintType: "validation"
-      formalExpression: 'confidence >= 0.0 AND confidence <= 1.0'
+      constraintType: "ValueRange"
+      scope: "Attribute"
+      expression:
+        language: "Custom"
+        expression: 'confidence >= 0.0 AND confidence <= 1.0'
       targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/confidence"
-      severity: "error"
+      severity: "Error"
       message: "Confidence must be between 0.0 and 1.0 inclusive"
       note: "Enforces probability interpretation; 0.0 = no confidence, 1.0 = certainty"
 
@@ -305,10 +340,13 @@ CrossDomainPatterns:
       localName: "DigestFormat"
       label: "Digest Format Constraint"
       definition: "validation rule ensuring that cryptographic digest values conform to the canonical format of algorithm prefix followed by colon and hexadecimal hash"
-      constraintType: "validation"
-      formalExpression: '^(sha256|sha512|blake3):[a-f0-9]{64,128}$'
+      constraintType: "Pattern"
+      scope: "Attribute"
+      expression:
+        language: "Regex"
+        expression: '^(sha256|sha512|blake3):[a-f0-9]{64,128}$'
       targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/evidenceDigest"
-      severity: "error"
+      severity: "Error"
       message: "Digest must be in format algorithm:hexdigest (e.g., sha256:abc123...)"
       note: "Supports sha256 (64 hex), sha512 (128 hex), blake3 (64 hex); ensures integrity verification"
 
@@ -318,10 +356,13 @@ CrossDomainPatterns:
       localName: "SemanticVersionFormat"
       label: "Semantic Version Format Constraint"
       definition: "validation rule ensuring that semantic version strings conform to the MAJOR.MINOR.PATCH specification"
-      constraintType: "validation"
-      formalExpression: '^\\d+\\.\\d+\\.\\d+$'
+      constraintType: "Pattern"
+      scope: "Attribute"
+      expression:
+        language: "Regex"
+        expression: '^\\d+\\.\\d+\\.\\d+$'
       targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/semanticVersion"
-      severity: "error"
+      severity: "Error"
       message: "Semantic version must be in format MAJOR.MINOR.PATCH (e.g., 1.2.3)"
       note: "Follows SemVer 2.0.0 specification; pre-release and build metadata not currently supported"
 
@@ -330,13 +371,37 @@ CrossDomainPatterns:
       namespace: "pattern"
       localName: "AvailabilityBeforeUse"
       label: "Availability Before Use Constraint"
-      definition: "validation rule ensuring that a fact is not consumed before the beginning of its availability period, preventing look-ahead bias in backtesting and enforcing data-licensing compliance"
-      constraintType: "validation"
-      formalExpression: '$queryTime >= availableFrom OR availableFrom IS NULL'
+      definition: "fail-closed validation rule ensuring that a fact is not consumed before the beginning of its availability period, preventing look-ahead bias in backtesting and enforcing data-licensing compliance"
+      constraintType: "Logical"
+      scope: "Attribute"
+      expression:
+        language: "Custom"
+        expression: '$queryTime >= availableFrom'
+      parameters:
+        - name: queryTime
+          type: instant
+          required: true
+          description: "explicit asOfAvailable query parameter (ADR-012); bound by PIT validator, not static SHACL"
       targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom"
-      severity: "error"
+      severity: "Error"
       message: "Cannot query data before its availability period begins"
-      note: "Required by ADR-012. $queryTime is the asOfAvailable query parameter supplied explicitly by the caller; implicit 'now' default is forbidden for compliance and audit use cases."
+      note: "Fail-closed (ADR-012): availableFrom MUST be present for PIT consumption — the OR availableFrom IS NULL escape was removed. If availableFrom is missing the fact is NOT consumable in a PIT context. $queryTime is the explicit asOfAvailable parameter; implicit 'now' is forbidden."
+
+    AvailabilityIntervalConsistency:
+      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/AvailabilityIntervalConsistency"
+      namespace: "pattern"
+      localName: "AvailabilityIntervalConsistency"
+      label: "Availability Interval Consistency Constraint"
+      definition: "validation rule ensuring that the start of an availability interval does not occur after its end"
+      constraintType: "Logical"
+      scope: "Attribute"
+      expression:
+        language: "Custom"
+        expression: 'availableFrom <= availableTo OR availableTo IS NULL'
+      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom"
+      severity: "Error"
+      message: "Availability interval start must not be after end"
+      note: "Allows open-ended availability (null availableTo = available indefinitely once availableFrom is reached)"
 
 
   patterns:
@@ -437,10 +502,10 @@ CrossDomainPatterns:
 
         # Availability Time (when consumers may legally use this data)
         - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom"
-          minCount: 0
+          minCount: 1
           maxCount: 1
           label: "Available From"
-          description: "beginning of the availability period during which this data may be consumed (delays, authorization, embargo)"
+          description: "beginning of the availability period during which this data may be consumed (delays, authorization, embargo). Required (fail-closed) for TemporalFact — a fact without an availability start is NOT consumable in PIT contexts."
 
         - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/availableTo"
           minCount: 0
@@ -453,27 +518,18 @@ CrossDomainPatterns:
       constraintsAdded:
         - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/ValidIntervalConsistency"
           targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/validFrom"
-          parameters:
-            rule: "validFrom < validTo OR validTo IS NULL"
-            message: "Business time interval must be valid (start before end)"
 
         - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/KnowledgeIntervalConsistency"
           targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom"
-          parameters:
-            rule: "knowledgeFrom < knowledgeTo OR knowledgeTo IS NULL"
-            message: "Knowledge time interval must be valid"
 
         - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/NoFutureKnowledge"
           targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom"
-          parameters:
-            rule: "knowledgeFrom <= $referenceTime"
-            message: "Cannot record knowledge from the future relative to the run reference time"
 
         - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/AvailabilityBeforeUse"
           targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom"
-          parameters:
-            rule: "$queryTime >= availableFrom OR availableFrom IS NULL"
-            message: "Cannot consume data before its availability period begins"
+
+        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/AvailabilityIntervalConsistency"
+          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom"
 
       owlProjection:
         kind: mixin
@@ -788,6 +844,8 @@ CrossDomainPatterns:
     - "Injected attributes must not conflict with type's own attributes (same IRI)"
     - "Pattern parameters must be provided if required=true"
     - "Pattern composition must respect applicability constraints"
+    - "All pattern constraints MUST conform to ConstraintDefinition grammar (core Layer 1): required fields iri/namespace/localName/label/definition/constraintType/scope/expression/severity/message, where expression is structured {language, expression}"
+    - "Runtime-parameterized constraints (NoFutureKnowledge: $referenceTime, AvailabilityBeforeUse: $queryTime) are enforced by the dedicated PIT validator with MaterializationRun as explicit input (ADR-012); the SHACL sh:ConstraintComponent definitions serve as declarative specifications only — static SHACL shapes cannot bind runtime parameters"
 
   # ==================== Notes ====================
   Notes:

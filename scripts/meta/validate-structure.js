@@ -89,8 +89,10 @@ function scanIris(obj, loc) {
 }
 
 const OWL_OVERRIDE = ['datatypeProperty', 'objectProperty', 'annotationProperty'];
-const CONSTRAINT_TYPES = ['Cardinality', 'ValueRange', 'Pattern', 'Custom', 'Logical', 'Uniqueness', 'Dependency', 'validation'];
-const SEVERITIES = ['Error', 'Warning', 'Info', 'error', 'warning', 'info'];
+const CONSTRAINT_TYPES = ['Cardinality', 'ValueRange', 'Pattern', 'Custom', 'Logical', 'Uniqueness', 'Dependency'];
+const SEVERITIES = ['Error', 'Warning', 'Info'];
+const CONSTRAINT_SCOPES = ['Attribute', 'Relation', 'Object', 'Association', 'Pattern', 'Module'];
+const EXPR_LANGUAGES = ['SHACL', 'SPARQL', 'JSONSchema', 'Regex', 'Custom'];
 
 function validateAttributeInstance(name, v, loc) {
   for (const f of ['iri', 'namespace', 'localName', 'label', 'definition', 'valueType']) {
@@ -100,11 +102,20 @@ function validateAttributeInstance(name, v, loc) {
 }
 
 function validateConstraintDef(name, v, loc) {
-  for (const f of ['iri', 'namespace', 'localName', 'label', 'definition', 'constraintType', 'formalExpression', 'targetElement', 'severity', 'message']) {
+  for (const f of ['iri', 'namespace', 'localName', 'label', 'definition', 'constraintType', 'scope', 'expression', 'targetElement', 'severity', 'message']) {
     if (v[f] === undefined || v[f] === null || v[f] === '') err(`${loc}`, `constraint missing \`${f}\``);
   }
   if (v.constraintType && !CONSTRAINT_TYPES.includes(v.constraintType)) err(`${loc}.constraintType`, `bad enum: ${v.constraintType}`);
+  if (v.scope && !CONSTRAINT_SCOPES.includes(v.scope)) err(`${loc}.scope`, `bad enum: ${v.scope}`);
   if (v.severity && !SEVERITIES.includes(v.severity)) err(`${loc}.severity`, `bad enum: ${v.severity}`);
+  // expression must be structured { language, expression } per ConstraintDefinition (core Layer 1)
+  if (v.expression && typeof v.expression === 'object') {
+    if (!v.expression.language) err(`${loc}.expression.language`, 'missing language');
+    else if (!EXPR_LANGUAGES.includes(v.expression.language)) err(`${loc}.expression.language`, `bad enum: ${v.expression.language}`);
+    if (!v.expression.expression) err(`${loc}.expression.expression`, 'missing expression string');
+  } else if (v.expression !== undefined) {
+    err(`${loc}.expression`, 'must be structured { language, expression }');
+  }
 }
 
 function validatePattern(p, i, loc) {
