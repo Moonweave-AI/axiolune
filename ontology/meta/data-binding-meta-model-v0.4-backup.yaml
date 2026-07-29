@@ -1,0 +1,985 @@
+# Axiolune Ontology Meta-Model - Layer 4: Data Binding
+# Version: 0.4.0
+# Date: 2026-07-28
+# Governance: Follows ADR-001, ADR-003, ADR-004, ADR-007 architecture decisions
+
+module:
+  moduleIri: "https://axiolune.ai/ontology/meta/data-binding"
+  baseIri: "https://axiolune.ai/ontology/meta/data-binding/"
+  preferredPrefix: "ax-binding"
+  version: "0.4.0"
+  imports:
+    - moduleIri: "https://axiolune.ai/ontology/meta/core#sha256:6a3861b3861fc2301deddd55965f23030f9fae653755c0568fa1ea2f4d634592"
+      version: "0.3.0"
+      artifactDigest: "sha256:6a3861b3861fc2301deddd55965f23030f9fae653755c0568fa1ea2f4d634592"
+      importMode: All
+    - moduleIri: "https://axiolune.ai/ontology/meta/patterns#sha256:654ecf0d6e55e5a2437da1e8cf1e6732bb19c34cecac470a9c32c357a63c7796"
+      version: "0.3.0"
+      artifactDigest: "sha256:654ecf0d6e55e5a2437da1e8cf1e6732bb19c34cecac470a9c32c357a63c7796"
+      importMode: All
+    - moduleIri: "https://axiolune.ai/ontology/meta/behavior#sha256:93e690b6261a52fd42627178114edb94cb7f80f372539f6eed6258233b2d2962"
+      version: "0.4.0"
+      artifactDigest: "sha256:93e690b6261a52fd42627178114edb94cb7f80f372539f6eed6258233b2d2962"
+      importMode: All
+  exports: []
+
+DataBinding:
+  version: "0.4.0"
+  description: "Meta-model for mapping physical data sources (tables, files, APIs) to ontology concepts"
+  layer: 4
+  changes:
+    - "v0.4.0: Removed Dataset.semanticMappings (ADR-007), Field.semanticMapping now sole truth source"
+    - "v0.4.0: Added TransformationDefinition with typed references (ADR-007)"
+    - "v0.4.0: Removed standalone FieldMappingDefinition (ADR-007)"
+    - "v0.3.0: Global rename to *Definition suffix (ADR-004)"
+    - "v0.3.0: Updated module system with version-locked imports"
+    - "v0.3.0: Introduced TargetSlot union type for Association mapping (ADR-003)"
+    - "v0.3.0: Created MaterializationPlanDefinition, deprecated IngestionPipelineDefinition"
+
+  note: |
+    Layer 4 maps PHYSICAL data artifacts to SEMANTIC ontology concepts without polluting
+    the conceptual layer. A single ObjectTypeDefinition may map to multiple tables; a single table
+    may map to multiple ObjectTypes.
+
+  # ==================== Data Source ====================
+  DataSource:
+    definition: "a meta-classifier for external or internal data providers with connection and authentication metadata"
+    purpose: "Defines where data originates and how to access it"
+
+    requiredFields:
+      iri: {type: uri, unique: true}
+      namespace: {type: string, required: true}
+      localName: {type: string, required: true}
+      label: {type: string, required: true}
+
+      definition:
+        type: string
+        required: true
+        example: "Bloomberg market data feed providing real-time and historical price information"
+
+      sourceType:
+        type: enum
+        required: true
+        values:
+          - relationalDatabase
+          - documentDatabase
+          - timeSeriesDatabase
+          - objectStorage
+          - fileSystem
+          - restAPI
+          - graphQL
+          - grpc
+          - streamingKafka
+          - streamingKinesis
+          - dataWarehouse
+
+      connection:
+        type: ConnectionSpec
+        description: "connection parameters (sensitive fields should reference secrets manager)"
+
+    optionalFields:
+      vendor:
+        type: string
+        example: "Bloomberg L.P."
+
+      version:
+        type: string
+        example: "BPIPE v3.14"
+
+      updateFrequency:
+        type: enum
+        values: [realtime, intraday, daily, weekly, monthly, onDemand, static]
+
+      latency:
+        typical: {type: duration, example: "PT0.5S"}
+        maximum: {type: duration, example: "PT2S"}
+
+      reliability:
+        sla: {type: decimal, description: "uptime SLA as decimal", example: 0.999}
+        historicalUptime: {type: decimal}
+
+      costModel:
+        type: string
+        description: "pricing structure"
+        example: "per-query with 10k free tier"
+
+      dataGovernance:
+        owner: {type: string}
+        classification: {type: enum, values: [public, internal, confidential, restricted]}
+        retentionPolicy: {type: uri, description: "PolicyType reference"}
+        privacyRegime: {type: "list[enum]", values: [GDPR, CCPA, SOX, MiFID]}
+
+      provenance:
+        type: "Layer2:ProvenancedFact"
+        description: "source metadata binding"
+
+    structures:
+      ConnectionSpec:
+        host: {type: string}
+        port: {type: integer}
+        database: {type: string}
+        schema: {type: string}
+        credentialsRef: {type: string, description: "reference to secrets manager entry"}
+        ssl: {type: boolean, default: true}
+        connectionPoolSize: {type: integer, default: 10}
+        timeout: {type: duration, default: "PT30S"}
+
+  # ==================== DatasetDefinition ====================
+  DatasetDefinition:
+    definition: "a meta-classifier for logical collections of data within a data source"
+    purpose: "Represents tables, collections, topics, or files that contain entity data"
+
+    requiredFields:
+      iri: {type: uri, unique: true}
+      namespace: {type: string, required: true}
+      localName: {type: string, required: true}
+      label: {type: string, required: true}
+
+      definition:
+        type: string
+        required: true
+        example: "table containing daily end-of-day equity prices from all global exchanges"
+
+      dataSource:
+        type: uri
+        required: true
+        description: "reference to DataSource IRI"
+
+      physicalIdentifier:
+        type: string
+        required: true
+        description: "actual table name, file path, topic, or collection name"
+        example: "market_data.equity_prices_eod"
+
+    optionalFields:
+      schema:
+        type: DatasetSchema
+        description: "physical schema definition"
+
+      partitioning:
+        type: PartitioningSpec
+        description: "how dataset is partitioned (for performance and temporal queries)"
+
+      updatePattern:
+        type: enum
+        values: [append, upsert, snapshot, cdc, eventSourcing]
+        description: "how data is updated"
+
+      temporalCoverage:
+        startDate: {type: instant, description: "earliest available data"}
+        endDate: {type: instant, description: "latest available data; null=ongoing"}
+
+      volumetrics:
+        rowCount: {type: integer}
+        storageSize: {type: string, example: "1.2 TB"}
+        growthRate: {type: string, example: "50 GB/month"}
+
+      qualityMetrics:
+        completeness: {type: decimal, description: "fraction of non-null required fields"}
+        accuracy: {type: decimal, description: "measured accuracy vs reference data"}
+        timeliness: {type: duration, description: "typical lag from event to availability"}
+
+    structures:
+      DatasetSchema:
+        fields: {type: "list[FieldDefinition]"}
+        primaryKey: {type: "list[string]"}
+        indexes: {type: "list[IndexDefinition]"}
+
+      PartitioningSpec:
+        strategy: {type: enum, values: [range, hash, list, composite]}
+        partitionKeys: {type: "list[string]"}
+        example: {strategy: range, partitionKeys: ["trade_date"]}
+
+  # ==================== Field Definition ====================
+  FieldDefinition:
+    definition: "a meta-classifier for physical field definitions in dataset schemas"
+    purpose: "Defines the structure of fields in physical datasets"
+
+    requiredFields:
+      name:
+        type: string
+        required: true
+        description: "field name in the physical schema"
+
+      dataType:
+        type: string
+        required: true
+        description: "native data type in source system"
+        example: "VARCHAR(255), DECIMAL(18,4), TIMESTAMP"
+
+    optionalFields:
+      nullable:
+        type: boolean
+        default: true
+
+      primaryKey:
+        type: boolean
+        default: false
+
+      foreignKey:
+        type: ForeignKeyReference
+
+      defaultValue:
+        type: any
+
+      constraints:
+        type: "list[uri]"
+        description: "references to ConstraintDefinition IRIs"
+
+      description:
+        type: string
+
+    structures:
+      ForeignKeyReference:
+        targetDataset: {type: uri, required: true, description: "referenced DatasetDefinition IRI"}
+        targetField: {type: string, required: true}
+        onDelete: {type: enum, values: [cascade, setNull, restrict], default: restrict}
+        onUpdate: {type: enum, values: [cascade, setNull, restrict], default: restrict}
+
+  # ==================== Index Definition ====================
+  IndexDefinition:
+    definition: "a meta-classifier for physical index structures in datasets"
+    purpose: "Defines indexes for query performance optimization"
+
+    requiredFields:
+      name:
+        type: string
+        required: true
+        description: "index name"
+
+      fields:
+        type: "list[string]"
+        required: true
+        minCount: 1
+        description: "field names included in this index"
+
+    optionalFields:
+      unique:
+        type: boolean
+        default: false
+        description: "whether this is a unique index"
+
+      indexType:
+        type: enum
+        values: [BTree, Hash, GiST, GIN, BRIN]
+        default: BTree
+        description: "physical index structure type"
+
+      partial:
+        type: string
+        description: "partial index predicate expression"
+
+  # ==================== Field ====================
+  Field:
+    definition: "a meta-classifier for individual columns, properties, or fields in a dataset"
+    purpose: "Defines physical data fields and their types"
+
+    requiredFields:
+      name:
+        type: string
+        required: true
+        description: "physical field name"
+        example: "close_price"
+
+      dataType:
+        type: string
+        required: true
+        description: "native data type in source system"
+        example: "DECIMAL(18,4)"
+
+    optionalFields:
+      nullable:
+        type: boolean
+        default: true
+
+      defaultValue:
+        type: string
+
+      constraints:
+        type: "list[string]"
+        description: "physical constraints (NOT NULL, UNIQUE, CHECK)"
+
+      description:
+        type: string
+        example: "closing price in local currency"
+
+      semanticMapping:
+        type: SemanticFieldMapping
+        description: "semantic mapping for this field (inline, single truth source per ADR-007)"
+
+  # ==================== Semantic Field Mapping ====================
+  SemanticFieldMapping:
+    definition: "inline semantic mapping for a single field"
+    purpose: "Maps physical field to ontology attribute with optional transformation"
+    note: "Replaces Dataset.semanticMappings and standalone FieldMappingDefinition per ADR-007"
+
+    requiredFields:
+      targetAttribute:
+        type: string
+        required: true
+        description: "attribute IRI or field path (e.g., 'fin:quotedPrice.amount' for nested fields)"
+        example: "fin:hasISIN"
+
+    optionalFields:
+      transformation:
+        type: TransformationReference
+        description: "typed reference to transformation definition"
+
+  # ==================== Transformation Reference ====================
+  TransformationReference:
+    definition: "typed reference to a transformation with parameters"
+    purpose: "Replaces free-string transformationExpression with typed IRI reference per ADR-007"
+
+    requiredFields:
+      transformationIri:
+        type: uri
+        required: true
+        description: "IRI of TransformationDefinition"
+        example: "data:TickerToISIN"
+
+    optionalFields:
+      parameters:
+        type: "map[string,any]"
+        description: "transformation-specific parameters"
+
+  # ==================== Transformation Definition ====================
+  TransformationDefinition:
+    definition: "reusable transformation logic for data mapping"
+    purpose: "Defines how to transform source values to target semantic values"
+
+    requiredFields:
+      iri: {type: uri, unique: true}
+      definition: {type: string, required: true}
+
+      kind:
+        type: enum
+        required: true
+        values: [LookupTransformation, MappingTransformation, ExpressionTransformation, ScriptTransformation]
+        description: "type of transformation"
+
+      sourceType:
+        type: string
+        required: true
+        description: "TypeRef of source value"
+
+      targetType:
+        type: string
+        required: true
+        description: "TypeRef of target value"
+
+    optionalFields:
+      implementation:
+        type: TransformationImplementation
+        description: "implementation details specific to transformation kind"
+
+      version:
+        type: string
+        description: "transformation version for change tracking"
+
+      testCases:
+        type: "list[TransformationTestCase]"
+        description: "test cases for validation"
+
+    structures:
+      TransformationImplementation:
+        # For LookupTransformation
+        lookupTable:
+          type: uri
+          description: "reference to lookup table dataset"
+        lookupKeyField: {type: string}
+        lookupValueField: {type: string}
+        cacheSeconds: {type: integer}
+        onMissingKey: {type: enum, values: [error, null, default]}
+        defaultValue: {type: string}
+
+        # For MappingTransformation
+        mapping:
+          type: "map[string,string]"
+          description: "static key-value mappings"
+
+        # For ExpressionTransformation
+        expression:
+          type: string
+          description: "transformation expression"
+        language: {type: enum, values: [sql, jsonPath, jq, python]}
+
+        # For ScriptTransformation
+        scriptPath: {type: string}
+        entrypoint: {type: string}
+        runtime: {type: enum, values: [python, javascript, wasm]}
+
+      TransformationTestCase:
+        input: {type: any}
+        expectedOutput: {type: any}
+        description: {type: string}
+
+  # ==================== Target Slot ====================
+  TargetSlot:
+    definition: "a union type representing different kinds of mapping targets (attributes, participant roles, relations, or pattern fields)"
+    purpose: "Allows SemanticMappingDefinition to target not just attributes but also Association participant roles, relations, and pattern-injected fields"
+    note: "Replaces simple targetAttribute: IRI with a discriminated union to support all mapping target types"
+
+    discriminator: slotType
+
+    variants:
+      AttributeSlot:
+        description: "maps to an AttributeTypeDefinition"
+        fields:
+          slotType: {type: literal, value: "attribute"}
+          targetAttribute: {type: uri, required: true, description: "AttributeTypeDefinition IRI"}
+
+      ParticipantRoleSlot:
+        description: "maps to a participant role in an AssociationTypeDefinition"
+        fields:
+          slotType: {type: literal, value: "participantRole"}
+          targetAssociation: {type: uri, required: true, description: "AssociationTypeDefinition IRI"}
+          targetRole: {type: string, required: true, description: "ParticipantRole.id"}
+
+      RelationSlot:
+        description: "maps to a RelationTypeDefinition"
+        fields:
+          slotType: {type: literal, value: "relation"}
+          targetRelation: {type: uri, required: true, description: "RelationTypeDefinition IRI"}
+          targetObjectType: {type: uri, required: false, description: "range ObjectTypeDefinition IRI (for disambiguation)"}
+
+      PatternFieldSlot:
+        description: "maps to a field injected by a Layer 2 pattern"
+        fields:
+          slotType: {type: literal, value: "patternField"}
+          targetPattern: {type: uri, required: true, description: "PatternDefinition IRI"}
+          targetField: {type: string, required: true, description: "injected attribute local name"}
+
+  # ==================== Semantic Mapping ====================
+  SemanticMappingDefinition:
+    definition: "a meta-classifier for mappings between physical data structures and ontology concepts"
+    purpose: "Bridges the gap between how data is stored and what it means"
+    note: "A DatasetDefinition can map to multiple ObjectTypes; an ObjectTypeDefinition can source from multiple Datasets"
+
+    requiredFields:
+      iri: {type: uri, unique: true}
+      label: {type: string, required: true}
+
+      sourceDataset:
+        type: uri
+        required: true
+        description: "DatasetDefinition IRI"
+
+      targetType:
+        type: uri
+        required: true
+        description: "ObjectTypeDefinition or AssociationTypeDefinition IRI"
+        example: "fin:Equity"
+
+      mappingType:
+        type: enum
+        required: true
+        values:
+          - directTable        # one table row = one entity instance
+          - joinedTables       # entity requires joining multiple tables
+          - aggregation        # entity derived from aggregating rows
+          - transformation     # entity requires complex transformation
+          - view               # entity sourced from database view
+          - denormalized       # one table contains multiple related entity types
+
+    optionalFields:
+      fieldMappings:
+        type: "list[FieldMapping]"
+        description: "attribute-level mappings"
+
+      filters:
+        type: "list[FilterCondition]"
+        description: "conditions to select rows representing this entity type"
+        example:
+          - {field: "security_type", operator: "=", value: "EQUITY"}
+
+      joins:
+        type: "list[JoinSpec]"
+        description: "tables to join (for joinedTables mapping)"
+
+      transformation:
+        type: TransformationSpec
+        description: "transformation logic (for transformation mapping)"
+
+      identityMapping:
+        type: IdentityMappingSpec
+        description: "how to construct entity IRI from physical data"
+
+      temporalMapping:
+        type: TemporalMappingSpec
+        description: "how temporal fields map to Layer 2 Temporal pattern"
+
+      provenanceMapping:
+        type: ProvenanceMappingSpec
+        description: "how provenance fields map to Layer 2 Provenance pattern"
+
+      validationRules:
+        type: "list[ValidationRule]"
+        description: "data quality checks applied during ingestion"
+
+      priority:
+        type: integer
+        default: 0
+        description: "when multiple mappings provide same attribute, higher priority wins"
+
+      effectiveDate:
+        type: instant
+        description: "when this mapping became active"
+
+      expirationDate:
+        type: instant
+        description: "when this mapping should no longer be used"
+
+    structures:
+      FieldMapping:
+        sourceField:
+          type: string
+          required: true
+          description: "physical field name"
+          example: "isin_code"
+
+        target:
+          type: TargetSlot
+          required: true
+          description: "mapping target (attribute, participant role, relation, or pattern field)"
+          note: "Replaces targetAttribute to support all target types"
+
+        transformation:
+          type: enum
+          values: [direct, cast, lookup, function, expression]
+          default: direct
+
+        transformationExpression:
+          type: string
+          description: "transformation logic when transformation != direct"
+          example: "UPPER(TRIM(isin_code))"
+
+        nullHandling:
+          type: enum
+          values: [preserve, defaultValue, skip, fail]
+          default: preserve
+
+        defaultValue:
+          type: string
+          description: "value when source is null and nullHandling=defaultValue"
+
+      FilterCondition:
+        field: {type: string, required: true}
+        operator: {type: enum, values: ["=", "!=", ">", "<", ">=", "<=", "IN", "NOT IN", "LIKE", "IS NULL", "IS NOT NULL"], required: true}
+        value: {type: string}
+        description: {type: string}
+
+      JoinSpec:
+        dataset: {type: uri, required: true, description: "DatasetDefinition IRI to join"}
+        joinType: {type: enum, values: [inner, left, right, full], default: inner}
+        conditions: {type: "list[JoinCondition]"}
+
+      JoinCondition:
+        leftField: {type: string, required: true}
+        operator: {type: string, default: "="}
+        rightField: {type: string, required: true}
+
+      TransformationSpec:
+        language: {type: enum, values: [sql, python, spark, dbt]}
+        artifactRef: {type: string, description: "path to transformation code"}
+        entrypoint: {type: string}
+        dependencies: {type: "list[string]"}
+        testSuite: {type: uri, description: "reference to test cases"}
+
+      IdentityMappingSpec:
+        strategy:
+          type: enum
+          values:
+            - naturalKey         # use natural identifier from data
+            - syntheticKey       # generate UUID or sequential ID
+            - compositeKey       # combine multiple fields
+            - uriTemplate        # apply template to construct IRI
+          required: true
+
+        keyFields:
+          type: "list[string]"
+          description: "fields used to construct identity"
+          example: ["isin_code"]
+
+        uriTemplate:
+          type: string
+          description: "template for IRI construction"
+          example: "https://axiolune.ai/ontology/meta/data-binding/finance/instrument/equity/{isin_code}"
+          note: "IRI namespace strategy pending ADR-002"
+
+        namespace:
+          type: string
+          description: "namespace prefix for generated IRIs"
+
+      TemporalMappingSpec:
+        pattern:
+          type: enum
+          values: [TemporalFact, TemporalObservation, TemporalEvent, none]
+          required: true
+
+        validFromField: {type: string, description: "source field for validFrom"}
+        validToField: {type: string, description: "source field for validTo"}
+        recordedAtField: {type: string, description: "source field for recordedAt"}
+        observedAtField: {type: string, description: "source field for observedAt"}
+        occurredAtField: {type: string, description: "source field for occurredAt"}
+
+        defaultValidTo:
+          type: string
+          description: "value when validTo is not provided"
+          example: "null"  # ongoing validity
+
+        recordedAtSource:
+          type: enum
+          values: [sourceField, ingestionTimestamp, currentTimestamp]
+          description: "how to determine recordedAt"
+
+      ProvenanceMappingSpec:
+        sourceField: {type: string, description: "field containing source identifier"}
+        sourceIriTemplate: {type: string, example: "https://moonweave.ai/source/{source_id}"}
+        confidenceField: {type: string}
+        revisionField: {type: string}
+        publishedAtField: {type: string}
+        receivedAtSource: {type: enum, values: [sourceField, ingestionTimestamp]}
+
+      ValidationRule:
+        id: {type: string}
+        type: {type: enum, values: [required, format, range, uniqueness, referentialIntegrity, custom]}
+        expression: {type: string}
+        failureAction: {type: enum, values: [reject, quarantine, accept-with-warning]}
+        severity: {type: enum, values: [error, warning, info]}
+
+  # ==================== Materialization Plan ====================
+  MaterializationPlanDefinition:
+    definition: "a declarative specification of how to materialize ontology instances from physical data sources"
+    purpose: "Defines WHAT should be materialized and HOW data maps to ontology, without specifying runtime orchestration (scheduling, retries, monitoring)"
+    note: "Runtime orchestration (schedule, retry, monitoring) moved to separate orchestration/runtime layer per ADR-003"
+
+    requiredFields:
+      iri: {type: uri, unique: true, required: true}
+      label: {type: string, required: true}
+
+      definition:
+        type: string
+        required: true
+        description: "purpose and scope of this materialization plan"
+
+      sourceDatasets:
+        type: "list[uri]"
+        required: true
+        minCount: 1
+        description: "DatasetDefinition IRIs to be materialized"
+
+      targetOntologyModule:
+        type: uri
+        required: true
+        description: "OntologyModuleDefinition IRI where instances will be created"
+
+      semanticMappings:
+        type: "list[uri]"
+        required: true
+        minCount: 1
+        description: "SemanticMappingDefinition IRIs that define how data maps to ontology"
+
+      materializationMode:
+        type: enum
+        required: true
+        values: [Incremental, Full, CDC, EventSourcing]
+        description: "how materialization handles updates"
+
+    optionalFields:
+      consistencyRequirement:
+        type: enum
+        values: [Eventual, Snapshot, Transactional]
+        default: Eventual
+        description: "consistency level required for materialized instances"
+
+      validationRules:
+        type: "list[ConstraintBinding]"
+        description: "validation rules applied during materialization"
+
+      conflictResolution:
+        type: ConflictResolutionStrategy
+        description: "how to handle conflicts when multiple sources provide same data"
+
+      incrementalKey:
+        type: string
+        description: "field name for incremental updates (e.g., updated_at timestamp)"
+
+      watermark:
+        type: string
+        description: "current watermark value for incremental processing"
+
+      targetGraphUri:
+        type: uri
+        description: "named graph URI where RDF triples will be stored"
+
+      owner:
+        type: string
+        description: "team or role responsible for this plan"
+
+    structures:
+      ConflictResolutionStrategy:
+        strategy:
+          type: enum
+          required: true
+          values: [AuthoritySource, TimestampPriority, ManualReview, Merge, RejectConflict]
+          description: "how to resolve conflicts when multiple mappings provide same attribute"
+
+        authoritySourcePriority:
+          type: "list[uri]"
+          description: "ordered list of DataSource IRIs by authority (highest first)"
+
+        timestampField:
+          type: string
+          description: "field name for timestamp comparison (when strategy=TimestampPriority)"
+
+    deprecated_note: |
+      IngestionPipelineDefinition with schedule, retry, monitoring has been deprecated.
+      Use MaterializationPlanDefinition for declarative mapping specifications.
+      For runtime orchestration, use dedicated workflow/orchestration tools (Airflow, Prefect, etc.)
+      or the platform's runtime execution layer.
+
+  # ==================== Data Lineage ====================
+  DataLineage:
+    definition: "a meta-classifier for tracking data flow and transformation chains"
+    purpose: "Documents how data moves from sources through transformations to ontology instances"
+
+    requiredFields:
+      iri: {type: uri, unique: true}
+
+      sourceDatasets:
+        type: "list[uri]"
+        description: "upstream DatasetDefinition IRIs"
+
+      targetDatasets:
+        type: "list[uri]"
+        description: "downstream DatasetDefinition IRIs or ontology instances"
+
+      transformations:
+        type: "list[uri]"
+        description: "Transformation IRIs applied"
+
+    optionalFields:
+      lineageGraph:
+        type: string
+        description: "serialized graph representation (e.g., DOT, JSON-LD)"
+
+      updateFrequency:
+        type: duration
+        example: "P1D"
+
+      lastRun:
+        timestamp: {type: instant}
+        status: {type: enum, values: [success, failure, partial]}
+        recordsProcessed: {type: integer}
+        recordsFailed: {type: integer}
+
+  # ==================== Ingestion Pipeline (DEPRECATED) ====================
+  IngestionPipelineDefinition:
+    definition: "a meta-classifier for ETL/ELT workflows that materialize ontology instances from data sources"
+    purpose: "Orchestrates data extraction, transformation, validation, and loading"
+    deprecated: true
+    deprecationReason: "Mixed declarative mapping with runtime orchestration, violating Layer 4 boundaries. Use MaterializationPlanDefinition for mapping specifications and external orchestration tools for runtime execution."
+    deprecatedSince: "0.3.0"
+    removalVersion: "0.4.0"
+    migrationPath: "Convert to MaterializationPlanDefinition for mapping logic; move schedule/retry/monitoring to external orchestration layer (Airflow, Prefect, etc.)"
+
+    requiredFields:
+      iri: {type: uri, unique: true}
+      label: {type: string, required: true}
+
+      stages:
+        type: "list[PipelineStage]"
+        minSize: 1
+        description: "ordered stages in the pipeline"
+
+      schedule:
+        type: ScheduleSpec
+        description: "when and how often to run"
+
+    optionalFields:
+      errorHandling:
+        strategy: {type: enum, values: [failFast, continueOnError, quarantine]}
+        notificationChannels: {type: "list[string]"}
+
+      monitoring:
+        type: MonitoringSpec
+
+      owner:
+        type: string
+
+    structures:
+      PipelineStage:
+        id: {type: string, required: true}
+        type: {type: enum, values: [extract, transform, validate, load, notify], required: true}
+        description: {type: string}
+        implementation: {type: string, description: "code or tool reference"}
+        dependencies: {type: "list[string]", description: "stage IDs that must complete first"}
+        timeout: {type: duration}
+        retryPolicy: {type: "Layer3:RetryPolicy"}
+
+      ScheduleSpec:
+        type: {type: enum, values: [cron, interval, eventDriven, manual], required: true}
+        cronExpression: {type: string, example: "0 2 * * *"}
+        interval: {type: duration, example: "PT1H"}
+        triggerEvent: {type: string, description: "event type for eventDriven"}
+
+      MonitoringSpec:
+        metricsEndpoint: {type: uri}
+        alertThresholds:
+          errorRate: {type: decimal, example: 0.01}
+          latency: {type: duration, example: "PT10M"}
+          recordsProcessed: {type: integer, example: 1000}
+
+  # ==================== Examples ====================
+  Examples:
+
+    EquityPriceMapping:
+      semanticMapping:
+        iri: "fin:mapping:EquityEODPrice"
+        label: "Equity End-of-Day Price Observation Mapping"
+        sourceDataset: "datasource:bloomberg/equity_prices_eod"
+        targetType: "fin:PriceObservation"  # AssociationTypeDefinition
+        mappingType: directTable
+
+        fieldMappings:
+          - sourceField: "isin"
+            target:
+              slotType: participantRole
+              targetAssociation: "fin:PriceObservation"
+              targetRole: "observedInstrument"
+            transformation: lookup
+            transformationExpression: "lookup_instrument_by_isin(isin)"
+
+          - sourceField: "exchange_code"
+            target:
+              slotType: participantRole
+              targetAssociation: "fin:PriceObservation"
+              targetRole: "venue"
+            transformation: lookup
+            transformationExpression: "lookup_market_by_mic(exchange_code)"
+
+          - sourceField: "close_price"
+            target:
+              slotType: attribute
+              targetAttribute: "fin:quotedPrice"
+            transformation: function
+            transformationExpression: "create_money(close_price, currency_code)"
+
+          - sourceField: "volume"
+            target:
+              slotType: attribute
+              targetAttribute: "fin:tradedVolume"
+            transformation: function
+            transformationExpression: "create_quantity(volume, 'shares')"
+
+        identityMapping:
+          strategy: compositeKey
+          keyFields: ["isin", "exchange_code", "trade_date"]
+          uriTemplate: "https://moonweave.ai/observation/price/{isin}/{exchange_code}/{trade_date}"
+          namespace: "fin-obs"
+
+        temporalMapping:
+          pattern: TemporalObservation
+          observedAtField: "trade_date_close"  # end of trading day
+          recordedAtSource: ingestionTimestamp
+
+        provenanceMapping:
+          sourceIriTemplate: "https://moonweave.ai/source/bloomberg"
+          confidenceField: null  # Bloomberg is authoritative
+          publishedAtField: "publish_timestamp"
+          receivedAtSource: ingestionTimestamp
+
+        validationRules:
+          - id: isinRequired
+            type: required
+            expression: "isin IS NOT NULL"
+            failureAction: reject
+            severity: error
+
+          - id: pricePositive
+            type: range
+            expression: "close_price > 0"
+            failureAction: reject
+            severity: error
+
+    HoldingMapping:
+      semanticMapping:
+        iri: "fin:mapping:PortfolioHolding"
+        label: "Portfolio Holding Mapping"
+        sourceDataset: "datasource:internal/portfolio_positions"
+        targetType: "fin:Holding"  # AssociationTypeDefinition
+        mappingType: directTable
+
+        fieldMappings:
+          - sourceField: "account_id"
+            target:
+              slotType: participantRole
+              targetAssociation: "fin:Holding"
+              targetRole: "account"
+            transformation: lookup
+
+          - sourceField: "isin"
+            target:
+              slotType: participantRole
+              targetAssociation: "fin:Holding"
+              targetRole: "instrument"
+            transformation: lookup
+
+          - sourceField: "quantity"
+            target:
+              slotType: attribute
+              targetAttribute: "fin:quantity"
+            transformation: direct
+
+          - sourceField: "avg_cost"
+            target:
+              slotType: attribute
+              targetAttribute: "fin:costBasis"
+            transformation: function
+            transformationExpression: "create_money(avg_cost, account_currency)"
+
+        identityMapping:
+          strategy: compositeKey
+          keyFields: ["account_id", "isin", "effective_date"]
+          uriTemplate: "https://moonweave.ai/holding/{account_id}/{isin}/{effective_date}"
+
+        temporalMapping:
+          pattern: TemporalFact
+          validFromField: "effective_date"
+          validToField: "expiration_date"
+          recordedAtField: "updated_at"
+
+  # ==================== Validation Rules ====================
+  ValidationRules:
+    - "SemanticMappingDefinition must reference valid DatasetDefinition and ObjectTypeDefinition/AssociationTypeDefinition"
+    - "FieldMapping.target must be a valid TargetSlot variant (attribute, participantRole, relation, patternField)"
+    - "TargetSlot.targetAttribute must reference valid AttributeTypeDefinition from Layer 1"
+    - "TargetSlot.targetAssociation must reference valid AssociationTypeDefinition from Layer 1"
+    - "TargetSlot.targetRole must match a ParticipantRole.id in the referenced AssociationTypeDefinition"
+    - "TargetSlot.targetRelation must reference valid RelationTypeDefinition from Layer 1"
+    - "TargetSlot.targetPattern must reference valid PatternDefinition from Layer 2"
+    - "IdentityMappingSpec.syntheticKey must use deterministic UUID generation for reproducibility"
+    - "IdentityMappingSpec.uriTemplate must produce stable, reproducible IRIs"
+    - "TemporalMappingSpec.pattern must reference valid pattern from Layer 2"
+    - "TransformationExpression must declare language, input fields, output type, version, and test cases"
+    - "Multiple FieldMappings targeting same attribute must have conflict resolution strategy"
+    - "MaterializationPlanDefinition.semanticMappings must all target the same OntologyModuleDefinition"
+    - "IngestionPipelineDefinition is deprecated; use MaterializationPlanDefinition + external orchestration"
+    - "TemporalMapping field references must exist in source dataset schema"
+    - "IdentityMapping must produce globally unique IRIs"
+    - "Multiple SemanticMappings for same targetType must have non-overlapping filters or priority"
+    - "Transformation artifacts must be version-controlled and reproducible"
+    - "DataSource credentials must never be stored in mapping definitions (use credentialsRef)"
+    - "Ingestion pipelines must emit audit events for Layer 2 Provenance tracking"
+
+  # ==================== Implementation Notes ====================
+  ImplementationNotes:
+    - "Layer 4 is the ONLY layer that references physical data structures"
+    - "Layers 1-3 remain independent of data storage choices"
+    - "SemanticMappingDefinition enables multiple physical representations of same concept"
+    - "IdentityMapping ensures stable IRIs across ingestion runs"
+    - "TemporalMapping ensures Point-in-Time correctness (Qlib requirement)"
+    - "ValidationRules enforce data quality before materializing ontology instances"
+    - "DataLineage enables impact analysis and debugging"
+    - "Transformation code should be testable, version-controlled, and have rollback capability"
+    - "Future: integrate with dbt, Airflow, Dagster for pipeline orchestration"
