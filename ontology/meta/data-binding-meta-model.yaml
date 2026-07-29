@@ -1,13 +1,13 @@
 # Axiolune Ontology Meta-Model - Layer 4: Data Binding
-# Version: 0.3.0
+# Version: 0.4.0
 # Date: 2026-07-28
-# Governance: Follows ADR-001, ADR-003, ADR-004 architecture decisions
+# Governance: Follows ADR-001, ADR-003, ADR-004, ADR-007 architecture decisions
 
 module:
   moduleIri: "https://axiolune.ai/ontology/meta/data-binding"
   baseIri: "https://axiolune.ai/ontology/meta/data-binding/"
   preferredPrefix: "ax-binding"
-  version: "0.3.0"
+  version: "0.4.0"
   imports:
     - moduleIri: "https://axiolune.ai/ontology/meta/core"
       version: "0.3.0"
@@ -24,10 +24,13 @@ module:
   exports: []
 
 DataBinding:
-  version: "0.3.0"
+  version: "0.4.0"
   description: "Meta-model for mapping physical data sources (tables, files, APIs) to ontology concepts"
   layer: 4
   changes:
+    - "v0.4.0: Removed Dataset.semanticMappings (ADR-007), Field.semanticMapping now sole truth source"
+    - "v0.4.0: Added TransformationDefinition with typed references (ADR-007)"
+    - "v0.4.0: Removed standalone FieldMappingDefinition (ADR-007)"
     - "v0.3.0: Global rename to *Definition suffix (ADR-004)"
     - "v0.3.0: Updated module system with version-locked imports"
     - "v0.3.0: Introduced TargetSlot union type for Association mapping (ADR-003)"
@@ -149,10 +152,6 @@ DataBinding:
         example: "market_data.equity_prices_eod"
 
     optionalFields:
-      semanticMappings:
-        type: "list[SemanticMappingDefinition]"
-        description: "mappings from this dataset to ontology concepts"
-
       schema:
         type: DatasetSchema
         description: "physical schema definition"
@@ -305,9 +304,114 @@ DataBinding:
         example: "closing price in local currency"
 
       semanticMapping:
+        type: SemanticFieldMapping
+        description: "semantic mapping for this field (inline, single truth source per ADR-007)"
+
+  # ==================== Semantic Field Mapping ====================
+  SemanticFieldMapping:
+    definition: "inline semantic mapping for a single field"
+    purpose: "Maps physical field to ontology attribute with optional transformation"
+    note: "Replaces Dataset.semanticMappings and standalone FieldMappingDefinition per ADR-007"
+
+    requiredFields:
+      targetAttribute:
+        type: string
+        required: true
+        description: "attribute IRI or field path (e.g., 'fin:quotedPrice.amount' for nested fields)"
+        example: "fin:hasISIN"
+
+    optionalFields:
+      transformation:
+        type: TransformationReference
+        description: "typed reference to transformation definition"
+
+  # ==================== Transformation Reference ====================
+  TransformationReference:
+    definition: "typed reference to a transformation with parameters"
+    purpose: "Replaces free-string transformationExpression with typed IRI reference per ADR-007"
+
+    requiredFields:
+      transformationIri:
         type: uri
-        description: "reference to mapped AttributeTypeDefinition IRI"
-        example: "fin:closePrice"
+        required: true
+        description: "IRI of TransformationDefinition"
+        example: "data:TickerToISIN"
+
+    optionalFields:
+      parameters:
+        type: "map[string,any]"
+        description: "transformation-specific parameters"
+
+  # ==================== Transformation Definition ====================
+  TransformationDefinition:
+    definition: "reusable transformation logic for data mapping"
+    purpose: "Defines how to transform source values to target semantic values"
+
+    requiredFields:
+      iri: {type: uri, unique: true}
+      definition: {type: string, required: true}
+
+      kind:
+        type: enum
+        required: true
+        values: [LookupTransformation, MappingTransformation, ExpressionTransformation, ScriptTransformation]
+        description: "type of transformation"
+
+      sourceType:
+        type: string
+        required: true
+        description: "TypeRef of source value"
+
+      targetType:
+        type: string
+        required: true
+        description: "TypeRef of target value"
+
+    optionalFields:
+      implementation:
+        type: TransformationImplementation
+        description: "implementation details specific to transformation kind"
+
+      version:
+        type: string
+        description: "transformation version for change tracking"
+
+      testCases:
+        type: "list[TransformationTestCase]"
+        description: "test cases for validation"
+
+    structures:
+      TransformationImplementation:
+        # For LookupTransformation
+        lookupTable:
+          type: uri
+          description: "reference to lookup table dataset"
+        lookupKeyField: {type: string}
+        lookupValueField: {type: string}
+        cacheSeconds: {type: integer}
+        onMissingKey: {type: enum, values: [error, null, default]}
+        defaultValue: {type: string}
+
+        # For MappingTransformation
+        mapping:
+          type: "map[string,string]"
+          description: "static key-value mappings"
+
+        # For ExpressionTransformation
+        expression:
+          type: string
+          description: "transformation expression"
+        language: {type: enum, values: [sql, jsonPath, jq, python]}
+
+        # For ScriptTransformation
+        scriptPath: {type: string}
+        entrypoint: {type: string}
+        runtime: {type: enum, values: [python, javascript, wasm]}
+
+      TransformationTestCase:
+        input: {type: any}
+        expectedOutput: {type: any}
+        description: {type: string}
 
   # ==================== Target Slot ====================
   TargetSlot:

@@ -1,13 +1,13 @@
 # Axiolune Ontology Meta-Model - Layer 3: Platform Behavior
-# Version: 0.3.0
+# Version: 0.4.0
 # Date: 2026-07-28
-# Governance: Follows ADR-001, ADR-003, ADR-004 architecture decisions
+# Governance: Follows ADR-001, ADR-003, ADR-004, ADR-008 architecture decisions
 
 module:
   moduleIri: "https://axiolune.ai/ontology/meta/behavior"
   baseIri: "https://axiolune.ai/ontology/meta/behavior/"
   preferredPrefix: "ax-behavior"
-  version: "0.3.0"
+  version: "0.4.0"
   imports:
     - moduleIri: "https://axiolune.ai/ontology/meta/core"
       version: "0.3.0"
@@ -20,10 +20,12 @@ module:
   exports: []
 
 PlatformBehavior:
-  version: "0.3.0"
+  version: "0.4.0"
   description: "Meta-model for platform capabilities: queries, functions, actions, and policies"
   layer: 3
   changes:
+    - "v0.4.0: Added ExecutionRecordDefinition for action execution tracking (ADR-008)"
+    - "v0.4.0: Added validation rule: retry policy requires isIdempotent=true (ADR-008)"
     - "v0.3.0: Global rename to *Definition suffix (ADR-004)"
     - "v0.3.0: Updated module system with version-locked imports"
     - "v0.3.0: Enhanced ActionTypeDefinition with transaction semantics (ADR-003)"
@@ -600,6 +602,124 @@ PlatformBehavior:
           strategy: compensatingAction
           compensatingAction: "fin:action:RetractResearchReport"
 
+  # ==================== Execution Record ====================
+  ExecutionRecordDefinition:
+    definition: "a meta-classifier for durable records of action execution attempts"
+    purpose: "Tracks action execution lifecycle for audit, recovery, and reconciliation per ADR-008"
+    note: "Every action execution creates an ExecutionRecord for safety and traceability"
+
+    requiredFields:
+      iri: {type: uri, unique: true}
+
+      executionId:
+        type: uri
+        required: true
+        unique: true
+        description: "globally unique identifier for this execution attempt"
+        example: "urn:uuid:550e8400-e29b-41d4-a716-446655440000"
+
+      actionType:
+        type: uri
+        required: true
+        description: "IRI of ActionTypeDefinition being executed"
+        example: "fin:action:SubmitOrder"
+
+      targetEntity:
+        type: uri
+        required: true
+        description: "IRI of entity being acted upon"
+        example: "fin:_order_12345"
+
+      parameters:
+        type: "map[string,string]"
+        required: true
+        description: "serialized action parameters"
+
+      status:
+        type: enum
+        required: true
+        values: [Pending, Running, Success, Failure, Unknown]
+        description: "execution lifecycle status"
+
+      startedAt:
+        type: datetime
+        required: true
+        description: "when execution started"
+
+    optionalFields:
+      completedAt:
+        type: datetime
+        description: "when execution finished (success, failure, or deemed unknown)"
+
+      outcome:
+        type: string
+        description: "success message or error details"
+
+      externalRequestId:
+        type: string
+        description: "client-generated request ID sent to external system for reconciliation"
+
+      externalOrderId:
+        type: string
+        description: "external system's ID (e.g., broker order ID)"
+
+      externalStatus:
+        type: string
+        description: "status from external system"
+
+      retryCount:
+        type: integer
+        default: 0
+        description: "number of retry attempts"
+
+      lastReconciledAt:
+        type: datetime
+        description: "last time reconciliation was attempted for Unknown status"
+
+      reconciledBy:
+        type: string
+        description: "system or user that reconciled this execution"
+
+    structures:
+      ExecutionStatus:
+        Pending: "Execution created but not yet started"
+        Running: "Execution in progress"
+        Success: "Execution confirmed complete"
+        Failure: "Execution confirmed failed"
+        Unknown: "Execution outcome not determined (timeout, lost response)"
+
+    validation:
+      - "ExecutionRecord.status=Success requires completedAt and outcome"
+      - "ExecutionRecord.status=Failure requires completedAt and outcome"
+      - "ExecutionRecord.status=Unknown should trigger reconciliation"
+      - "ExecutionRecord is immutable once created (append-only ledger)"
+      - "ExecutionRecord.externalRequestId must be unique per execution"
+
+    examples:
+      SuccessfulExecution:
+        executionId: "urn:uuid:abc-123"
+        actionType: "fin:action:SubmitOrder"
+        targetEntity: "fin:_order_789"
+        parameters: {instrument: "AAPL", quantity: "100", orderType: "Market"}
+        status: Success
+        startedAt: "2026-07-28T10:30:00.000Z"
+        completedAt: "2026-07-28T10:30:00.523Z"
+        outcome: "Order submitted successfully: EXG-ORD-456789"
+        externalRequestId: "req-uuid-def456"
+        externalOrderId: "EXG-ORD-456789"
+        externalStatus: "Acknowledged"
+
+      TimeoutExecution:
+        executionId: "urn:uuid:xyz-789"
+        actionType: "fin:action:SubmitOrder"
+        targetEntity: "fin:_order_999"
+        parameters: {instrument: "MSFT", quantity: "50", orderType: "Limit"}
+        status: Unknown
+        startedAt: "2026-07-28T11:00:00.000Z"
+        outcome: "Network timeout after 5000ms, response not received"
+        externalRequestId: "req-uuid-ghi789"
+        lastReconciledAt: "2026-07-28T11:00:30.000Z"
+
   # ==================== Policy Type ====================
   PolicyType:
     definition: "a meta-classifier for authorization, compliance, and governance rules"
@@ -702,6 +822,10 @@ PlatformBehavior:
     - "ActionTypeDefinition with effectDomain=external must have compensation or rollback strategy"
     - "ActionTypeDefinition with riskAssessment.level=high must have approval workflow"
     - "ActionTypeDefinition preconditions must be checkable before execution"
+    - "ActionTypeDefinition with retryPolicy must have idempotency=idempotent (ADR-008: non-idempotent actions cannot be automatically retried)"
+    - "ExecutionRecord must be created for every action execution attempt"
+    - "ExecutionRecord with status=Unknown must trigger reconciliation protocol"
+    - "ExecutionRecord is append-only (immutable after creation)"
     - "ActionTypeDefinition postconditions must be verifiable after execution"
     - "PolicyType with enforcement.mode=blocking must fail-fast on rule violation"
     - "Idempotent actions must produce same result when called multiple times with same inputs"
