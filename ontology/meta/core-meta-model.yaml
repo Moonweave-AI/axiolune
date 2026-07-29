@@ -206,10 +206,10 @@ MetaModel:
         definition: "uniform resource identifier"
         owlMapping: "xsd:anyURI"
 
-    note: "Domain-specific types (ISIN, MoneyType, QuantityType) defined as IdentifierType, MoneyType, QuantityType"
+    note: "Domain-specific types (ISIN, MoneyTypeDefinition, QuantityTypeDefinition) defined as IdentifierTypeDefinition, MoneyTypeDefinition, QuantityTypeDefinition"
 
   # ==================== Identifier Type ====================
-  IdentifierType:
+  IdentifierTypeDefinition:
     definition: "a meta-classifier for standard identifiers with validation rules and issuing authorities"
     owlProjection:
       kind: datatype
@@ -241,18 +241,18 @@ MetaModel:
         type: "list[Alignment]"
 
   # ==================== Money Type ====================
-  MoneyType:
+  MoneyTypeDefinition:
     definition: "a meta-classifier for monetary amounts with currency and scale"
     owlProjection:
       kind: structuredValueClass
-      classIri: "{BASE_IRI}/values/MonetaryAmount"
+      classIri: "https://axiolune.ai/ontology/meta/core/values/MonetaryAmount"
       properties:
-        - predicateIri: "{BASE_IRI}/properties/hasAmount"
+        - predicateIri: "https://axiolune.ai/ontology/meta/core/properties/hasAmount"
           range: "xsd:decimal"
-        - predicateIri: "{BASE_IRI}/properties/hasCurrency"
+        - predicateIri: "https://axiolune.ai/ontology/meta/core/properties/hasCurrency"
           range: "xsd:string"
           pattern: "^[A-Z]{3}$"
-        - predicateIri: "{BASE_IRI}/properties/hasScale"
+        - predicateIri: "https://axiolune.ai/ontology/meta/core/properties/hasScale"
           range: "xsd:integer"
     note: "MUST NOT use generic number or decimal for financial amounts. Projected as a structured value class (not a simple datatype) to preserve currency, amount, and scale independence."
 
@@ -275,17 +275,17 @@ MetaModel:
         description: "decimal places for rounding"
 
   # ==================== Quantity Type ====================
-  QuantityType:
+  QuantityTypeDefinition:
     definition: "a meta-classifier for measurements with units and precision"
     owlProjection:
       kind: structuredValueClass
-      classIri: "{BASE_IRI}/values/QuantityValue"
+      classIri: "https://axiolune.ai/ontology/meta/core/values/QuantityValue"
       properties:
-        - predicateIri: "{BASE_IRI}/properties/hasNumericValue"
+        - predicateIri: "https://axiolune.ai/ontology/meta/core/properties/hasNumericValue"
           range: "xsd:decimal"
-        - predicateIri: "{BASE_IRI}/properties/hasUnit"
+        - predicateIri: "https://axiolune.ai/ontology/meta/core/properties/hasUnit"
           range: "xsd:string"
-        - predicateIri: "{BASE_IRI}/properties/hasPrecision"
+        - predicateIri: "https://axiolune.ai/ontology/meta/core/properties/hasPrecision"
           range: "xsd:integer"
     note: "Projected as a structured value class to preserve value, unit, precision, and rounding independently. Unit should be a URI reference to a unit ontology (e.g., QUDT) in production."
 
@@ -311,7 +311,7 @@ MetaModel:
         default: half-even
 
   # ==================== Code List Type ====================
-  CodeListType:
+  CodeListTypeDefinition:
     definition: "a meta-classifier for controlled vocabularies with versioning and maintenance"
     owlProjection:
       kind: class
@@ -357,7 +357,7 @@ MetaModel:
         type: uri
         unique: true
         constraint: "globally unique across all namespaces (FIBO hygiene rule #1)"
-        example: "{BASE_IRI}/finance/Equity"
+        example: "https://axiolune.ai/ontology/meta/core/finance/Equity"
         note: "IRI namespace strategy pending ADR-002"
 
       namespace:
@@ -418,11 +418,11 @@ MetaModel:
   AttributeTypeDefinition:
     definition: "a meta-classifier for typed properties that attach literal values or structured value objects to entities"
     owlProjection:
-      note: "Projection kind depends on valueType category: primitive types → datatypeProperty, structured value types (MoneyType, QuantityType) → objectProperty"
+      note: "Projection kind depends on valueType category: primitive types → datatypeProperty, structured value types (MoneyTypeDefinition, QuantityTypeDefinition) → objectProperty"
       rules:
         - "IF valueType references a primitive (string, integer, decimal, boolean, date, instant, duration, uri) THEN owl:DatatypeProperty"
-        - "IF valueType references IdentifierType or CodeListType THEN owl:DatatypeProperty"
-        - "IF valueType references MoneyType, QuantityType, or other StructuredValueType THEN owl:ObjectProperty with range = structured value class IRI"
+        - "IF valueType references IdentifierTypeDefinition or CodeListTypeDefinition THEN owl:DatatypeProperty"
+        - "IF valueType references MoneyTypeDefinition, QuantityTypeDefinition, or other StructuredValueType THEN owl:ObjectProperty with range = structured value class IRI"
     note: "Renamed from PropertyType to clarify it represents literal-valued attributes, not object relations. OWL projection is now conditional based on valueType complexity."
 
     requiredFields:
@@ -444,7 +444,7 @@ MetaModel:
       valueType:
         type: string
         required: true
-        description: "reference to ValueType, IdentifierType, MoneyType, QuantityType, CodeListType, or other structured value type"
+        description: "reference to ValueType, IdentifierTypeDefinition, MoneyTypeDefinition, QuantityTypeDefinition, CodeListTypeDefinition, or other structured value type"
         example: "fin:ISIN"
         note: "Determines OWL projection: primitives → datatypeProperty, structured values → objectProperty"
 
@@ -490,7 +490,7 @@ MetaModel:
 
       - description: "Structured value object property"
         iri: "fin:quotedPrice"
-        valueType: "fin:MoneyType"
+        valueType: "fin:MoneyTypeDefinition"
         owlProjection: "owl:ObjectProperty with range fin:MonetaryAmount (class with hasAmount, hasCurrency, hasScale properties)"
 
   # ==================== Attribute Use ====================
@@ -791,7 +791,7 @@ MetaModel:
         type: uri
         unique: true
         description: "globally unique IRI for this constraint"
-        example: "{BASE_IRI}/constraints/ISINCheckDigit"
+        example: "https://axiolune.ai/ontology/meta/core/constraints/ISINCheckDigit"
 
       namespace:
         type: string
@@ -906,13 +906,13 @@ MetaModel:
         type: uri
         required: true
         description: "IRI reference to ConstraintDefinition"
-        example: "{BASE_IRI}/constraints/ISINCheckDigit"
+        example: "https://axiolune.ai/ontology/meta/core/constraints/ISINCheckDigit"
 
       targetElement:
         type: uri
         required: true
         description: "IRI of the element being constrained (ObjectTypeDefinition, AttributeUse, RelationUse, etc.)"
-        example: "{BASE_IRI}/attributes/hasISIN"
+        example: "https://axiolune.ai/ontology/meta/core/attributes/hasISIN"
 
     optionalFields:
       parameters:
@@ -1033,7 +1033,7 @@ MetaModel:
     - "AssociationTypeDefinition.participantRoles must have at least 2 roles"
     - "OWL cardinality restrictions are axioms (reasoning); SHACL validates data completeness"
     - "Use max: null (not -1) for unbounded cardinality"
-    - "Financial amounts MUST use MoneyType, not generic number or decimal"
+    - "Financial amounts MUST use MoneyTypeDefinition, not generic number or decimal"
     - "Percentages, basis points, and quantities are distinct types"
 
   # ==================== Notes ====================

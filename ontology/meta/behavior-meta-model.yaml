@@ -11,11 +11,11 @@ module:
   imports:
     - moduleIri: "https://axiolune.ai/ontology/meta/core"
       version: "0.3.0"
-      artifactDigest: "sha256:pending"
+      artifactDigest: "sha256:f2eddc1184bdf99b7a77c88f69cff0ace9f962abcacf852cd3a56d6acfbc2b6a"
       importMode: All
     - moduleIri: "https://axiolune.ai/ontology/meta/patterns"
       version: "0.3.0"
-      artifactDigest: "sha256:pending"
+      artifactDigest: "sha256:06570776bf5acc6832a50dbb799d8b9159739768b338c22382055d550908fc44"
       importMode: All
   exports: []
 
@@ -116,7 +116,7 @@ PlatformBehavior:
         type: string
         required: true
         description: "return value type (ValueType, ObjectTypeDefinition, AssociationTypeDefinition, or collection)"
-        example: "fin:MoneyType"
+        example: "fin:MoneyTypeDefinition"
 
     optionalFields:
       returnCardinality:
@@ -162,7 +162,7 @@ PlatformBehavior:
           - {name: instrument, type: "fin:Instrument", required: true}
           - {name: asOf, type: instant, required: true}
           - {name: market, type: "fin:Market", required: false}
-        returnType: "fin:MoneyType"
+        returnType: "fin:MoneyTypeDefinition"
         returnCardinality: optional
         implementation:
           language: sparql
@@ -238,8 +238,8 @@ PlatformBehavior:
       calculateYieldToMaturity:
         iri: "fin:function:CalculateYTM"
         parameters:
-          - {name: price, type: "fin:MoneyType", required: true}
-          - {name: faceValue, type: "fin:MoneyType", required: true}
+          - {name: price, type: "fin:MoneyTypeDefinition", required: true}
+          - {name: faceValue, type: "fin:MoneyTypeDefinition", required: true}
           - {name: couponRate, type: decimal, required: true}
           - {name: yearsToMaturity, type: decimal, required: true}
         returnType: decimal
@@ -258,7 +258,7 @@ PlatformBehavior:
         parameters:
           - {name: holdings, type: "list[fin:Holding]", required: true}
           - {name: asOf, type: instant, required: true}
-        returnType: "fin:MoneyType"
+        returnType: "fin:MoneyTypeDefinition"
         purity: observationallyPure
         note: "May cache price lookups but output depends only on inputs"
 
@@ -419,7 +419,7 @@ PlatformBehavior:
             type: uri
             required: true
             description: "IRI of the compensating ActionTypeDefinition"
-            example: "{BASE_IRI}/actions/CancelOrder"
+            example: "https://axiolune.ai/ontology/meta/behavior/actions/CancelOrder"
           applicableWhen:
             type: enum
             required: true
@@ -516,12 +516,17 @@ PlatformBehavior:
           - id: brokerAcknowledged
             expression: "exists(order.brokerConfirmation)"
             verificationStrategy: eventual
-        idempotency: conditionallyIdempotent
+        idempotency: nonIdempotent
         idempotencyKeyField: idempotencyKey
         idempotencyKeyFieldRequired: true
         idempotencyWindow: "PT24H"
         irreversible: true
         unknownResultReconciliation: QueryExternal
+        note: |
+          ADR-008 Compliance: This action is nonIdempotent without broker-level idempotency guarantees.
+          Even with an idempotency key, duplicate submissions may create multiple orders if the broker
+          does not honor the key. Therefore, automatic retry is disabled. For timeout/unknown status,
+          use ExecutionRecord reconciliation protocol with QueryExternal strategy.
         commandReceipt:
           commandId: {type: string, required: true}
           correlationId: {type: string, required: false}
@@ -551,12 +556,6 @@ PlatformBehavior:
           artifactRef: "actions/submit_order.py"
           entrypoint: "submit_order"
           timeout: "PT30S"
-          retryPolicy:
-            maxAttempts: 3
-            backoffStrategy: exponential
-            initialDelay: "PT1S"
-            maxDelay: "PT10S"
-            retryableErrors: ["NETWORK_TIMEOUT", "BROKER_UNAVAILABLE"]
 
       CancelOrder:
         iri: "fin:action:CancelOrder"

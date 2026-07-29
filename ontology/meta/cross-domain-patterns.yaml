@@ -12,7 +12,7 @@ module:
   imports:
     - moduleIri: "https://axiolune.ai/ontology/meta/core"
       version: "0.3.0"
-      artifactDigest: "sha256:pending"  # TODO: Calculate after core-meta-model.yaml is finalized
+      artifactDigest: "sha256:f2eddc1184bdf99b7a77c88f69cff0ace9f962abcacf852cd3a56d6acfbc2b6a"  # TODO: Calculate after core-meta-model.yaml is finalized
       importMode: All
   exports: []  # Export all pattern definitions
 
@@ -45,7 +45,7 @@ CrossDomainPatterns:
         unique: true
         required: true
         description: "globally unique IRI for this pattern"
-        example: "{BASE_IRI}/patterns/TemporalFact"
+        example: "https://axiolune.ai/ontology/meta/patterns/patterns/TemporalFact"
 
       namespace:
         type: string
@@ -215,7 +215,7 @@ CrossDomainPatterns:
   patterns:
     # ==================== Publication Timing Pattern (Base) ====================
     - pattern: PublicationTiming
-      iri: "{BASE_IRI}/patterns/PublicationTiming"
+      iri: "https://axiolune.ai/ontology/meta/patterns/patterns/PublicationTiming"
       namespace: "pattern"
       localName: "PublicationTiming"
       label: "Publication Timing Pattern"
@@ -225,28 +225,28 @@ CrossDomainPatterns:
       note: "Extracted as shared base pattern to avoid conflicts between TemporalFact and ProvenancedFact"
 
       injectedAttributes:
-        - attribute: "{BASE_IRI}/attributes/publishedAt"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/publishedAt"
           minCount: 0
           maxCount: 1
           label: "Published At"
           description: "when the data provider published this information"
 
-        - attribute: "{BASE_IRI}/attributes/receivedAt"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/receivedAt"
           minCount: 0
           maxCount: 1
           label: "Received At"
           description: "when the platform received this information"
 
       constraintsAdded:
-        - constraintRef: "{BASE_IRI}/constraints/PublishBeforeReceive"
-          targetElement: "{BASE_IRI}/attributes/publishedAt"
+        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/PublishBeforeReceive"
+          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/publishedAt"
           parameters:
             rule: "publishedAt <= receivedAt OR receivedAt IS NULL"
             message: "Publication must occur before or at reception time"
 
     # ==================== Temporal Fact Pattern ====================
     - pattern: TemporalFact
-      iri: "{BASE_IRI}/patterns/TemporalFact"
+      iri: "https://axiolune.ai/ontology/meta/patterns/patterns/TemporalFact"
       namespace: "pattern"
       localName: "TemporalFact"
       label: "Bi-Temporal Fact Pattern"
@@ -255,7 +255,7 @@ CrossDomainPatterns:
       appliesTo: [ObjectTypeDefinition, AssociationTypeDefinition]
 
       dependencies:
-        - "{BASE_IRI}/patterns/PublicationTiming"
+        - "https://axiolune.ai/ontology/meta/patterns/patterns/PublicationTiming"
       note: "Depends on PublicationTiming for publishedAt field; no conflict when both patterns are bound"
 
       parameters:
@@ -272,39 +272,39 @@ CrossDomainPatterns:
 
       injectedAttributes:
         # Business Valid Time (when the fact was true in the real world)
-        - attribute: "{BASE_IRI}/attributes/validFrom"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/validFrom"
           minCount: 1
           maxCount: 1
           label: "Valid From"
           description: "business time when this fact became true in the real world"
 
-        - attribute: "{BASE_IRI}/attributes/validTo"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/validTo"
           minCount: 0
           maxCount: 1
           label: "Valid To"
           description: "business time when this fact ceased to be true (null = still valid)"
 
         # Knowledge Time (when the platform learned about the fact)
-        - attribute: "{BASE_IRI}/attributes/knowledgeFrom"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom"
           minCount: 1
           maxCount: 1
           label: "Knowledge From"
           description: "system time when the platform began to assert this version as true"
 
-        - attribute: "{BASE_IRI}/attributes/knowledgeTo"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo"
           minCount: 0
           maxCount: 1
           label: "Knowledge To"
           description: "system time when the platform ceased to assert this version (null = current version, not superseded or retracted)"
 
         # Auxiliary Time Fields
-        - attribute: "{BASE_IRI}/attributes/observedAt"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/observedAt"
           minCount: 0
           maxCount: 1
           label: "Observed At"
           description: "when the observation or measurement was made (for market data)"
 
-        - attribute: "{BASE_IRI}/attributes/availableAt"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/availableAt"
           minCount: 0
           maxCount: 1
           label: "Available At"
@@ -313,20 +313,20 @@ CrossDomainPatterns:
         # Note: publishedAt and receivedAt come from PublicationTiming dependency
 
       constraintsAdded:
-        - constraintRef: "{BASE_IRI}/constraints/ValidIntervalConsistency"
-          targetElement: "{BASE_IRI}/attributes/validFrom"
+        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/ValidIntervalConsistency"
+          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/validFrom"
           parameters:
             rule: "validFrom < validTo OR validTo IS NULL"
             message: "Business time interval must be valid (start before end)"
 
-        - constraintRef: "{BASE_IRI}/constraints/KnowledgeIntervalConsistency"
-          targetElement: "{BASE_IRI}/attributes/knowledgeFrom"
+        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/KnowledgeIntervalConsistency"
+          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom"
           parameters:
             rule: "knowledgeFrom < knowledgeTo OR knowledgeTo IS NULL"
             message: "Knowledge time interval must be valid"
 
-        - constraintRef: "{BASE_IRI}/constraints/NoFutureKnowledge"
-          targetElement: "{BASE_IRI}/attributes/knowledgeFrom"
+        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/NoFutureKnowledge"
+          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom"
           parameters:
             rule: "knowledgeFrom <= current_timestamp"
             message: "Cannot record knowledge from the future"
@@ -338,13 +338,13 @@ CrossDomainPatterns:
           - "time:TemporalEntity"
 
       shaclShape:
-        shapeIri: "{BASE_IRI}/shapes/TemporalFactShape"
+        shapeIri: "https://axiolune.ai/ontology/meta/patterns/shapes/TemporalFactShape"
         propertyShapes:
-          - path: "{BASE_IRI}/attributes/validFrom"
+          - path: "https://axiolune.ai/ontology/meta/patterns/attributes/validFrom"
             minCount: 1
             maxCount: 1
             datatype: "xsd:dateTime"
-          - path: "{BASE_IRI}/attributes/knowledgeFrom"
+          - path: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom"
             minCount: 1
             maxCount: 1
             datatype: "xsd:dateTime"
@@ -391,7 +391,7 @@ CrossDomainPatterns:
 
     # ==================== Temporal Observation Pattern ====================
     - pattern: TemporalObservation
-      iri: "{BASE_IRI}/patterns/TemporalObservation"
+      iri: "https://axiolune.ai/ontology/meta/patterns/patterns/TemporalObservation"
       namespace: "pattern"
       localName: "TemporalObservation"
       label: "Temporal Observation Pattern"
@@ -400,31 +400,31 @@ CrossDomainPatterns:
       appliesTo: [AssociationTypeDefinition]
 
       conflicts:
-        - "{BASE_IRI}/patterns/TemporalFact"
+        - "https://axiolune.ai/ontology/meta/patterns/patterns/TemporalFact"
 
       injectedAttributes:
-        - attribute: "{BASE_IRI}/attributes/observedAt"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/observedAt"
           minCount: 1
           maxCount: 1
           label: "Observed At"
           description: "when the measurement or observation was made"
 
-        - attribute: "{BASE_IRI}/attributes/recordedAt"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/recordedAt"
           minCount: 1
           maxCount: 1
           label: "Recorded At"
           description: "when the observation was recorded in the system"
 
       constraintsAdded:
-        - constraintRef: "{BASE_IRI}/constraints/ObservationBeforeRecording"
-          targetElement: "{BASE_IRI}/attributes/observedAt"
+        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/ObservationBeforeRecording"
+          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/observedAt"
           parameters:
             rule: "observedAt <= recordedAt"
             message: "Observation must occur before or at recording time"
 
     # ==================== Provenance Pattern ====================
     - pattern: ProvenancedFact
-      iri: "{BASE_IRI}/patterns/ProvenancedFact"
+      iri: "https://axiolune.ai/ontology/meta/patterns/patterns/ProvenancedFact"
       namespace: "pattern"
       localName: "ProvenancedFact"
       label: "Provenance Tracking Pattern"
@@ -434,35 +434,35 @@ CrossDomainPatterns:
       reference: "W3C PROV-O"
 
       dependencies:
-        - "{BASE_IRI}/patterns/PublicationTiming"
+        - "https://axiolune.ai/ontology/meta/patterns/patterns/PublicationTiming"
       note: "Depends on PublicationTiming for publishedAt and receivedAt fields"
 
       injectedAttributes:
-        - attribute: "{BASE_IRI}/attributes/source"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/source"
           minCount: 1
           maxCount: 1
           label: "Source"
           description: "originating data source or provider URI"
 
-        - attribute: "{BASE_IRI}/attributes/sourceVersion"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/sourceVersion"
           minCount: 0
           maxCount: 1
           label: "Source Version"
           description: "version or snapshot identifier of the source"
 
-        - attribute: "{BASE_IRI}/attributes/confidence"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/confidence"
           minCount: 0
           maxCount: 1
           label: "Confidence Score"
           description: "confidence score or probability (0.0 to 1.0)"
 
-        - attribute: "{BASE_IRI}/attributes/revision"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/revision"
           minCount: 0
           maxCount: 1
           label: "Revision Number"
           description: "revision number for this fact (increments on updates)"
 
-        - attribute: "{BASE_IRI}/attributes/derivedFrom"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/derivedFrom"
           minCount: 0
           maxCount: null
           label: "Derived From"
@@ -471,14 +471,14 @@ CrossDomainPatterns:
         # Note: publishedAt and receivedAt come from PublicationTiming dependency
 
       constraintsAdded:
-        - constraintRef: "{BASE_IRI}/constraints/ConfidenceRange"
-          targetElement: "{BASE_IRI}/attributes/confidence"
+        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/ConfidenceRange"
+          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/confidence"
           parameters:
             rule: "confidence >= 0.0 AND confidence <= 1.0"
             message: "Confidence must be between 0.0 and 1.0"
 
-        - constraintRef: "{BASE_IRI}/constraints/PublishBeforeReceive"
-          targetElement: "{BASE_IRI}/attributes/publishedAt"
+        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/PublishBeforeReceive"
+          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/publishedAt"
           parameters:
             rule: "publishedAt <= receivedAt"
             message: "Source publication must precede platform receipt"
@@ -496,7 +496,7 @@ CrossDomainPatterns:
 
     # ==================== Evidence Pattern ====================
     - pattern: Evidence
-      iri: "{BASE_IRI}/patterns/Evidence"
+      iri: "https://axiolune.ai/ontology/meta/patterns/patterns/Evidence"
       namespace: "pattern"
       localName: "Evidence"
       label: "Evidence Tracking Pattern"
@@ -505,46 +505,46 @@ CrossDomainPatterns:
       appliesTo: [ObjectTypeDefinition, AssociationTypeDefinition]
 
       injectedAttributes:
-        - attribute: "{BASE_IRI}/attributes/evidenceType"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/evidenceType"
           minCount: 1
           maxCount: 1
           label: "Evidence Type"
           description: "category of evidence"
 
-        - attribute: "{BASE_IRI}/attributes/evidenceRef"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/evidenceRef"
           minCount: 1
           maxCount: 1
           label: "Evidence Reference"
           description: "URI reference to evidence artifact"
 
-        - attribute: "{BASE_IRI}/attributes/evidenceDigest"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/evidenceDigest"
           minCount: 0
           maxCount: 1
           label: "Evidence Digest"
           description: "cryptographic hash of evidence artifact for immutability verification"
 
-        - attribute: "{BASE_IRI}/attributes/evidenceTimestamp"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/evidenceTimestamp"
           minCount: 0
           maxCount: 1
           label: "Evidence Timestamp"
           description: "when the evidence was created or captured"
 
-        - attribute: "{BASE_IRI}/attributes/evidenceDescription"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/evidenceDescription"
           minCount: 0
           maxCount: 1
           label: "Evidence Description"
           description: "human-readable description of the evidence"
 
       constraintsAdded:
-        - constraintRef: "{BASE_IRI}/constraints/DigestFormat"
-          targetElement: "{BASE_IRI}/attributes/evidenceDigest"
+        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/DigestFormat"
+          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/evidenceDigest"
           parameters:
             pattern: "^(sha256|sha512):[a-f0-9]+$"
             message: "Evidence digest must be in format 'algorithm:hexhash'"
 
     # ==================== Lifecycle Pattern ====================
     - pattern: Lifecycle
-      iri: "{BASE_IRI}/patterns/Lifecycle"
+      iri: "https://axiolune.ai/ontology/meta/patterns/patterns/Lifecycle"
       namespace: "pattern"
       localName: "Lifecycle"
       label: "Lifecycle State Management Pattern"
@@ -553,31 +553,31 @@ CrossDomainPatterns:
       appliesTo: [ObjectTypeDefinition, AssociationTypeDefinition]
 
       injectedAttributes:
-        - attribute: "{BASE_IRI}/attributes/lifecycleState"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/lifecycleState"
           minCount: 1
           maxCount: 1
           label: "Lifecycle State"
           description: "current lifecycle state of the entity"
 
-        - attribute: "{BASE_IRI}/attributes/lifecycleVersion"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/lifecycleVersion"
           minCount: 1
           maxCount: 1
           label: "Lifecycle Version"
           description: "version number incremented on each state transition"
 
-        - attribute: "{BASE_IRI}/attributes/createdAt"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/createdAt"
           minCount: 1
           maxCount: 1
           label: "Created At"
           description: "when the entity was first created"
 
-        - attribute: "{BASE_IRI}/attributes/updatedAt"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/updatedAt"
           minCount: 1
           maxCount: 1
           label: "Updated At"
           description: "when the entity was last updated"
 
-        - attribute: "{BASE_IRI}/attributes/deprecatedAt"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/deprecatedAt"
           minCount: 0
           maxCount: 1
           label: "Deprecated At"
@@ -587,7 +587,7 @@ CrossDomainPatterns:
 
     # ==================== Versioning Pattern ====================
     - pattern: Versioning
-      iri: "{BASE_IRI}/patterns/Versioning"
+      iri: "https://axiolune.ai/ontology/meta/patterns/patterns/Versioning"
       namespace: "pattern"
       localName: "Versioning"
       label: "Semantic Versioning Pattern"
@@ -597,33 +597,33 @@ CrossDomainPatterns:
       note: "This is for ONTOLOGY ARTIFACT versioning, not business fact modification (use TemporalFact for that)"
 
       injectedAttributes:
-        - attribute: "{BASE_IRI}/attributes/semanticVersion"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/semanticVersion"
           minCount: 1
           maxCount: 1
           label: "Semantic Version"
           description: "semantic version in MAJOR.MINOR.PATCH format"
 
-        - attribute: "{BASE_IRI}/attributes/versionedIri"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/versionedIri"
           minCount: 1
           maxCount: 1
           label: "Versioned IRI"
           description: "IRI including version identifier"
 
-        - attribute: "{BASE_IRI}/attributes/priorVersion"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/priorVersion"
           minCount: 0
           maxCount: 1
           label: "Prior Version"
           description: "IRI of the immediately preceding version"
 
-        - attribute: "{BASE_IRI}/attributes/incompatibleWith"
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/incompatibleWith"
           minCount: 0
           maxCount: null
           label: "Incompatible With"
           description: "version IRIs this version is incompatible with"
 
       constraintsAdded:
-        - constraintRef: "{BASE_IRI}/constraints/SemanticVersionFormat"
-          targetElement: "{BASE_IRI}/attributes/semanticVersion"
+        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/SemanticVersionFormat"
+          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/semanticVersion"
           parameters:
             pattern: "^\\d+\\.\\d+\\.\\d+$"
             message: "Semantic version must be in MAJOR.MINOR.PATCH format"
@@ -646,4 +646,4 @@ CrossDomainPatterns:
     - "Identity pattern is implicit in ObjectTypeDefinition/AssociationTypeDefinition; not a separate pattern"
     - "FIBO alignment references retained for compatibility but should be formalized as Alignment objects"
     - "Classification pattern omitted pending decision on whether it should be a pattern or a relation"
-    - "All {BASE_IRI} placeholders await ADR-002 IRI namespace decision"
+    - "All https://axiolune.ai/ontology/meta/patterns/ placeholders await ADR-002 IRI namespace decision"
