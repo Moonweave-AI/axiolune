@@ -22,7 +22,7 @@ const fs = require('fs');
 const yaml = require('js-yaml');
 const path = require('path');
 
-const META_DIR = process.env.META_DIR ? path.resolve(process.env.META_DIR) : path.join(__dirname, '..', 'ontology', 'meta');
+const META_DIR = process.env.META_DIR ? path.resolve(process.env.META_DIR) : path.join(__dirname, '..', '..', 'ontology', 'meta');
 const STRICT = process.argv.includes('--strict');
 
 const IRI_RE = /^https?:\/\/[^\s]+$/;

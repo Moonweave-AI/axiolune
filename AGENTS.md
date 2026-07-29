@@ -1,9 +1,24 @@
 # AGENTS.md — Axiolune Ontology Meta-Model
 
+## Repository layout (phase-separated)
+
+```
+ontology/meta/          # M3 meta-model YAML + digests + projection (IRI-stable, do NOT move)
+scripts/meta/            # M3 validators + generators + tests (run from repo root)
+scripts/archive/         # one-shot migration scripts (completed, kept for audit)
+docs/meta/               # M3-phase docs: decisions (ADRs), reports, design, reference
+  decisions/             # ADR-001..012 + superseded/
+  reports/               # acceptance reports + raw test-all output
+  reference/             # external reference projects (read-only)
+assets/                  # banner/logo
+```
+Future phases (M2 domain ontology, M1 runtime) get their own `ontology/domain/`, `scripts/domain/`,
+`docs/domain/`, `docs/runtime/` trees to avoid mixing with this phase.
+
 ## Quick verification (run before declaring the meta-model done)
 
 ```
-node scripts/test-all.js
+node scripts/meta/test-all.js
 ```
 
 This single command runs the full meta-model gate (exit 0 = pass):
@@ -12,20 +27,22 @@ This single command runs the full meta-model gate (exit 0 = pass):
 3. `deep-analysis-v0.5.js` — ADR-011 / ADR-012 compliance
 4. `validate-references.js` — real reference + constraint + targetElement + import version-label closure
 5. `validate-structure.js` — deep structural validation (root, module, required fields, IRI/enum)
-6. `test-structure-negative.js` — 13 negative tests (proves the validator rejects malformed input)
-7. `generate-owl.js` + `generate-shacl.js` — M3 -> M2 projection (OWL2-DL + SHACL)
-8. `test-projection.js` — n3 parse of OWL/SHACL + rdf-validate-shacl good/bad M1 validation
+6. `validate-structure.js --strict` — unknown-key typo detection on type-classifiers
+7. `test-structure-negative.js` — 14 negative tests (proves the validator rejects malformed input)
+8. `generate-owl.js` + `generate-shacl.js` — M3 -> M2 projection (OWL2-DL + SHACL)
+9. `test-projection.js` — n3 parse of OWL/SHACL + rdf-validate-shacl good/bad M1 validation
+10. projection drift check — committed `.ttl` == regenerated (catches stale artifacts)
 
 ## Individual commands
 
 ```
-node scripts/validate-yaml.js ontology/meta/*.yaml        # syntax
-node scripts/verify-meta-model.js                          # digests + imports + closures
-node scripts/validate-references.js                        # reference + version closure
-node scripts/validate-structure.js                         # deep structural (use --strict for typo checks)
-node scripts/test-structure-negative.js                    # negative tests
-node scripts/generate-owl.js && node scripts/generate-shacl.js   # regenerate projection
-node scripts/test-projection.js                            # projection verification
+node scripts/meta/validate-yaml.js ontology/meta/*.yaml        # syntax
+node scripts/meta/verify-meta-model.js                          # digests + imports + closures
+node scripts/meta/validate-references.js                        # reference + version closure
+node scripts/meta/validate-structure.js                         # deep structural (use --strict for typo checks)
+node scripts/meta/test-structure-negative.js                    # negative tests
+node scripts/meta/generate-owl.js && node scripts/meta/generate-shacl.js   # regenerate projection
+node scripts/meta/test-projection.js                            # projection verification
 ```
 
 ## Meta-model structure & conventions
@@ -37,7 +54,7 @@ node scripts/test-projection.js                            # projection verifica
   - `data-binding-meta-model.yaml` (Layer 4, v0.5.0) — ADR-011 single truth source (SemanticMappingDefinition canonical)
 - `digests.json` — SHA-256 of each module. Imports are content-addressed (`moduleIri#sha256:...`) with `artifactDigest`. Editing any file requires recomputing its digest and updating every importer (topological order: core -> patterns -> behavior -> data-binding) plus `digests.json`.
 - `ontology/meta/projection/` — generated M3->M2 output (do not hand-edit; regenerate with the generators). Deterministic.
-- ADRs in `docs/decisions/` (ADR-001..012). ADR-011 (canonical data binding) and ADR-012 (three-axis temporal) govern Layer 4.
+- ADRs in `docs/meta/decisions/` (ADR-001..012). ADR-011 (canonical data binding) and ADR-012 (three-axis temporal) govern Layer 4.
 
 ## Hard rules
 

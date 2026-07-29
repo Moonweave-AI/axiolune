@@ -31,7 +31,7 @@ function loadYaml(filePath) {
 function analyzeDataBinding() {
   console.log(`\n${colors.bold}${colors.cyan}=== v0.5 Data Binding Analysis ===${colors.reset}\n`);
 
-  const dataBindingPath = path.join(__dirname, '../ontology/meta/data-binding-meta-model.yaml');
+  const dataBindingPath = path.join(__dirname, '../../ontology/meta/data-binding-meta-model.yaml');
 
   if (!fs.existsSync(dataBindingPath)) {
     console.log(`${colors.yellow}⚠️  v0.5 module not found, checking v0.4...${colors.reset}`);
@@ -357,7 +357,7 @@ function checkThreeAxisBinding(dataBinding) {
 
 function checkNoCurrentTimestamp(dataBinding) {
   const yamlContent = fs.readFileSync(
-    path.join(__dirname, '../ontology/meta/data-binding-meta-model.yaml'),
+    path.join(__dirname, '../../ontology/meta/data-binding-meta-model.yaml'),
     'utf8'
   );
 

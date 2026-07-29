@@ -25,7 +25,7 @@ const yaml = require('js-yaml');
 const { Writer, DataFactory } = require('n3');
 const { quad, namedNode, literal } = DataFactory;
 
-const META_DIR = path.join(__dirname, '..', 'ontology', 'meta');
+const META_DIR = path.join(__dirname, '..', '..', 'ontology', 'meta');
 const OUT = path.join(META_DIR, 'projection', 'axiolune-meta.owl.ttl');
 
 const XSD = 'http://www.w3.org/2001/XMLSchema#';

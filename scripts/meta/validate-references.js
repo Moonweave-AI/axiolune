@@ -11,7 +11,7 @@ const fs = require('fs');
 const yaml = require('js-yaml');
 const path = require('path');
 
-const META_DIR = path.join(__dirname, '..', 'ontology', 'meta');
+const META_DIR = path.join(__dirname, '..', '..', 'ontology', 'meta');
 const core = yaml.load(fs.readFileSync(path.join(META_DIR, 'core-meta-model.yaml'), 'utf8'));
 const patterns = yaml.load(fs.readFileSync(path.join(META_DIR, 'cross-domain-patterns.yaml'), 'utf8'));
 

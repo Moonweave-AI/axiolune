@@ -4,7 +4,7 @@
 **Accepted (meta-model layer)** | 2026-07-29
 
 Implementation: data-binding-meta-model v0.5.0 + cross-domain-patterns v0.4.0
-Validation: ADR-012 compliance verified by `scripts/deep-analysis-v0.5.js` (6/6 checks), `scripts/validate-references.js`, and grep confirming no functional `CURRENT_TIMESTAMP` usage in the meta-model (the 6 surviving mentions are changelog/prohibition prose only).
+Validation: ADR-012 compliance verified by `scripts/meta/deep-analysis-v0.5.js` (6/6 checks), `scripts/meta/validate-references.js`, and grep confirming no functional `CURRENT_TIMESTAMP` usage in the meta-model (the 6 surviving mentions are changelog/prohibition prose only).
 Digest: sha256:f23edc168fce27e5bd03ac731ea617f334409437e607a56b432d1c75a05a93af
 
 **Scope of acceptance**: criteria 1-6 are implemented and machine-verified at the meta-model layer (incl. `NoFutureKnowledge` rewritten to `$referenceTime` and `AvailabilityBeforeUse` added).

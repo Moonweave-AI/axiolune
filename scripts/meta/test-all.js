@@ -11,19 +11,20 @@
 const { execFileSync } = require('child_process');
 const path = require('path');
 
+const ROOT = path.join(__dirname, '..', '..');
 const steps = [
-  ['YAML syntax', ['node', ['scripts/validate-yaml.js',
+  ['YAML syntax', ['node', ['scripts/meta/validate-yaml.js',
     'ontology/meta/core-meta-model.yaml', 'ontology/meta/cross-domain-patterns.yaml',
     'ontology/meta/behavior-meta-model.yaml', 'ontology/meta/data-binding-meta-model.yaml']]],
-  ['verify-meta-model (digest + import lock)', ['node', ['scripts/verify-meta-model.js']]],
-  ['deep-analysis-v0.5 (ADR-011/012 compliance)', ['node', ['scripts/deep-analysis-v0.5.js']]],
-  ['validate-references (real closure)', ['node', ['scripts/validate-references.js']]],
-  ['validate-structure (deep structural)', ['node', ['scripts/validate-structure.js']]],
-  ['validate-structure --strict (typo detection)', ['node', ['scripts/validate-structure.js', '--strict']]],
-  ['negative tests (structure)', ['node', ['scripts/test-structure-negative.js']]],
-  ['generate-owl', ['node', ['scripts/generate-owl.js']]],
-  ['generate-shacl', ['node', ['scripts/generate-shacl.js']]],
-  ['test-projection (M3->M2 parse + SHACL validate)', ['node', ['scripts/test-projection.js']]],
+  ['verify-meta-model (digest + import lock)', ['node', ['scripts/meta/verify-meta-model.js']]],
+  ['deep-analysis-v0.5 (ADR-011/012 compliance)', ['node', ['scripts/meta/deep-analysis-v0.5.js']]],
+  ['validate-references (real closure)', ['node', ['scripts/meta/validate-references.js']]],
+  ['validate-structure (deep structural)', ['node', ['scripts/meta/validate-structure.js']]],
+  ['validate-structure --strict (typo detection)', ['node', ['scripts/meta/validate-structure.js', '--strict']]],
+  ['negative tests (structure)', ['node', ['scripts/meta/test-structure-negative.js']]],
+  ['generate-owl', ['node', ['scripts/meta/generate-owl.js']]],
+  ['generate-shacl', ['node', ['scripts/meta/generate-shacl.js']]],
+  ['test-projection (M3->M2 parse + SHACL validate)', ['node', ['scripts/meta/test-projection.js']]],
   ['projection drift check (committed == regenerated)', ['git', ['diff', '--exit-code', '--', 'ontology/meta/projection/']]],
 ];
 
@@ -31,7 +32,7 @@ let fail = 0;
 for (const [label, [cmd, args]] of steps) {
   process.stdout.write(`• ${label} ... `);
   try {
-    execFileSync(cmd, args, { stdio: ['ignore', 'ignore', 'pipe'], cwd: path.join(__dirname, '..') });
+    execFileSync(cmd, args, { stdio: ['ignore', 'ignore', 'pipe'], cwd: ROOT });
     console.log('PASS');
   } catch (e) {
     console.log('FAIL');

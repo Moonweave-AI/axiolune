@@ -17,7 +17,7 @@ const path = require('path');
 const { Parser, Store } = require('n3');
 const SHACLValidator = require('rdf-validate-shacl').default;
 
-const META = path.join(__dirname, '..', 'ontology', 'meta');
+const META = path.join(__dirname, '..', '..', 'ontology', 'meta');
 const AX = 'https://axiolune.ai/ontology/meta/';
 const XSD = 'http://www.w3.org/2001/XMLSchema#';
 const ATTR = AX + 'patterns/attributes/';

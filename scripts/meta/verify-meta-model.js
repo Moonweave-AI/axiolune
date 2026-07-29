@@ -5,7 +5,7 @@ const crypto = require('crypto');
 const yaml = require('js-yaml');
 const path = require('path');
 
-const META_DIR = path.join(__dirname, '..', 'ontology', 'meta');
+const META_DIR = path.join(__dirname, '..', '..', 'ontology', 'meta');
 const FILES = {
   core: 'core-meta-model.yaml',
   patterns: 'cross-domain-patterns.yaml',

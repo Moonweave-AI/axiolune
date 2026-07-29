@@ -35,7 +35,7 @@ const yaml = require('js-yaml');
 const { Writer, DataFactory } = require('n3');
 const { quad, namedNode, literal } = DataFactory;
 
-const META_DIR = path.join(__dirname, '..', 'ontology', 'meta');
+const META_DIR = path.join(__dirname, '..', '..', 'ontology', 'meta');
 const OUT1 = path.join(META_DIR, 'projection', 'axiolune-meta.shacl.ttl');       // Tier 1 (machine-verifiable)
 const OUT2 = path.join(META_DIR, 'projection', 'axiolune-meta.shacl-sparql.ttl'); // Tier 2 (parse-verified)
 const AX = 'https://axiolune.ai/ontology/meta/';

@@ -15,7 +15,7 @@ const os = require('os');
 const { execFileSync } = require('child_process');
 const yaml = require('js-yaml');
 
-const META_DIR = path.join(__dirname, '..', 'ontology', 'meta');
+const META_DIR = path.join(__dirname, '..', '..', 'ontology', 'meta');
 const VALIDATOR = path.join(__dirname, 'validate-structure.js');
 const FILES = ['core-meta-model.yaml', 'cross-domain-patterns.yaml', 'behavior-meta-model.yaml', 'data-binding-meta-model.yaml'];
 

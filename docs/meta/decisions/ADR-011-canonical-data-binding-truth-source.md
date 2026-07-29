@@ -4,7 +4,7 @@
 **Accepted (meta-model layer)** | 2026-07-29
 
 Implementation: data-binding-meta-model v0.5.0
-Validation: ADR-011 compliance verified by `scripts/deep-analysis-v0.5.js` (10/10 checks) and `scripts/validate-references.js` (real reference closure).
+Validation: ADR-011 compliance verified by `scripts/meta/deep-analysis-v0.5.js` (10/10 checks) and `scripts/meta/validate-references.js` (real reference closure).
 Digest: sha256:f23edc168fce27e5bd03ac731ea617f334409437e607a56b432d1c75a05a93af
 
 **Scope of acceptance**: criteria 1-5 are implemented and machine-verified at the meta-model layer.

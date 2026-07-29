@@ -44,20 +44,20 @@ Core architectural decisions defining the four-layer ontology infrastructure:
 
 Located in `ontology/meta/`:
 
-1. **[core-meta-model.yaml](../ontology/meta/core-meta-model.yaml)** - Layer 1: Semantic Core
+1. **[core-meta-model.yaml](../../ontology/meta/core-meta-model.yaml)** - Layer 1: Semantic Core
    - OntologyModule, ObjectType, AttributeType, RelationType, AssociationType
    - Value type system (ValueType, IdentifierType, MoneyType, QuantityType, CodeListType)
    - AttributeUse, RelationUse, PatternBinding, Alignment structures
    - Governance metadata
    - **Status**: ✓ YAML syntax validated
 
-2. **[cross-domain-patterns.yaml](../ontology/meta/cross-domain-patterns.yaml)** - Layer 2: Cross-Domain Patterns
+2. **[cross-domain-patterns.yaml](../../ontology/meta/cross-domain-patterns.yaml)** - Layer 2: Cross-Domain Patterns
    - Identity, Classification, Temporal (3 variants), Provenance (2 variants)
    - Evidence, Lifecycle, Versioning patterns
    - Pattern composition examples (PriceObservation, Order, ResearchAssertion)
    - **Status**: ✓ YAML syntax validated
 
-3. **[behavior-meta-model.yaml](../ontology/meta/behavior-meta-model.yaml)** - Layer 3: Platform Behavior
+3. **[behavior-meta-model.yaml](../../ontology/meta/behavior-meta-model.yaml)** - Layer 3: Platform Behavior
    - QueryType (read-only data access)
    - FunctionType (side-effect-free computation)
    - ActionType (trading actions with authorization, pre/post conditions, compensation)
@@ -65,7 +65,7 @@ Located in `ontology/meta/`:
    - Examples: SubmitOrder, CancelOrder, PublishResearchReport
    - **Status**: ✓ YAML syntax validated
 
-4. **[data-binding-meta-model.yaml](../ontology/meta/data-binding-meta-model.yaml)** - Layer 4: Data Binding
+4. **[data-binding-meta-model.yaml](../../ontology/meta/data-binding-meta-model.yaml)** - Layer 4: Data Binding
    - DataSource, Dataset, Field definitions
    - SemanticMapping (6 mapping types)
    - Identity, Temporal, Provenance mapping specifications
@@ -199,7 +199,7 @@ scripts/
 ### YAML Validation
 ```bash
 # Validate all meta-model files
-node scripts/validate-yaml.js ontology/meta/*.yaml
+node scripts/meta/validate-yaml.js ontology/meta/*.yaml
 ```
 
 ### Future Tooling
