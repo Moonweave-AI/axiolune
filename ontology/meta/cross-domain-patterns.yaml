@@ -1,15 +1,29 @@
 # Axiolune Ontology Meta-Model - Layer 2: Cross-Domain Fact Patterns
 # Version: 0.3.0
 # Date: 2026-07-28
-# Governance: Follows ADR-001 and ADR-003 architecture decisions
-# Changes: Introduced formal PatternDefinition structure to replace ad-hoc pattern descriptions
+# Governance: Follows ADR-001, ADR-003, ADR-004 architecture decisions
+# Changes: Introduced formal PatternDefinition structure; updated module system
+
+module:
+  moduleIri: "https://axiolune.ai/ontology/meta/patterns"
+  baseIri: "https://axiolune.ai/ontology/meta/patterns/"
+  preferredPrefix: "ax-pattern"
+  version: "0.3.0"
+  imports:
+    - moduleIri: "https://axiolune.ai/ontology/meta/core"
+      version: "0.3.0"
+      artifactDigest: "sha256:pending"  # TODO: Calculate after core-meta-model.yaml is finalized
+      importMode: All
+  exports: []  # Export all pattern definitions
 
 CrossDomainPatterns:
   version: "0.3.0"
   description: "Reusable patterns for identity, time, provenance, evidence, and lifecycle that apply across domain objects"
   layer: 2
-  dependencies:
-    - "ontology/meta/core-meta-model.yaml"
+  changes:
+    - "v0.3.0: Global rename to *Definition suffix (ADR-004)"
+    - "v0.3.0: Updated module system with version-locked imports"
+    - "v0.3.0: Introduced formal PatternDefinition (ADR-003)"
 
   note: |
     Layer 2 patterns are now formally defined using PatternDefinition.
@@ -63,7 +77,7 @@ CrossDomainPatterns:
       appliesTo:
         type: "list[enum]"
         required: true
-        values: [ObjectType, AssociationType, AttributeType, RelationType]
+        values: [ObjectTypeDefinition, AssociationTypeDefinition, AttributeTypeDefinition, RelationTypeDefinition]
         description: "which meta-types this pattern can be bound to"
 
       injectedAttributes:
@@ -187,7 +201,7 @@ CrossDomainPatterns:
 
       boundToType:
         type: uri
-        description: "ObjectType or AssociationType IRI"
+        description: "ObjectTypeDefinition or AssociationTypeDefinition IRI"
 
       parameterValues:
         type: dict
@@ -199,6 +213,37 @@ CrossDomainPatterns:
 
   # ==================== Patterns ====================
   patterns:
+    # ==================== Publication Timing Pattern (Base) ====================
+    - pattern: PublicationTiming
+      iri: "{BASE_IRI}/patterns/PublicationTiming"
+      namespace: "pattern"
+      localName: "PublicationTiming"
+      label: "Publication Timing Pattern"
+      definition: "foundational pattern for tracking when information was published by its source and received by the platform"
+      version: "1.0.0"
+      appliesTo: [ObjectTypeDefinition, AssociationTypeDefinition]
+      note: "Extracted as shared base pattern to avoid conflicts between TemporalFact and ProvenancedFact"
+
+      injectedAttributes:
+        - attribute: "{BASE_IRI}/attributes/publishedAt"
+          minCount: 0
+          maxCount: 1
+          label: "Published At"
+          description: "when the data provider published this information"
+
+        - attribute: "{BASE_IRI}/attributes/receivedAt"
+          minCount: 0
+          maxCount: 1
+          label: "Received At"
+          description: "when the platform received this information"
+
+      constraintsAdded:
+        - constraintRef: "{BASE_IRI}/constraints/PublishBeforeReceive"
+          targetElement: "{BASE_IRI}/attributes/publishedAt"
+          parameters:
+            rule: "publishedAt <= receivedAt OR receivedAt IS NULL"
+            message: "Publication must occur before or at reception time"
+
     # ==================== Temporal Fact Pattern ====================
     - pattern: TemporalFact
       iri: "{BASE_IRI}/patterns/TemporalFact"
@@ -207,7 +252,11 @@ CrossDomainPatterns:
       label: "Bi-Temporal Fact Pattern"
       definition: "pattern for bi-temporal semantics distinguishing business validity time (when the fact was true in the world) from system knowledge time (when the platform learned about it)"
       version: "1.0.0"
-      appliesTo: [ObjectType, AssociationType]
+      appliesTo: [ObjectTypeDefinition, AssociationTypeDefinition]
+
+      dependencies:
+        - "{BASE_IRI}/patterns/PublicationTiming"
+      note: "Depends on PublicationTiming for publishedAt field; no conflict when both patterns are bound"
 
       parameters:
         - name: timeGranularity
@@ -255,17 +304,13 @@ CrossDomainPatterns:
           label: "Observed At"
           description: "when the observation or measurement was made (for market data)"
 
-        - attribute: "{BASE_IRI}/attributes/publishedAt"
-          minCount: 0
-          maxCount: 1
-          label: "Published At"
-          description: "when the data provider published this information"
-
         - attribute: "{BASE_IRI}/attributes/availableAt"
           minCount: 0
           maxCount: 1
           label: "Available At"
           description: "when this data became available for use by strategies (considering delays and authorization)"
+
+        # Note: publishedAt and receivedAt come from PublicationTiming dependency
 
       constraintsAdded:
         - constraintRef: "{BASE_IRI}/constraints/ValidIntervalConsistency"
@@ -352,7 +397,7 @@ CrossDomainPatterns:
       label: "Temporal Observation Pattern"
       definition: "pattern for single-timestamp observations without explicit validity periods (e.g., sensor readings, event timestamps)"
       version: "1.0.0"
-      appliesTo: [AssociationType]
+      appliesTo: [AssociationTypeDefinition]
 
       conflicts:
         - "{BASE_IRI}/patterns/TemporalFact"
@@ -385,8 +430,12 @@ CrossDomainPatterns:
       label: "Provenance Tracking Pattern"
       definition: "pattern for tracking the origin, authority, lineage, and confidence of information"
       version: "1.0.0"
-      appliesTo: [ObjectType, AssociationType]
+      appliesTo: [ObjectTypeDefinition, AssociationTypeDefinition]
       reference: "W3C PROV-O"
+
+      dependencies:
+        - "{BASE_IRI}/patterns/PublicationTiming"
+      note: "Depends on PublicationTiming for publishedAt and receivedAt fields"
 
       injectedAttributes:
         - attribute: "{BASE_IRI}/attributes/source"
@@ -413,23 +462,13 @@ CrossDomainPatterns:
           label: "Revision Number"
           description: "revision number for this fact (increments on updates)"
 
-        - attribute: "{BASE_IRI}/attributes/publishedAt"
-          minCount: 0
-          maxCount: 1
-          label: "Published At"
-          description: "when the source published this information"
-
-        - attribute: "{BASE_IRI}/attributes/receivedAt"
-          minCount: 0
-          maxCount: 1
-          label: "Received At"
-          description: "when the platform received this information"
-
         - attribute: "{BASE_IRI}/attributes/derivedFrom"
           minCount: 0
           maxCount: null
           label: "Derived From"
           description: "URIs of facts this was derived from (for computed/transformed data)"
+
+        # Note: publishedAt and receivedAt come from PublicationTiming dependency
 
       constraintsAdded:
         - constraintRef: "{BASE_IRI}/constraints/ConfidenceRange"
@@ -463,7 +502,7 @@ CrossDomainPatterns:
       label: "Evidence Tracking Pattern"
       definition: "pattern for linking facts to supporting evidence, documents, and data artifacts for audit and reproducibility"
       version: "1.0.0"
-      appliesTo: [ObjectType, AssociationType]
+      appliesTo: [ObjectTypeDefinition, AssociationTypeDefinition]
 
       injectedAttributes:
         - attribute: "{BASE_IRI}/attributes/evidenceType"
@@ -511,7 +550,7 @@ CrossDomainPatterns:
       label: "Lifecycle State Management Pattern"
       definition: "pattern for managing entity lifecycle states, transitions, and history"
       version: "1.0.0"
-      appliesTo: [ObjectType, AssociationType]
+      appliesTo: [ObjectTypeDefinition, AssociationTypeDefinition]
 
       injectedAttributes:
         - attribute: "{BASE_IRI}/attributes/lifecycleState"
@@ -554,7 +593,7 @@ CrossDomainPatterns:
       label: "Semantic Versioning Pattern"
       definition: "pattern for tracking semantic versions of ontology artifacts (not business fact revisions)"
       version: "1.0.0"
-      appliesTo: [ObjectType, AssociationType, AttributeType, RelationType]
+      appliesTo: [ObjectTypeDefinition, AssociationTypeDefinition, AttributeTypeDefinition, RelationTypeDefinition]
       note: "This is for ONTOLOGY ARTIFACT versioning, not business fact modification (use TemporalFact for that)"
 
       injectedAttributes:
@@ -604,7 +643,7 @@ CrossDomainPatterns:
     - "Patterns are now first-class ontology elements with IRIs and versions"
     - "PatternBinding in Layer 1 refers to PatternDefinition.iri in Layer 2"
     - "TemporalFact and TemporalObservation are mutually exclusive (conflicts)"
-    - "Identity pattern is implicit in ObjectType/AssociationType; not a separate pattern"
+    - "Identity pattern is implicit in ObjectTypeDefinition/AssociationTypeDefinition; not a separate pattern"
     - "FIBO alignment references retained for compatibility but should be formalized as Alignment objects"
     - "Classification pattern omitted pending decision on whether it should be a pattern or a relation"
     - "All {BASE_IRI} placeholders await ADR-002 IRI namespace decision"

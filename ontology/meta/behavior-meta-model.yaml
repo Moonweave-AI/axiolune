@@ -1,15 +1,32 @@
 # Axiolune Ontology Meta-Model - Layer 3: Platform Behavior
-# Version: 0.2.0
+# Version: 0.3.0
 # Date: 2026-07-28
-# Governance: Follows ADR-001 architecture decisions
+# Governance: Follows ADR-001, ADR-003, ADR-004 architecture decisions
+
+module:
+  moduleIri: "https://axiolune.ai/ontology/meta/behavior"
+  baseIri: "https://axiolune.ai/ontology/meta/behavior/"
+  preferredPrefix: "ax-behavior"
+  version: "0.3.0"
+  imports:
+    - moduleIri: "https://axiolune.ai/ontology/meta/core"
+      version: "0.3.0"
+      artifactDigest: "sha256:pending"
+      importMode: All
+    - moduleIri: "https://axiolune.ai/ontology/meta/patterns"
+      version: "0.3.0"
+      artifactDigest: "sha256:pending"
+      importMode: All
+  exports: []
 
 PlatformBehavior:
-  version: "0.2.0"
+  version: "0.3.0"
   description: "Meta-model for platform capabilities: queries, functions, actions, and policies"
   layer: 3
-  dependencies:
-    - "ontology/meta/core-meta-model.yaml"
-    - "ontology/meta/cross-domain-patterns.yaml"
+  changes:
+    - "v0.3.0: Global rename to *Definition suffix (ADR-004)"
+    - "v0.3.0: Updated module system with version-locked imports"
+    - "v0.3.0: Enhanced ActionTypeDefinition with transaction semantics (ADR-003)"
 
   note: |
     Layer 3 defines WHAT OPERATIONS the platform can perform, distinct from:
@@ -21,7 +38,7 @@ PlatformBehavior:
   CallableParameterDefinition:
     definition: "a meta-classifier for parameters used by queries, functions, and actions"
     purpose: "Shared parameter definition structure to avoid duplication across callable types"
-    note: "Replaces locally-scoped ParameterDefinition; used by QueryType, FunctionType, and ActionType"
+    note: "Replaces locally-scoped ParameterDefinition; used by QueryTypeDefinition, FunctionTypeDefinition, and ActionTypeDefinition"
 
     requiredFields:
       name:
@@ -33,7 +50,7 @@ PlatformBehavior:
       type:
         type: string
         required: true
-        description: "ValueType, ObjectType, or collection reference"
+        description: "ValueType, ObjectTypeDefinition, or collection reference"
         example: "instant"
 
     optionalFields:
@@ -62,7 +79,7 @@ PlatformBehavior:
         description: "semantic role of this parameter in the operation"
 
   # ==================== Query Type ====================
-  QueryType:
+  QueryTypeDefinition:
     definition: "a meta-classifier for read-only data access operations with typed parameters and return values"
     purpose: "Defines queryable capabilities without side effects"
 
@@ -81,7 +98,7 @@ PlatformBehavior:
       targetType:
         type: uri
         required: true
-        description: "ObjectType or AssociationType this query operates on"
+        description: "ObjectTypeDefinition or AssociationTypeDefinition this query operates on"
         example: "fin:Instrument"
 
       parameters:
@@ -96,7 +113,7 @@ PlatformBehavior:
       returnType:
         type: string
         required: true
-        description: "return value type (ValueType, ObjectType, AssociationType, or collection)"
+        description: "return value type (ValueType, ObjectTypeDefinition, AssociationTypeDefinition, or collection)"
         example: "fin:MoneyType"
 
     optionalFields:
@@ -126,7 +143,7 @@ PlatformBehavior:
 
       applicableToTypes:
         type: "list[uri]"
-        description: "ObjectType IRIs this query can operate on (replaces Layer 1 interfaces)"
+        description: "ObjectTypeDefinition IRIs this query can operate on (replaces Layer 1 interfaces)"
         example: ["fin:Instrument", "fin:Equity", "fin:Bond"]
 
     structures:
@@ -162,7 +179,7 @@ PlatformBehavior:
           artifactRef: "queries/list-active-orders.sql"
 
   # ==================== Function Type ====================
-  FunctionType:
+  FunctionTypeDefinition:
     definition: "a meta-classifier for side-effect-free computational operations"
     purpose: "Defines pure functions for calculations, transformations, and derivations"
     note: "Functions are deterministic, referentially transparent, and idempotent"
@@ -192,7 +209,7 @@ PlatformBehavior:
         description: |
           pure: no side effects, deterministic
           observationallyPure: may use memoization/cache but behaviorally pure
-          impure: may depend on external state (use QueryType instead)
+          impure: may depend on external state (use QueryTypeDefinition instead)
 
       implementation:
         language: {type: enum, values: [python, javascript, r, julia, external]}
@@ -205,7 +222,7 @@ PlatformBehavior:
 
       applicableToTypes:
         type: "list[uri]"
-        description: "ObjectType IRIs this function can operate on (replaces Layer 1 interfaces)"
+        description: "ObjectTypeDefinition IRIs this function can operate on (replaces Layer 1 interfaces)"
         example: ["fin:Instrument", "fin:Portfolio"]
 
     structures:
@@ -244,7 +261,7 @@ PlatformBehavior:
         note: "May cache price lookups but output depends only on inputs"
 
   # ==================== Action Type ====================
-  ActionType:
+  ActionTypeDefinition:
     definition: "a meta-classifier for stateful operations that modify system state or interact with external systems"
     purpose: "Defines trading actions, workflow operations, and state-changing commands with full governance"
     note: "Actions require authorization, preconditions, audit trails, and compensation/rollback semantics"
@@ -399,7 +416,7 @@ PlatformBehavior:
           actionRef:
             type: uri
             required: true
-            description: "IRI of the compensating ActionType"
+            description: "IRI of the compensating ActionTypeDefinition"
             example: "{BASE_IRI}/actions/CancelOrder"
           applicableWhen:
             type: enum
@@ -418,7 +435,7 @@ PlatformBehavior:
 
       EffectSpecification:
         type: {type: enum, values: [create, update, delete, send, receive, execute]}
-        target: {type: uri, description: "affected ObjectType or external system"}
+        target: {type: uri, description: "affected ObjectTypeDefinition or external system"}
         description: {type: string}
 
       AuthorizationRequirement:
@@ -679,23 +696,23 @@ PlatformBehavior:
 
   # ==================== Validation Rules ====================
   ValidationRules:
-    - "QueryType must be side-effect free (no state modifications)"
-    - "FunctionType with purity=pure must be deterministic and referentially transparent"
-    - "ActionType must declare all effects explicitly"
-    - "ActionType with effectDomain=external must have compensation or rollback strategy"
-    - "ActionType with riskAssessment.level=high must have approval workflow"
-    - "ActionType preconditions must be checkable before execution"
-    - "ActionType postconditions must be verifiable after execution"
+    - "QueryTypeDefinition must be side-effect free (no state modifications)"
+    - "FunctionTypeDefinition with purity=pure must be deterministic and referentially transparent"
+    - "ActionTypeDefinition must declare all effects explicitly"
+    - "ActionTypeDefinition with effectDomain=external must have compensation or rollback strategy"
+    - "ActionTypeDefinition with riskAssessment.level=high must have approval workflow"
+    - "ActionTypeDefinition preconditions must be checkable before execution"
+    - "ActionTypeDefinition postconditions must be verifiable after execution"
     - "PolicyType with enforcement.mode=blocking must fail-fast on rule violation"
     - "Idempotent actions must produce same result when called multiple times with same inputs"
 
   # ==================== Implementation Notes ====================
   ImplementationNotes:
-    - "QueryType implements Layer 2 temporal queries (asOf, validAt, asOfValidAt)"
-    - "ActionType preconditions can reference Layer 2 Lifecycle state machines"
-    - "ActionType audit events stored with Layer 2 Provenance and Evidence patterns"
-    - "PolicyType enforcement hooks into ActionType execution pipeline"
+    - "QueryTypeDefinition implements Layer 2 temporal queries (asOf, validAt, asOfValidAt)"
+    - "ActionTypeDefinition preconditions can reference Layer 2 Lifecycle state machines"
+    - "ActionTypeDefinition audit events stored with Layer 2 Provenance and Evidence patterns"
+    - "PolicyType enforcement hooks into ActionTypeDefinition execution pipeline"
     - "Compensation actions form sagas for distributed transaction management"
-    - "Order is an ObjectType (Layer 1); SubmitOrder is an ActionType (Layer 3)"
+    - "Order is an ObjectTypeDefinition (Layer 1); SubmitOrder is an ActionTypeDefinition (Layer 3)"
     - "Functions can be composed into queries and actions"
     - "All platform behavior elements must have governance metadata"

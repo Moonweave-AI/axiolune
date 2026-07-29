@@ -1,32 +1,52 @@
 # Axiolune Ontology Meta-Model - Layer 1: Semantic Core
-# Version: 0.2.0
+# Version: 0.3.0
 # Date: 2026-07-28
-# Governance: Follows ADR-001 architecture decisions
+# Governance: Follows ADR-001, ADR-004 architecture decisions
+
+module:
+  moduleIri: "https://axiolune.ai/ontology/meta/core"
+  baseIri: "https://axiolune.ai/ontology/meta/core/"
+  preferredPrefix: "ax-meta"
+  version: "0.3.0"
+  imports: []
+  exports: []  # Empty means export all defined types
 
 MetaModel:
-  version: "0.2.0"
+  version: "0.3.0"
   description: "Semantic core meta-model defining ontology structure, types, and alignment"
   layer: 1
-  dependencies: []
+  changes:
+    - "v0.3.0: Global rename to *Definition suffix (ADR-004)"
+    - "v0.3.0: Updated module system with moduleIri, baseIri, preferredPrefix"
+    - "v0.3.0: Added LocalizedTextDefinition"
 
   # ==================== Module Management ====================
-  OntologyModule:
+  OntologyModuleDefinition:
     definition: "a named collection of ontology elements with versioning and dependency management"
     owlProjection:
       kind: ontology
+    note: "Updated in ADR-004 to support version-locked imports and symbol resolution"
 
     requiredFields:
-      iri:
-        type: uri
+      moduleIri:
+        type: iri
         unique: true
-        description: "globally unique IRI for this module"
-        example: "{BASE_IRI}/finance/instruments"
-        note: "IRI namespace strategy pending ADR-002"
+        description: "globally unique IRI for this module (identifies the module itself)"
+        example: "https://axiolune.ai/ontology/finance/instruments"
+        note: "Module IRI is distinct from baseIri"
 
-      namespace:
+      baseIri:
+        type: iri
+        required: true
+        description: "base IRI for concepts defined in this module (used for symbol resolution)"
+        example: "https://axiolune.ai/ontology/finance/instruments/"
+        note: "Note trailing slash; concatenated with localName to form concept IRIs"
+
+      preferredPrefix:
         type: string
         unique: true
-        description: "short prefix for this module"
+        required: true
+        description: "short prefix for this module (used in prefix:localName references)"
         example: "fin-inst"
         pattern: "^[a-z][a-z0-9-]*$"
 
@@ -35,6 +55,7 @@ MetaModel:
         required: true
         pattern: "^\\d+\\.\\d+\\.\\d+$"
         example: "1.0.0"
+        note: "Semantic versioning"
 
       label:
         type: string
@@ -48,9 +69,12 @@ MetaModel:
 
     optionalFields:
       imports:
-        type: "list[uri]"
-        description: "IRIs of imported modules"
-        example: ["{BASE_IRI}/finance/core"]
+        type: "list[ModuleImportDefinition]"
+        description: "version-locked imports of other modules"
+
+      exports:
+        type: "list[iri]"
+        description: "explicitly exported symbol IRIs (empty list = export all)"
 
       status:
         type: enum
@@ -60,6 +84,88 @@ MetaModel:
       governance:
         type: GovernanceMetadata
         description: "owner, approvers, change history"
+
+  # ==================== Module Import ====================
+  ModuleImportDefinition:
+    definition: "a version-locked import of another ontology module"
+    note: "Ensures deterministic symbol resolution and prevents breaking changes from implicit updates"
+
+    requiredFields:
+      moduleIri:
+        type: iri
+        required: true
+        description: "IRI of the imported module"
+        example: "https://axiolune.ai/ontology/finance/core"
+
+      version:
+        type: string
+        required: true
+        pattern: "^\\d+\\.\\d+\\.\\d+$"
+        description: "locked version of the imported module"
+        note: "Prevents implicit breaking changes"
+
+      artifactDigest:
+        type: string
+        required: true
+        pattern: "^sha256:[0-9a-f]{64}$"
+        description: "SHA-256 digest of the imported module file"
+        note: "Ensures integrity and enables reproducible builds"
+
+      importMode:
+        type: enum
+        required: true
+        values: [All, Selective]
+        description: "All = import all exported symbols; Selective = import only specified symbols"
+
+    optionalFields:
+      importedSymbols:
+        type: "list[SymbolImportSpec]"
+        description: "symbols to import (required if importMode=Selective)"
+
+  # ==================== Symbol Import Spec ====================
+  SymbolImportSpec:
+    definition: "specification of a single imported symbol with optional local alias"
+
+    requiredFields:
+      symbolIri:
+        type: iri
+        required: true
+        description: "complete IRI of the imported symbol"
+        example: "https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/isIssuedBy"
+
+    optionalFields:
+      localAlias:
+        type: string
+        description: "optional local alias for this symbol"
+        example: "isIssuedBy"
+        note: "Allows 'fibo:FinancialInstrument as Instrument' style imports"
+
+  # ==================== LocalizedText ====================
+  LocalizedTextDefinition:
+    definition: "a value object for multi-language text with language tags"
+    kind: StructuredValueType
+    owlProjection:
+      kind: rdfLangString
+      note: "Projects to rdf:langString with @en, @zh, etc. language tags"
+
+    requiredFields:
+      language:
+        type: string
+        required: true
+        pattern: "^[a-z]{2}(-[A-Z]{2})?$"
+        description: "language tag (ISO 639-1, optional ISO 3166-1)"
+        example: ["en", "zh-CN", "ja", "en-US"]
+
+      text:
+        type: string
+        required: true
+        description: "text content in the specified language"
+
+    optionalFields:
+      defaultLanguage:
+        type: string
+        default: "en"
+        description: "fallback language if requested language not available"
 
   # ==================== Value Type System ====================
   ValueType:
@@ -241,7 +347,7 @@ MetaModel:
         type: "list[Alignment]"
 
   # ==================== Object Type ====================
-  ObjectType:
+  ObjectTypeDefinition:
     definition: "a meta-classifier that defines domain entity types with identity, properties, and constraints"
     owlProjection:
       kind: class
@@ -286,14 +392,6 @@ MetaModel:
         example: ["fin:Instrument", "fin:TradableAsset"]
         note: "Replaces single baseClass; represents true semantic inheritance"
 
-      interfaces:
-        type: "list[uri]"
-        description: "behavioral contracts this type implements (Layer 3 references)"
-        example: ["fin:Queryable", "fin:Priceable"]
-        deprecated: true
-        deprecationReason: "Interfaces mixed behavior into semantic layer; use behavior-meta-model.yaml applicableToTypes instead"
-        removalVersion: "0.3.0"
-
       attributeUses:
         type: "list[AttributeUse]"
         description: "attributes applied to this type with contextual constraints"
@@ -317,11 +415,15 @@ MetaModel:
         type: GovernanceMetadata
 
   # ==================== Attribute Type ====================
-  AttributeType:
-    definition: "a meta-classifier for typed properties that attach literal values to entities"
+  AttributeTypeDefinition:
+    definition: "a meta-classifier for typed properties that attach literal values or structured value objects to entities"
     owlProjection:
-      kind: datatypeProperty
-    note: "Renamed from PropertyType to clarify it represents literal-valued attributes, not object relations"
+      note: "Projection kind depends on valueType category: primitive types → datatypeProperty, structured value types (MoneyType, QuantityType) → objectProperty"
+      rules:
+        - "IF valueType references a primitive (string, integer, decimal, boolean, date, instant, duration, uri) THEN owl:DatatypeProperty"
+        - "IF valueType references IdentifierType or CodeListType THEN owl:DatatypeProperty"
+        - "IF valueType references MoneyType, QuantityType, or other StructuredValueType THEN owl:ObjectProperty with range = structured value class IRI"
+    note: "Renamed from PropertyType to clarify it represents literal-valued attributes, not object relations. OWL projection is now conditional based on valueType complexity."
 
     requiredFields:
       iri: {type: uri, unique: true}
@@ -342,10 +444,17 @@ MetaModel:
       valueType:
         type: string
         required: true
-        description: "reference to ValueType, IdentifierType, MoneyType, QuantityType, or CodeListType"
+        description: "reference to ValueType, IdentifierType, MoneyType, QuantityType, CodeListType, or other structured value type"
         example: "fin:ISIN"
+        note: "Determines OWL projection: primitives → datatypeProperty, structured values → objectProperty"
 
     optionalFields:
+      owlProjectionOverride:
+        type: enum
+        values: [datatypeProperty, objectProperty, annotationProperty]
+        description: "explicit override of automatic OWL projection (use sparingly)"
+        note: "Only needed for edge cases where automatic projection is incorrect"
+
       defaultCardinality:
         minCount: {type: integer, default: 0, description: "0=optional, 1=required"}
         maxCount: {type: integer, default: 1, description: "1=single-valued, null=unbounded"}
@@ -373,16 +482,27 @@ MetaModel:
             targetIri: "https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/hasDateValue"
             relation: rdfs:subPropertyOf
 
+    examples:
+      - description: "Simple datatype property"
+        iri: "fin:hasISIN"
+        valueType: "fin:ISINType"
+        owlProjection: "owl:DatatypeProperty with range xsd:string + pattern constraint"
+
+      - description: "Structured value object property"
+        iri: "fin:quotedPrice"
+        valueType: "fin:MoneyType"
+        owlProjection: "owl:ObjectProperty with range fin:MonetaryAmount (class with hasAmount, hasCurrency, hasScale properties)"
+
   # ==================== Attribute Use ====================
   AttributeUse:
-    definition: "a binding of an AttributeType to an ObjectType with contextual constraints"
+    definition: "a binding of an AttributeTypeDefinition to an ObjectTypeDefinition with contextual constraints"
     note: "Separates global attribute definition from context-specific usage"
 
     requiredFields:
       attribute:
         type: uri
         required: true
-        description: "reference to global AttributeType"
+        description: "reference to global AttributeTypeDefinition"
         example: "fin:hasISIN"
 
     optionalFields:
@@ -411,11 +531,11 @@ MetaModel:
         description: "additional validation rules for this usage context"
 
   # ==================== Relation Type ====================
-  RelationType:
+  RelationTypeDefinition:
     definition: "a meta-classifier for binary semantic relationships between entity types"
     owlProjection:
       kind: objectProperty
-    note: "For pure semantic relations; use AssociationType for relations with context"
+    note: "For pure semantic relations; use AssociationTypeDefinition for relations with context"
 
     requiredFields:
       iri: {type: uri, unique: true}
@@ -448,7 +568,7 @@ MetaModel:
     optionalFields:
       inverseOf:
         type: uri
-        description: "inverse RelationType IRI for bidirectional relations"
+        description: "inverse RelationTypeDefinition IRI for bidirectional relations"
         example: "fin:issues"
         note: "Strong-typed reference; no text inverseName"
 
@@ -462,26 +582,26 @@ MetaModel:
 
   # ==================== Relation Use ====================
   RelationUse:
-    definition: "a contextual application of a RelationType with specific cardinality constraints"
+    definition: "a contextual application of a RelationTypeDefinition with specific cardinality constraints"
     note: "Cardinality is contextual, not global, because subclasses may have different constraints"
 
     requiredFields:
       relation:
         type: uri
         required: true
-        description: "reference to RelationType"
+        description: "reference to RelationTypeDefinition"
         example: "fin:isIssuedBy"
 
       subjectType:
         type: uri
         required: true
-        description: "subject ObjectType IRI"
+        description: "subject ObjectTypeDefinition IRI"
         example: "fin:Equity"
 
       objectType:
         type: uri
         required: true
-        description: "object ObjectType IRI"
+        description: "object ObjectTypeDefinition IRI"
         example: "fin:Organization"
 
     optionalFields:
@@ -501,7 +621,7 @@ MetaModel:
         type: "list[ConstraintBinding]"
 
   # ==================== Association Type ====================
-  AssociationType:
+  AssociationTypeDefinition:
     definition: "a meta-classifier for reifiable n-ary relations with identity, context, and lifecycle"
     owlProjection:
       kind: class
@@ -556,7 +676,7 @@ MetaModel:
 
   # ==================== Participant Role ====================
   ParticipantRole:
-    definition: "a typed slot in an AssociationType specifying the role and type of a participant"
+    definition: "a typed slot in an AssociationTypeDefinition specifying the role and type of a participant"
 
     requiredFields:
       id:
@@ -568,7 +688,7 @@ MetaModel:
       range:
         type: uri
         required: true
-        description: "participant ObjectType IRI"
+        description: "participant ObjectTypeDefinition IRI"
         example: "fin:Instrument"
 
       minCount:
@@ -587,7 +707,7 @@ MetaModel:
 
   # ==================== Pattern Binding ====================
   PatternBinding:
-    definition: "a declaration that an ObjectType or AssociationType adheres to a cross-domain pattern"
+    definition: "a declaration that an ObjectTypeDefinition or AssociationTypeDefinition adheres to a cross-domain pattern"
     note: "Patterns from Layer 2 (Temporal, Provenance, Evidence) inject attribute requirements and constraints"
 
     requiredFields:
@@ -791,7 +911,7 @@ MetaModel:
       targetElement:
         type: uri
         required: true
-        description: "IRI of the element being constrained (ObjectType, AttributeUse, RelationUse, etc.)"
+        description: "IRI of the element being constrained (ObjectTypeDefinition, AttributeUse, RelationUse, etc.)"
         example: "{BASE_IRI}/attributes/hasISIN"
 
     optionalFields:
@@ -907,10 +1027,10 @@ MetaModel:
     - "All definitions must follow ISO 704 genus-differentia structure"
     - "localName must be unique within namespace"
     - "Alignment targetIri must reference valid external vocabulary URIs"
-    - "AttributeUse minCount/maxCount override global AttributeType defaults"
+    - "AttributeUse minCount/maxCount override global AttributeTypeDefinition defaults"
     - "AttributeUse.label can be overridden for display, but definition CANNOT be changed"
-    - "RelationType.inverseOf must reference a valid RelationType IRI"
-    - "AssociationType.participantRoles must have at least 2 roles"
+    - "RelationTypeDefinition.inverseOf must reference a valid RelationTypeDefinition IRI"
+    - "AssociationTypeDefinition.participantRoles must have at least 2 roles"
     - "OWL cardinality restrictions are axioms (reasoning); SHACL validates data completeness"
     - "Use max: null (not -1) for unbounded cardinality"
     - "Financial amounts MUST use MoneyType, not generic number or decimal"
@@ -923,6 +1043,6 @@ MetaModel:
     - "Layer 3 (behavior-meta-model.yaml) defines WHAT OPERATIONS are available"
     - "Layer 4 (data-binding-meta-model.yaml) defines HOW data maps to ontology"
     - "Removed deprecated 'required' field; use minCount: 1 instead"
-    - "Removed redundant 'links' field from ObjectType; compiler generates reverse index from RelationType"
+    - "Removed redundant 'links' field from ObjectTypeDefinition; compiler generates reverse index from RelationTypeDefinition"
     - "AspectType removed; semantic inheritance uses superTypes, validation uses patternBindings"
     - "InterfaceType moved to Layer 3 (behavior-meta-model.yaml)"

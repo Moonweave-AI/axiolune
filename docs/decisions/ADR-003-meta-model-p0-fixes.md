@@ -1,7 +1,19 @@
-# ADR-003: 元模型 P0 修正方案
+# ADR-003: 元模型 P0 问题识别
 
 ## 状态
-**草案 (Draft)** | 2026-07-28
+**已被 ADR-004 取代 (Superseded by ADR-004)** | 2026-07-28
+
+## 后记
+
+本 ADR 最初尝试一次性修复所有 P0 问题，但评审指出："可以作为架构草案，尚不能称为'P0 已解除、元模型可编译'"。
+
+根本问题：在基础设施（命名规则、模块系统、TypeRef、符号解析）尚未就绪时，就引入了大量新结构。这导致：
+1. ADR 决定使用 `*Definition` 后缀，但 YAML 文件仍用旧名称
+2. 模块系统缺少版本锁定、摘要校验
+3. TypeRef 仍是自由字符串，无法静态验证
+4. 模式组合规则、双时间映射、值对象投影都不完整
+
+**修正策略**：将修复分阶段进行，基础门槛前置到 ADR-004。本 ADR 保留作为问题识别文档。
 
 ## 背景
 
@@ -568,21 +580,30 @@ ModuleImport:
 4. 订单—成交—撤单（Order + SubmitOrder Action）
 5. 研究断言—证据—模型运行
 
-## 后果
+## 实际评审结果
 
-### 正面影响
-- P0 阻断项解除，元模型可编译
-- M3/M2/M1/M0 层级清晰，不再混淆
-- 符号解析、模式注入、映射目标、交易语义均已正式化
+经过 YAML 语法验证和语义审查，评审结论为 **Request Changes**：
 
-### 负面影响
-- 大量字段重命名，需要更新所有引用
-- 增加复杂度（PatternDefinition、TargetSlot、CommandReceipt 等）
-- 现有示例需要全部重写
+| 原 P0 项 | 状态 | 评审结论 |
+|---------|------|---------|
+| 未定义符号 | ⚠️ 部分修复 | 已补 ConstraintDefinition 等，但 CodeValue、LocalizedText、OWLRestriction、SHACLPropertyShape 仍无定义 |
+| 参数作用域 | ✅ 基本修复 | CallableParameterDefinition 已上提，但 type 仍是自由字符串，非 TypeRef |
+| PatternDefinition | ⚠️ 部分修复 | IRI、版本已出现，但模式组合规则不足以稳定编译 |
+| 删除 Interface | ❌ 未修复 | 仅标记 deprecated，与 ADR "删除"决策不一致 |
+| 基数统一 | ⚠️ 部分修复 | 主结构已用 minCount/maxCount，但仍有 max: null、minSize 等 |
+| Association 映射 | ✅ 方向正确 | TargetSlot 是实质性改进，但旧 Field.semanticMapping 仍保留 |
+| Money/Quantity 投影 | ❌ 尚未闭环 | 改为值对象正确，但 AttributeType 仍统一投影为 datatypeProperty |
+| 双时间 | ❌ 尚未闭环 | 已加 knowledgeFrom/To，但模式冲突、逻辑键、Layer 4 映射不一致 |
+| Layer 4 去编排 | ⚠️ 部分修复 | MaterializationPlan 正确，但 IngestionPipeline 仍有运行态字段 |
+| 交易动作失败语义 | ⚠️ 部分修复 | 回执、幂等键已加，但重试与外部订单状态仍不够安全 |
 
-### 风险
-- 修改范围大，可能引入新的不一致性
-- 需要配套的模式验证器和编译器原型
+### 最重要的问题
+
+1. **模块解析缺失**：OntologyModule 仍是 `iri + namespace + list[uri] imports`，而非 `moduleIri + baseIri + preferredPrefix + version-locked ModuleImport`
+2. **Layer 2 组合矛盾**：TemporalFact 与 ProvenancedFact 都注入 publishedAt，但规则禁止注入同一 IRI
+3. **双时间查询不完整**：缺少 logicalKey、修订优先级、撤回语义
+4. **金额投影未闭环**：fin:quotedPrice 应是 owl:ObjectProperty，但 AttributeType 固定为 datatypeProperty
+5. **数据绑定多套真源**：Dataset.semanticMappings、SemanticMapping、Field.semanticMapping 重叠
 
 ## 参考
 

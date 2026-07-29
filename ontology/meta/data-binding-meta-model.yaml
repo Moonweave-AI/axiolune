@@ -1,20 +1,41 @@
 # Axiolune Ontology Meta-Model - Layer 4: Data Binding
-# Version: 0.2.0
+# Version: 0.3.0
 # Date: 2026-07-28
-# Governance: Follows ADR-001 architecture decisions
+# Governance: Follows ADR-001, ADR-003, ADR-004 architecture decisions
+
+module:
+  moduleIri: "https://axiolune.ai/ontology/meta/data-binding"
+  baseIri: "https://axiolune.ai/ontology/meta/data-binding/"
+  preferredPrefix: "ax-binding"
+  version: "0.3.0"
+  imports:
+    - moduleIri: "https://axiolune.ai/ontology/meta/core"
+      version: "0.3.0"
+      artifactDigest: "sha256:pending"
+      importMode: All
+    - moduleIri: "https://axiolune.ai/ontology/meta/patterns"
+      version: "0.3.0"
+      artifactDigest: "sha256:pending"
+      importMode: All
+    - moduleIri: "https://axiolune.ai/ontology/meta/behavior"
+      version: "0.3.0"
+      artifactDigest: "sha256:pending"
+      importMode: All
+  exports: []
 
 DataBinding:
-  version: "0.2.0"
+  version: "0.3.0"
   description: "Meta-model for mapping physical data sources (tables, files, APIs) to ontology concepts"
   layer: 4
-  dependencies:
-    - "ontology/meta/core-meta-model.yaml"
-    - "ontology/meta/cross-domain-patterns.yaml"
-    - "ontology/meta/behavior-meta-model.yaml"
+  changes:
+    - "v0.3.0: Global rename to *Definition suffix (ADR-004)"
+    - "v0.3.0: Updated module system with version-locked imports"
+    - "v0.3.0: Introduced TargetSlot union type for Association mapping (ADR-003)"
+    - "v0.3.0: Created MaterializationPlanDefinition, deprecated IngestionPipelineDefinition"
 
   note: |
     Layer 4 maps PHYSICAL data artifacts to SEMANTIC ontology concepts without polluting
-    the conceptual layer. A single ObjectType may map to multiple tables; a single table
+    the conceptual layer. A single ObjectTypeDefinition may map to multiple tables; a single table
     may map to multiple ObjectTypes.
 
   # ==================== Data Source ====================
@@ -100,8 +121,8 @@ DataBinding:
         connectionPoolSize: {type: integer, default: 10}
         timeout: {type: duration, default: "PT30S"}
 
-  # ==================== Dataset ====================
-  Dataset:
+  # ==================== DatasetDefinition ====================
+  DatasetDefinition:
     definition: "a meta-classifier for logical collections of data within a data source"
     purpose: "Represents tables, collections, topics, or files that contain entity data"
 
@@ -129,7 +150,7 @@ DataBinding:
 
     optionalFields:
       semanticMappings:
-        type: "list[SemanticMapping]"
+        type: "list[SemanticMappingDefinition]"
         description: "mappings from this dataset to ontology concepts"
 
       schema:
@@ -211,7 +232,7 @@ DataBinding:
 
     structures:
       ForeignKeyReference:
-        targetDataset: {type: uri, required: true, description: "referenced Dataset IRI"}
+        targetDataset: {type: uri, required: true, description: "referenced DatasetDefinition IRI"}
         targetField: {type: string, required: true}
         onDelete: {type: enum, values: [cascade, setNull, restrict], default: restrict}
         onUpdate: {type: enum, values: [cascade, setNull, restrict], default: restrict}
@@ -285,37 +306,37 @@ DataBinding:
 
       semanticMapping:
         type: uri
-        description: "reference to mapped AttributeType IRI"
+        description: "reference to mapped AttributeTypeDefinition IRI"
         example: "fin:closePrice"
 
   # ==================== Target Slot ====================
   TargetSlot:
     definition: "a union type representing different kinds of mapping targets (attributes, participant roles, relations, or pattern fields)"
-    purpose: "Allows SemanticMapping to target not just attributes but also Association participant roles, relations, and pattern-injected fields"
+    purpose: "Allows SemanticMappingDefinition to target not just attributes but also Association participant roles, relations, and pattern-injected fields"
     note: "Replaces simple targetAttribute: IRI with a discriminated union to support all mapping target types"
 
     discriminator: slotType
 
     variants:
       AttributeSlot:
-        description: "maps to an AttributeType"
+        description: "maps to an AttributeTypeDefinition"
         fields:
           slotType: {type: literal, value: "attribute"}
-          targetAttribute: {type: uri, required: true, description: "AttributeType IRI"}
+          targetAttribute: {type: uri, required: true, description: "AttributeTypeDefinition IRI"}
 
       ParticipantRoleSlot:
-        description: "maps to a participant role in an AssociationType"
+        description: "maps to a participant role in an AssociationTypeDefinition"
         fields:
           slotType: {type: literal, value: "participantRole"}
-          targetAssociation: {type: uri, required: true, description: "AssociationType IRI"}
+          targetAssociation: {type: uri, required: true, description: "AssociationTypeDefinition IRI"}
           targetRole: {type: string, required: true, description: "ParticipantRole.id"}
 
       RelationSlot:
-        description: "maps to a RelationType"
+        description: "maps to a RelationTypeDefinition"
         fields:
           slotType: {type: literal, value: "relation"}
-          targetRelation: {type: uri, required: true, description: "RelationType IRI"}
-          targetObjectType: {type: uri, required: false, description: "range ObjectType IRI (for disambiguation)"}
+          targetRelation: {type: uri, required: true, description: "RelationTypeDefinition IRI"}
+          targetObjectType: {type: uri, required: false, description: "range ObjectTypeDefinition IRI (for disambiguation)"}
 
       PatternFieldSlot:
         description: "maps to a field injected by a Layer 2 pattern"
@@ -325,10 +346,10 @@ DataBinding:
           targetField: {type: string, required: true, description: "injected attribute local name"}
 
   # ==================== Semantic Mapping ====================
-  SemanticMapping:
+  SemanticMappingDefinition:
     definition: "a meta-classifier for mappings between physical data structures and ontology concepts"
     purpose: "Bridges the gap between how data is stored and what it means"
-    note: "A Dataset can map to multiple ObjectTypes; an ObjectType can source from multiple Datasets"
+    note: "A DatasetDefinition can map to multiple ObjectTypes; an ObjectTypeDefinition can source from multiple Datasets"
 
     requiredFields:
       iri: {type: uri, unique: true}
@@ -337,12 +358,12 @@ DataBinding:
       sourceDataset:
         type: uri
         required: true
-        description: "Dataset IRI"
+        description: "DatasetDefinition IRI"
 
       targetType:
         type: uri
         required: true
-        description: "ObjectType or AssociationType IRI"
+        description: "ObjectTypeDefinition or AssociationTypeDefinition IRI"
         example: "fin:Equity"
 
       mappingType:
@@ -444,7 +465,7 @@ DataBinding:
         description: {type: string}
 
       JoinSpec:
-        dataset: {type: uri, required: true, description: "Dataset IRI to join"}
+        dataset: {type: uri, required: true, description: "DatasetDefinition IRI to join"}
         joinType: {type: enum, values: [inner, left, right, full], default: inner}
         conditions: {type: "list[JoinCondition]"}
 
@@ -523,7 +544,7 @@ DataBinding:
         severity: {type: enum, values: [error, warning, info]}
 
   # ==================== Materialization Plan ====================
-  MaterializationPlan:
+  MaterializationPlanDefinition:
     definition: "a declarative specification of how to materialize ontology instances from physical data sources"
     purpose: "Defines WHAT should be materialized and HOW data maps to ontology, without specifying runtime orchestration (scheduling, retries, monitoring)"
     note: "Runtime orchestration (schedule, retry, monitoring) moved to separate orchestration/runtime layer per ADR-003"
@@ -541,18 +562,18 @@ DataBinding:
         type: "list[uri]"
         required: true
         minCount: 1
-        description: "Dataset IRIs to be materialized"
+        description: "DatasetDefinition IRIs to be materialized"
 
       targetOntologyModule:
         type: uri
         required: true
-        description: "OntologyModule IRI where instances will be created"
+        description: "OntologyModuleDefinition IRI where instances will be created"
 
       semanticMappings:
         type: "list[uri]"
         required: true
         minCount: 1
-        description: "SemanticMapping IRIs that define how data maps to ontology"
+        description: "SemanticMappingDefinition IRIs that define how data maps to ontology"
 
       materializationMode:
         type: enum
@@ -608,8 +629,8 @@ DataBinding:
           description: "field name for timestamp comparison (when strategy=TimestampPriority)"
 
     deprecated_note: |
-      IngestionPipeline with schedule, retry, monitoring has been deprecated.
-      Use MaterializationPlan for declarative mapping specifications.
+      IngestionPipelineDefinition with schedule, retry, monitoring has been deprecated.
+      Use MaterializationPlanDefinition for declarative mapping specifications.
       For runtime orchestration, use dedicated workflow/orchestration tools (Airflow, Prefect, etc.)
       or the platform's runtime execution layer.
 
@@ -623,11 +644,11 @@ DataBinding:
 
       sourceDatasets:
         type: "list[uri]"
-        description: "upstream Dataset IRIs"
+        description: "upstream DatasetDefinition IRIs"
 
       targetDatasets:
         type: "list[uri]"
-        description: "downstream Dataset IRIs or ontology instances"
+        description: "downstream DatasetDefinition IRIs or ontology instances"
 
       transformations:
         type: "list[uri]"
@@ -649,14 +670,14 @@ DataBinding:
         recordsFailed: {type: integer}
 
   # ==================== Ingestion Pipeline (DEPRECATED) ====================
-  IngestionPipeline:
+  IngestionPipelineDefinition:
     definition: "a meta-classifier for ETL/ELT workflows that materialize ontology instances from data sources"
     purpose: "Orchestrates data extraction, transformation, validation, and loading"
     deprecated: true
-    deprecationReason: "Mixed declarative mapping with runtime orchestration, violating Layer 4 boundaries. Use MaterializationPlan for mapping specifications and external orchestration tools for runtime execution."
+    deprecationReason: "Mixed declarative mapping with runtime orchestration, violating Layer 4 boundaries. Use MaterializationPlanDefinition for mapping specifications and external orchestration tools for runtime execution."
     deprecatedSince: "0.3.0"
     removalVersion: "0.4.0"
-    migrationPath: "Convert to MaterializationPlan for mapping logic; move schedule/retry/monitoring to external orchestration layer (Airflow, Prefect, etc.)"
+    migrationPath: "Convert to MaterializationPlanDefinition for mapping logic; move schedule/retry/monitoring to external orchestration layer (Airflow, Prefect, etc.)"
 
     requiredFields:
       iri: {type: uri, unique: true}
@@ -713,7 +734,7 @@ DataBinding:
         iri: "fin:mapping:EquityEODPrice"
         label: "Equity End-of-Day Price Observation Mapping"
         sourceDataset: "datasource:bloomberg/equity_prices_eod"
-        targetType: "fin:PriceObservation"  # AssociationType
+        targetType: "fin:PriceObservation"  # AssociationTypeDefinition
         mappingType: directTable
 
         fieldMappings:
@@ -782,7 +803,7 @@ DataBinding:
         iri: "fin:mapping:PortfolioHolding"
         label: "Portfolio Holding Mapping"
         sourceDataset: "datasource:internal/portfolio_positions"
-        targetType: "fin:Holding"  # AssociationType
+        targetType: "fin:Holding"  # AssociationTypeDefinition
         mappingType: directTable
 
         fieldMappings:
@@ -826,20 +847,20 @@ DataBinding:
 
   # ==================== Validation Rules ====================
   ValidationRules:
-    - "SemanticMapping must reference valid Dataset and ObjectType/AssociationType"
+    - "SemanticMappingDefinition must reference valid DatasetDefinition and ObjectTypeDefinition/AssociationTypeDefinition"
     - "FieldMapping.target must be a valid TargetSlot variant (attribute, participantRole, relation, patternField)"
-    - "TargetSlot.targetAttribute must reference valid AttributeType from Layer 1"
-    - "TargetSlot.targetAssociation must reference valid AssociationType from Layer 1"
-    - "TargetSlot.targetRole must match a ParticipantRole.id in the referenced AssociationType"
-    - "TargetSlot.targetRelation must reference valid RelationType from Layer 1"
+    - "TargetSlot.targetAttribute must reference valid AttributeTypeDefinition from Layer 1"
+    - "TargetSlot.targetAssociation must reference valid AssociationTypeDefinition from Layer 1"
+    - "TargetSlot.targetRole must match a ParticipantRole.id in the referenced AssociationTypeDefinition"
+    - "TargetSlot.targetRelation must reference valid RelationTypeDefinition from Layer 1"
     - "TargetSlot.targetPattern must reference valid PatternDefinition from Layer 2"
     - "IdentityMappingSpec.syntheticKey must use deterministic UUID generation for reproducibility"
     - "IdentityMappingSpec.uriTemplate must produce stable, reproducible IRIs"
     - "TemporalMappingSpec.pattern must reference valid pattern from Layer 2"
     - "TransformationExpression must declare language, input fields, output type, version, and test cases"
     - "Multiple FieldMappings targeting same attribute must have conflict resolution strategy"
-    - "MaterializationPlan.semanticMappings must all target the same OntologyModule"
-    - "IngestionPipeline is deprecated; use MaterializationPlan + external orchestration"
+    - "MaterializationPlanDefinition.semanticMappings must all target the same OntologyModuleDefinition"
+    - "IngestionPipelineDefinition is deprecated; use MaterializationPlanDefinition + external orchestration"
     - "TemporalMapping field references must exist in source dataset schema"
     - "IdentityMapping must produce globally unique IRIs"
     - "Multiple SemanticMappings for same targetType must have non-overlapping filters or priority"
@@ -851,7 +872,7 @@ DataBinding:
   ImplementationNotes:
     - "Layer 4 is the ONLY layer that references physical data structures"
     - "Layers 1-3 remain independent of data storage choices"
-    - "SemanticMapping enables multiple physical representations of same concept"
+    - "SemanticMappingDefinition enables multiple physical representations of same concept"
     - "IdentityMapping ensures stable IRIs across ingestion runs"
     - "TemporalMapping ensures Point-in-Time correctness (Qlib requirement)"
     - "ValidationRules enforce data quality before materializing ontology instances"
