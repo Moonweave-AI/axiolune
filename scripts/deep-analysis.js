@@ -83,10 +83,17 @@ const definedConstraints = new Set();
 const referencedConstraints = new Set();
 
 if (patterns.CrossDomainPatterns) {
+  // Check for constraints dictionary
+  if (patterns.CrossDomainPatterns.constraints) {
+    for (const constraintName in patterns.CrossDomainPatterns.constraints) {
+      definedConstraints.add(constraintName);
+    }
+  }
+
   for (const key in patterns.CrossDomainPatterns) {
     const item = patterns.CrossDomainPatterns[key];
 
-    // Check if it's a constraint definition
+    // Check if it's a constraint definition (old style - top-level with IRI)
     if (item && item.iri && item.iri.includes('/constraints/')) {
       definedConstraints.add(key);
     }

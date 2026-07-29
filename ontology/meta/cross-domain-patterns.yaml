@@ -10,9 +10,9 @@ module:
   preferredPrefix: "ax-pattern"
   version: "0.3.0"
   imports:
-    - moduleIri: "https://axiolune.ai/ontology/meta/core#sha256:3af6c95570984e6c121f5790a1a4654f8a787b99e3598909af3d70a6211b99c8"
+    - moduleIri: "https://axiolune.ai/ontology/meta/core#sha256:6a3861b3861fc2301deddd55965f23030f9fae653755c0568fa1ea2f4d634592"
       version: "0.3.0"
-      artifactDigest: "sha256:3af6c95570984e6c121f5790a1a4654f8a787b99e3598909af3d70a6211b99c8"  # TODO: Calculate after core-meta-model.yaml is finalized
+      artifactDigest: "sha256:6a3861b3861fc2301deddd55965f23030f9fae653755c0568fa1ea2f4d634592"  # TODO: Calculate after core-meta-model.yaml is finalized
       importMode: All
   exports: []  # Export all pattern definitions
 
@@ -212,6 +212,116 @@ CrossDomainPatterns:
         description: "attributes added to the type"
 
   # ==================== Patterns ====================
+
+  # ==================== Constraint Definitions ====================
+  # Added to complete constraint closure (P0-2 fix)
+
+  constraints:
+    PublishBeforeReceive:
+      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/PublishBeforeReceive"
+      namespace: "pattern"
+      localName: "PublishBeforeReceive"
+      label: "Publish Before Receive Constraint"
+      definition: "validation rule ensuring that the publication timestamp of information does not occur after its reception timestamp"
+      constraintType: "validation"
+      formalExpression: 'publishedAt <= receivedAt OR receivedAt IS NULL'
+      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/publishedAt"
+      severity: "error"
+      message: "Publication time must not be after reception time"
+      note: "Allows null receivedAt for unpublished drafts; enforces causal consistency"
+
+    ValidIntervalConsistency:
+      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/ValidIntervalConsistency"
+      namespace: "pattern"
+      localName: "ValidIntervalConsistency"
+      label: "Valid Interval Consistency Constraint"
+      definition: "validation rule ensuring that the start of a business validity interval does not occur after its end"
+      constraintType: "validation"
+      formalExpression: 'validFrom <= validTo OR validTo IS NULL'
+      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/validFrom"
+      severity: "error"
+      message: "Valid interval start must not be after end"
+      note: "Allows open-ended intervals (null validTo); enforces temporal coherence"
+
+    KnowledgeIntervalConsistency:
+      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/KnowledgeIntervalConsistency"
+      namespace: "pattern"
+      localName: "KnowledgeIntervalConsistency"
+      label: "Knowledge Interval Consistency Constraint"
+      definition: "validation rule ensuring that the start of a knowledge time interval does not occur after its end"
+      constraintType: "validation"
+      formalExpression: 'knowledgeFrom <= knowledgeTo OR knowledgeTo IS NULL'
+      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom"
+      severity: "error"
+      message: "Knowledge interval start must not be after end"
+      note: "Allows open-ended knowledge (null knowledgeTo); critical for bi-temporal queries"
+
+    NoFutureKnowledge:
+      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/NoFutureKnowledge"
+      namespace: "pattern"
+      localName: "NoFutureKnowledge"
+      label: "No Future Knowledge Constraint"
+      definition: "validation rule ensuring that knowledge acquisition time does not occur in the future relative to the current system time"
+      constraintType: "validation"
+      formalExpression: 'knowledgeFrom <= CURRENT_TIMESTAMP'
+      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom"
+      severity: "warning"
+      message: "Knowledge time must not be in the future"
+      note: "WARNING: Uses CURRENT_TIMESTAMP which makes historical replay non-deterministic; should be replaced with transaction time for reproducibility"
+
+    ObservationBeforeRecording:
+      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/ObservationBeforeRecording"
+      namespace: "pattern"
+      localName: "ObservationBeforeRecording"
+      label: "Observation Before Recording Constraint"
+      definition: "validation rule ensuring that the observation timestamp does not occur after the recording timestamp"
+      constraintType: "validation"
+      formalExpression: 'observedAt <= recordedAt'
+      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/observedAt"
+      severity: "error"
+      message: "Observation time must not be after recording time"
+      note: "Used by TemporalObservation pattern; enforces causal ordering"
+
+    ConfidenceRange:
+      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/ConfidenceRange"
+      namespace: "pattern"
+      localName: "ConfidenceRange"
+      label: "Confidence Range Constraint"
+      definition: "validation rule ensuring that confidence values are bounded within the closed interval from zero to one"
+      constraintType: "validation"
+      formalExpression: 'confidence >= 0.0 AND confidence <= 1.0'
+      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/confidence"
+      severity: "error"
+      message: "Confidence must be between 0.0 and 1.0 inclusive"
+      note: "Enforces probability interpretation; 0.0 = no confidence, 1.0 = certainty"
+
+    DigestFormat:
+      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/DigestFormat"
+      namespace: "pattern"
+      localName: "DigestFormat"
+      label: "Digest Format Constraint"
+      definition: "validation rule ensuring that cryptographic digest values conform to the canonical format of algorithm prefix followed by colon and hexadecimal hash"
+      constraintType: "validation"
+      formalExpression: '^(sha256|sha512|blake3):[a-f0-9]{64,128}$'
+      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/evidenceDigest"
+      severity: "error"
+      message: "Digest must be in format algorithm:hexdigest (e.g., sha256:abc123...)"
+      note: "Supports sha256 (64 hex), sha512 (128 hex), blake3 (64 hex); ensures integrity verification"
+
+    SemanticVersionFormat:
+      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/SemanticVersionFormat"
+      namespace: "pattern"
+      localName: "SemanticVersionFormat"
+      label: "Semantic Version Format Constraint"
+      definition: "validation rule ensuring that semantic version strings conform to the MAJOR.MINOR.PATCH specification"
+      constraintType: "validation"
+      formalExpression: '^\\d+\\.\\d+\\.\\d+$'
+      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/semanticVersion"
+      severity: "error"
+      message: "Semantic version must be in format MAJOR.MINOR.PATCH (e.g., 1.2.3)"
+      note: "Follows SemVer 2.0.0 specification; pre-release and build metadata not currently supported"
+
+
   patterns:
     # ==================== Publication Timing Pattern (Base) ====================
     - pattern: PublicationTiming
