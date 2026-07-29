@@ -9,17 +9,17 @@ module:
   preferredPrefix: "ax-binding"
   version: "0.5.0"
   imports:
-    - moduleIri: "https://axiolune.ai/ontology/meta/core#sha256:df6c5aa670df2d1bc5444c283132d3142a54a44fe97a88b6a70220e8731e8821"
+    - moduleIri: "https://axiolune.ai/ontology/meta/core#sha256:a8abfe0e96ab7f84f8ae322f8ffedfe2dda29bbdb6ba020d2a68aad11d67d01d"
       version: "0.4.0"
-      artifactDigest: "sha256:df6c5aa670df2d1bc5444c283132d3142a54a44fe97a88b6a70220e8731e8821"
+      artifactDigest: "sha256:a8abfe0e96ab7f84f8ae322f8ffedfe2dda29bbdb6ba020d2a68aad11d67d01d"
       importMode: All
-    - moduleIri: "https://axiolune.ai/ontology/meta/patterns#sha256:7c06c28d73f1f989470bf995efc66ed3e50d91913068e35e3e464ccd41e0d411"
+    - moduleIri: "https://axiolune.ai/ontology/meta/patterns#sha256:1222a140204bf3eb035f4b19b1b5ef691d750209565155b85dd0079e9d39cb9b"
       version: "0.4.0"
-      artifactDigest: "sha256:7c06c28d73f1f989470bf995efc66ed3e50d91913068e35e3e464ccd41e0d411"
+      artifactDigest: "sha256:1222a140204bf3eb035f4b19b1b5ef691d750209565155b85dd0079e9d39cb9b"
       importMode: All
-    - moduleIri: "https://axiolune.ai/ontology/meta/behavior#sha256:c4437f3e658be399ab232777027ec68b6bc040f7a46c590a2863c0933ece3148"
+    - moduleIri: "https://axiolune.ai/ontology/meta/behavior#sha256:7ba324d2a616f78b388edf45c05037125ccd8d12a1b045dadfd05013c0f33a3e"
       version: "0.4.0"
-      artifactDigest: "sha256:c4437f3e658be399ab232777027ec68b6bc040f7a46c590a2863c0933ece3148"
+      artifactDigest: "sha256:7ba324d2a616f78b388edf45c05037125ccd8d12a1b045dadfd05013c0f33a3e"
       importMode: All
   exports: []
 
@@ -1078,6 +1078,84 @@ DataBinding:
         recordsProcessed: {type: integer}
         recordsFailed: {type: integer}
 
+  # ==================== PIT Validation Request (ADR-012) ====================
+  PITValidationRequest:
+    definition: "invocation contract for the dynamic Point-in-Time validator that enforces runtime-parameterized constraints"
+    purpose: "Binds MaterializationRun context + three-axis as-of parameters + target data graph, enabling NoFutureKnowledge and AvailabilityBeforeUse enforcement outside static SHACL"
+    note: |
+      The SHACL sh:ConstraintComponent definitions for NoFutureKnowledge and
+      AvailabilityBeforeUse are declarative specifications (Tier-2, parse-verified).
+      This request is the formal invocation contract: the PIT validator reads
+      $referenceTime from materializationRun, $queryTime from asOfAvailable,
+      and validates the target graph. This is approach B per the v7 review:
+      runtime validation with explicit MaterializationRun input.
+
+    requiredFields:
+      materializationRun:
+        type: uri
+        required: true
+        description: "MaterializationRun IRI providing immutable referenceTime (binds $referenceTime)"
+
+      asOfKnowledge:
+        type: instant
+        required: true
+        description: "knowledge-time pivot (binds NoFutureKnowledge: knowledgeFrom <= $referenceTime)"
+
+      asOfValid:
+        type: instant
+        required: true
+        description: "valid-time pivot"
+
+      asOfAvailable:
+        type: instant
+        required: true
+        description: "availability-time pivot (binds AvailabilityBeforeUse: $queryTime >= availableFrom)"
+
+      targetGraph:
+        type: uri
+        required: true
+        description: "named graph or dataset IRI to validate"
+
+    optionalFields:
+      targetShapes:
+        type: "list[uri]"
+        description: "specific NodeShape IRIs to apply (default: all pattern shapes targeting the data)"
+
+      constraintFilter:
+        type: "list[uri]"
+        description: "specific ConstraintComponent IRIs to evaluate (default: NoFutureKnowledge + AvailabilityBeforeUse + AvailabilityIntervalConsistency)"
+
+    structures:
+      ValidationResult:
+        conforms:
+          type: boolean
+          required: true
+          description: "true if all constraints satisfied"
+
+        violations:
+          type: "list[ConstraintViolation]"
+          description: "detailed violations if !conforms"
+
+      ConstraintViolation:
+        constraintRef:
+          type: uri
+          required: true
+          description: "ConstraintDefinition IRI that was violated"
+
+        focusNode:
+          type: uri
+          required: true
+          description: "IRI of the data node that violated the constraint"
+
+        value:
+          type: any
+          description: "the offending value"
+
+        message:
+          type: string
+          required: true
+          description: "human-readable violation message"
+
   # ==================== Ingestion Pipeline (DEPRECATED) ====================
   IngestionPipelineDefinition:
     definition: "a meta-classifier for ETL/ELT workflows that materialize ontology instances from data sources"
@@ -1394,6 +1472,9 @@ DataBinding:
     - "Transformation artifacts must be version-controlled and reproducible"
     - "DataSource credentials must never be stored in mapping definitions (use credentialsRef)"
     - "Materialization must emit audit events for Layer 2 Provenance tracking"
+    - "PITValidationRequest.materializationRun binds $referenceTime for NoFutureKnowledge (ADR-012)"
+    - "PITValidationRequest.asOfAvailable binds $queryTime for AvailabilityBeforeUse (ADR-012)"
+    - "PITValidationRequest.targetGraph is the data to validate; constraintFilter defaults to all runtime-parameterized constraints"
 
   # ==================== Implementation Notes ====================
   ImplementationNotes:

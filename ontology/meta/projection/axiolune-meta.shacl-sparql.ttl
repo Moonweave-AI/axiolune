@@ -49,3 +49,7 @@ _:b41 a sh:SPARQLSelectValidator;
     sh:message "Cannot query data before its availability period begins";
     sh:severity sh:Violation;
     sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?t . FILTER(?t > $queryTime) }".
+ax:PatternFactSparqlShape sh:sparql _:b42.
+_:b42 sh:message "Availability interval start must not be after end";
+    sh:severity sh:Violation;
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?af . $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?at . FILTER(BOUND(?at) && ?af > ?at) }".

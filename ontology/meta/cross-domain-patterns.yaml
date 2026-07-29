@@ -1,7 +1,7 @@
 # Axiolune Ontology Meta-Model - Layer 2: Cross-Domain Fact Patterns
 # Version: 0.4.0
 # Date: 2026-07-29
-# Governance: Follows ADR-001, ADR-003, ADR-004, ADR-012 architecture decisions
+# Governance: Follows ADR-001, ADR-002, ADR-003, ADR-004, ADR-012 architecture decisions
 # Changes: Introduced formal PatternDefinition structure; updated module system
 
 module:
@@ -9,10 +9,14 @@ module:
   baseIri: "https://axiolune.ai/ontology/meta/patterns/"
   preferredPrefix: "ax-pattern"
   version: "0.4.0"
+  curiePrefixes:
+    ax-meta: "https://axiolune.ai/ontology/meta/"
+    ax-pattern: "https://axiolune.ai/ontology/meta/patterns/"
+    fin: "https://axiolune.ai/ontology/domain/"
   imports:
-    - moduleIri: "https://axiolune.ai/ontology/meta/core#sha256:df6c5aa670df2d1bc5444c283132d3142a54a44fe97a88b6a70220e8731e8821"
+    - moduleIri: "https://axiolune.ai/ontology/meta/core#sha256:a8abfe0e96ab7f84f8ae322f8ffedfe2dda29bbdb6ba020d2a68aad11d67d01d"
       version: "0.4.0"
-      artifactDigest: "sha256:df6c5aa670df2d1bc5444c283132d3142a54a44fe97a88b6a70220e8731e8821"
+      artifactDigest: "sha256:a8abfe0e96ab7f84f8ae322f8ffedfe2dda29bbdb6ba020d2a68aad11d67d01d"
       importMode: All
   exports: []  # Export all pattern definitions
 
@@ -240,7 +244,7 @@ CrossDomainPatterns:
       label: "Publish Before Receive Constraint"
       definition: "validation rule ensuring that the publication timestamp of information does not occur after its reception timestamp"
       constraintType: "Logical"
-      scope: "Attribute"
+      scope: "Object"
       expression:
         language: "Custom"
         expression: 'publishedAt <= receivedAt OR receivedAt IS NULL'
@@ -256,7 +260,7 @@ CrossDomainPatterns:
       label: "Valid Interval Consistency Constraint"
       definition: "validation rule ensuring that the start of a business validity interval does not occur after its end"
       constraintType: "Logical"
-      scope: "Attribute"
+      scope: "Object"
       expression:
         language: "Custom"
         expression: 'validFrom <= validTo OR validTo IS NULL'
@@ -272,7 +276,7 @@ CrossDomainPatterns:
       label: "Knowledge Interval Consistency Constraint"
       definition: "validation rule ensuring that the start of a knowledge time interval does not occur after its end"
       constraintType: "Logical"
-      scope: "Attribute"
+      scope: "Object"
       expression:
         language: "Custom"
         expression: 'knowledgeFrom <= knowledgeTo OR knowledgeTo IS NULL'
@@ -288,7 +292,7 @@ CrossDomainPatterns:
       label: "No Future Knowledge Constraint"
       definition: "validation rule ensuring that knowledge acquisition time does not occur in the future relative to the immutable reference time of the materialization run"
       constraintType: "Logical"
-      scope: "Attribute"
+      scope: "Object"
       expression:
         language: "Custom"
         expression: 'knowledgeFrom <= $referenceTime'
@@ -309,7 +313,7 @@ CrossDomainPatterns:
       label: "Observation Before Recording Constraint"
       definition: "validation rule ensuring that the observation timestamp does not occur after the recording timestamp"
       constraintType: "Logical"
-      scope: "Attribute"
+      scope: "Object"
       expression:
         language: "Custom"
         expression: 'observedAt <= recordedAt'
@@ -373,7 +377,7 @@ CrossDomainPatterns:
       label: "Availability Before Use Constraint"
       definition: "fail-closed validation rule ensuring that a fact is not consumed before the beginning of its availability period, preventing look-ahead bias in backtesting and enforcing data-licensing compliance"
       constraintType: "Logical"
-      scope: "Attribute"
+      scope: "Object"
       expression:
         language: "Custom"
         expression: '$queryTime >= availableFrom'
@@ -394,7 +398,7 @@ CrossDomainPatterns:
       label: "Availability Interval Consistency Constraint"
       definition: "validation rule ensuring that the start of an availability interval does not occur after its end"
       constraintType: "Logical"
-      scope: "Attribute"
+      scope: "Object"
       expression:
         language: "Custom"
         expression: 'availableFrom <= availableTo OR availableTo IS NULL'
@@ -577,7 +581,7 @@ CrossDomainPatterns:
             AND (knowledgeTo IS NULL OR knowledgeTo > :asOfKnowledge)
             AND validFrom <= :asOfValid
             AND (validTo IS NULL OR validTo > :asOfValid)
-            AND (availableFrom IS NULL OR availableFrom <= :asOfAvailable)
+            AND availableFrom <= :asOfAvailable
             AND (availableTo IS NULL OR availableTo > :asOfAvailable)
           ORDER BY knowledgeFrom DESC, validFrom DESC
           LIMIT 1 PER logical_key
@@ -855,4 +859,4 @@ CrossDomainPatterns:
     - "Identity pattern is implicit in ObjectTypeDefinition/AssociationTypeDefinition; not a separate pattern"
     - "FIBO alignment references retained for compatibility but should be formalized as Alignment objects"
     - "Classification pattern omitted pending decision on whether it should be a pattern or a relation"
-    - "All https://axiolune.ai/ontology/meta/patterns/ placeholders await ADR-002 IRI namespace decision"
+    - "All IRIs are final per ADR-002 (Accepted); CURIE prefixes (ax-meta, ax-pattern, fin) expand to https://axiolune.ai/ontology/{meta,meta/patterns,domain}/ respectively; absolute IRIs are canonical"

@@ -9,13 +9,13 @@ module:
   preferredPrefix: "ax-behavior"
   version: "0.4.0"
   imports:
-    - moduleIri: "https://axiolune.ai/ontology/meta/core#sha256:df6c5aa670df2d1bc5444c283132d3142a54a44fe97a88b6a70220e8731e8821"
+    - moduleIri: "https://axiolune.ai/ontology/meta/core#sha256:a8abfe0e96ab7f84f8ae322f8ffedfe2dda29bbdb6ba020d2a68aad11d67d01d"
       version: "0.4.0"
-      artifactDigest: "sha256:df6c5aa670df2d1bc5444c283132d3142a54a44fe97a88b6a70220e8731e8821"
+      artifactDigest: "sha256:a8abfe0e96ab7f84f8ae322f8ffedfe2dda29bbdb6ba020d2a68aad11d67d01d"
       importMode: All
-    - moduleIri: "https://axiolune.ai/ontology/meta/patterns#sha256:7c06c28d73f1f989470bf995efc66ed3e50d91913068e35e3e464ccd41e0d411"
+    - moduleIri: "https://axiolune.ai/ontology/meta/patterns#sha256:1222a140204bf3eb035f4b19b1b5ef691d750209565155b85dd0079e9d39cb9b"
       version: "0.4.0"
-      artifactDigest: "sha256:7c06c28d73f1f989470bf995efc66ed3e50d91913068e35e3e464ccd41e0d411"
+      artifactDigest: "sha256:1222a140204bf3eb035f4b19b1b5ef691d750209565155b85dd0079e9d39cb9b"
       importMode: All
   exports: []
 
@@ -157,6 +157,10 @@ PlatformBehavior:
     examples:
       getPriceAt:
         iri: "fin:query:GetPriceAt"
+        namespace: "fin"
+        localName: "GetPriceAt"
+        label: "Get Price At"
+        definition: "example query: retrieve the market price of an instrument at a three-axis point in time"
         targetType: "fin:Instrument"
         parameters:
           - {name: instrument, type: "fin:Instrument", required: true}
@@ -172,6 +176,10 @@ PlatformBehavior:
 
       listActiveOrders:
         iri: "fin:query:ListActiveOrders"
+        namespace: "fin"
+        localName: "ListActiveOrders"
+        label: "List Active Orders"
+        definition: "example query: list active orders for an account at a three-axis point in time"
         targetType: "fin:Order"
         parameters:
           - {name: account, type: "fin:Account", required: true}
@@ -241,6 +249,10 @@ PlatformBehavior:
     examples:
       calculateYieldToMaturity:
         iri: "fin:function:CalculateYTM"
+        namespace: "fin"
+        localName: "CalculateYTM"
+        label: "Calculate Yield To Maturity"
+        definition: "example function: calculate bond yield to maturity from price and coupon"
         parameters:
           - {name: price, type: "fin:MoneyTypeDefinition", required: true}
           - {name: faceValue, type: "fin:MoneyTypeDefinition", required: true}
@@ -259,6 +271,10 @@ PlatformBehavior:
 
       computePortfolioValue:
         iri: "fin:function:ComputePortfolioValue"
+        namespace: "fin"
+        localName: "ComputePortfolioValue"
+        label: "Compute Portfolio Value"
+        definition: "example function: compute total portfolio value at a three-axis point in time"
         parameters:
           - {name: holdings, type: "list[fin:Holding]", required: true}
           - {name: asOfKnowledge, type: instant, required: true, description: "knowledge-time pivot (ADR-012)"}
@@ -429,7 +445,7 @@ PlatformBehavior:
           applicableWhen:
             type: enum
             required: true
-            values: [PartiallyExecuted, FullyExecuted, Unknown, Failed]
+            values: [PartiallyExecuted, FullyExecuted, Unknown, Failed, Published, Withdrawn]
             description: "when this compensating action is applicable"
           successGuarantee:
             type: enum
@@ -485,6 +501,10 @@ PlatformBehavior:
     examples:
       SubmitOrder:
         iri: "fin:action:SubmitOrder"
+        namespace: "fin"
+        localName: "SubmitOrder"
+        label: "Submit Order"
+        definition: "example action: submit a trading order to external broker with governance"
         effectDomain: external
         parameters:
           - {name: order, type: "fin:Order", required: true}
@@ -565,6 +585,10 @@ PlatformBehavior:
 
       CancelOrder:
         iri: "fin:action:CancelOrder"
+        namespace: "fin"
+        localName: "CancelOrder"
+        label: "Cancel Order"
+        definition: "example action: cancel a previously submitted order with broker reconciliation"
         effectDomain: external
         parameters:
           - {name: order, type: "fin:Order", required: true}
@@ -590,6 +614,10 @@ PlatformBehavior:
 
       PublishResearchReport:
         iri: "fin:action:PublishResearchReport"
+        namespace: "fin"
+        localName: "PublishResearchReport"
+        label: "Publish Research Report"
+        definition: "example action: publish a research report with compliance withdrawal support"
         effectDomain: internal
         parameters:
           - {name: report, type: "fin:ResearchReport", required: true}

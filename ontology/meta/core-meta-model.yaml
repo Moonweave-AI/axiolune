@@ -360,7 +360,7 @@ MetaModel:
         unique: true
         constraint: "globally unique across all namespaces (FIBO hygiene rule #1)"
         example: "https://axiolune.ai/ontology/meta/core/finance/Equity"
-        note: "IRI namespace strategy pending ADR-002"
+        note: "IRI namespace strategy per ADR-002 (Accepted): CURIE prefixes ax-meta, ax-pattern, fin are reserved; absolute IRIs are canonical, CURIEs are convenience aliases expanded by the registry"
 
       namespace:
         type: string
@@ -1309,12 +1309,21 @@ MetaModel:
         default: Error
 
       message:
-        type: LocalizedText
+        type: string
         required: true
-        description: "error message template for violations"
+        description: "human-readable violation message template"
         example: "ISIN check digit validation failed for value {value}"
 
     optionalFields:
+      targetElement:
+        type: uri
+        description: "IRI of the primary element this constraint validates (pattern extension; used by Layer 2 pattern constraints to specify the attribute they constrain)"
+        example: "https://axiolune.ai/ontology/meta/patterns/attributes/confidence"
+
+      note:
+        type: string
+        description: "explanatory note for this constraint"
+
       parameters:
         type: "list[ConstraintParameter]"
         description: "parameterized constraints"

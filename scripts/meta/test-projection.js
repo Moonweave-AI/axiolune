@@ -115,6 +115,28 @@ async function validate(data, label) {
   if (!rtba.conforms && rtba.paths.some(p => p.includes('availableFrom'))) ok('TemporalFact missing availableFrom correctly rejected (fail-closed PIT)');
   else bad(`TemporalFact missing availableFrom should be rejected (fail-closed); conforms=${rtba.conforms} paths=${rtba.paths.join(',')}`);
 
+  // ---- Constraint coverage: every source constraint must have a SHACL projection ----
+  console.log('\n=== Constraint coverage (source -> SHACL product) ===');
+  const yaml = require('js-yaml');
+  const fs2 = require('fs');
+  const patterns = yaml.load(fs2.readFileSync(path.join(META, 'cross-domain-patterns.yaml'), 'utf8'));
+  const sourceConstraints = Object.keys(patterns.CrossDomainPatterns.constraints || {});
+  // Collect all string literals from both SHACL files (messages carry constraint identity)
+  const shaclText = fs2.readFileSync(path.join(META, 'projection', 'axiolune-meta.shacl.ttl'), 'utf8');
+  const sparqlText = fs2.readFileSync(path.join(META, 'projection', 'axiolune-meta.shacl-sparql.ttl'), 'utf8');
+  let covered = 0;
+  for (const name of sourceConstraints) {
+    const c = patterns.CrossDomainPatterns.constraints[name];
+    // Each constraint's message should appear in one of the SHACL files
+    const msg = c.message || '';
+    const found = shaclText.includes(msg) || sparqlText.includes(msg) ||
+                  sparqlText.includes(name + 'Component'); // ConstraintComponent naming
+    if (found) { ok(`constraint ${name} has SHACL projection`); covered++; }
+    else bad(`constraint ${name} has NO SHACL projection (message not found in any .ttl)`);
+  }
+  if (covered === sourceConstraints.length) ok(`All ${covered} source constraints have SHACL projections`);
+  else bad(`Only ${covered}/${sourceConstraints.length} constraints have SHACL projections`);
+
   console.log('\n' + '='.repeat(60));
   if (fail === 0) { console.log(`✅ PROJECTION VERIFIED (${pass} assertions)`); process.exit(0); }
   else { console.log(`❌ PROJECTION VERIFICATION FAILED (${fail} failures)`); process.exit(1); }

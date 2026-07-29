@@ -163,6 +163,7 @@ function sparqlFor(name, c) {
   const sel = {
     ValidIntervalConsistency: `SELECT $this WHERE { $this ${pathOf(attrs.validFrom.iri)} ?vf . $this ${pathOf(attrs.validTo.iri)} ?vt . FILTER(BOUND(?vt) && ?vf > ?vt) }`,
     KnowledgeIntervalConsistency: `SELECT $this WHERE { $this ${pathOf(attrs.knowledgeFrom.iri)} ?kf . $this ${pathOf(attrs.knowledgeTo.iri)} ?kt . FILTER(BOUND(?kt) && ?kf > ?kt) }`,
+    AvailabilityIntervalConsistency: `SELECT $this WHERE { $this ${pathOf(attrs.availableFrom.iri)} ?af . $this ${pathOf(attrs.availableTo.iri)} ?at . FILTER(BOUND(?at) && ?af > ?at) }`,
     PublishBeforeReceive: `SELECT $this WHERE { $this ${pathOf(attrs.publishedAt.iri)} ?pub . $this ${pathOf(attrs.receivedAt.iri)} ?rcv . FILTER(?pub > ?rcv) }`,
     ObservationBeforeRecording: `SELECT $this WHERE { $this ${pathOf(attrs.observedAt.iri)} ?obs . $this ${pathOf(attrs.recordedAt.iri)} ?rec . FILTER(?obs > ?rec) }`,
   };
