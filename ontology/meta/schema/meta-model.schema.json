@@ -2,19 +2,30 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://axiolune.ai/ontology/meta/schema/meta-model.schema.json",
   "title": "Axiolune Meta-Model Schema",
-  "description": "JSON Schema for validating Axiolune ontology meta-model definitions",
+  "description": "JSON Schema for validating Axiolune ontology meta-model YAML files with hierarchical structure",
   "type": "object",
-  "required": ["module", "definitions"],
-  "additionalProperties": false,
+  "required": ["module"],
+  "additionalProperties": true,
   "properties": {
     "module": {
       "$ref": "#/$defs/ModuleMetadata"
-    },
-    "definitions": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/Definition"
-      }
+    }
+  },
+  "patternProperties": {
+    "^[A-Z][a-zA-Z0-9]*$": {
+      "description": "Top-level sections like MetaModel, CrossDomainPatterns, BehaviorModel, DataBinding",
+      "type": "object",
+      "properties": {
+        "version": {"$ref": "#/$defs/SemanticVersion"},
+        "description": {"type": "string"},
+        "layer": {"type": "integer", "minimum": 1, "maximum": 4},
+        "changes": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "note": {"type": "string"}
+      },
+      "additionalProperties": true
     }
   },
   "$defs": {
@@ -95,363 +106,211 @@
         }
       }
     },
-    "Definition": {
-      "oneOf": [
-        {"$ref": "#/$defs/OntologyModuleDefinition"},
-        {"$ref": "#/$defs/ObjectTypeDefinition"},
-        {"$ref": "#/$defs/AttributeTypeDefinition"},
-        {"$ref": "#/$defs/RelationTypeDefinition"},
-        {"$ref": "#/$defs/IdentifierTypeDefinition"},
-        {"$ref": "#/$defs/CodeListTypeDefinition"},
-        {"$ref": "#/$defs/StructuredValueTypeDefinition"},
-        {"$ref": "#/$defs/PatternDefinition"},
-        {"$ref": "#/$defs/QueryTypeDefinition"},
-        {"$ref": "#/$defs/ActionTypeDefinition"},
-        {"$ref": "#/$defs/DatasetDefinition"},
-        {"$ref": "#/$defs/FieldMappingDefinition"}
-      ]
-    },
     "OntologyModuleDefinition": {
       "type": "object",
-      "required": ["kind", "iri", "definition"],
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
-        "kind": {"const": "OntologyModuleDefinition"},
-        "iri": {"$ref": "#/$defs/IRI"},
         "definition": {"type": "string"},
-        "documentation": {"type": "string"},
-        "moduleIri": {"$ref": "#/$defs/IRI"},
-        "baseIri": {"type": "string", "pattern": "^https?://[^\\s]+[/#]$"},
-        "preferredPrefix": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
-        "version": {"$ref": "#/$defs/SemanticVersion"},
-        "imports": {
-          "type": "array",
-          "items": {"$ref": "#/$defs/ModuleImportDefinition"}
-        },
-        "exports": {
-          "type": "array",
-          "items": {"type": "string"}
-        },
-        "owlProjection": {"$ref": "#/$defs/OWLProjection"}
+        "owlProjection": {"$ref": "#/$defs/OWLProjection"},
+        "requiredFields": {"type": "object"},
+        "optionalFields": {"type": "object"},
+        "note": {"type": "string"}
       }
     },
     "ObjectTypeDefinition": {
       "type": "object",
-      "required": ["kind", "iri", "definition"],
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
-        "kind": {"const": "ObjectTypeDefinition"},
-        "iri": {"$ref": "#/$defs/IRI"},
         "definition": {"type": "string"},
-        "documentation": {"type": "string"},
-        "isAbstract": {"type": "boolean", "default": false},
-        "superTypes": {
-          "type": "array",
-          "items": {"$ref": "#/$defs/TypeRef"}
-        },
-        "appliedPatterns": {
-          "type": "array",
-          "items": {"$ref": "#/$defs/IRI"}
-        },
-        "localAttributes": {
-          "type": "array",
-          "items": {"$ref": "#/$defs/IRI"}
-        },
-        "logicalKey": {
-          "type": "array",
-          "items": {"$ref": "#/$defs/IRI"}
-        },
         "owlProjection": {"$ref": "#/$defs/OWLProjection"},
-        "examples": {
-          "type": "array",
-          "items": {"type": "object"}
-        }
+        "requiredFields": {"type": "object"},
+        "optionalFields": {"type": "object"},
+        "examples": {"type": "array"}
       }
     },
     "AttributeTypeDefinition": {
       "type": "object",
-      "required": ["kind", "iri", "definition", "valueType"],
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
-        "kind": {"const": "AttributeTypeDefinition"},
         "iri": {"$ref": "#/$defs/IRI"},
+        "namespace": {"type": "string"},
+        "localName": {"type": "string"},
+        "label": {"type": "string"},
         "definition": {"type": "string"},
-        "documentation": {"type": "string"},
-        "valueType": {"$ref": "#/$defs/TypeRef"},
-        "defaultValue": {},
-        "validation": {"$ref": "#/$defs/ValidationRules"},
-        "owlProjection": {"$ref": "#/$defs/OWLProjection"},
+        "valueType": {"type": "string"},
         "owlProjectionOverride": {
           "enum": ["datatypeProperty", "objectProperty", "annotationProperty"]
         },
-        "examples": {
-          "type": "array",
-          "items": {"type": "object"}
-        }
+        "defaultCardinality": {"type": "object"},
+        "pattern": {"type": "string"},
+        "note": {"type": "string"},
+        "alignments": {"type": "array"}
       }
     },
     "RelationTypeDefinition": {
       "type": "object",
-      "required": ["kind", "iri", "definition", "domain", "range"],
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
-        "kind": {"const": "RelationTypeDefinition"},
+        "iri": {"$ref": "#/$defs/IRI"},
+        "namespace": {"type": "string"},
+        "localName": {"type": "string"},
+        "label": {"type": "string"},
+        "definition": {"type": "string"},
+        "domain": {"type": "string"},
+        "range": {"type": "string"},
+        "inverseOf": {"$ref": "#/$defs/IRI"},
+        "characteristics": {"type": "array"},
+        "alignments": {"type": "array"}
+      }
+    },
+    "AssociationTypeDefinition": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
         "iri": {"$ref": "#/$defs/IRI"},
         "definition": {"type": "string"},
-        "documentation": {"type": "string"},
-        "domain": {"$ref": "#/$defs/TypeRef"},
-        "range": {"$ref": "#/$defs/TypeRef"},
-        "cardinality": {
-          "type": "string",
-          "pattern": "^(0\\.\\.[1n]|1\\.\\.[1n]|[1-9][0-9]*\\.\\.[1-9][0-9]*|[1-9][0-9]*\\.\\.[n])$"
-        },
-        "inverseOf": {"$ref": "#/$defs/IRI"},
-        "owlProjection": {"$ref": "#/$defs/OWLProjection"},
-        "examples": {
-          "type": "array",
-          "items": {"type": "object"}
-        }
+        "participantRoles": {"type": "array"},
+        "attributeUses": {"type": "array"},
+        "patternBindings": {"type": "array"}
       }
     },
     "IdentifierTypeDefinition": {
       "type": "object",
-      "required": ["kind", "iri", "definition", "format"],
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
-        "kind": {"const": "IdentifierTypeDefinition"},
-        "iri": {"$ref": "#/$defs/IRI"},
         "definition": {"type": "string"},
-        "documentation": {"type": "string"},
-        "format": {"type": "string"},
-        "issuingAuthority": {"type": "string"},
-        "validationPattern": {"type": "string"},
         "owlProjection": {"$ref": "#/$defs/OWLProjection"},
-        "examples": {
-          "type": "array",
-          "items": {"type": "string"}
-        }
+        "requiredFields": {"type": "object"},
+        "optionalFields": {"type": "object"}
+      }
+    },
+    "MoneyTypeDefinition": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "definition": {"type": "string"},
+        "owlProjection": {"$ref": "#/$defs/OWLProjection"},
+        "structure": {"type": "object"},
+        "note": {"type": "string"}
+      }
+    },
+    "QuantityTypeDefinition": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "definition": {"type": "string"},
+        "owlProjection": {"$ref": "#/$defs/OWLProjection"},
+        "structure": {"type": "object"},
+        "note": {"type": "string"}
       }
     },
     "CodeListTypeDefinition": {
       "type": "object",
-      "required": ["kind", "iri", "definition", "codes"],
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
-        "kind": {"const": "CodeListTypeDefinition"},
-        "iri": {"$ref": "#/$defs/IRI"},
         "definition": {"type": "string"},
-        "documentation": {"type": "string"},
-        "codes": {
-          "type": "array",
-          "items": {"$ref": "#/$defs/CodeValue"}
-        },
-        "isExtensible": {"type": "boolean", "default": false},
-        "owlProjection": {"$ref": "#/$defs/OWLProjection"}
+        "owlProjection": {"$ref": "#/$defs/OWLProjection"},
+        "requiredFields": {"type": "object"},
+        "optionalFields": {"type": "object"}
       }
     },
-    "StructuredValueTypeDefinition": {
+    "ConstraintDefinition": {
       "type": "object",
-      "required": ["kind", "iri", "definition"],
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
-        "kind": {"const": "StructuredValueTypeDefinition"},
-        "iri": {"$ref": "#/$defs/IRI"},
         "definition": {"type": "string"},
-        "documentation": {"type": "string"},
-        "requiredFields": {
-          "type": "object",
-          "additionalProperties": {"$ref": "#/$defs/FieldSpec"}
-        },
-        "optionalFields": {
-          "type": "object",
-          "additionalProperties": {"$ref": "#/$defs/FieldSpec"}
-        },
-        "owlProjection": {"$ref": "#/$defs/OWLProjection"}
+        "owlProjection": {"$ref": "#/$defs/OWLProjection"},
+        "requiredFields": {"type": "object"},
+        "optionalFields": {"type": "object"}
       }
     },
     "PatternDefinition": {
       "type": "object",
-      "required": ["kind", "pattern", "iri"],
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
-        "kind": {"const": "PatternDefinition"},
-        "pattern": {"type": "string"},
-        "iri": {"$ref": "#/$defs/IRI"},
         "definition": {"type": "string"},
-        "documentation": {"type": "string"},
-        "dependencies": {
-          "type": "array",
-          "items": {"$ref": "#/$defs/IRI"}
-        },
-        "conflicts": {
-          "type": "array",
-          "items": {"$ref": "#/$defs/IRI"}
-        },
-        "injectedAttributes": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["attribute"],
-            "properties": {
-              "attribute": {"$ref": "#/$defs/IRI"},
-              "isRequired": {"type": "boolean", "default": false}
-            }
-          }
-        }
+        "purpose": {"type": "string"},
+        "requiredFields": {"type": "object"},
+        "optionalFields": {"type": "object"}
       }
     },
     "QueryTypeDefinition": {
       "type": "object",
-      "required": ["kind", "iri", "definition", "returnType"],
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
-        "kind": {"const": "QueryTypeDefinition"},
-        "iri": {"$ref": "#/$defs/IRI"},
         "definition": {"type": "string"},
-        "documentation": {"type": "string"},
-        "parameters": {
-          "type": "object",
-          "additionalProperties": {"$ref": "#/$defs/FieldSpec"}
-        },
-        "returnType": {"$ref": "#/$defs/TypeRef"},
-        "querySemantics": {
-          "enum": ["pointInTime", "current", "temporal", "aggregate"]
-        }
+        "requiredFields": {"type": "object"},
+        "optionalFields": {"type": "object"},
+        "returnShape": {"type": "object"}
       }
     },
     "ActionTypeDefinition": {
       "type": "object",
-      "required": ["kind", "iri", "definition", "targetType"],
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
-        "kind": {"const": "ActionTypeDefinition"},
-        "iri": {"$ref": "#/$defs/IRI"},
         "definition": {"type": "string"},
-        "documentation": {"type": "string"},
-        "targetType": {"$ref": "#/$defs/TypeRef"},
-        "parameters": {
-          "type": "object",
-          "additionalProperties": {"$ref": "#/$defs/FieldSpec"}
+        "requiredFields": {"type": "object"},
+        "optionalFields": {"type": "object"},
+        "idempotency": {
+          "enum": ["isIdempotent", "conditionallyIdempotent", "nonIdempotent"]
         },
-        "preconditions": {
-          "type": "array",
-          "items": {"type": "string"}
-        },
-        "effects": {
-          "type": "array",
-          "items": {"type": "string"}
-        },
-        "isIdempotent": {"type": "boolean", "default": false},
-        "timeoutSeconds": {"type": "integer", "minimum": 1},
-        "retryPolicy": {"$ref": "#/$defs/RetryPolicy"}
+        "retryPolicy": {"type": "object"}
+      }
+    },
+    "ExecutionRecordDefinition": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "definition": {"type": "string"},
+        "purpose": {"type": "string"},
+        "requiredFields": {"type": "object"},
+        "optionalFields": {"type": "object"}
+      }
+    },
+    "TransformationDefinition": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "definition": {"type": "string"},
+        "purpose": {"type": "string"},
+        "requiredFields": {"type": "object"},
+        "optionalFields": {"type": "object"},
+        "structures": {"type": "object"}
       }
     },
     "DatasetDefinition": {
       "type": "object",
-      "required": ["kind", "iri", "definition", "ontologyType"],
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
-        "kind": {"const": "DatasetDefinition"},
-        "iri": {"$ref": "#/$defs/IRI"},
         "definition": {"type": "string"},
-        "documentation": {"type": "string"},
-        "ontologyType": {"$ref": "#/$defs/TypeRef"},
-        "fields": {
-          "type": "array",
-          "items": {"$ref": "#/$defs/FieldSpec"}
-        },
-        "semanticMappings": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["field", "semanticProperty"],
-            "properties": {
-              "field": {"type": "string"},
-              "semanticProperty": {"$ref": "#/$defs/IRI"}
-            }
-          }
-        }
+        "purpose": {"type": "string"},
+        "requiredFields": {"type": "object"},
+        "optionalFields": {"type": "object"},
+        "structures": {"type": "object"}
       }
     },
-    "FieldMappingDefinition": {
+    "SemanticMappingDefinition": {
       "type": "object",
-      "required": ["kind", "iri", "definition", "sourceField", "targetAttribute"],
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
-        "kind": {"const": "FieldMappingDefinition"},
-        "iri": {"$ref": "#/$defs/IRI"},
         "definition": {"type": "string"},
-        "documentation": {"type": "string"},
-        "sourceField": {"type": "string"},
-        "targetAttribute": {"$ref": "#/$defs/IRI"},
-        "transformation": {"$ref": "#/$defs/TransformationReference"}
+        "purpose": {"type": "string"},
+        "note": {"type": "string"},
+        "requiredFields": {"type": "object"},
+        "optionalFields": {"type": "object"},
+        "structures": {"type": "object"}
       }
     },
-    "CodeValue": {
+    "MaterializationPlanDefinition": {
       "type": "object",
-      "required": ["code", "label"],
-      "additionalProperties": false,
+      "additionalProperties": true,
       "properties": {
-        "code": {"type": "string"},
-        "label": {"$ref": "#/$defs/LocalizedText"},
-        "definition": {"type": "string"}
-      }
-    },
-    "LocalizedText": {
-      "oneOf": [
-        {"type": "string"},
-        {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        }
-      ]
-    },
-    "FieldSpec": {
-      "type": "object",
-      "required": ["type"],
-      "additionalProperties": false,
-      "properties": {
-        "type": {"$ref": "#/$defs/TypeRef"},
-        "documentation": {"type": "string"},
-        "defaultValue": {},
-        "validation": {"$ref": "#/$defs/ValidationRules"}
-      }
-    },
-    "ValidationRules": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "pattern": {"type": "string"},
-        "minLength": {"type": "integer", "minimum": 0},
-        "maxLength": {"type": "integer", "minimum": 0},
-        "minimum": {"type": "number"},
-        "maximum": {"type": "number"},
-        "exclusiveMinimum": {"type": "number"},
-        "exclusiveMaximum": {"type": "number"}
-      }
-    },
-    "RetryPolicy": {
-      "type": "object",
-      "required": ["maxAttempts"],
-      "additionalProperties": false,
-      "properties": {
-        "maxAttempts": {"type": "integer", "minimum": 1},
-        "backoffMs": {"type": "integer", "minimum": 0},
-        "backoffMultiplier": {"type": "number", "minimum": 1}
-      }
-    },
-    "TransformationReference": {
-      "type": "object",
-      "required": ["transformationIri"],
-      "additionalProperties": false,
-      "properties": {
-        "transformationIri": {"$ref": "#/$defs/IRI"},
-        "parameters": {
-          "type": "object",
-          "additionalProperties": true
-        }
+        "definition": {"type": "string"},
+        "purpose": {"type": "string"},
+        "note": {"type": "string"},
+        "requiredFields": {"type": "object"},
+        "optionalFields": {"type": "object"},
+        "structures": {"type": "object"}
       }
     },
     "OWLProjection": {
@@ -462,13 +321,13 @@
         "rules": {
           "type": "array",
           "items": {"type": "string"}
-        }
+        },
+        "note": {"type": "string"}
       }
     },
     "TypeRef": {
       "type": "string",
-      "description": "Type reference: primitive (string, integer, etc), structured (list[T], map[K,V]), constrained (string[pattern=/regex/]), or named (IRI/prefix:local/local)",
-      "pattern": "^(string|integer|decimal|boolean|datetime|duration|uri|iri|list\\[.+\\]|map\\[.+,.+\\]|enum\\[.+\\]|union\\[.+\\]|[a-zA-Z][a-zA-Z0-9_-]*(:[a-zA-Z][a-zA-Z0-9_-]*)?|https?://.+)(\\?)?$"
+      "description": "Type reference: primitive (string, integer, etc), structured (list[T], map[K,V]), or IRI"
     },
     "IRI": {
       "type": "string",
