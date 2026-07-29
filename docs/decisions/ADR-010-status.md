@@ -1,381 +1,179 @@
-# P0 Blocking Issues - Resolution Status
+# ADR-010: Meta-Model P0 Issues Resolution - Status Report
 
-**Document**: ADR-010 Implementation Tracking  
-**Date**: 2026-07-28  
-**Status**: In Progress
-
-## Executive Summary
-
-| Issue | Status | Auto/Manual | Evidence |
-|-------|--------|-------------|----------|
-| P0-1: Schema-YAML mismatch | 🔴 Not Started | Manual | Requires Schema rewrite |
-| P0-2: Module digests | ✅ Complete | Auto | 83 fixes, 0 pending digests |
-| P0-3: IRI templates | ✅ Complete | Auto | 76 {BASE_IRI} resolved |
-| P0-4: Naming consistency | ✅ Complete | Auto | 26 renames to *Definition |
-| P0-5: Pattern semantics | 🟡 Partial | Manual | Requires attribute definitions |
-| P0-6: Data binding | 🔴 Not Started | Manual | Remove dual truth sources |
-| P0-7: Action safety | 🔴 Not Started | Manual | Fix SubmitOrder idempotency |
-
-**Overall Progress**: 3/7 complete (42.9%)
+**Status**: Draft  
+**Decision Owner**: TBD  
+**Date**: 2026-07-29  
+**Review Status**: ❌ Request Changes
 
 ---
 
-## P0-2: Module Reproducibility ✅ COMPLETE
+## 状态声明
 
-**Script**: `scripts/calculate-digests.js` + `scripts/fix-p0-issues.js`
+**本 ADR 当前状态为 Draft，不代表已完成或可验收的工作。**
 
-### Changes Applied
-
-#### 1. SHA-256 Digest Calculation
-
-All module digests calculated and embedded:
-
-```yaml
-# Before
-artifactDigest: "sha256:pending"
-
-# After
-artifactDigest: "sha256:f2eddc1184bdf99b7a77c88f69cff0ace9f962abcacf852cd3a56d6acfbc2b6a"
-```
-
-**Digest Map**:
-- `core-meta-model.yaml`: `sha256:f2eddc1184bdf99b7a77c88f69cff0ace9f962abcacf852cd3a56d6acfbc2b6a`
-- `cross-domain-patterns.yaml`: `sha256:06570776bf5acc6832a50dbb799d8b9159739768b338c22382055d550908fc44`
-- `behavior-meta-model.yaml`: `sha256:e169f9fb159f0cea47aaad617bf7a67eb6f5b522e945a6b36f292b0c089908d9`
-- `data-binding-meta-model.yaml`: `sha256:88bf8dbe53b0bf3bdaefec4e350d551e78a3cee88a8b9b30de1c9b3f046eb001`
-
-#### 2. Version Conflict Resolution
-
-Fixed `data-binding-meta-model.yaml` import:
-
-```yaml
-# Before
-imports:
-  - moduleIri: "https://axiolune.ai/ontology/meta/behavior"
-    version: "0.3.0"  # ❌ Wrong - behavior is v0.4.0
-
-# After
-imports:
-  - moduleIri: "https://axiolune.ai/ontology/meta/behavior"
-    version: "0.4.0"  # ✅ Correct
-```
-
-### Verification
-
-```bash
-$ grep -r "sha256:pending" ontology/meta/*.yaml
-# (no results) ✅
-
-$ grep -r "version.*0\.3\.0.*behavior" ontology/meta/data-binding-meta-model.yaml
-# (no results) ✅
-```
+先前的多个"完成报告"声称 3/7、4/7、4.5/7、7/7 完成均不准确，已移至 `superseded/` 目录。
 
 ---
 
-## P0-3: IRI Template Resolution ✅ COMPLETE
+## 实际完成情况
 
-**Script**: `scripts/fix-p0-issues.js`
+### ✅ 已完成 (2/7 门槛)
 
-### Changes Applied
+1. **YAML 语法有效性** ✅
+   - 修复 core-meta-model.yaml 第 704 行正则表达式转义错误
+   - 4/4 YAML 文件通过 `js-yaml` 严格解析
+   - 证据: `node scripts/verify-meta-model.js` 输出
 
-Resolved all 76 `{BASE_IRI}` template placeholders:
+2. **导入摘要锁定** ✅
+   - 6/6 导入引用锁定到当前模块摘要
+   - 摘要一致性: 4/4 文件匹配 digests.json
+   - 证据: `scripts/fix-digests.js` 成功收敛
 
-```yaml
-# Before (double-slash bug)
-baseIri: "https://axiolune.ai/ontology/meta/patterns/"
-iri: "{BASE_IRI}/patterns/TemporalFact"
-# Would become: https://axiolune.ai/ontology/meta/patterns//patterns/TemporalFact ❌
+### ❌ 未完成 (5/7 门槛)
 
-# After
-iri: "https://axiolune.ai/ontology/meta/patterns/TemporalFact"  # ✅
-```
+3. **模式属性闭包** ❌
+   - 已定义: 13/28 属性
+   - 缺失: 15 个属性 (recordedAt, evidenceType, evidenceRef, evidenceDigest, evidenceTimestamp, evidenceDescription, lifecycleState, lifecycleVersion, createdAt, updatedAt, deprecatedAt, semanticVersion, versionedIri, priorVersion, incompatibleWith)
+   - 阻断原因: 引用这些属性的模式无法生成 OWL/SHACL
 
-### Resolution Count by File
+4. **约束定义闭包** ❌
+   - 已定义: 0/8 约束
+   - 缺失: PublishBeforeReceive, ValidIntervalConsistency, KnowledgeIntervalConsistency, NoFutureKnowledge, ObservationBeforeRecording, ConfidenceRange, DigestFormat, SemanticVersionFormat
+   - 阻断原因: 约束引用无法编译为可执行的 SHACL 验证
 
-- `core-meta-model.yaml`: 12 templates
-- `cross-domain-patterns.yaml`: 62 templates
-- `behavior-meta-model.yaml`: 1 template
-- `data-binding-meta-model.yaml`: 1 template
+5. **数据绑定单一真源** ❌
+   - 当前状态: 3 个并存的映射结构
+     - Field.semanticMapping (字段级)
+     - SemanticMappingDefinition (独立定义)
+     - MaterializationPlan.semanticMappings (计划级)
+   - 违反: ADR-007 单一真值源原则
+   - 阻断原因: 架构不一致，无法确定 canonical truth source
 
-**Total**: 76 templates resolved
+6. **时间映射完整性** ⚠️ 部分
+   - TemporalMappingSpec 未定义
+   - 缺少 valid/knowledge/availability 三轴完整映射
+   - 影响: 无法支持历史 PIT 查询
 
-### Verification
-
-```bash
-$ grep -r "{BASE_IRI}" ontology/meta/*.yaml
-# (no results) ✅
-```
-
----
-
-## P0-4: Naming Consistency ✅ COMPLETE
-
-**Script**: `scripts/fix-naming-consistency.js`
-
-### Changes Applied
-
-All meta-types now use `*Definition` suffix per ADR-004:
-
-| Before | After | Occurrences |
-|--------|-------|-------------|
-| `IdentifierType` | `IdentifierTypeDefinition` | 8 |
-| `MoneyType` | `MoneyTypeDefinition` | 7 |
-| `QuantityType` | `QuantityTypeDefinition` | 4 |
-| `CodeListType` | `CodeListTypeDefinition` | 7 |
-
-**Total**: 26 renames across 4 files
-
-### Example
-
-```yaml
-# Before
-IdentifierType:
-  definition: "a meta-classifier for standard identifiers..."
-  
-# After
-IdentifierTypeDefinition:
-  definition: "a meta-classifier for standard identifiers..."
-```
-
-### Verification
-
-```bash
-$ grep -E "^  (Identifier|Money|Quantity|CodeList)Type:" ontology/meta/*.yaml
-# (no results) ✅
-```
+7. **Schema 深度验证** ❌
+   - 当前 Schema 仅验证模块头部
+   - 19/25 定义类型无法从根 Schema 可达
+   - 允许任意额外字段，无法捕获错误
 
 ---
 
-## P0-5: Pattern Semantics 🟡 PARTIAL
+## P0 阻断问题详情
 
-**Status**: Requires manual attribute definitions and conflict symmetry
+详见 [深度分析报告](../reports/deep-analysis-report.json) 和 [当前状态报告](../reports/current-state-2026-07-29.md)
 
-### Remaining Work
-
-#### 1. Conflict Symmetry
-
-```yaml
-# cross-domain-patterns.yaml
-TemporalFact:
-  conflicts:
-    - "https://axiolune.ai/ontology/meta/patterns/TemporalObservation"
-
-TemporalObservation:
-  conflicts:
-    - "https://axiolune.ai/ontology/meta/patterns/TemporalFact"  # ✅ Must add
-```
-
-#### 2. Injected Attribute Definitions
-
-All pattern-injected attributes must be defined in `core-meta-model.yaml`:
-
-**Required AttributeTypeDefinition entries**:
-- `validFrom` (instant, required)
-- `validTo` (instant, optional)
-- `knowledgeFrom` (instant, required)
-- `knowledgeTo` (instant, optional)
-- `observedAt` (instant, optional)
-- `availableAt` (instant, optional)
-- `publishedAt` (instant, optional)
-- `receivedAt` (instant, optional)
-- `source` (uri, required)
-- `sourceVersion` (string, optional)
-- `confidence` (decimal, optional, range 0.0-1.0)
-- `revision` (integer, optional)
-- `derivedFrom` (list[uri], optional)
-
-#### 3. Data Binding Field Mappings
-
-`data-binding-meta-model.yaml` must map to new bi-temporal fields:
-
-```yaml
-# Current (incomplete)
-recordedAtField: "timestamp"
-
-# Required (complete bi-temporal)
-temporalFieldMappings:
-  observedAt: "observation_time"
-  knowledgeFrom: "ingestion_timestamp"
-  knowledgeTo: null  # Current version
-  availableAt: "available_from"
-```
+**P0-1**: 模式属性闭包不完整 (15 个缺失)  
+**P0-2**: 约束定义闭包缺失 (8 个缺失)  
+**P0-3**: 数据绑定多真源 (违反 ADR-007)
 
 ---
 
-## P0-6: Data Binding Single Truth Source 🔴 NOT STARTED
+## ADR-009 验收样例状态
 
-**Status**: Requires removal of `Dataset.semanticMappings` and `SemanticMappingDefinition`
+| 样例 | 状态 | 原因 |
+|------|------|------|
+| 证券标识 | ❌ FAIL | M3 片段使用旧方言，issuer 错误地作为属性 |
+| 价格观测 | ❌ FAIL | 使用已废弃的 StructuredValueTypeDefinition |
+| 持仓双时间 | ❌ FAIL | 缺少 valid/knowledge 区间，无 M2 投影 |
+| 订单生命周期 | ❌ FAIL | 使用旧字段，缺少回执与未知结果处理 |
+| 研究断言 | ❌ FAIL | 无 M2 投影，Evidence 为平铺字段 |
 
-### Required Changes
-
-#### 1. Remove Dual Truth Sources
-
-```yaml
-# data-binding-meta-model.yaml
-
-# ❌ DELETE THIS (duplicate truth source)
-DatasetDefinition:
-  optionalFields:
-    semanticMappings:  # REMOVE
-      type: "list[SemanticMappingDefinition]"
-
-# ❌ DELETE THIS (entire type)
-SemanticMappingDefinition:
-  definition: "..."  # REMOVE ENTIRE SECTION
-
-# ✅ KEEP THIS (single truth source per ADR-007)
-FieldDefinition:
-  optionalFields:
-    semanticMapping:
-      type: SemanticFieldMapping
-```
-
-#### 2. Remove Free-Form Transformation Expressions
-
-```yaml
-# ❌ DELETE
-FieldMapping:
-  transformationExpression: "lookup_instrument_by_isin(...)"  # REMOVE
-
-# ✅ KEEP (typed reference)
-FieldMapping:
-  transformation:
-    type: TransformationReference
-    transformationIri: "data:TickerToISIN"
-```
+**结论**: 0/5 样例可作为当前版本的可执行验收样例
 
 ---
 
-## P0-7: Action Safety Compliance 🔴 NOT STARTED
+## 工具链
 
-**Status**: Requires fixing `SubmitOrder` idempotency declaration
+### ✅ 已创建
 
-### Required Changes
+- `scripts/verify-meta-model.js` - 基础验证（YAML、摘要、导入锁）
+- `scripts/deep-analysis.js` - 深度架构分析（闭包、契约、真源）
+- `scripts/fix-digests.js` - 自动摘要更新
 
-```yaml
-# behavior-meta-model.yaml
+### ❌ 缺失
 
-# Before ❌
-SubmitOrder:
-  isIdempotent: conditionallyIdempotent  # ❌ Not allowed with retry
-  retryPolicy:
-    maxAttempts: 3
-
-# After ✅
-SubmitOrder:
-  isIdempotent: false  # Honest declaration
-  retryPolicy: null     # No automatic retry
-  note: "Non-idempotent action; use ExecutionRecord reconciliation protocol for timeout recovery (ADR-008)"
-```
-
-### Validation Rule Update
-
-```yaml
-ValidationRules:
-  - "ActionTypeDefinition with retryPolicy MUST have isIdempotent=true (strict boolean, not conditionallyIdempotent)"
-```
+- OWL/SHACL 生成器
+- Schema 深度验证器
+- 端到端集成测试
+- 历史回放测试
 
 ---
 
-## P0-1: Schema Rewrite 🔴 NOT STARTED
+## 修复路线图
 
-**Status**: Requires complete Schema rewrite to match hierarchical YAML structure
+### Phase 1: 模式闭包修复 (1-2 天)
 
-### Required Changes
+1. 添加 15 个缺失的 AttributeTypeDefinition
+   - recordedAt (TemporalObservation)
+   - Evidence 属性 (5 个)
+   - Lifecycle 属性 (5 个)
+   - Versioning 属性 (4 个)
+2. 添加 8 个 ConstraintDefinition
+   - 时间约束 (4 个)
+   - 格式约束 (3 个)
+   - 范围约束 (1 个)
 
-Current Schema expects:
+### Phase 2: 数据绑定重构 (2-3 天)
 
-```json
-{
-  "module": {...},
-  "definitions": [...]  // ❌ YAMLs don't have this
-}
-```
+1. 设计单一真源架构
+2. 移除冗余映射结构
+3. 统一 field/row/dataset 级语义表达
 
-YAMLs actually use:
+### Phase 3: 时间语义完善 (2-3 天)
 
-```yaml
-module: {...}
-MetaModel:  # or CrossDomainPatterns, PlatformBehavior, DataBinding
-  ObjectTypeDefinition: {...}
-  AttributeTypeDefinition: {...}
-```
+1. 定义 TemporalMappingSpec
+2. 实现三轴时间映射 (valid/knowledge/availability)
+3. 添加历史回放测试
 
-**Decision**: Rewrite Schema to validate hierarchical structure (see ADR-010)
+### Phase 4: 验收准备 (3-5 天)
 
----
-
-## Automation Summary
-
-### Scripts Created
-
-1. ✅ `scripts/calculate-digests.js` - SHA-256 calculation
-2. ✅ `scripts/fix-p0-issues.js` - P0-2 and P0-3 automation
-3. ✅ `scripts/fix-naming-consistency.js` - P0-4 automation
-
-### Total Automated Fixes
-
-- **83 fixes** (P0-2, P0-3): Digests and IRI templates
-- **26 renames** (P0-4): Naming consistency
-- **109 total changes** applied automatically
-
-### Manual Work Remaining
-
-- P0-1: Schema rewrite (~2 hours)
-- P0-5: Pattern attribute definitions (~3 hours)
-- P0-6: Data binding cleanup (~1 hour)
-- P0-7: Action safety fix (~30 minutes)
-
-**Estimated remaining effort**: 6.5 hours
+1. 重写 ADR-009 样例为可执行版本
+2. 实现 OWL/SHACL 生成
+3. 添加端到端测试
+4. Schema 深度验证
 
 ---
 
-## Next Steps
+## 签收标准
 
-### Immediate (This Session)
+在以下所有条件满足前，本 ADR 保持 **Draft** 状态：
 
-1. ✅ Execute P0-2 automation
-2. ✅ Execute P0-3 automation
-3. ✅ Execute P0-4 automation
-4. 🔲 Document current state (this file)
-5. 🔲 Commit all automated fixes
-6. 🔲 Begin P0-7 manual fix (quick win)
-
-### Next Session
-
-1. Complete P0-5: Define all pattern-injected attributes
-2. Complete P0-6: Remove dual truth sources
-3. Complete P0-1: Rewrite Schema for hierarchical validation
-4. Regenerate ADR-009 examples with complete M3→M2→M1 chain
+- [ ] 28/28 模式属性已定义
+- [ ] 8/8 约束已定义
+- [ ] 数据绑定为单一真源
+- [ ] 时间映射完整（三轴）
+- [ ] 5/5 ADR-009 样例可执行
+- [ ] OWL/SHACL 生成成功
+- [ ] 所有测试通过
+- [ ] 文档与实现一致
 
 ---
 
-## Verification Commands
+## 决策
 
-```bash
-# P0-2: No pending digests
-grep -r "sha256:pending" ontology/meta/*.yaml
-# Expected: (no results)
+**当前**: 不签收，Request Changes
 
-# P0-3: No IRI templates
-grep -r "{BASE_IRI}" ontology/meta/*.yaml
-# Expected: (no results)
+**理由**: 
+1. 3/7 阻断问题未解决
+2. ADR-009 样例无法基于当前模型执行
+3. 架构不一致（多真源）
+4. 闭包不完整（23 个缺失定义）
 
-# P0-4: No old naming patterns
-grep -E "^  (Identifier|Money|Quantity|CodeList)Type:" ontology/meta/*.yaml
-# Expected: (no results)
-
-# P0-7: Check SubmitOrder
-grep -A5 "SubmitOrder:" ontology/meta/behavior-meta-model.yaml | grep -E "(isIdempotent|retryPolicy)"
-# Expected: isIdempotent: false, retryPolicy: null
-```
+**下一步**: 完成 Phase 1-2 修复后重新评审
 
 ---
 
-## Conclusion
+## 参考
 
-**Automated fixes (P0-2, P0-3, P0-4)** are complete and verified. **109 total changes** applied.
+- [深度分析报告](../reports/deep-analysis-report.json)
+- [当前状态报告](../reports/current-state-2026-07-29.md)
+- [验证工具](../../scripts/verify-meta-model.js)
+- [已废弃的报告](superseded/)
 
-**Manual fixes (P0-1, P0-5, P0-6, P0-7)** require careful semantic edits and are documented above for next session.
+---
 
-**Progress**: 42.9% complete (3/7 issues resolved)
+**最后更新**: 2026-07-29T03:30:00Z  
+**下次评审**: Phase 1 完成后
