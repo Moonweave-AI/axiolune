@@ -9,13 +9,13 @@ module:
   preferredPrefix: "ax-behavior"
   version: "0.4.0"
   imports:
-    - moduleIri: "https://axiolune.ai/ontology/meta/core#sha256:6a3861b3861fc2301deddd55965f23030f9fae653755c0568fa1ea2f4d634592"
-      version: "0.3.0"
-      artifactDigest: "sha256:6a3861b3861fc2301deddd55965f23030f9fae653755c0568fa1ea2f4d634592"
+    - moduleIri: "https://axiolune.ai/ontology/meta/core#sha256:df6c5aa670df2d1bc5444c283132d3142a54a44fe97a88b6a70220e8731e8821"
+      version: "0.4.0"
+      artifactDigest: "sha256:df6c5aa670df2d1bc5444c283132d3142a54a44fe97a88b6a70220e8731e8821"
       importMode: All
-    - moduleIri: "https://axiolune.ai/ontology/meta/patterns#sha256:654ecf0d6e55e5a2437da1e8cf1e6732bb19c34cecac470a9c32c357a63c7796"
-      version: "0.3.0"
-      artifactDigest: "sha256:654ecf0d6e55e5a2437da1e8cf1e6732bb19c34cecac470a9c32c357a63c7796"
+    - moduleIri: "https://axiolune.ai/ontology/meta/patterns#sha256:c03298a22caa07942caca8d0cafadec3c087ff64c8d92b4737fd0b26f213d40d"
+      version: "0.4.0"
+      artifactDigest: "sha256:c03298a22caa07942caca8d0cafadec3c087ff64c8d92b4737fd0b26f213d40d"
       importMode: All
   exports: []
 
@@ -63,8 +63,8 @@ PlatformBehavior:
 
       defaultValue:
         type: any
-        description: "default value expression when not provided"
-        example: "now()"
+        description: "default value expression when not provided (MUST NOT use non-reproducible now()/clock; use a bound runtime-context parameter for time-sensitive queries per ADR-012)"
+        example: "$referenceTime"
 
       description:
         type: string
@@ -173,7 +173,9 @@ PlatformBehavior:
         targetType: "fin:Order"
         parameters:
           - {name: account, type: "fin:Account", required: true}
-          - {name: asOf, type: instant, required: false, default: "now()"}
+          - {name: asOfKnowledge, type: instant, required: true, description: "knowledge-time pivot; explicit, no implicit now (ADR-012)"}
+          - {name: asOfValid, type: instant, required: true, description: "valid-time pivot; explicit (ADR-012)"}
+          - {name: asOfAvailable, type: instant, required: true, description: "availability-time pivot; explicit, prevents look-ahead bias (ADR-012)"}
         returnType: "fin:Order"
         returnCardinality: list
         implementation:
@@ -483,7 +485,7 @@ PlatformBehavior:
         parameters:
           - {name: order, type: "fin:Order", required: true}
           - {name: account, type: "fin:Account", required: true}
-          - {name: idempotencyKey, type: string, required: false}
+          - {name: idempotencyKey, type: string, required: true, description: "required because idempotencyKeyFieldRequired=true; used for broker reconciliation even though broker may not honor it"}
         effects:
           - {type: update, target: "fin:Order", description: "transition order state to 'submitted'"}
           - {type: send, target: "external:BrokerAPI", description: "transmit order to broker"}
@@ -574,7 +576,13 @@ PlatformBehavior:
             failureMessage: "Order cannot be cancelled in current state"
             severity: blocking
         idempotency: idempotent
-        note: "Cancelling an already-cancelled order is a no-op"
+        commandReceipt:
+          commandId: {type: string, required: true}
+          correlationId: {type: string, required: false}
+          executionStatus: {type: enum, values: [Accepted, Rejected, Pending, Completed, Failed, Unknown]}
+          externalReferenceId: {type: string, required: false, description: "broker cancel request ID"}
+          timestamp: {type: instant, required: true}
+        note: "Cancelling an already-cancelled order is a no-op. This action is the compensating action for SubmitOrder (PartiallyExecuted/Unknown); it is itself idempotent."
 
       PublishResearchReport:
         iri: "fin:action:PublishResearchReport"
@@ -596,10 +604,18 @@ PlatformBehavior:
             expression: "report.reviewStatus == 'approved'"
             failureMessage: "Report must be approved by compliance"
             severity: blocking
-        idempotency: conditionallyIdempotent
-        compensation:
-          strategy: compensatingAction
-          compensatingAction: "fin:action:RetractResearchReport"
+        idempotency: idempotent
+        idempotencyNote: "Publishing an already-published report is a no-op (idempotent); no idempotency key required"
+        commandReceipt:
+          commandId: {type: string, required: true}
+          correlationId: {type: string, required: false}
+          executionStatus: {type: enum, values: [Accepted, Rejected, Completed, Failed]}
+          timestamp: {type: instant, required: true}
+        compensatingActions:
+          - actionRef: "fin:action:RetractResearchReport"
+            applicableWhen: Published
+            successGuarantee: BestEffort
+            triggerCondition: "compliance_withdrawal"
 
   # ==================== Execution Record ====================
   ExecutionRecordDefinition:
@@ -816,6 +832,7 @@ PlatformBehavior:
   # ==================== Validation Rules ====================
   ValidationRules:
     - "QueryTypeDefinition must be side-effect free (no state modifications)"
+    - "Point-in-Time queries MUST require explicit asOfKnowledge/asOfValid/asOfAvailable parameters; implicit now()/current clock is forbidden (ADR-012 reproducibility)"
     - "FunctionTypeDefinition with purity=pure must be deterministic and referentially transparent"
     - "ActionTypeDefinition must declare all effects explicitly"
     - "ActionTypeDefinition with effectDomain=external must have compensation or rollback strategy"

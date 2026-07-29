@@ -1,11 +1,14 @@
 # ADR-012: Reproducible Three-Axis Temporal Semantics
 
 ## Status
-**Accepted** | 2026-07-29
+**Accepted (meta-model layer)** | 2026-07-29
 
-Implementation: data-binding-meta-model v0.5.0  
-Validation: All 6 acceptance criteria pass  
-Digest: sha256:f16924434185d5074c5c3a2327c0092618fed619469997ed87b98a17a9ff611e
+Implementation: data-binding-meta-model v0.5.0 + cross-domain-patterns v0.4.0
+Validation: ADR-012 compliance verified by `scripts/deep-analysis-v0.5.js` (6/6 checks), `scripts/validate-references.js`, and grep confirming no functional `CURRENT_TIMESTAMP` usage in the meta-model (the 6 surviving mentions are changelog/prohibition prose only).
+Digest: sha256:f23edc168fce27e5bd03ac731ea617f334409437e607a56b432d1c75a05a93af
+
+**Scope of acceptance**: criteria 1-6 are implemented and machine-verified at the meta-model layer (incl. `NoFutureKnowledge` rewritten to `$referenceTime` and `AvailabilityBeforeUse` added).
+Criteria 7-9 (executed golden-path example with correction scenario, PIT query API implementation, historical replay test) are runtime concerns and remain pending.
 
 ## Context
 
@@ -313,12 +316,12 @@ queryFacts(factType: IRI) // Uses current time for all axes - breaks reproducibi
 Before this ADR can move from Draft to Accepted:
 
 1. ✅ Three-axis temporal model defined (valid/knowledge/availability)
-2. ⬜ `TemporalMappingSpec` type added to meta-model
-3. ⬜ `MaterializationRun` type added with immutable runtime context
-4. ⬜ `NoFutureKnowledge` constraint updated to use `$referenceTime`
-5. ⬜ `AvailabilityBeforeUse` constraint added
-6. ⬜ All `CURRENT_TIMESTAMP` references removed from meta-model
-7. ⬜ At least one golden path example with:
+2. ✅ `TemporalMappingSpec` type added to meta-model (verified: deep-analysis-v0.5)
+3. ✅ `MaterializationRun` type added with immutable runtime context (verified)
+4. ✅ `NoFutureKnowledge` constraint updated to use `$referenceTime` (verified: no functional `CURRENT_TIMESTAMP` remains)
+5. ✅ `AvailabilityBeforeUse` constraint added (verified: validate-references resolves it)
+6. ✅ All functional `CURRENT_TIMESTAMP` usage removed from meta-model (verified: the 6 surviving mentions are changelog/prohibition prose only)
+7. ⬜ At least one golden path example executed with:
    - Valid time from source field
    - Knowledge time from runtime context
    - Availability time from transformation
@@ -326,4 +329,4 @@ Before this ADR can move from Draft to Accepted:
 8. ⬜ PIT query API implemented with required time parameters
 9. ⬜ Historical replay test: Same MaterializationRun context produces identical output
 
-**Current Status**: Draft - architecture defined, implementation not started
+**Current Status**: Implemented and machine-verified at the meta-model layer (criteria 1-6, 2026-07-29). Criteria 7-9 are runtime/query-layer concerns and remain pending.

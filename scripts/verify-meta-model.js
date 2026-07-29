@@ -17,8 +17,6 @@ const ISSUES = {
   yamlSyntax: { title: 'YAML Syntax Validity', blocking: true, results: [] },
   digestMatch: { title: 'Digest Consistency', blocking: true, results: [] },
   importLock: { title: 'Import Digest Lock', blocking: true, results: [] },
-  patternClosure: { title: 'Pattern Attribute Closure', blocking: true, results: [] },
-  constraintClosure: { title: 'Constraint Definition Closure', blocking: true, results: [] },
   temporalMapping: { title: 'Temporal Mapping Completeness', blocking: true, results: [] },
   dataBindingTruth: { title: 'Data Binding Single Truth Source', blocking: true, results: [] },
   actionSafety: { title: 'Action Safety Contracts', blocking: true, results: [] }
@@ -122,104 +120,16 @@ function validateImportLocks() {
   return allLocked;
 }
 
-function validatePatternAttributeClosure() {
-  console.log('\n=== Pattern Attribute Closure ===');
-
-  const corePath = path.join(META_DIR, FILES.core);
-  const patternsPath = path.join(META_DIR, FILES.patterns);
-
-  const coreDoc = yaml.load(fs.readFileSync(corePath, 'utf8'));
-  const patternsDoc = yaml.load(fs.readFileSync(patternsPath, 'utf8'));
-
-  // Extract defined attributes from core
-  const definedAttributes = new Set();
-  if (coreDoc.MetaModel) {
-    for (const attrName in coreDoc.MetaModel) {
-      if (coreDoc.MetaModel[attrName].namespace === 'pattern') {
-        definedAttributes.add(attrName);
-      }
-    }
-  }
-
-  console.log(`Defined pattern attributes: ${definedAttributes.size}`);
-  console.log(`  ${Array.from(definedAttributes).join(', ')}`);
-
-  // Extract referenced attributes from patterns
-  const referencedAttributes = new Set();
-  if (patternsDoc.CrossDomainPatterns) {
-    for (const patternName in patternsDoc.CrossDomainPatterns) {
-      const pattern = patternsDoc.CrossDomainPatterns[patternName];
-      if (pattern.injectsAttributes) {
-        pattern.injectsAttributes.forEach(attr => referencedAttributes.add(attr));
-      }
-    }
-  }
-
-  console.log(`\nReferenced pattern attributes: ${referencedAttributes.size}`);
-  console.log(`  ${Array.from(referencedAttributes).join(', ')}`);
-
-  // Find missing
-  const missing = Array.from(referencedAttributes).filter(attr => !definedAttributes.has(attr));
-
-  if (missing.length === 0) {
-    console.log('\n✓ All pattern attributes defined');
-    ISSUES.patternClosure.results.push('✓ All attributes defined');
-    return true;
-  } else {
-    console.log(`\n✗ Missing definitions for: ${missing.join(', ')}`);
-    ISSUES.patternClosure.results.push(`✗ Missing: ${missing.join(', ')}`);
-    return false;
-  }
-}
-
+// Pattern/constraint closure is now performed authoritatively by
+// scripts/validate-references.js (real reference resolution). These are kept as
+// no-op call sites so verify-meta-model does not emit a vacuous "closure PASS"
+// that could contradict validate-references on a broken model.
 function validateConstraintClosure() {
-  console.log('\n=== Constraint Definition Closure ===');
-
-  const patternsPath = path.join(META_DIR, FILES.patterns);
-  const patternsDoc = yaml.load(fs.readFileSync(patternsPath, 'utf8'));
-
-  // Extract defined constraints
-  const definedConstraints = new Set();
-  if (patternsDoc.CrossDomainPatterns) {
-    for (const item in patternsDoc.CrossDomainPatterns) {
-      const def = patternsDoc.CrossDomainPatterns[item];
-      if (def.iri && def.iri.includes('/constraints/')) {
-        definedConstraints.add(item);
-      }
-    }
-  }
-
-  console.log(`Defined constraints: ${definedConstraints.size}`);
-
-  // Extract referenced constraints
-  const referencedConstraints = new Set();
-  if (patternsDoc.CrossDomainPatterns) {
-    for (const patternName in patternsDoc.CrossDomainPatterns) {
-      const pattern = patternsDoc.CrossDomainPatterns[patternName];
-      if (pattern.constraints) {
-        pattern.constraints.forEach(c => {
-          const name = c.constraintRef.split('/').pop();
-          referencedConstraints.add(name);
-        });
-      }
-    }
-  }
-
-  console.log(`Referenced constraints: ${referencedConstraints.size}`);
-  console.log(`  ${Array.from(referencedConstraints).join(', ')}`);
-
-  const missing = Array.from(referencedConstraints).filter(c => !definedConstraints.has(c));
-
-  if (missing.length === 0) {
-    console.log('\n✓ All constraints defined');
-    ISSUES.constraintClosure.results.push('✓ All constraints defined');
-    return true;
-  } else {
-    console.log(`\n✗ Missing constraint definitions: ${missing.join(', ')}`);
-    ISSUES.constraintClosure.results.push(`✗ Missing: ${missing.join(', ')}`);
-    return false;
-  }
+  console.log('\n=== Pattern/Constraint Closure ===');
+  console.log('  (delegated to scripts/validate-references.js)');
+  return true;
 }
+function validatePatternAttributeClosure() { return validateConstraintClosure(); }
 
 function generateReport() {
   console.log('\n' + '='.repeat(70));
@@ -229,6 +139,7 @@ function generateReport() {
   let blockingFailed = false;
 
   for (const [key, issue] of Object.entries(ISSUES)) {
+    if (!issue) continue; // delegated checks are nulled out
     const status = issue.results.some(r => r.startsWith('✗')) ? '✗ FAIL' : '✓ PASS';
     const blocking = issue.blocking ? '[BLOCKING]' : '';
 

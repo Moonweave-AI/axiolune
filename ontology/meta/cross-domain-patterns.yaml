@@ -1,26 +1,30 @@
 # Axiolune Ontology Meta-Model - Layer 2: Cross-Domain Fact Patterns
-# Version: 0.3.0
-# Date: 2026-07-28
-# Governance: Follows ADR-001, ADR-003, ADR-004 architecture decisions
+# Version: 0.4.0
+# Date: 2026-07-29
+# Governance: Follows ADR-001, ADR-003, ADR-004, ADR-012 architecture decisions
 # Changes: Introduced formal PatternDefinition structure; updated module system
 
 module:
   moduleIri: "https://axiolune.ai/ontology/meta/patterns"
   baseIri: "https://axiolune.ai/ontology/meta/patterns/"
   preferredPrefix: "ax-pattern"
-  version: "0.3.0"
+  version: "0.4.0"
   imports:
-    - moduleIri: "https://axiolune.ai/ontology/meta/core#sha256:6a3861b3861fc2301deddd55965f23030f9fae653755c0568fa1ea2f4d634592"
-      version: "0.3.0"
-      artifactDigest: "sha256:6a3861b3861fc2301deddd55965f23030f9fae653755c0568fa1ea2f4d634592"  # TODO: Calculate after core-meta-model.yaml is finalized
+    - moduleIri: "https://axiolune.ai/ontology/meta/core#sha256:df6c5aa670df2d1bc5444c283132d3142a54a44fe97a88b6a70220e8731e8821"
+      version: "0.4.0"
+      artifactDigest: "sha256:df6c5aa670df2d1bc5444c283132d3142a54a44fe97a88b6a70220e8731e8821"
       importMode: All
   exports: []  # Export all pattern definitions
 
 CrossDomainPatterns:
-  version: "0.3.0"
+  version: "0.4.0"
   description: "Reusable patterns for identity, time, provenance, evidence, and lifecycle that apply across domain objects"
   layer: 2
   changes:
+    - "v0.4.0: NoFutureKnowledge uses $referenceTime instead of CURRENT_TIMESTAMP (ADR-012 reproducibility)"
+    - "v0.4.0: Added AvailabilityBeforeUse constraint (ADR-012)"
+    - "v0.4.0: TemporalFact injects availableFrom/availableTo (three-axis availability, ADR-012)"
+    - "v0.4.0: asOfQuerySemantics requires explicit asOfAvailable (no implicit now)"
     - "v0.3.0: Global rename to *Definition suffix (ADR-004)"
     - "v0.3.0: Updated module system with version-locked imports"
     - "v0.3.0: Introduced formal PatternDefinition (ADR-003)"
@@ -261,13 +265,13 @@ CrossDomainPatterns:
       namespace: "pattern"
       localName: "NoFutureKnowledge"
       label: "No Future Knowledge Constraint"
-      definition: "validation rule ensuring that knowledge acquisition time does not occur in the future relative to the current system time"
+      definition: "validation rule ensuring that knowledge acquisition time does not occur in the future relative to the immutable reference time of the materialization run"
       constraintType: "validation"
-      formalExpression: 'knowledgeFrom <= CURRENT_TIMESTAMP'
+      formalExpression: 'knowledgeFrom <= $referenceTime'
       targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom"
       severity: "warning"
-      message: "Knowledge time must not be in the future"
-      note: "WARNING: Uses CURRENT_TIMESTAMP which makes historical replay non-deterministic; should be replaced with transaction time for reproducibility"
+      message: "Knowledge time must not be in the future relative to the run reference time"
+      note: "Reproducible (ADR-012): $referenceTime is bound to MaterializationRun.referenceTime, an immutable value captured at run start. Replaces the prior CURRENT_TIMESTAMP form which made historical replay non-deterministic."
 
     ObservationBeforeRecording:
       iri: "https://axiolune.ai/ontology/meta/patterns/constraints/ObservationBeforeRecording"
@@ -320,6 +324,19 @@ CrossDomainPatterns:
       severity: "error"
       message: "Semantic version must be in format MAJOR.MINOR.PATCH (e.g., 1.2.3)"
       note: "Follows SemVer 2.0.0 specification; pre-release and build metadata not currently supported"
+
+    AvailabilityBeforeUse:
+      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/AvailabilityBeforeUse"
+      namespace: "pattern"
+      localName: "AvailabilityBeforeUse"
+      label: "Availability Before Use Constraint"
+      definition: "validation rule ensuring that a fact is not consumed before the beginning of its availability period, preventing look-ahead bias in backtesting and enforcing data-licensing compliance"
+      constraintType: "validation"
+      formalExpression: '$queryTime >= availableFrom OR availableFrom IS NULL'
+      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom"
+      severity: "error"
+      message: "Cannot query data before its availability period begins"
+      note: "Required by ADR-012. $queryTime is the asOfAvailable query parameter supplied explicitly by the caller; implicit 'now' default is forbidden for compliance and audit use cases."
 
 
   patterns:
@@ -418,11 +435,18 @@ CrossDomainPatterns:
           label: "Observed At"
           description: "when the observation or measurement was made (for market data)"
 
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/availableAt"
+        # Availability Time (when consumers may legally use this data)
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom"
           minCount: 0
           maxCount: 1
-          label: "Available At"
-          description: "when this data became available for use by strategies (considering delays and authorization)"
+          label: "Available From"
+          description: "beginning of the availability period during which this data may be consumed (delays, authorization, embargo)"
+
+        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/availableTo"
+          minCount: 0
+          maxCount: 1
+          label: "Available To"
+          description: "end of the availability period (null = available indefinitely once availableFrom is reached)"
 
         # Note: publishedAt and receivedAt come from PublicationTiming dependency
 
@@ -442,8 +466,14 @@ CrossDomainPatterns:
         - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/NoFutureKnowledge"
           targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom"
           parameters:
-            rule: "knowledgeFrom <= current_timestamp"
-            message: "Cannot record knowledge from the future"
+            rule: "knowledgeFrom <= $referenceTime"
+            message: "Cannot record knowledge from the future relative to the run reference time"
+
+        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/AvailabilityBeforeUse"
+          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom"
+          parameters:
+            rule: "$queryTime >= availableFrom OR availableFrom IS NULL"
+            message: "Cannot consume data before its availability period begins"
 
       owlProjection:
         kind: mixin
@@ -470,15 +500,20 @@ CrossDomainPatterns:
           rationale: "validFrom aligns with FIBO start date concept"
 
       asOfQuerySemantics:
-        description: "formal Point-in-Time query semantics"
+        description: "formal Point-in-Time query semantics across three temporal axes (ADR-012)"
         parameters:
           - name: asOfKnowledge
             type: instant
-            description: "query at this point on the knowledge time axis (default: now)"
+            required: true
+            description: "query at this point on the knowledge time axis; required (no implicit now)"
           - name: asOfValid
             type: instant
-            description: "query at this point on the business time axis (default: asOfKnowledge)"
-
+            required: true
+            description: "query at this point on the business (valid) time axis; required"
+          - name: asOfAvailable
+            type: instant
+            required: true
+            description: "query restricted to data available at this point on the availability time axis; required (prevents look-ahead bias)"
         logicalQuery: |
           SELECT *
           FROM facts
@@ -486,6 +521,8 @@ CrossDomainPatterns:
             AND (knowledgeTo IS NULL OR knowledgeTo > :asOfKnowledge)
             AND validFrom <= :asOfValid
             AND (validTo IS NULL OR validTo > :asOfValid)
+            AND (availableFrom IS NULL OR availableFrom <= :asOfAvailable)
+            AND (availableTo IS NULL OR availableTo > :asOfAvailable)
           ORDER BY knowledgeFrom DESC, validFrom DESC
           LIMIT 1 PER logical_key
 

@@ -1,0 +1,51 @@
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix ax: <https://axiolune.ai/ontology/meta/>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+
+<https://axiolune.ai/ontology/meta/> rdfs:comment "Axiolune meta-model SHACL Tier 2 — parameter-free sh:sparql + parameterized sh:ConstraintComponent (parse-verified; enforcement requires a SPARQL-capable SHACL engine, e.g. pyshacl).".
+ax:PatternFact a owl:Class.
+ax:PatternFactSparqlShape a sh:NodeShape;
+    sh:targetClass ax:PatternFact;
+    sh:sparql _:b34.
+_:b34 sh:message "Publication time must not be after reception time";
+    sh:severity sh:Violation;
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/publishedAt> ?pub . $this <https://axiolune.ai/ontology/meta/patterns/attributes/receivedAt> ?rcv . FILTER(?pub > ?rcv) }".
+ax:PatternFactSparqlShape sh:sparql _:b35.
+_:b35 sh:message "Valid interval start must not be after end";
+    sh:severity sh:Violation;
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?vf . $this <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?vt . FILTER(BOUND(?vt) && ?vf > ?vt) }".
+ax:PatternFactSparqlShape sh:sparql _:b36.
+_:b36 sh:message "Knowledge interval start must not be after end";
+    sh:severity sh:Violation;
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?kf . $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?kt . FILTER(BOUND(?kt) && ?kf > ?kt) }".
+ax:NoFutureKnowledgeComponent a sh:ConstraintComponent;
+    rdfs:label "No Future Knowledge Constraint";
+    sh:parameter _:b37.
+_:b37 sh:path ax:referenceTime;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:description "Immutable reference time from MaterializationRun (ADR-012)".
+ax:NoFutureKnowledgeComponent sh:validator _:b38.
+_:b38 a sh:SPARQLSelectValidator;
+    sh:message "Knowledge time must not be in the future relative to the run reference time";
+    sh:severity sh:Warning;
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?t . FILTER(?t > $referenceTime) }".
+ax:PatternFactSparqlShape sh:sparql _:b39.
+_:b39 sh:message "Observation time must not be after recording time";
+    sh:severity sh:Violation;
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/observedAt> ?obs . $this <https://axiolune.ai/ontology/meta/patterns/attributes/recordedAt> ?rec . FILTER(?obs > ?rec) }".
+ax:AvailabilityBeforeUseComponent a sh:ConstraintComponent;
+    rdfs:label "Availability Before Use Constraint";
+    sh:parameter _:b40.
+_:b40 sh:path ax:queryTime;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:description "Explicit query time (asOfAvailable) supplied by caller (ADR-012)".
+ax:AvailabilityBeforeUseComponent sh:validator _:b41.
+_:b41 a sh:SPARQLSelectValidator;
+    sh:message "Cannot query data before its availability period begins";
+    sh:severity sh:Violation;
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?t . FILTER(?t > $queryTime) }".

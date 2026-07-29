@@ -9,17 +9,17 @@ module:
   preferredPrefix: "ax-binding"
   version: "0.5.0"
   imports:
-    - moduleIri: "https://axiolune.ai/ontology/meta/core#sha256:6a3861b3861fc2301deddd55965f23030f9fae653755c0568fa1ea2f4d634592"
+    - moduleIri: "https://axiolune.ai/ontology/meta/core#sha256:df6c5aa670df2d1bc5444c283132d3142a54a44fe97a88b6a70220e8731e8821"
       version: "0.4.0"
-      artifactDigest: "sha256:6a3861b3861fc2301deddd55965f23030f9fae653755c0568fa1ea2f4d634592"
+      artifactDigest: "sha256:df6c5aa670df2d1bc5444c283132d3142a54a44fe97a88b6a70220e8731e8821"
       importMode: All
-    - moduleIri: "https://axiolune.ai/ontology/meta/patterns#sha256:654ecf0d6e55e5a2437da1e8cf1e6732bb19c34cecac470a9c32c357a63c7796"
+    - moduleIri: "https://axiolune.ai/ontology/meta/patterns#sha256:c03298a22caa07942caca8d0cafadec3c087ff64c8d92b4737fd0b26f213d40d"
       version: "0.4.0"
-      artifactDigest: "sha256:654ecf0d6e55e5a2437da1e8cf1e6732bb19c34cecac470a9c32c357a63c7796"
+      artifactDigest: "sha256:c03298a22caa07942caca8d0cafadec3c087ff64c8d92b4737fd0b26f213d40d"
       importMode: All
-    - moduleIri: "https://axiolune.ai/ontology/meta/behavior#sha256:93e690b6261a52fd42627178114edb94cb7f80f372539f6eed6258233b2d2962"
+    - moduleIri: "https://axiolune.ai/ontology/meta/behavior#sha256:d633bd3132bd549807b6ca1df518454c9173256d843d7f40f07500c253678185"
       version: "0.4.0"
-      artifactDigest: "sha256:93e690b6261a52fd42627178114edb94cb7f80f372539f6eed6258233b2d2962"
+      artifactDigest: "sha256:d633bd3132bd549807b6ca1df518454c9173256d843d7f40f07500c253678185"
       importMode: All
   exports: []
 
@@ -741,6 +741,12 @@ DataBinding:
   TemporalMappingSpec:
     definition: "specification of three-axis temporal semantics mapping according to genus-differentia form and ADR-012"
     purpose: "Maps physical time fields to valid time, knowledge time, and availability time axes"
+    note: |
+      This spec is the three-axis (TemporalFact) temporal mapping. All three axes
+      (validTime, knowledgeTime, availabilityTime) are REQUIRED so a TemporalFact
+      mapping cannot silently omit an axis (ADR-012). Single-axis temporal patterns
+      (e.g., TemporalObservation) bind their fields (observedAt/recordedAt) via
+      slotMappings with slotType: patternField, NOT via this spec.
 
     requiredFields:
       patternRef:
@@ -748,18 +754,20 @@ DataBinding:
         required: true
         description: "temporal pattern IRI (e.g., ax-pattern:TemporalFact)"
 
-    optionalFields:
       validTime:
         type: TimeAxisBinding
-        description: "when fact holds true in reality (business time)"
+        required: true
+        description: "when fact holds true in reality (business time) — required for three-axis completeness"
 
       knowledgeTime:
         type: TimeAxisBinding
-        description: "when platform knows/retracts this version (transaction time)"
+        required: true
+        description: "when platform knows/retracts this version (transaction time) — required; SHOULD bind assertionTime from runtime context"
 
       availabilityTime:
         type: TimeAxisBinding
-        description: "when consumers can use this data (regulatory/access control time)"
+        required: true
+        description: "when consumers can use this data (regulatory/access control time) — required; prevents look-ahead bias"
 
   # ==================== Semantic Mapping (ADR-011 Compliant) ====================
   SemanticMappingDefinition:
@@ -1207,7 +1215,7 @@ DataBinding:
           namespace: "fin-obs"
 
         temporal:
-          patternRef: "ax-pattern:TemporalObservation"
+          patternRef: "ax-pattern:TemporalFact"
           validTime:
             from:
               bindingType: directField
@@ -1224,6 +1232,7 @@ DataBinding:
             from:
               bindingType: directField
               source: {dataset: "prices", field: "publish_timestamp"}
+            note: "price is consumable once the source publishes; no embargo for this feed"
 
         provenance:
           sourceSystem:
@@ -1331,13 +1340,15 @@ DataBinding:
               source: {dataset: "pos", field: "expiration_date"}
           knowledgeTime:
             from:
-              bindingType: directField
-              source: {dataset: "pos", field: "updated_at"}
+              bindingType: runtimeContext
+              contextField: "assertionTime"
             closePolicy: explicitOnly
+            note: "knowledge time is the platform assertion time (MaterializationRun.assertionTime), NOT the source updated_at field (ADR-012)"
           availabilityTime:
             from:
               bindingType: directField
               source: {dataset: "pos", field: "updated_at"}
+            note: "internal position snapshot; available to consumers once the source row is updated (no embargo)"
 
   # ==================== Validation Rules (ADR-011/012 Compliant) ====================
   ValidationRules:
@@ -1354,6 +1365,8 @@ DataBinding:
     - "IdentitySpec.logicalKey must use FieldReference with dataset alias from SourceBinding"
     - "IdentitySpec.iriTemplate must produce stable, reproducible IRIs"
     - "TemporalMappingSpec must use TimeAxisBinding (not recordedAtSource: currentTimestamp)"
+    - "When temporal.patternRef = TemporalFact, validTime, knowledgeTime, AND availabilityTime MUST all be present (ADR-012 three-axis completeness; text rules are a contract — enforced by the domain-ontology validator)"
+    - "knowledgeTime.from SHOULD use bindingType: runtimeContext (assertionTime); using a source field as knowledgeTime is discouraged unless it provably equals the platform assertion time (ADR-012)"
     - "TemporalMappingSpec.patternRef must reference valid temporal pattern from Layer 2"
     - "TimeAxisBinding.from and TimeAxisBinding.to must use ValueBinding (no CURRENT_TIMESTAMP)"
     - "RuntimeContextBinding.contextField must reference valid MaterializationRun field (assertionTime, referenceTime, runId)"

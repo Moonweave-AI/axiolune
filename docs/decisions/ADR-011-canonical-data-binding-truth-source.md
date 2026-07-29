@@ -1,11 +1,14 @@
 # ADR-011: Canonical Data Binding Truth Source
 
 ## Status
-**Accepted** | 2026-07-29
+**Accepted (meta-model layer)** | 2026-07-29
 
-Implementation: data-binding-meta-model v0.5.0  
-Validation: All 10 acceptance criteria pass  
-Digest: sha256:f16924434185d5074c5c3a2327c0092618fed619469997ed87b98a17a9ff611e
+Implementation: data-binding-meta-model v0.5.0
+Validation: ADR-011 compliance verified by `scripts/deep-analysis-v0.5.js` (10/10 checks) and `scripts/validate-references.js` (real reference closure).
+Digest: sha256:f23edc168fce27e5bd03ac731ea617f334409437e607a56b432d1c75a05a93af
+
+**Scope of acceptance**: criteria 1-5 are implemented and machine-verified at the meta-model layer.
+Criteria 6-7 (executed golden-path mappings and regenerated ADR-009 examples) remain pending — these require the M3→M2 compiler and runnable fixtures and are tracked as follow-on work.
 
 ## Context
 
@@ -212,13 +215,13 @@ This is one of the correct and valuable parts of the current design.
 Before this ADR can move from Draft to Accepted:
 
 1. ✅ `SemanticMappingDefinition` structure defined with all required components
-2. ⬜ `MaterializationRun` type defined for runtime state
-3. ⬜ `Field.semanticMapping` and `SemanticFieldMapping` removed from meta-model
-4. ⬜ All existing mappings migrated to new structure
-5. ⬜ Validation rules enforce single truth source (no field-level semantic annotations)
-6. ⬜ At least two production-grade golden path mappings:
+2. ✅ `MaterializationRun` type defined for runtime state (verified: deep-analysis-v0.5 check 7-8)
+3. ✅ `Field.semanticMapping` and `SemanticFieldMapping` removed from meta-model (verified: deep-analysis-v0.5 checks 1-2; PROHIBITED rules present)
+4. ✅ Meta-model examples migrated to new structure (`EquityPriceMapping`, `HoldingMappingWithJoin` use `slotMappings`)
+5. ✅ Validation rules enforce single truth source (no field-level semantic annotations) (verified: `SemanticFieldMapping type PROHIBITED` rule)
+6. ⬜ At least two production-grade golden path mappings executed and verified end-to-end:
    - Market price with Money construction, participant roles, three-axis time
    - Position snapshot with multi-table join, logical key, validity period
 7. ⬜ All five ADR-009 examples regenerated and passing with new structure
 
-**Current Status**: Draft - architecture defined, implementation not started
+**Current Status**: Implemented and machine-verified at the meta-model layer (criteria 1-5, 2026-07-29). Criteria 6-7 require the M3→M2 compiler and runnable fixtures; tracked as follow-on.

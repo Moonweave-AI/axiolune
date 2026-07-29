@@ -1,21 +1,23 @@
 # Axiolune Ontology Meta-Model - Layer 1: Semantic Core
-# Version: 0.3.0
-# Date: 2026-07-28
-# Governance: Follows ADR-001, ADR-004 architecture decisions
+# Version: 0.4.0
+# Date: 2026-07-29
+# Governance: Follows ADR-001, ADR-004, ADR-012 architecture decisions
 
 module:
   moduleIri: "https://axiolune.ai/ontology/meta/core"
   baseIri: "https://axiolune.ai/ontology/meta/core/"
   preferredPrefix: "ax-meta"
-  version: "0.3.0"
+  version: "0.4.0"
   imports: []
   exports: []  # Empty means export all defined types
 
 MetaModel:
-  version: "0.3.0"
+  version: "0.4.0"
   description: "Semantic core meta-model defining ontology structure, types, and alignment"
   layer: 1
   changes:
+    - "v0.4.0: Added availableFrom/availableTo availability-axis attributes (ADR-012)"
+    - "v0.4.0: Deprecated availableAt single-instant attribute (retained for transition, removal 0.6.0)"
     - "v0.3.0: Global rename to *Definition suffix (ADR-004)"
     - "v0.3.0: Updated module system with moduleIri, baseIri, preferredPrefix"
     - "v0.3.0: Added LocalizedTextDefinition"
@@ -617,18 +619,47 @@ MetaModel:
       maxCount: 1
     note: "Used for market data and sensor readings; semantically distinct from validFrom (observation instant vs validity period)"
 
-  availableAt:
-    iri: "https://axiolune.ai/ontology/meta/patterns/attributes/availableAt"
+  availableFrom:
+    iri: "https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom"
     namespace: "pattern"
-    localName: "availableAt"
-    label: "Available At"
-    definition: "instant in time when data became available for consumption by trading strategies or downstream systems, accounting for processing delays, authorization checks, and embargo periods"
+    localName: "availableFrom"
+    label: "Available From"
+    definition: "instant in time that marks the beginning of the availability period during which data may be consumed by a specific downstream subject, accounting for processing delays, authorization checks, and embargo periods"
     valueType: "instant"
     owlProjectionOverride: "datatypeProperty"
     defaultCardinality:
       minCount: 0
       maxCount: 1
-    note: "Captures operational availability, not publication or reception; critical for look-ahead bias prevention"
+    note: "Canonical availability axis start (ADR-012); half-open interval [availableFrom, availableTo). Critical for look-ahead bias prevention in backtesting and compliance audits."
+
+  availableTo:
+    iri: "https://axiolune.ai/ontology/meta/patterns/attributes/availableTo"
+    namespace: "pattern"
+    localName: "availableTo"
+    label: "Available To"
+    definition: "instant in time that marks the end of the availability period during which data may be consumed by a specific downstream subject, or null if the data remains available indefinitely"
+    valueType: "instant"
+    owlProjectionOverride: "datatypeProperty"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "Canonical availability axis end (ADR-012); null = available indefinitely once availableFrom is reached."
+
+  availableAt:
+    iri: "https://axiolune.ai/ontology/meta/patterns/attributes/availableAt"
+    namespace: "pattern"
+    localName: "availableAt"
+    label: "Available At (Deprecated)"
+    definition: "single instant in time when data became available for consumption; superseded by the availableFrom/availableTo interval per ADR-012"
+    valueType: "instant"
+    owlProjectionOverride: "datatypeProperty"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    deprecated: true
+    deprecatedSince: "0.5.0"
+    removalVersion: "0.6.0"
+    note: "DEPRECATED. Use availableFrom (and optional availableTo) for the availability axis. Retained for transition only; not injected by patterns in v0.5."
 
   # --- Publication Timing Attributes ---
 
