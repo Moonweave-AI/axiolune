@@ -19,10 +19,10 @@
 | 证券/衍生品分类 | FIBO SEC + DER + FBC | `docs/meta/reference/ontology-design-reference/fibo/SEC/` `DER/` `FBC/` |
 | 工具层次结构 | nautilus_trader (18+ 子类) + Lean (12 SecurityType) | `docs/meta/reference/project-reference/nautilus_trader/` `Lean/` |
 | 订单状态机 | nautilus_trader (15 状态 FSM + 16 事件) | `docs/meta/reference/project-reference/nautilus_trader/` |
-| 持仓/PnL | nautilus_trader (事件溯源) + rqalpha (T+1/税基) | `docs/meta/reference/project-reference/nautilus_trader/` `rqalpha/` |
+| 持仓/PnL | nautilus_trader (事件溯源) + rqalpha (税基队列) | `docs/meta/reference/project-reference/nautilus_trader/` `rqalpha/` |
 | 行情数据 | nautilus_trader (Bar/Tick/Quote/L2) + Lean (Bar/Tick) | 同上 |
 | 因子/回测 | qlib (Expression DSL + PITProvider) | `docs/meta/reference/project-reference/qlib/` |
-| 中国市场 | rqalpha (T+1/涨跌停) + vnpy (5 档 tick) | `docs/meta/reference/project-reference/rqalpha/` `vnpy/` |
+| 市场规则参数(T+1/涨跌停/结算周期) | rqalpha (T+1 实现) + vnpy (5 档 tick) | `docs/meta/reference/project-reference/rqalpha/` `vnpy/` |
 | 行业术语 | FIBO ONTOLOGY_GUIDE (ISO 704 定义规范) | `docs/meta/reference/ontology-design-reference/fibo/ONTOLOGY_GUIDE.md` |
 
 **不使用**: `axiolune-design-draft` 作为权威来源(其概念定义非行业标准,仅可参考其域划分思路)。
@@ -71,20 +71,29 @@ Step 6: 审查
 
 ## 5. 域推进顺序
 
-按依赖关系排序,前 3 个域构成"价格→持仓→下单"最小闭环:
+按依赖关系排序,前 4 个域构成"价格→持仓→下单"最小闭环:
 
 | 顺序 | 域 | 依赖 | 参考来源 |
 |------|----|------|----------|
-| 1 | instruments(工具与市场) | M3 core | FIBO SEC/FBC + nautilus_trader/Lean |
+| 0 | core(基础类型:标识符、货币、参与方) | M3 core | FIBO FND + ISO 6166/10383/17442 |
+| 1 | instruments(工具与市场) | core | FIBO SEC/FBC + nautilus_trader/Lean |
 | 2 | market-data(行情) | instruments | nautilus_trader/Lean + FIBO MD |
 | 3 | orders(订单与执行) | instruments + market-data | nautilus_trader FSM + Lean |
 | 4 | positions(持仓与组合) | instruments + market-data | nautilus_trader/rqalpha |
 | 5 | strategy(因子与回测) | positions | qlib |
 | 6 | risk(风险) | positions | Lean Greeks + FIBO |
 | 7 | operations(清算/对账/公司行动) | orders + positions | FIBO FBC/BP |
-| 8 | china-extensions(中国市场) | instruments + positions + orders | rqalpha + vnpy |
 
-域 1-3 完成后即可端到端验证"价格查询→持仓计算→订单提交"闭环。域 8 横切多个域,最后做。
+域 0-3 完成后即可端到端验证"价格查询→持仓计算→订单提交"闭环。
+
+### 5.1 市场差异如何建模(不设独立"中国市场"域)
+
+美股 A 股都是 Equity,差异不在本体概念,而在交易规则参数和数据供给:
+
+- **交易规则(T+1/T+0、涨跌停、结算周期)**:作为 Market/Venue 类型的属性(如 `settlementCycle: T+1`、`priceLimitUp: 0.10`、`priceLimitDown: -0.10`),定义在 instruments 域的 Market 类型上,不设独立的 T1Position 子类型。
+- **交易所(SSE/SZSE vs NYSE/NASDAQ)**:同一 Venue 类型的不同实例,通过 MIC(ISO 10383)标识。
+- **数据源差异**:属 L4 数据绑定(SemanticMappingDefinition),不同数据源映射到同一本体类型,不是本体层的概念区分。
+- **rqalpha/vnpy 的参考价值**:它们是实现层参考(T+1 逻辑、5 档 tick 格式、持仓队列),提取的是"如何建模这些参数",不是"建立独立的中国市场域"。
 
 ## 6. 验证策略
 
@@ -110,7 +119,7 @@ Step 6: 审查
 |-----|----------|------|
 | ADR-013 | Phase 0 末 | M2 架构:域划分、继承 vs 组合、IRI 命名空间 |
 | ADR-014 | orders 域 | 订单状态机选型(nautilus_trader 15 状态) |
-| ADR-015 | positions 域 | 持仓模型:事件溯源 vs 快照、PnL 计算、T+1 |
+| ADR-015 | positions 域 | 持仓模型:事件溯源 vs 快照、PnL 计算、税基追踪 |
 | 按需 | 各域 | 重大设计决策随时记录 |
 
 ## 8. 不做的事
@@ -121,3 +130,4 @@ Step 6: 审查
 - 不预设团队/预算/工时(AI 辅助开发)
 - 不用 design-draft 作为权威来源
 - 不发明 M3 不存在的 YAML 语法(如 `kind:` 字段)
+- 不设独立的市场域(中国/美国):市场差异是 Market/Venue 类型的属性参数,不是本体概念区分
