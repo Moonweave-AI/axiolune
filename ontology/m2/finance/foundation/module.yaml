@@ -1,0 +1,78 @@
+# Axiolune M2 Finance — Foundation Module
+# Module: fin-foundation
+# Version: 0.1.0
+# Status: draft (G0 fixture — proves the M2 Authoring Profile is usable)
+# ADR: ADR-013 (M2 Authoring Profile)
+
+module:
+  moduleIri: "https://axiolune.ai/ontology/finance/foundation"
+  baseIri: "https://axiolune.ai/ontology/finance/foundation/"
+  preferredPrefix: "fin-foundation"
+  version: "0.1.0"
+  label: "Financial Foundation"
+  definition: "financial identity, identifiers, and classification vocabulary shared across all finance domain modules"
+  imports: []
+  exports: []
+  status: draft
+
+domain:
+  # ---- Identifier: ISIN (ISO 6166) ----
+  # Inferred type: IdentifierTypeDefinition (has iri+namespace+localName+label+definition+pattern)
+  ISIN:
+    iri: "https://axiolune.ai/ontology/finance/foundation/ISIN"
+    namespace: "fin-foundation"
+    localName: "ISIN"
+    label: "International Securities Identification Number"
+    definition: "12-character alphanumeric code that identifies a security as specified by ISO 6166"
+    pattern: "^[A-Z]{2}[A-Z0-9]{9}[0-9]$"
+    note: "First 2 chars = ISO 3166-1 alpha-2 country code; last char = Luhn check digit"
+    alignments:
+      - vocabulary: "FIBO"
+        targetIri: "https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesIdentification/InternationalSecuritiesIdentificationNumber"
+        relation: "rdfs:subClassOf"
+        sourceRelease:
+          vocabulary: "FIBO"
+          release: "2026Q1"
+          artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        rationale: "ISIN is a concrete identifier type conforming to FIBO's securities identification hierarchy"
+        verification:
+          status: "proposed"
+
+  # ---- Attribute: hasPrimaryIdentifier ----
+  # Inferred type: AttributeTypeDefinition (has iri+namespace+localName+label+definition+valueType)
+  hasPrimaryIdentifier:
+    iri: "https://axiolune.ai/ontology/finance/foundation/hasPrimaryIdentifier"
+    namespace: "fin-foundation"
+    localName: "hasPrimaryIdentifier"
+    label: "Has Primary Identifier"
+    definition: "relation from a financial instrument to its primary externally-issued identifier"
+    valueType: "string"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "In production this would reference an IdentifierTypeDefinition; G0 fixture uses string for simplicity"
+
+  # ---- Object: FinancialInstrument ----
+  # Inferred type: ObjectTypeDefinition (has iri+namespace+localName+label+definition+superTypes+attributeUses)
+  FinancialInstrument:
+    iri: "https://axiolune.ai/ontology/finance/foundation/FinancialInstrument"
+    namespace: "fin-foundation"
+    localName: "FinancialInstrument"
+    label: "Financial Instrument"
+    definition: "financial instrument that represents a legal agreement between two parties involving a monetary value"
+    superTypes: []
+    attributeUses:
+      - attribute: "https://axiolune.ai/ontology/finance/foundation/hasPrimaryIdentifier"
+        minCount: 0
+        maxCount: 1
+    alignments:
+      - vocabulary: "FIBO"
+        targetIri: "https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/FinancialInstrument"
+        relation: "rdfs:subClassOf"
+        sourceRelease:
+          vocabulary: "FIBO"
+          release: "2026Q1"
+          artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        rationale: "Axiolune FinancialInstrument is a concrete domain-level subclass of FIBO's FinancialInstrument"
+        verification:
+          status: "proposed"
