@@ -1,0 +1,74 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-risk: <https://axiolune.ai/ontology/finance/risk/>.
+
+<https://axiolune.ai/ontology/finance/risk> a owl:Ontology;
+    owl:versionIRI <https://axiolune.ai/ontology/finance/risk/0.1.0>;
+    rdfs:label "Risk Management";
+    rdfs:comment "risk measure definitions, risk limits, exposure observations, and limit breaches that capture risk management semantics with point-in-time exposure tracking";
+    owl:imports <https://axiolune.ai/ontology/finance/foundation>, <https://axiolune.ai/ontology/finance/instruments>, <https://axiolune.ai/ontology/finance/portfolio-positions>, <https://axiolune.ai/ontology/finance/market-data>.
+fin-risk:RiskMeasureType a owl:Class;
+    rdfs:label "Risk Measure Type";
+    rdfs:comment "controlled vocabulary of risk measure categories (VaR, CVaR, volatility, exposure, concentration)".
+fin-risk:RiskMeasureType_VaR a fin-risk:RiskMeasureType;
+    rdfs:label "VaR".
+fin-risk:RiskMeasureType_CVaR a fin-risk:RiskMeasureType;
+    rdfs:label "CVaR".
+fin-risk:RiskMeasureType_Volatility a fin-risk:RiskMeasureType;
+    rdfs:label "Volatility".
+fin-risk:RiskMeasureType_Exposure a fin-risk:RiskMeasureType;
+    rdfs:label "Exposure".
+fin-risk:RiskMeasureType_Concentration a fin-risk:RiskMeasureType;
+    rdfs:label "Concentration".
+fin-risk:RiskMeasureType_Beta a fin-risk:RiskMeasureType;
+    rdfs:label "Beta".
+fin-risk:RiskMeasureType_Greeks a fin-risk:RiskMeasureType;
+    rdfs:label "Greeks".
+fin-risk:LimitBreachSeverity a owl:Class;
+    rdfs:label "Limit Breach Severity";
+    rdfs:comment "controlled vocabulary indicating severity of risk limit violation (warning, breach, critical)".
+fin-risk:LimitBreachSeverity_Warning a fin-risk:LimitBreachSeverity;
+    rdfs:label "Warning".
+fin-risk:LimitBreachSeverity_Breach a fin-risk:LimitBreachSeverity;
+    rdfs:label "Breach".
+fin-risk:LimitBreachSeverity_Critical a fin-risk:LimitBreachSeverity;
+    rdfs:label "Critical".
+fin-risk:RiskMeasureDefinition a owl:Class;
+    rdfs:label "Risk Measure Definition";
+    rdfs:comment "specification of a risk metric including calculation method, parameters, time horizon, and confidence level".
+fin-risk:RiskLimit a owl:Class;
+    rdfs:label "Risk Limit";
+    rdfs:comment "authorized maximum or threshold for a risk measure applicable to a portfolio, account, or instrument with defined scope and validity".
+fin-risk:ExposureObservation a owl:Class;
+    rdfs:label "Exposure Observation";
+    rdfs:comment "point-in-time observation of a risk measure value for a portfolio, account, or instrument with calculation timestamp and contributing factors".
+fin-risk:LimitBreach a owl:Class;
+    rdfs:label "Limit Breach";
+    rdfs:comment "detected violation of a risk limit with breach severity, exposure observation, and applicable limit".
+fin-risk:hasMeasureName a owl:Class;
+    rdfs:label "has measure name";
+    rdfs:comment "human-readable name of the risk measure".
+fin-risk:hasMeasureType a owl:Class;
+    rdfs:label "has measure type";
+    rdfs:comment "category of the risk measure".
+fin-risk:hasTimeHorizon a owl:Class;
+    rdfs:label "has time horizon";
+    rdfs:comment "time horizon for risk calculation in days (e.g., 1 for 1-day VaR)".
+fin-risk:hasConfidenceLevel a owl:Class;
+    rdfs:label "has confidence level";
+    rdfs:comment "confidence level for statistical risk measures (e.g., 0.99 for 99% VaR)".
+fin-risk:hasLimitValue a owl:Class;
+    rdfs:label "has limit value";
+    rdfs:comment "maximum allowed value for the risk measure".
+fin-risk:hasWarningThreshold a owl:Class;
+    rdfs:label "has warning threshold";
+    rdfs:comment "threshold value that triggers a warning before breach".
+fin-risk:hasExposureValue a owl:Class;
+    rdfs:label "has exposure value";
+    rdfs:comment "observed value of the risk measure".
+fin-risk:hasBreachSeverity a owl:Class;
+    rdfs:label "has breach severity";
+    rdfs:comment "severity level of the limit violation".

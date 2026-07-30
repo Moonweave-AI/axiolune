@@ -1,0 +1,205 @@
+# Axiolune M2 Finance — Strategy & Research Competency Questions
+# Module: fin-strategy-research
+# Version: 0.1.0
+# Purpose: Validate strategy research query capabilities
+
+competency_questions:
+  - id: "CQ-SR1"
+    question: "What signals were generated for a given instrument in a specific time window?"
+    businessContext: "Research analyst wants to review all signals generated for AAPL during 2026-07-01 to 2026-07-31 to evaluate factor performance"
+    scope: "Signal retrieval with temporal filtering"
+    sparqlPattern: |
+      SELECT ?signal ?direction ?strength ?validFrom ?factor ?strategy
+      WHERE {
+        ?signal a fin-strategy:Signal ;
+                fin-strategy:signalForInstrument ?instrument ;
+                fin-strategy:hasSignalDirection ?direction ;
+                foundation:validFrom ?validFrom .
+        OPTIONAL { ?signal fin-strategy:hasSignalStrength ?strength }
+        OPTIONAL { ?signal fin-strategy:generatedByFactor ?factor }
+        OPTIONAL { ?signal fin-strategy:generatedByStrategy ?strategy }
+        FILTER(?instrument = <instrument-iri>)
+        FILTER(?validFrom >= "2026-07-01T00:00:00Z"^^xsd:dateTime)
+        FILTER(?validFrom < "2026-08-01T00:00:00Z"^^xsd:dateTime)
+      }
+      ORDER BY ?validFrom
+    expectedResult: "Chronologically ordered list of signals with direction, strength, and generating factor/strategy"
+    dependsOn:
+      - "Signal Association"
+      - "TemporalFact pattern (validFrom)"
+      - "signalForInstrument participant"
+      - "generatedByFactor, generatedByStrategy participants"
+    riskLevel: "medium"
+    note: "Requires PIT validation: availableFrom must be <= query time to prevent look-ahead bias"
+
+  - id: "CQ-SR2"
+    question: "What factors are used by a given strategy definition?"
+    businessContext: "Portfolio manager wants to understand which factors are incorporated in a momentum strategy"
+    scope: "Strategy composition and factor lineage"
+    sparqlPattern: |
+      SELECT ?factor ?factorName ?category
+      WHERE {
+        ?signal fin-strategy:generatedByStrategy ?strategy ;
+                fin-strategy:generatedByFactor ?factor .
+        ?factor fin-strategy:hasFactorName ?factorName ;
+                fin-strategy:hasFactorCategory ?category .
+        FILTER(?strategy = <strategy-iri>)
+      }
+      GROUP BY ?factor ?factorName ?category
+    expectedResult: "Unique list of factors used by the strategy with their categories"
+    dependsOn:
+      - "StrategyDefinition Object"
+      - "FactorDefinition Object"
+      - "Signal Association linking both"
+    riskLevel: "low"
+
+  - id: "CQ-SR3"
+    question: "What are the performance metrics for a completed backtest run?"
+    businessContext: "Researcher wants to retrieve Sharpe ratio, max drawdown, and cumulative return for backtest #12345"
+    scope: "Backtest performance retrieval"
+    sparqlPattern: |
+      SELECT ?observation ?cumulativeReturn ?maxDrawdown ?sharpeRatio ?validFrom
+      WHERE {
+        ?observation a fin-strategy:PerformanceObservation ;
+                     fin-strategy:observedInBacktest ?backtest ;
+                     foundation:validFrom ?validFrom .
+        OPTIONAL { ?observation fin-strategy:hasCumulativeReturn ?cumulativeReturn }
+        OPTIONAL { ?observation fin-strategy:hasMaxDrawdown ?maxDrawdown }
+        OPTIONAL { ?observation fin-strategy:hasSharpeRatio ?sharpeRatio }
+        FILTER(?backtest = <backtest-iri>)
+      }
+      ORDER BY ?validFrom
+    expectedResult: "Time series of performance observations with key metrics"
+    dependsOn:
+      - "BacktestRun Association"
+      - "PerformanceObservation Association"
+      - "observedInBacktest participant"
+      - "TemporalFact pattern"
+    riskLevel: "low"
+
+  - id: "CQ-SR4"
+    question: "What was the initial capital and date range for a backtest run?"
+    businessContext: "Compliance team wants to verify backtest parameters for audit trail"
+    scope: "Backtest metadata retrieval"
+    sparqlPattern: |
+      SELECT ?backtest ?strategy ?startDate ?endDate ?initialCapital ?currency ?status
+      WHERE {
+        ?backtest a fin-strategy:BacktestRun ;
+                  fin-strategy:backtestsStrategy ?strategy ;
+                  fin-strategy:hasStartDate ?startDate ;
+                  fin-strategy:hasEndDate ?endDate ;
+                  fin-strategy:hasBacktestStatus ?status .
+        OPTIONAL { ?backtest fin-strategy:hasInitialCapital ?initialCapital }
+        OPTIONAL { ?backtest foundation:hasCurrency ?currency }
+        FILTER(?backtest = <backtest-iri>)
+      }
+    expectedResult: "Backtest parameters including strategy, date range, capital, and status"
+    dependsOn:
+      - "BacktestRun Association"
+      - "backtestsStrategy participant"
+      - "hasStartDate, hasEndDate, hasInitialCapital, hasBacktestStatus attributes"
+    riskLevel: "low"
+
+  - id: "CQ-SR5"
+    question: "Which backtest runs used a given strategy definition in the last quarter?"
+    businessContext: "Researcher wants to find all backtest runs of a mean-reversion strategy to compare parameter variations"
+    scope: "Backtest-strategy lineage with temporal filtering"
+    sparqlPattern: |
+      SELECT ?backtest ?startDate ?endDate ?status
+      WHERE {
+        ?backtest a fin-strategy:BacktestRun ;
+                  fin-strategy:backtestsStrategy ?strategy ;
+                  fin-strategy:hasStartDate ?startDate ;
+                  fin-strategy:hasEndDate ?endDate ;
+                  fin-strategy:hasBacktestStatus ?status ;
+                  foundation:knowledgeFrom ?knowledgeFrom .
+        FILTER(?strategy = <strategy-iri>)
+        FILTER(?knowledgeFrom >= "2026-04-01T00:00:00Z"^^xsd:dateTime)
+        FILTER(?knowledgeFrom < "2026-07-01T00:00:00Z"^^xsd:dateTime)
+      }
+      ORDER BY DESC(?knowledgeFrom)
+    expectedResult: "List of backtest runs for the strategy created in Q2 2026"
+    dependsOn:
+      - "BacktestRun Association"
+      - "ProvenancedFact pattern (knowledgeFrom)"
+      - "backtestsStrategy participant"
+    riskLevel: "low"
+
+  - id: "CQ-SR6"
+    question: "What was the Sharpe ratio trajectory over the backtest period?"
+    businessContext: "Risk analyst wants to see how risk-adjusted returns evolved during the backtest"
+    scope: "Time-series performance metric retrieval"
+    sparqlPattern: |
+      SELECT ?validFrom ?sharpeRatio ?cumulativeReturn
+      WHERE {
+        ?observation a fin-strategy:PerformanceObservation ;
+                     fin-strategy:observedInBacktest ?backtest ;
+                     fin-strategy:hasSharpeRatio ?sharpeRatio ;
+                     fin-strategy:hasCumulativeReturn ?cumulativeReturn ;
+                     foundation:validFrom ?validFrom .
+        FILTER(?backtest = <backtest-iri>)
+      }
+      ORDER BY ?validFrom
+    expectedResult: "Ordered time series of Sharpe ratio and cumulative return observations"
+    dependsOn:
+      - "PerformanceObservation Association"
+      - "TemporalFact pattern (validFrom as observation date)"
+      - "hasSharpeRatio, hasCumulativeReturn attributes"
+    riskLevel: "low"
+    note: "validFrom represents the performance observation date (e.g., end of day during backtest)"
+
+  - id: "CQ-SR7"
+    question: "Which factors generated long signals for instruments in a specific sector during a market downturn?"
+    businessContext: "Researcher investigating contrarian factor behavior during 2026-03 market correction"
+    scope: "Signal filtering by direction, factor, and instrument attributes with temporal constraints"
+    sparqlPattern: |
+      SELECT ?signal ?factor ?factorName ?instrument ?instrumentName ?validFrom
+      WHERE {
+        ?signal a fin-strategy:Signal ;
+                fin-strategy:hasSignalDirection fin-strategy:Long ;
+                fin-strategy:generatedByFactor ?factor ;
+                fin-strategy:signalForInstrument ?instrument ;
+                foundation:validFrom ?validFrom .
+        ?factor fin-strategy:hasFactorName ?factorName .
+        ?instrument instruments:hasInstrumentName ?instrumentName ;
+                    instruments:hasSector ?sector .
+        FILTER(?sector = "Technology")
+        FILTER(?validFrom >= "2026-03-01T00:00:00Z"^^xsd:dateTime)
+        FILTER(?validFrom < "2026-04-01T00:00:00Z"^^xsd:dateTime)
+      }
+      ORDER BY ?validFrom ?instrument
+    expectedResult: "Chronological list of long signals from factors for technology sector instruments in March 2026"
+    dependsOn:
+      - "Signal Association"
+      - "FactorDefinition Object"
+      - "FinancialInstrument (from fin-instruments)"
+      - "signalForInstrument, generatedByFactor participants"
+      - "hasSignalDirection attribute"
+    riskLevel: "medium"
+    note: "Assumes fin-instruments has sector classification (may need extension)"
+
+  - id: "CQ-SR8"
+    question: "What is the knowledge-time history of performance observations for a backtest (revisions)?"
+    businessContext: "Audit team investigating if backtest results were revised after initial calculation"
+    scope: "Knowledge-time reproducibility and revision tracking"
+    sparqlPattern: |
+      SELECT ?observation ?validFrom ?knowledgeFrom ?knowledgeTo ?sharpeRatio ?cumulativeReturn
+      WHERE {
+        ?observation a fin-strategy:PerformanceObservation ;
+                     fin-strategy:observedInBacktest ?backtest ;
+                     foundation:validFrom ?validFrom ;
+                     foundation:knowledgeFrom ?knowledgeFrom .
+        OPTIONAL { ?observation foundation:knowledgeTo ?knowledgeTo }
+        OPTIONAL { ?observation fin-strategy:hasSharpeRatio ?sharpeRatio }
+        OPTIONAL { ?observation fin-strategy:hasCumulativeReturn ?cumulativeReturn }
+        FILTER(?backtest = <backtest-iri>)
+        FILTER(?validFrom = "2026-07-15T00:00:00Z"^^xsd:dateTime)
+      }
+      ORDER BY ?knowledgeFrom
+    expectedResult: "All versions of performance observation for 2026-07-15, showing original and revised values"
+    dependsOn:
+      - "PerformanceObservation Association"
+      - "TemporalFact pattern (validFrom, knowledgeFrom, knowledgeTo)"
+      - "Three-axis temporal semantics"
+    riskLevel: "high"
+    note: "Analogous to CQ-S5 and CQ-OE8. Critical for research reproducibility and detecting result tampering."

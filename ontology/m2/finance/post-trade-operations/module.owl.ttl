@@ -1,0 +1,79 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-post-trade: <https://axiolune.ai/ontology/finance/post-trade-operations/>.
+
+<https://axiolune.ai/ontology/finance/post-trade-operations> a owl:Ontology;
+    owl:versionIRI <https://axiolune.ai/ontology/finance/post-trade-operations/0.1.0>;
+    rdfs:label "Post-Trade Operations";
+    rdfs:comment "corporate action events, settlement instructions, and reconciliation breaks that capture post-trade processing and operational risk semantics";
+    owl:imports <https://axiolune.ai/ontology/finance/foundation>, <https://axiolune.ai/ontology/finance/instruments>, <https://axiolune.ai/ontology/finance/portfolio-positions>, <https://axiolune.ai/ontology/finance/orders-execution>.
+fin-post-trade:CorporateActionType a owl:Class;
+    rdfs:label "Corporate Action Type";
+    rdfs:comment "controlled vocabulary of corporate action categories (dividend, split, merger, spinoff)".
+fin-post-trade:CorporateActionType_Dividend a fin-post-trade:CorporateActionType;
+    rdfs:label "Dividend".
+fin-post-trade:CorporateActionType_Split a fin-post-trade:CorporateActionType;
+    rdfs:label "Split".
+fin-post-trade:CorporateActionType_Merger a fin-post-trade:CorporateActionType;
+    rdfs:label "Merger".
+fin-post-trade:CorporateActionType_Spinoff a fin-post-trade:CorporateActionType;
+    rdfs:label "Spinoff".
+fin-post-trade:CorporateActionType_RightsIssue a fin-post-trade:CorporateActionType;
+    rdfs:label "RightsIssue".
+fin-post-trade:CorporateActionType_Delisting a fin-post-trade:CorporateActionType;
+    rdfs:label "Delisting".
+fin-post-trade:SettlementStatus a owl:Class;
+    rdfs:label "Settlement Status";
+    rdfs:comment "controlled vocabulary of settlement states (pending, settled, failed, canceled)".
+fin-post-trade:SettlementStatus_Pending a fin-post-trade:SettlementStatus;
+    rdfs:label "Pending".
+fin-post-trade:SettlementStatus_Settled a fin-post-trade:SettlementStatus;
+    rdfs:label "Settled".
+fin-post-trade:SettlementStatus_Failed a fin-post-trade:SettlementStatus;
+    rdfs:label "Failed".
+fin-post-trade:SettlementStatus_Canceled a fin-post-trade:SettlementStatus;
+    rdfs:label "Canceled".
+fin-post-trade:ReconciliationStatus a owl:Class;
+    rdfs:label "Reconciliation Status";
+    rdfs:comment "controlled vocabulary of reconciliation outcomes (matched, break, investigating, resolved)".
+fin-post-trade:ReconciliationStatus_Matched a fin-post-trade:ReconciliationStatus;
+    rdfs:label "Matched".
+fin-post-trade:ReconciliationStatus_Break a fin-post-trade:ReconciliationStatus;
+    rdfs:label "Break".
+fin-post-trade:ReconciliationStatus_Investigating a fin-post-trade:ReconciliationStatus;
+    rdfs:label "Investigating".
+fin-post-trade:ReconciliationStatus_Resolved a fin-post-trade:ReconciliationStatus;
+    rdfs:label "Resolved".
+fin-post-trade:CorporateActionEvent a owl:Class;
+    rdfs:label "Corporate Action Event";
+    rdfs:comment "scheduled or announced corporate action affecting instrument holders with ex-date, record date, payment date, and impact details".
+fin-post-trade:SettlementInstruction a owl:Class;
+    rdfs:label "Settlement Instruction";
+    rdfs:comment "instruction to settle a trade execution with settlement date, status, counterparty, and clearing details".
+fin-post-trade:ReconciliationBreak a owl:Class;
+    rdfs:label "Reconciliation Break";
+    rdfs:comment "detected discrepancy between internal records and external source (broker, custodian, counterparty) with break details and resolution status".
+fin-post-trade:hasActionType a owl:Class;
+    rdfs:label "has action type";
+    rdfs:comment "category of the corporate action".
+fin-post-trade:hasExDate a owl:Class;
+    rdfs:label "has ex-date";
+    rdfs:comment "ex-dividend or ex-rights date after which new buyers do not receive the action benefit".
+fin-post-trade:hasPaymentDate a owl:Class;
+    rdfs:label "has payment date";
+    rdfs:comment "date when dividend or other corporate action payment is made".
+fin-post-trade:hasSettlementDate a owl:Class;
+    rdfs:label "has settlement date";
+    rdfs:comment "date when trade settlement occurs (T+N from trade date)".
+fin-post-trade:hasSettlementStatus a owl:Class;
+    rdfs:label "has settlement status";
+    rdfs:comment "current state of the settlement process".
+fin-post-trade:hasReconciliationStatus a owl:Class;
+    rdfs:label "has reconciliation status";
+    rdfs:comment "current state of the reconciliation investigation".
+fin-post-trade:hasBreakAmount a owl:Class;
+    rdfs:label "has break amount";
+    rdfs:comment "monetary value of the discrepancy".
