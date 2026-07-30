@@ -1,0 +1,86 @@
+# fin-market-data — Competency Questions (CQ)
+# M2-PLAN §6.2: Slice A market data CQ with PIT validation
+
+cqs:
+  - id: "CQ-MD1"
+    question: "Given a listing, venue, and three-axis as-of timestamps (asOfValid, asOfKnowledge, asOfAvailable), what is the available price of the specified kind?"
+    scope: "PIT price query with three-axis temporal semantics"
+    expectedResult: "returns the unique price observation that satisfies: (1) validFrom <= asOfValid < validTo, (2) knowledgeFrom <= asOfKnowledge < knowledgeTo, (3) availableFrom <= asOfAvailable < availableTo, (4) matches instrument/venue/priceKind, or returns explicit 'no data available' if no observation satisfies all conditions"
+    negativeExamples:
+      - "data with availableFrom after asOfAvailable is rejected (future data leakage)"
+      - "data with validFrom after asOfValid is rejected (not yet valid)"
+      - "data with knowledgeFrom after asOfKnowledge is rejected (revision not yet known)"
+      - "data with missing availableFrom is rejected (fail-closed per ADR-012)"
+      - "interval inversion (validTo <= validFrom) is rejected"
+    dependsOn: ["PriceObservation", "TemporalFact", "PITValidationRequest"]
+    riskLevel: "high"
+    status: "draft"
+    note: "Core PIT validation CQ per M2-PLAN §6.2 CQ-S2. Prevents look-ahead bias in backtest and research."
+
+  - id: "CQ-MD2"
+    question: "Given an instrument, venue, and time interval [t_start, t_end), return all trade observations that occurred in that interval with correct temporal ordering"
+    scope: "temporal range query for trade observations"
+    expectedResult: "returns all TradeObservation instances where validFrom is in [t_start, t_end), ordered by validFrom ascending, with provenance (source, revision) for each"
+    negativeExamples:
+      - "observations outside the interval are excluded"
+      - "observations with missing validFrom are rejected"
+      - "observations with inverted intervals (validTo < validFrom) are rejected"
+    dependsOn: ["TradeObservation", "TemporalFact"]
+    riskLevel: "medium"
+    status: "draft"
+
+  - id: "CQ-MD3"
+    question: "When the same price observation is revised (knowledge-time changes), can historical queries with fixed asOfKnowledge still reproduce the original result?"
+    scope: "revision tracking and reproducibility"
+    expectedResult: "query with asOfKnowledge = T1 returns version V1; after revision at T2, query with asOfKnowledge = T1 still returns V1, and query with asOfKnowledge = T2 returns V2; the revision chain is traceable"
+    negativeExamples:
+      - "revision overwrites history without preserving old version (fails reproducibility)"
+      - "knowledge-time not recorded (cannot distinguish versions)"
+    dependsOn: ["PriceObservation", "TemporalFact", "ProvenancedFact"]
+    riskLevel: "high"
+    status: "draft"
+    note: "M2-PLAN §6.2 CQ-S5 reproducibility requirement"
+
+  - id: "CQ-MD4"
+    question: "Given a quote observation, are both bid and ask present, or at least one?"
+    scope: "quote observation structural constraint"
+    expectedResult: "returns the quote observation if at least one of (hasBidPrice, hasAskPrice) is present; rejects if both are null"
+    negativeExamples:
+      - "quote with both bid and ask null is rejected"
+    dependsOn: ["QuoteObservation"]
+    riskLevel: "low"
+    status: "draft"
+
+  - id: "CQ-MD5"
+    question: "Given a bar, does it satisfy OHLC ordering (Low <= Open/Close <= High, Low <= High)?"
+    scope: "bar data integrity constraint"
+    expectedResult: "returns valid bar if Low <= Open <= High, Low <= Close <= High, Low <= High; rejects otherwise"
+    negativeExamples:
+      - "bar with Open > High is rejected"
+      - "bar with Close < Low is rejected"
+      - "bar with Low > High is rejected"
+    dependsOn: ["Bar"]
+    riskLevel: "medium"
+    status: "draft"
+
+  - id: "CQ-MD6"
+    question: "Can I retrieve the data source and revision number for a given price observation?"
+    scope: "provenance and audit trail"
+    expectedResult: "returns the source (data provider), revision identifier, evidence locator, and assertion timestamp for the observation"
+    negativeExamples:
+      - "observation without source provenance is rejected or flagged as unverified"
+    dependsOn: ["PriceObservation", "ProvenancedFact"]
+    riskLevel: "medium"
+    status: "draft"
+
+  - id: "CQ-MD7"
+    question: "Given an instrument listing, venue, and a time window, return the most recent close price before a specified timestamp T"
+    scope: "last-known price query (typical for valuation)"
+    expectedResult: "returns the PriceObservation with priceKind = Close, validFrom < T, max(validFrom), satisfying PIT constraints"
+    negativeExamples:
+      - "price with availableFrom > T is excluded (not yet available)"
+      - "price with validFrom >= T is excluded (future price)"
+    dependsOn: ["PriceObservation", "TemporalFact", "PITValidationRequest"]
+    riskLevel: "high"
+    status: "draft"
+    note: "Used by portfolio valuation (CQ-S4 in M2-PLAN §6.2)"

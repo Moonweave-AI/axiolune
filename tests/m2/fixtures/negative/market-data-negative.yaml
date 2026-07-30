@@ -1,0 +1,153 @@
+# M2 Market Data — Negative Test Fixtures
+# Invalid instances that must be rejected by validation
+
+fixtures:
+  - id: "price-obs-neg-001-missing-available-time"
+    description: "Price observation missing availableFrom (fail-closed per ADR-012)"
+    type: "https://axiolune.ai/ontology/finance/market-data/PriceObservation"
+    instance:
+      iri: "https://axiolune.ai/data/market-data/price-obs-neg-001"
+      observedInstrument: "https://axiolune.ai/data/instruments/equity-AAPL-US"
+      hasPriceValue: 150.25
+      hasPriceKind: "Last"
+      hasCurrencyCode: "USD"
+      validFrom: "2026-07-29T14:30:00Z"
+      validTo: "2026-07-29T14:30:01Z"
+      knowledgeFrom: "2026-07-29T14:30:00.123Z"
+      knowledgeTo: null
+      availableFrom: null  # MISSING - must fail closed
+      source: "nasdaq-data-feed"
+    expectedResult: "rejected"
+    violationType: "missing-availability-time"
+    note: "M2-PLAN §2.5: availableFrom missing must fail-closed to prevent unconstrained availability"
+
+  - id: "price-obs-neg-002-future-available"
+    description: "PIT query with asOfAvailable before data availableFrom (look-ahead bias)"
+    type: "https://axiolune.ai/ontology/finance/market-data/PriceObservation"
+    instance:
+      iri: "https://axiolune.ai/data/market-data/price-obs-neg-002"
+      observedInstrument: "https://axiolune.ai/data/instruments/equity-AAPL-US"
+      hasPriceValue: 150.25
+      hasPriceKind: "Last"
+      hasCurrencyCode: "USD"
+      validFrom: "2026-07-29T14:30:00Z"
+      validTo: "2026-07-29T14:30:01Z"
+      knowledgeFrom: "2026-07-29T14:30:00.123Z"
+      knowledgeTo: null
+      availableFrom: "2026-07-29T14:30:05.000Z"  # available at 14:30:05
+      source: "nasdaq-data-feed"
+    pitQuery:
+      asOfValid: "2026-07-29T14:30:00.500Z"
+      asOfKnowledge: "2026-07-29T14:30:01.000Z"
+      asOfAvailable: "2026-07-29T14:30:03.000Z"  # BEFORE availableFrom - should not return
+    expectedResult: "rejected"
+    violationType: "future-data-leakage"
+    note: "CQ-MD1: Query at 14:30:03 cannot see data available only from 14:30:05"
+
+  - id: "price-obs-neg-003-interval-inversion"
+    description: "Price observation with validTo <= validFrom"
+    type: "https://axiolune.ai/ontology/finance/market-data/PriceObservation"
+    instance:
+      iri: "https://axiolune.ai/data/market-data/price-obs-neg-003"
+      observedInstrument: "https://axiolune.ai/data/instruments/equity-AAPL-US"
+      hasPriceValue: 150.25
+      hasPriceKind: "Last"
+      hasCurrencyCode: "USD"
+      validFrom: "2026-07-29T14:30:00Z"
+      validTo: "2026-07-29T14:29:00Z"  # BEFORE validFrom - inverted interval
+      knowledgeFrom: "2026-07-29T14:30:00.123Z"
+      knowledgeTo: null
+      availableFrom: "2026-07-29T14:30:00.500Z"
+      source: "nasdaq-data-feed"
+    expectedResult: "rejected"
+    violationType: "interval-inversion"
+    note: "M2-PLAN §2.5: All intervals use half-open [from, to); to <= from is invalid"
+
+  - id: "quote-obs-neg-001-missing-both-sides"
+    description: "Quote observation with both bid and ask null"
+    type: "https://axiolune.ai/ontology/finance/market-data/QuoteObservation"
+    instance:
+      iri: "https://axiolune.ai/data/market-data/quote-obs-neg-001"
+      observedInstrument: "https://axiolune.ai/data/instruments/equity-AAPL-US"
+      hasBidPrice: null  # both null - invalid
+      hasAskPrice: null
+      hasCurrencyCode: "USD"
+      validFrom: "2026-07-29T14:30:00Z"
+      validTo: "2026-07-29T14:30:01Z"
+      knowledgeFrom: "2026-07-29T14:30:00.100Z"
+      knowledgeTo: null
+      availableFrom: "2026-07-29T14:30:00.300Z"
+      source: "nasdaq-L2-feed"
+    expectedResult: "rejected"
+    violationType: "missing-quote-sides"
+    note: "CQ-MD4: At least one of (hasBidPrice, hasAskPrice) must be present"
+
+  - id: "bar-neg-001-ohlc-violation"
+    description: "Bar with Open > High (OHLC ordering violation)"
+    type: "https://axiolune.ai/ontology/finance/market-data/Bar"
+    instance:
+      iri: "https://axiolune.ai/data/market-data/bar-neg-001"
+      observedInstrument: "https://axiolune.ai/data/instruments/equity-AAPL-US"
+      hasOpenPrice: 150.60  # > High - invalid
+      hasHighPrice: 150.50
+      hasLowPrice: 150.00
+      hasClosePrice: 150.25
+      hasVolume: 125000
+      hasBarAggregation: "Time"
+      hasBarDuration: "PT5M"
+      hasCurrencyCode: "USD"
+      validFrom: "2026-07-29T14:25:00Z"
+      validTo: "2026-07-29T14:30:00Z"
+      knowledgeFrom: "2026-07-29T14:30:00.500Z"
+      knowledgeTo: null
+      availableFrom: "2026-07-29T14:30:01.000Z"
+      source: "bar-aggregator"
+    expectedResult: "rejected"
+    violationType: "ohlc-ordering-violation"
+    note: "CQ-MD5: Open must satisfy Low <= Open <= High"
+
+  - id: "bar-neg-002-low-high-inversion"
+    description: "Bar with Low > High"
+    type: "https://axiolune.ai/ontology/finance/market-data/Bar"
+    instance:
+      iri: "https://axiolune.ai/data/market-data/bar-neg-002"
+      observedInstrument: "https://axiolune.ai/data/instruments/equity-AAPL-US"
+      hasOpenPrice: 150.45  # between Low and High is impossible when Low > High, so just make it = Low
+      hasHighPrice: 150.30  # < Low - invalid
+      hasLowPrice: 150.50
+      hasClosePrice: 150.45
+      hasVolume: 125000
+      hasBarAggregation: "Time"
+      hasCurrencyCode: "USD"
+      validFrom: "2026-07-29T14:25:00Z"
+      validTo: "2026-07-29T14:30:00Z"
+      knowledgeFrom: "2026-07-29T14:30:00.500Z"
+      knowledgeTo: null
+      availableFrom: "2026-07-29T14:30:01.000Z"
+      source: "bar-aggregator"
+    expectedResult: "rejected"
+    violationType: "low-high-inversion"
+    note: "CQ-MD5: Low <= High must hold"
+
+  - id: "price-obs-neg-004-future-valid-time"
+    description: "PIT query returns observation with validFrom after asOfValid"
+    type: "https://axiolune.ai/ontology/finance/market-data/PriceObservation"
+    instance:
+      iri: "https://axiolune.ai/data/market-data/price-obs-neg-004"
+      observedInstrument: "https://axiolune.ai/data/instruments/equity-AAPL-US"
+      hasPriceValue: 150.25
+      hasPriceKind: "Last"
+      hasCurrencyCode: "USD"
+      validFrom: "2026-07-29T15:00:00Z"  # future event
+      validTo: "2026-07-29T15:00:01Z"
+      knowledgeFrom: "2026-07-29T14:30:00.123Z"
+      knowledgeTo: null
+      availableFrom: "2026-07-29T14:30:00.500Z"
+      source: "nasdaq-data-feed"
+    pitQuery:
+      asOfValid: "2026-07-29T14:30:00Z"  # query at 14:30, but price valid at 15:00
+      asOfKnowledge: "2026-07-29T14:35:00Z"
+      asOfAvailable: "2026-07-29T14:35:00Z"
+    expectedResult: "rejected"
+    violationType: "future-valid-time"
+    note: "CQ-MD1: validFrom <= asOfValid < validTo must hold; this observation is not yet valid"

@@ -1,0 +1,428 @@
+# Axiolune M2 Finance — Market Data Module
+# Module: fin-market-data
+# Version: 0.1.0
+# Status: draft
+# Dependencies: fin-foundation, fin-market-structure, fin-instruments
+# Terminology: docs/ontology/terminology/fin-market-data-terms.yaml
+# CQ: docs/ontology/competency-questions/fin-market-data-cq.yaml
+# Alignment: No direct FIBO equivalent (gap); modeled from nautilus_trader QuoteTick/TradeTick/Bar
+# Implementation evidence: nautilus_trader (QuoteTick, TradeTick, Bar), Lean (TradeBar, QuoteBar)
+
+module:
+  moduleIri: "https://axiolune.ai/ontology/finance/market-data"
+  baseIri: "https://axiolune.ai/ontology/finance/market-data/"
+  preferredPrefix: "fin-market-data"
+  version: "0.1.0"
+  label: "Market Data"
+  definition: "price observations, quote observations, trade observations, bars, and data provenance that capture market activity with three-axis temporal semantics (valid/knowledge/availability time) per ADR-012"
+  imports:
+    - moduleIri: "https://axiolune.ai/ontology/finance/foundation"
+      version: "0.1.0"
+      artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      importMode: All
+    - moduleIri: "https://axiolune.ai/ontology/finance/market-structure"
+      version: "0.1.0"
+      artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      importMode: All
+    - moduleIri: "https://axiolune.ai/ontology/finance/instruments"
+      version: "0.1.0"
+      artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      importMode: All
+  exports: []
+  status: draft
+
+domain:
+  # ==================== Code Lists ====================
+
+  PriceKind:
+    iri: "https://axiolune.ai/ontology/finance/market-data/PriceKind"
+    namespace: "fin-market-data"
+    localName: "PriceKind"
+    label: "Price Kind"
+    definition: "controlled vocabulary of price observation types that distinguish the semantic role of a price value in market data"
+    values:
+      - Last
+      - Bid
+      - Ask
+      - Mid
+      - Open
+      - High
+      - Low
+      - Close
+      - Settlement
+      - VWAP
+      - TWAP
+    note: "Axiolune-native code list; nautilus_trader uses PriceType enum with similar values"
+
+  QuoteSide:
+    iri: "https://axiolune.ai/ontology/finance/market-data/QuoteSide"
+    namespace: "fin-market-data"
+    localName: "QuoteSide"
+    label: "Quote Side"
+    definition: "controlled vocabulary indicating whether a quote is a bid (buy) or ask (sell) side quotation"
+    values:
+      - Bid
+      - Ask
+    note: "Axiolune-native; corresponds to nautilus_trader OrderSide.BUY/SELL in quote context"
+
+  BarAggregation:
+    iri: "https://axiolune.ai/ontology/finance/market-data/BarAggregation"
+    namespace: "fin-market-data"
+    localName: "BarAggregation"
+    label: "Bar Aggregation"
+    definition: "controlled vocabulary of bar aggregation methods (time, tick, volume, dollar)"
+    values:
+      - Time
+      - Tick
+      - Volume
+      - Dollar
+      - Range
+      - Renko
+    note: "Axiolune-native; nautilus_trader supports multiple bar types"
+
+  # ==================== Attributes ====================
+
+  hasPriceValue:
+    iri: "https://axiolune.ai/ontology/finance/market-data/hasPriceValue"
+    namespace: "fin-market-data"
+    localName: "hasPriceValue"
+    label: "Has Price Value"
+    definition: "relation from a price observation to its decimal price value"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+    note: "Should use Money type binding from M3 when cross-module type references are wired"
+
+  hasPriceKind:
+    iri: "https://axiolune.ai/ontology/finance/market-data/hasPriceKind"
+    namespace: "fin-market-data"
+    localName: "hasPriceKind"
+    label: "Has Price Kind"
+    definition: "relation from a price observation to its price kind from the PriceKind code list"
+    valueType: "string"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+
+  hasQuoteSide:
+    iri: "https://axiolune.ai/ontology/finance/market-data/hasQuoteSide"
+    namespace: "fin-market-data"
+    localName: "hasQuoteSide"
+    label: "Has Quote Side"
+    definition: "relation from a quote observation to its side (Bid or Ask) from the QuoteSide code list"
+    valueType: "string"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+
+  hasBidPrice:
+    iri: "https://axiolune.ai/ontology/finance/market-data/hasBidPrice"
+    namespace: "fin-market-data"
+    localName: "hasBidPrice"
+    label: "Has Bid Price"
+    definition: "relation from a quote observation to the bid price value"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+
+  hasAskPrice:
+    iri: "https://axiolune.ai/ontology/finance/market-data/hasAskPrice"
+    namespace: "fin-market-data"
+    localName: "hasAskPrice"
+    label: "Has Ask Price"
+    definition: "relation from a quote observation to the ask price value"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+
+  hasBidSize:
+    iri: "https://axiolune.ai/ontology/finance/market-data/hasBidSize"
+    namespace: "fin-market-data"
+    localName: "hasBidSize"
+    label: "Has Bid Size"
+    definition: "relation from a quote observation to the bid quantity"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+
+  hasAskSize:
+    iri: "https://axiolune.ai/ontology/finance/market-data/hasAskSize"
+    namespace: "fin-market-data"
+    localName: "hasAskSize"
+    label: "Has Ask Size"
+    definition: "relation from a quote observation to the ask quantity"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+
+  hasTradePrice:
+    iri: "https://axiolune.ai/ontology/finance/market-data/hasTradePrice"
+    namespace: "fin-market-data"
+    localName: "hasTradePrice"
+    label: "Has Trade Price"
+    definition: "relation from a trade observation to the execution price"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+
+  hasTradeSize:
+    iri: "https://axiolune.ai/ontology/finance/market-data/hasTradeSize"
+    namespace: "fin-market-data"
+    localName: "hasTradeSize"
+    label: "Has Trade Size"
+    definition: "relation from a trade observation to the executed quantity"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+
+  hasOpenPrice:
+    iri: "https://axiolune.ai/ontology/finance/market-data/hasOpenPrice"
+    namespace: "fin-market-data"
+    localName: "hasOpenPrice"
+    label: "Has Open Price"
+    definition: "relation from a bar to the first trade price in the bar period"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+
+  hasHighPrice:
+    iri: "https://axiolune.ai/ontology/finance/market-data/hasHighPrice"
+    namespace: "fin-market-data"
+    localName: "hasHighPrice"
+    label: "Has High Price"
+    definition: "relation from a bar to the highest trade price in the bar period"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+
+  hasLowPrice:
+    iri: "https://axiolune.ai/ontology/finance/market-data/hasLowPrice"
+    namespace: "fin-market-data"
+    localName: "hasLowPrice"
+    label: "Has Low Price"
+    definition: "relation from a bar to the lowest trade price in the bar period"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+
+  hasClosePrice:
+    iri: "https://axiolune.ai/ontology/finance/market-data/hasClosePrice"
+    namespace: "fin-market-data"
+    localName: "hasClosePrice"
+    label: "Has Close Price"
+    definition: "relation from a bar to the last trade price in the bar period"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+
+  hasVolume:
+    iri: "https://axiolune.ai/ontology/finance/market-data/hasVolume"
+    namespace: "fin-market-data"
+    localName: "hasVolume"
+    label: "Has Volume"
+    definition: "relation from a bar or trade observation to the total quantity traded"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+
+  hasBarAggregation:
+    iri: "https://axiolune.ai/ontology/finance/market-data/hasBarAggregation"
+    namespace: "fin-market-data"
+    localName: "hasBarAggregation"
+    label: "Has Bar Aggregation"
+    definition: "relation from a bar to its aggregation method from the BarAggregation code list"
+    valueType: "string"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+
+  hasBarDuration:
+    iri: "https://axiolune.ai/ontology/finance/market-data/hasBarDuration"
+    namespace: "fin-market-data"
+    localName: "hasBarDuration"
+    label: "Has Bar Duration"
+    definition: "relation from a time-aggregated bar to its duration (e.g. 1 minute, 5 minutes, 1 hour)"
+    valueType: "duration"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "Only applicable for Time aggregation; null for Tick/Volume/Dollar bars"
+
+  observesInstrument:
+    iri: "https://axiolune.ai/ontology/finance/market-data/observesInstrument"
+    namespace: "fin-market-data"
+    localName: "observesInstrument"
+    label: "Observes Instrument"
+    definition: "relation from a market data observation to the financial instrument being observed"
+    valueType: "string"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+    note: "references a FinancialInstrument or InstrumentListing IRI"
+
+  observesAtVenue:
+    iri: "https://axiolune.ai/ontology/finance/market-data/observesAtVenue"
+    namespace: "fin-market-data"
+    localName: "observesAtVenue"
+    label: "Observes At Venue"
+    definition: "relation from a market data observation to the trading venue where the observation occurred"
+    valueType: "string"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "references a TradingVenue IRI; null for consolidated feeds"
+
+  # ==================== Association Types ====================
+
+  PriceObservation:
+    iri: "https://axiolune.ai/ontology/finance/market-data/PriceObservation"
+    namespace: "fin-market-data"
+    localName: "PriceObservation"
+    label: "Price Observation"
+    definition: "time-stamped observation of a price for a financial instrument at a specific venue with a defined price kind, currency, source, and three-axis temporal semantics (valid-time = market event time, knowledge-time = when platform learned, availability-time = when queryable per ADR-012)"
+    participantRoles:
+      - roleName: "observedInstrument"
+        range: "https://axiolune.ai/ontology/finance/instruments/FinancialInstrument"
+        minCount: 1
+        maxCount: 1
+      - roleName: "observedAtVenue"
+        range: "https://axiolune.ai/ontology/finance/market-structure/TradingVenue"
+        minCount: 0
+        maxCount: 1
+    attributeUses:
+      - attribute: "https://axiolune.ai/ontology/finance/market-data/hasPriceValue"
+        minCount: 1
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/market-data/hasPriceKind"
+        minCount: 1
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode"
+        minCount: 1
+        maxCount: 1
+    patternBindings:
+      - pattern: "https://axiolune.ai/ontology/meta/patterns/TemporalFact"
+      - pattern: "https://axiolune.ai/ontology/meta/patterns/ProvenancedFact"
+    note: "Association (not ObjectType) because price is an observation fact with context (instrument, venue, time, source, kind), not a stable business entity. validTime = market timestamp, knowledgeTime = assertion/revision time, availabilityTime = supplier receipt/permission release time."
+
+  QuoteObservation:
+    iri: "https://axiolune.ai/ontology/finance/market-data/QuoteObservation"
+    namespace: "fin-market-data"
+    localName: "QuoteObservation"
+    label: "Quote Observation"
+    definition: "time-stamped observation of bid and/or ask prices with sizes for a financial instrument at a specific venue, with three-axis temporal semantics per ADR-012"
+    participantRoles:
+      - roleName: "observedInstrument"
+        range: "https://axiolune.ai/ontology/finance/instruments/FinancialInstrument"
+        minCount: 1
+        maxCount: 1
+      - roleName: "observedAtVenue"
+        range: "https://axiolune.ai/ontology/finance/market-structure/TradingVenue"
+        minCount: 0
+        maxCount: 1
+    attributeUses:
+      - attribute: "https://axiolune.ai/ontology/finance/market-data/hasBidPrice"
+        minCount: 0
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/market-data/hasAskPrice"
+        minCount: 0
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/market-data/hasBidSize"
+        minCount: 0
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/market-data/hasAskSize"
+        minCount: 0
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode"
+        minCount: 1
+        maxCount: 1
+    patternBindings:
+      - pattern: "https://axiolune.ai/ontology/meta/patterns/TemporalFact"
+      - pattern: "https://axiolune.ai/ontology/meta/patterns/ProvenancedFact"
+    note: "Corresponds to nautilus_trader QuoteTick. Either bid or ask (or both) must be present. validTime = quote timestamp."
+
+  TradeObservation:
+    iri: "https://axiolune.ai/ontology/finance/market-data/TradeObservation"
+    namespace: "fin-market-data"
+    localName: "TradeObservation"
+    label: "Trade Observation"
+    definition: "time-stamped observation of an executed trade for a financial instrument at a specific venue with price, size, currency, source, and three-axis temporal semantics per ADR-012"
+    participantRoles:
+      - roleName: "observedInstrument"
+        range: "https://axiolune.ai/ontology/finance/instruments/FinancialInstrument"
+        minCount: 1
+        maxCount: 1
+      - roleName: "observedAtVenue"
+        range: "https://axiolune.ai/ontology/finance/market-structure/TradingVenue"
+        minCount: 0
+        maxCount: 1
+    attributeUses:
+      - attribute: "https://axiolune.ai/ontology/finance/market-data/hasTradePrice"
+        minCount: 1
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/market-data/hasTradeSize"
+        minCount: 1
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode"
+        minCount: 1
+        maxCount: 1
+    patternBindings:
+      - pattern: "https://axiolune.ai/ontology/meta/patterns/TemporalFact"
+      - pattern: "https://axiolune.ai/ontology/meta/patterns/ProvenancedFact"
+    note: "Corresponds to nautilus_trader TradeTick. validTime = trade execution timestamp."
+
+  Bar:
+    iri: "https://axiolune.ai/ontology/finance/market-data/Bar"
+    namespace: "fin-market-data"
+    localName: "Bar"
+    label: "Bar"
+    definition: "aggregated market data observation over a time period, tick count, volume, or dollar amount, with open/high/low/close prices, volume, aggregation method, and three-axis temporal semantics per ADR-012"
+    participantRoles:
+      - roleName: "observedInstrument"
+        range: "https://axiolune.ai/ontology/finance/instruments/FinancialInstrument"
+        minCount: 1
+        maxCount: 1
+      - roleName: "observedAtVenue"
+        range: "https://axiolune.ai/ontology/finance/market-structure/TradingVenue"
+        minCount: 0
+        maxCount: 1
+    attributeUses:
+      - attribute: "https://axiolune.ai/ontology/finance/market-data/hasOpenPrice"
+        minCount: 1
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/market-data/hasHighPrice"
+        minCount: 1
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/market-data/hasLowPrice"
+        minCount: 1
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/market-data/hasClosePrice"
+        minCount: 1
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/market-data/hasVolume"
+        minCount: 1
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/market-data/hasBarAggregation"
+        minCount: 1
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/market-data/hasBarDuration"
+        minCount: 0
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode"
+        minCount: 1
+        maxCount: 1
+    patternBindings:
+      - pattern: "https://axiolune.ai/ontology/meta/patterns/TemporalFact"
+      - pattern: "https://axiolune.ai/ontology/meta/patterns/ProvenancedFact"
+    note: "Corresponds to nautilus_trader Bar and Lean TradeBar/QuoteBar. validTime = bar period end timestamp (bar represents [validFrom, validTo) interval). OHLCV = Open/High/Low/Close/Volume."

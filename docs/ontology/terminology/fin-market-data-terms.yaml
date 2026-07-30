@@ -1,0 +1,137 @@
+# fin-market-data — Terminology Cards
+# M2-PLAN §3.3: Each term has ISO 704 definition, genus/differentia, excludes, and sources.
+
+terms:
+  - term: "Price Observation"
+    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/PriceObservation"
+    definition: "time-stamped observation of a price for a financial instrument at a specific venue with a defined price kind, currency, and data source"
+    genus: "observation fact"
+    differentia:
+      - "has a specific price kind (Last, Bid, Ask, Mid, Open, High, Low, Close, Settlement, VWAP, TWAP)"
+      - "scoped to an instrument and optionally a venue"
+      - "has three-axis temporal semantics (valid/knowledge/availability time per ADR-012)"
+      - "has provenance (source, revision, evidence)"
+    excludes:
+      - "the instrument itself"
+      - "a quote observation (which has bid/ask structure)"
+      - "a trade observation (which is an execution event)"
+      - "a 'current price' attribute (which would be a derived view)"
+    sources:
+      - reference: "nautilus-trader"
+        locator: "model/data/tick.pyx QuoteTick/TradeTick (observation with instrument_id, price, timestamp, venue)"
+      - reference: "lean"
+        locator: "Data/Market/Tick.cs (BaseData with Symbol, Time, Value)"
+    status: "review"
+
+  - term: "Quote Observation"
+    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/QuoteObservation"
+    definition: "time-stamped observation of bid and/or ask prices with sizes for a financial instrument at a specific venue"
+    genus: "market data observation"
+    differentia:
+      - "contains bid price and/or ask price (at least one required)"
+      - "contains bid size and/or ask size"
+      - "represents a market maker's or exchange's quote, not an executed trade"
+    excludes:
+      - "executed trade (which is TradeObservation)"
+      - "aggregated bar data (which is Bar)"
+      - "single-sided price without bid/ask structure (which is PriceObservation)"
+    sources:
+      - reference: "nautilus-trader"
+        locator: "model/data/tick.pyx QuoteTick (bid, ask, bid_size, ask_size)"
+      - reference: "lean"
+        locator: "Data/Market/QuoteBar.cs"
+    status: "review"
+
+  - term: "Trade Observation"
+    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/TradeObservation"
+    definition: "time-stamped observation of an executed trade for a financial instrument at a specific venue with price, size, and currency"
+    genus: "market data observation"
+    differentia:
+      - "represents an actual executed trade (transaction)"
+      - "has a single execution price and quantity"
+      - "has a trade timestamp (validTime)"
+    excludes:
+      - "quote (which is a market maker's bid/ask, not an execution)"
+      - "bar (which aggregates multiple trades)"
+      - "order execution from the platform's own orders (which is Execution in orders-execution module)"
+    sources:
+      - reference: "nautilus-trader"
+        locator: "model/data/tick.pyx TradeTick (price, size, aggressor_side)"
+      - reference: "lean"
+        locator: "Data/Market/Tick.cs (trade tick with TickType.Trade)"
+    status: "review"
+
+  - term: "Bar"
+    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/Bar"
+    definition: "aggregated market data observation over a time period, tick count, volume, or dollar amount, with open/high/low/close prices and volume"
+    genus: "aggregated observation"
+    differentia:
+      - "aggregates multiple trades or quotes into OHLCV structure"
+      - "has an aggregation method (Time, Tick, Volume, Dollar, Range, Renko)"
+      - "represents an interval [validFrom, validTo) not a point-in-time"
+      - "has bar duration for time-based bars"
+    excludes:
+      - "single trade tick (which is TradeObservation)"
+      - "single quote tick (which is QuoteObservation)"
+      - "unaggregated raw data"
+    sources:
+      - reference: "nautilus-trader"
+        locator: "model/data/bar.pyx Bar (open, high, low, close, volume, ts_event, ts_init)"
+      - reference: "lean"
+        locator: "Data/Market/TradeBar.cs, Data/Market/QuoteBar.cs"
+    status: "review"
+
+  - term: "Price Kind"
+    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/PriceKind"
+    definition: "controlled vocabulary of price observation types that distinguish the semantic role of a price value in market data"
+    genus: "code list"
+    differentia:
+      - "distinguishes Last, Bid, Ask, Mid, Open, High, Low, Close, Settlement, VWAP, TWAP"
+      - "defines the interpretation of a price value"
+    excludes:
+      - "price value itself (which is a decimal with currency)"
+      - "quote side (which is Bid/Ask for quote observations)"
+    sources:
+      - reference: "nautilus-trader"
+        locator: "model/enums.pyx PriceType enum"
+      - reference: "fibo-2026Q1"
+        locator: "No direct FIBO equivalent; gap in FIBO MD ontology"
+    status: "review"
+
+  - term: "Three-Axis Temporal Semantics"
+    canonicalIri: "https://axiolune.ai/ontology/meta/patterns/TemporalFact"
+    definition: "temporal binding pattern with valid-time (when fact is true in business domain), knowledge-time (when platform learned/revised fact), and availability-time (when fact became queryable per permissions/receipt)"
+    genus: "cross-cutting pattern"
+    differentia:
+      - "valid-time: market event timestamp (trade time, quote time, bar period end)"
+      - "knowledge-time: when platform asserted/revised the observation"
+      - "availability-time: when data supplier received/released data, or when permissions allow query"
+      - "prevents look-ahead bias: queries with asOfAvailable cannot see data not yet available at that time"
+    excludes:
+      - "single timestamp (insufficient for PIT queries and revision tracking)"
+      - "file modification time (not a controlled availability signal)"
+    sources:
+      - reference: "ADR-012"
+        locator: "Reproducible Three-Axis Temporal Semantics"
+      - reference: "qlib"
+        locator: "PIT (Point-in-Time) database with period/observation time distinction"
+    status: "accepted"
+
+  - term: "PIT Validation"
+    canonicalIri: "https://axiolune.ai/ontology/meta/data-binding/PITValidationRequest"
+    definition: "validation that a point-in-time query with three-axis as-of parameters returns only data that was valid, known, and available at those timestamps, preventing look-ahead bias"
+    genus: "validation constraint"
+    differentia:
+      - "enforces validFrom <= asOfValid < validTo"
+      - "enforces knowledgeFrom <= asOfKnowledge < knowledgeTo"
+      - "enforces availableFrom <= asOfAvailable < availableTo"
+      - "fail-closed: missing availableFrom rejects the observation"
+    excludes:
+      - "simple timestamp filtering (which doesn't prevent future data leakage)"
+      - "availability time defaulting to file mtime (uncontrolled)"
+    sources:
+      - reference: "ADR-012"
+        locator: "§2.5 PIT validation contract"
+      - reference: "qlib"
+        locator: "PITProvider implementation (prevents future knowledge leakage in backtest)"
+    status: "accepted"
