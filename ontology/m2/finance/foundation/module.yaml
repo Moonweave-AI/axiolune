@@ -1,8 +1,12 @@
 # Axiolune M2 Finance — Foundation Module
 # Module: fin-foundation
 # Version: 0.1.0
-# Status: draft (G0 fixture — proves the M2 Authoring Profile is usable)
+# Status: draft
 # ADR: ADR-013 (M2 Authoring Profile)
+# Dependencies: M3 core (no M2 imports yet — this is the base layer)
+# Terminology: docs/ontology/terminology/fin-foundation-terms.yaml
+# CQ: docs/ontology/competency-questions/fin-foundation-cq.yaml
+# Alignment: FIBO FND/BE/SEC/FBC + ISO 6166/10383/17442/4217
 
 module:
   moduleIri: "https://axiolune.ai/ontology/finance/foundation"
@@ -10,22 +14,23 @@ module:
   preferredPrefix: "fin-foundation"
   version: "0.1.0"
   label: "Financial Foundation"
-  definition: "financial identity, identifiers, and classification vocabulary shared across all finance domain modules"
+  definition: "financial identity, identifiers, currency, jurisdiction, and party vocabulary shared across all finance domain modules"
   imports: []
   exports: []
   status: draft
 
 domain:
-  # ---- Identifier: ISIN (ISO 6166) ----
-  # Inferred type: IdentifierTypeDefinition (has iri+namespace+localName+label+definition+pattern)
+  # ==================== Identifiers ====================
+
   ISIN:
     iri: "https://axiolune.ai/ontology/finance/foundation/ISIN"
     namespace: "fin-foundation"
     localName: "ISIN"
     label: "International Securities Identification Number"
-    definition: "12-character alphanumeric code that identifies a security as specified by ISO 6166"
+    definition: "12-character alphanumeric code that identifies a security as specified by ISO 6166, consisting of a 2-character ISO 3166-1 country code, a 9-character national securities identifying number, and a Luhn check digit"
     pattern: "^[A-Z]{2}[A-Z0-9]{9}[0-9]$"
-    note: "First 2 chars = ISO 3166-1 alpha-2 country code; last char = Luhn check digit"
+    checkAlgorithm: "Luhn"
+    length: 12
     alignments:
       - vocabulary: "FIBO"
         targetIri: "https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesIdentification/InternationalSecuritiesIdentificationNumber"
@@ -34,45 +39,207 @@ domain:
           vocabulary: "FIBO"
           release: "2026Q1"
           artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
-        rationale: "ISIN is a concrete identifier type conforming to FIBO's securities identification hierarchy"
+        rationale: "Axiolune ISIN is a concrete identifier conforming to ISO 6166, subsumed by FIBO's securities identification hierarchy"
         verification:
           status: "proposed"
 
-  # ---- Attribute: hasPrimaryIdentifier ----
-  # Inferred type: AttributeTypeDefinition (has iri+namespace+localName+label+definition+valueType)
-  hasPrimaryIdentifier:
-    iri: "https://axiolune.ai/ontology/finance/foundation/hasPrimaryIdentifier"
+  LEI:
+    iri: "https://axiolune.ai/ontology/finance/foundation/LEI"
     namespace: "fin-foundation"
-    localName: "hasPrimaryIdentifier"
-    label: "Has Primary Identifier"
-    definition: "relation from a financial instrument to its primary externally-issued identifier"
-    valueType: "string"
-    defaultCardinality:
-      minCount: 0
-      maxCount: 1
-    note: "In production this would reference an IdentifierTypeDefinition; G0 fixture uses string for simplicity"
-
-  # ---- Object: FinancialInstrument ----
-  # Inferred type: ObjectTypeDefinition (has iri+namespace+localName+label+definition+superTypes+attributeUses)
-  FinancialInstrument:
-    iri: "https://axiolune.ai/ontology/finance/foundation/FinancialInstrument"
-    namespace: "fin-foundation"
-    localName: "FinancialInstrument"
-    label: "Financial Instrument"
-    definition: "financial instrument that represents a legal agreement between two parties involving a monetary value"
-    superTypes: []
-    attributeUses:
-      - attribute: "https://axiolune.ai/ontology/finance/foundation/hasPrimaryIdentifier"
-        minCount: 0
-        maxCount: 1
+    localName: "LEI"
+    label: "Legal Entity Identifier"
+    definition: "20-character alphanumeric code that uniquely identifies a legal entity as defined in ISO 17442, consisting of a 4-character LOU prefix, 12-character entity-specific identifier, and 2 check digits"
+    pattern: "^[A-Z0-9]{18}[0-9]{2}$"
+    checkAlgorithm: "ISO 17442"
+    length: 20
     alignments:
       - vocabulary: "FIBO"
-        targetIri: "https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/FinancialInstrument"
+        targetIri: "https://spec.edmcouncil.org/fibo/ontology/BE/LegalEntities/LEIEntities/LegalEntityIdentifier"
         relation: "rdfs:subClassOf"
         sourceRelease:
           vocabulary: "FIBO"
           release: "2026Q1"
           artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
-        rationale: "Axiolune FinancialInstrument is a concrete domain-level subclass of FIBO's FinancialInstrument"
+        rationale: "Axiolune LEI is a concrete identifier conforming to ISO 17442, subsumed by FIBO's legal entity identification hierarchy"
+        verification:
+          status: "proposed"
+
+  MIC:
+    iri: "https://axiolune.ai/ontology/finance/foundation/MIC"
+    namespace: "fin-foundation"
+    localName: "MIC"
+    label: "Market Identifier Code"
+    definition: "market identifier code that uniquely identifies an exchange, trading platform, or market as specified by ISO 10383, comprising a 4-character alphanumeric operating-level code or a 4+4 character segment-level code"
+    pattern: "^[A-Z]{4}([A-Z]{4})?$"
+    length: 4
+    alignments:
+      - vocabulary: "FIBO"
+        targetIri: "https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/Markets/MarketIdentifier"
+        relation: "rdfs:subClassOf"
+        sourceRelease:
+          vocabulary: "FIBO"
+          release: "2026Q1"
+          artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        rationale: "Axiolune MIC is a concrete identifier conforming to ISO 10383, subsumed by FIBO's market identifier hierarchy"
+        verification:
+          status: "proposed"
+
+  # ==================== Attributes ====================
+
+  hasPrimaryIdentifier:
+    iri: "https://axiolune.ai/ontology/finance/foundation/hasPrimaryIdentifier"
+    namespace: "fin-foundation"
+    localName: "hasPrimaryIdentifier"
+    label: "Has Primary Identifier"
+    definition: "relation from a financial instrument to its primary externally-issued identifier such as an ISIN"
+    valueType: "string"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "value references an IdentifierTypeDefinition instance (ISIN/LEI/MIC); G1 uses string for simplicity until cross-module type references are wired"
+
+  hasLegalName:
+    iri: "https://axiolune.ai/ontology/finance/foundation/hasLegalName"
+    namespace: "fin-foundation"
+    localName: "hasLegalName"
+    label: "Has Legal Name"
+    definition: "relation from a legal entity to its registered legal name"
+    valueType: "string"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    alignments:
+      - vocabulary: "FIBO"
+        targetIri: "https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/hasLegalName"
+        relation: "rdfs:subPropertyOf"
+        sourceRelease:
+          vocabulary: "FIBO"
+          release: "2026Q1"
+          artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        rationale: "hasLegalName in Axiolune is a domain-level subproperty of FIBO's generic hasLegalName"
+        verification:
+          status: "proposed"
+
+  isIssuedBy:
+    iri: "https://axiolune.ai/ontology/finance/foundation/isIssuedBy"
+    namespace: "fin-foundation"
+    localName: "isIssuedBy"
+    label: "Is Issued By"
+    definition: "relation from a financial instrument to the party responsible for circulating, distributing, or publishing it"
+    valueType: "string"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    alignments:
+      - vocabulary: "FIBO"
+        targetIri: "https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/isIssuedBy"
+        relation: "rdfs:subPropertyOf"
+        sourceRelease:
+          vocabulary: "FIBO"
+          release: "2026Q1"
+          artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        rationale: "Axiolune isIssuedBy is a domain-level subproperty of FIBO's generic isIssuedBy relation"
+        verification:
+          status: "proposed"
+
+  hasCurrencyCode:
+    iri: "https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode"
+    namespace: "fin-foundation"
+    localName: "hasCurrencyCode"
+    label: "Has Currency Code"
+    definition: "relation from a financial concept to its ISO 4217 3-character alphabetic currency code"
+    valueType: "string"
+    pattern: "^[A-Z]{3}$"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "ISO 4217 alphabetic code (e.g. USD, EUR, CNY, JPY)"
+
+  # ==================== Object Types ====================
+
+  Party:
+    iri: "https://axiolune.ai/ontology/finance/foundation/Party"
+    namespace: "fin-foundation"
+    localName: "Party"
+    label: "Party"
+    definition: "autonomous agent that can participate in legal or financial relationships, including natural persons and legal entities"
+    superTypes: []
+    attributeUses: []
+    alignments:
+      - vocabulary: "FIBO"
+        targetIri: "https://www.omg.org/spec/Commons/PartiesAndSituations/Party"
+        relation: "rdfs:subClassOf"
+        sourceRelease:
+          vocabulary: "FIBO"
+          release: "2026Q1"
+          artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        rationale: "Axiolune Party is a domain-level subclass of Commons Party, the FIBO foundational party concept"
+        verification:
+          status: "proposed"
+
+  LegalEntity:
+    iri: "https://axiolune.ai/ontology/finance/foundation/LegalEntity"
+    namespace: "fin-foundation"
+    localName: "LegalEntity"
+    label: "Legal Entity"
+    definition: "organization that is legally or financially responsible for the performance of financial transactions and is capable of accruing liability on its own part, excluding natural persons but including governments and supranational entities"
+    superTypes:
+      - "https://axiolune.ai/ontology/finance/foundation/Party"
+    attributeUses:
+      - attribute: "https://axiolune.ai/ontology/finance/foundation/hasLegalName"
+        minCount: 0
+        maxCount: 1
+    alignments:
+      - vocabulary: "FIBO"
+        targetIri: "https://www.omg.org/spec/Commons/Organizations/LegalEntity"
+        relation: "rdfs:subClassOf"
+        sourceRelease:
+          vocabulary: "FIBO"
+          release: "2026Q1"
+          artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        rationale: "Axiolune LegalEntity is a domain-level subclass of Commons LegalEntity, the FIBO foundational legal entity concept per ISO 17442"
+        verification:
+          status: "proposed"
+
+  Currency:
+    iri: "https://axiolune.ai/ontology/finance/foundation/Currency"
+    namespace: "fin-foundation"
+    localName: "Currency"
+    label: "Currency"
+    definition: "medium of exchange value defined by reference to the geographical location of the monetary authorities responsible for it, as specified in ISO 4217"
+    superTypes: []
+    attributeUses:
+      - attribute: "https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode"
+        minCount: 1
+        maxCount: 1
+    alignments:
+      - vocabulary: "FIBO"
+        targetIri: "https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/Currency"
+        relation: "rdfs:subClassOf"
+        sourceRelease:
+          vocabulary: "FIBO"
+          release: "2026Q1"
+          artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        rationale: "Axiolune Currency is a domain-level subclass of FIBO Currency (ISO 4217)"
+        verification:
+          status: "proposed"
+
+  Jurisdiction:
+    iri: "https://axiolune.ai/ontology/finance/foundation/Jurisdiction"
+    namespace: "fin-foundation"
+    localName: "Jurisdiction"
+    label: "Jurisdiction"
+    definition: "legal authority that has the power to make and enforce rules of conduct within a defined geographical or functional scope"
+    superTypes: []
+    attributeUses: []
+    alignments:
+      - vocabulary: "FIBO"
+        targetIri: "https://www.omg.org/spec/Commons/RegulatoryAgencies/Jurisdiction"
+        relation: "rdfs:subClassOf"
+        sourceRelease:
+          vocabulary: "FIBO"
+          release: "2026Q1"
+          artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        rationale: "Axiolune Jurisdiction is a domain-level subclass of Commons Jurisdiction"
         verification:
           status: "proposed"

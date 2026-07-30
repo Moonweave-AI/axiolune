@@ -1,0 +1,236 @@
+# Axiolune M2 Finance — Instruments Module
+# Module: fin-instruments
+# Version: 0.1.0
+# Status: draft
+# Dependencies: fin-foundation (ISIN, isIssuedBy, LegalEntity)
+#              fin-market-structure (TradingVenue, InstrumentListing venue reference)
+# Terminology: docs/ontology/terminology/fin-instruments-terms.yaml
+# CQ: docs/ontology/competency-questions/fin-instruments-cq.yaml
+# Alignment: FIBO FBC/FinancialInstruments + SEC/Securities + SEC/Equities
+# Implementation evidence: nautilus_trader (19 instrument types), Lean (12 SecurityType)
+
+module:
+  moduleIri: "https://axiolune.ai/ontology/finance/instruments"
+  baseIri: "https://axiolune.ai/ontology/finance/instruments/"
+  preferredPrefix: "fin-instruments"
+  version: "0.1.0"
+  label: "Financial Instruments"
+  definition: "financial instruments, securities, equities, listings, and issuers that define what is traded"
+  imports:
+    - moduleIri: "https://axiolune.ai/ontology/finance/foundation"
+      version: "0.1.0"
+      artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      importMode: All
+    - moduleIri: "https://axiolune.ai/ontology/finance/market-structure"
+      version: "0.1.0"
+      artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      importMode: All
+  exports: []
+  status: draft
+
+domain:
+  # ==================== Attributes ====================
+
+  hasTickSize:
+    iri: "https://axiolune.ai/ontology/finance/instruments/hasTickSize"
+    namespace: "fin-instruments"
+    localName: "hasTickSize"
+    label: "Has Tick Size"
+    definition: "relation from an instrument listing to its minimum price increment (tick size) as a monetary amount"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "corresponds to nautilus_trader price_increment; FIBO Listing.hasTickSize"
+
+  hasLotSize:
+    iri: "https://axiolune.ai/ontology/finance/instruments/hasLotSize"
+    namespace: "fin-instruments"
+    localName: "hasLotSize"
+    label: "Has Lot Size"
+    definition: "relation from an instrument listing to its standard board lot size as a quantity"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "corresponds to nautilus_trader lot_size; FIBO Listing.hasLotSize"
+
+  hasListingDate:
+    iri: "https://axiolune.ai/ontology/finance/instruments/hasListingDate"
+    namespace: "fin-instruments"
+    localName: "hasListingDate"
+    label: "Has Listing Date"
+    definition: "relation from an instrument listing to the date on which the instrument was first listed on the venue"
+    valueType: "instant"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+    note: "FIBO Listing.hasListingDate"
+
+  hasDelistingDate:
+    iri: "https://axiolune.ai/ontology/finance/instruments/hasDelistingDate"
+    namespace: "fin-instruments"
+    localName: "hasDelistingDate"
+    label: "Has Delisting Date"
+    definition: "relation from an instrument listing to the date on which the instrument was delisted from the venue, or null if still listed"
+    valueType: "instant"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "FIBO Listing.hasDelistingDate; null = still listed"
+
+  isTradedOn:
+    iri: "https://axiolune.ai/ontology/finance/instruments/isTradedOn"
+    namespace: "fin-instruments"
+    localName: "isTradedOn"
+    label: "Is Traded On"
+    definition: "relation from a financial instrument to a trading venue where it is listed for trading"
+    valueType: "string"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "references a TradingVenue IRI; FIBO ListedSecurity.isTradedOn"
+
+  hasDenominatedCurrency:
+    iri: "https://axiolune.ai/ontology/finance/instruments/hasDenominatedCurrency"
+    namespace: "fin-instruments"
+    localName: "hasDenominatedCurrency"
+    label: "Has Denominated Currency"
+    definition: "relation from a financial instrument to the currency in which it is denominated"
+    valueType: "string"
+    pattern: "^[A-Z]{3}$"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "references a Currency IRI; FIBO FinancialInstrument.isDenominatedIn"
+
+  # ==================== Object Types ====================
+
+  FinancialInstrument:
+    iri: "https://axiolune.ai/ontology/finance/instruments/FinancialInstrument"
+    namespace: "fin-instruments"
+    localName: "FinancialInstrument"
+    label: "Financial Instrument"
+    definition: "written contract that gives rise to both a financial asset of one entity and a financial liability of another entity, as defined in IAS 32"
+    superTypes: []
+    attributeUses:
+      - attribute: "https://axiolune.ai/ontology/finance/foundation/hasPrimaryIdentifier"
+        minCount: 0
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/instruments/hasDenominatedCurrency"
+        minCount: 0
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/foundation/isIssuedBy"
+        minCount: 0
+        maxCount: 1
+    alignments:
+      - vocabulary: "FIBO"
+        targetIri: "https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/FinancialInstrument"
+        relation: "rdfs:subClassOf"
+        sourceRelease:
+          vocabulary: "FIBO"
+          release: "2026Q1"
+          artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        rationale: "Axiolune Financial instrument is a domain-level subclass of FIBO FinancialInstrument (IAS 32 definition)"
+        verification:
+          status: "proposed"
+
+  Security:
+    iri: "https://axiolune.ai/ontology/finance/instruments/Security"
+    namespace: "fin-instruments"
+    localName: "Security"
+    label: "Security"
+    definition: "financial instrument that can be bought or sold, as defined in the Securities Exchange Act 1934"
+    superTypes:
+      - "https://axiolune.ai/ontology/finance/instruments/FinancialInstrument"
+    attributeUses: []
+    alignments:
+      - vocabulary: "FIBO"
+        targetIri: "https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/Security"
+        relation: "rdfs:subClassOf"
+        sourceRelease:
+          vocabulary: "FIBO"
+          release: "2026Q1"
+          artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        rationale: "Axiolune Security is a domain-level subclass of FIBO Security"
+        verification:
+          status: "proposed"
+
+  EquityInstrument:
+    iri: "https://axiolune.ai/ontology/finance/instruments/EquityInstrument"
+    namespace: "fin-instruments"
+    localName: "EquityInstrument"
+    label: "Equity Instrument"
+    definition: "financial instrument representing an ownership interest in an entity or pool of assets, as defined in ISO 10962"
+    superTypes:
+      - "https://axiolune.ai/ontology/finance/instruments/Security"
+    attributeUses: []
+    alignments:
+      - vocabulary: "FIBO"
+        targetIri: "https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/EquityInstrument"
+        relation: "rdfs:subClassOf"
+        sourceRelease:
+          vocabulary: "FIBO"
+          release: "2026Q1"
+          artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        rationale: "Axiolune EquityInstrument is a domain-level subclass of FIBO EquityInstrument (ISO 10962)"
+        verification:
+          status: "proposed"
+
+  InstrumentListing:
+    iri: "https://axiolune.ai/ontology/finance/instruments/InstrumentListing"
+    namespace: "fin-instruments"
+    localName: "InstrumentListing"
+    label: "Instrument Listing"
+    definition: "catalog entry for a securities offering managed by an exchange that provides the terms under which that security is made available on that exchange"
+    superTypes: []
+    attributeUses:
+      - attribute: "https://axiolune.ai/ontology/finance/instruments/hasTickSize"
+        minCount: 0
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/instruments/hasLotSize"
+        minCount: 0
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/instruments/hasListingDate"
+        minCount: 1
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/instruments/hasDelistingDate"
+        minCount: 0
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/instruments/isTradedOn"
+        minCount: 1
+        maxCount: 1
+      - attribute: "https://axiolune.ai/ontology/finance/instruments/hasDenominatedCurrency"
+        minCount: 0
+        maxCount: 1
+    alignments:
+      - vocabulary: "FIBO"
+        targetIri: "https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/Listing"
+        relation: "rdfs:subClassOf"
+        sourceRelease:
+          vocabulary: "FIBO"
+          release: "2026Q1"
+          artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        rationale: "Axiolune InstrumentListing is a domain-level subclass of FIBO Listing"
+        verification:
+          status: "proposed"
+
+  Issuer:
+    iri: "https://axiolune.ai/ontology/finance/instruments/Issuer"
+    namespace: "fin-instruments"
+    localName: "Issuer"
+    label: "Issuer"
+    definition: "role of a party that issues or proposes to issue in a formal filing one or more financial instruments"
+    superTypes: []
+    attributeUses: []
+    alignments:
+      - vocabulary: "FIBO"
+        targetIri: "https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/Issuer"
+        relation: "rdfs:subClassOf"
+        sourceRelease:
+          vocabulary: "FIBO"
+          release: "2026Q1"
+          artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        rationale: "Axiolune Issuer is a domain-level subclass of FIBO Issuer, the role of a party that issues financial instruments"
+        verification:
+          status: "proposed"
