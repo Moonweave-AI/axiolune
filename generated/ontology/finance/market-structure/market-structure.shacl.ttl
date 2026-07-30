@@ -1,0 +1,62 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-market-structure: <https://axiolune.ai/ontology/finance/market-structure/>.
+
+fin-market-structure:hasMarketIdentifierCodeShape a sh:PropertyShape;
+    sh:path fin-market-structure:hasMarketIdentifierCode;
+    sh:pattern "^[A-Z]{4}([A-Z]{4})?$";
+    sh:datatype xsd:string;
+    sh:name "Has Market Identifier Code".
+fin-market-structure:TradingVenueShape a sh:NodeShape;
+    sh:targetClass fin-market-structure:TradingVenue;
+    sh:name "Trading Venue";
+    sh:description "organization, association, or group that constitutes, maintains, or provides a facility for bringing together purchasers and sellers of financial instruments, identified by a MIC (ISO 10383)";
+    sh:property fin-market-structure:TradingVenueShape_hasMarketIdentifierCode.
+fin-market-structure:TradingVenueShape_hasMarketIdentifierCode a sh:PropertyShape;
+    sh:path fin-market-structure:hasMarketIdentifierCode;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-structure:TradingVenueShape sh:property fin-market-structure:TradingVenueShape_hasVenueType.
+fin-market-structure:TradingVenueShape_hasVenueType a sh:PropertyShape;
+    sh:path fin-market-structure:hasVenueType;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-market-structure:MarketSegmentShape a sh:NodeShape;
+    sh:targetClass fin-market-structure:MarketSegment;
+    sh:name "Market Segment";
+    sh:description "section of a trading venue that specializes in one or more specific instruments or that is regulated differently from other sections of the same venue";
+    sh:property fin-market-structure:MarketSegmentShape_hasMarketIdentifierCode.
+fin-market-structure:MarketSegmentShape_hasMarketIdentifierCode a sh:PropertyShape;
+    sh:path fin-market-structure:hasMarketIdentifierCode;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-structure:MarketSegmentShape sh:property fin-market-structure:MarketSegmentShape_isPartOfVenue.
+fin-market-structure:MarketSegmentShape_isPartOfVenue a sh:PropertyShape;
+    sh:path fin-market-structure:isPartOfVenue;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-structure:TradingSessionShape a sh:NodeShape;
+    sh:targetClass fin-market-structure:TradingSession;
+    sh:name "Trading Session";
+    sh:description "scheduled time period during which a trading venue accepts orders and executes trades, characterized by a session type such as pre-market, regular, post-market, or auction";
+    sh:property fin-market-structure:TradingSessionShape_hasSessionType.
+fin-market-structure:TradingSessionShape_hasSessionType a sh:PropertyShape;
+    sh:path fin-market-structure:hasSessionType;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-structure:TradingSessionShape sh:property fin-market-structure:TradingSessionShape_hasSessionStartTime.
+fin-market-structure:TradingSessionShape_hasSessionStartTime a sh:PropertyShape;
+    sh:path fin-market-structure:hasSessionStartTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-structure:TradingSessionShape sh:property fin-market-structure:TradingSessionShape_hasSessionEndTime.
+fin-market-structure:TradingSessionShape_hasSessionEndTime a sh:PropertyShape;
+    sh:path fin-market-structure:hasSessionEndTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-structure:TradingCalendarShape a sh:NodeShape;
+    sh:targetClass fin-market-structure:TradingCalendar;
+    sh:name "Trading Calendar";
+    sh:description "schedule of trading sessions for a trading venue across calendar dates, defining which dates and times the venue is open for trading".
