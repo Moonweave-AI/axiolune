@@ -1,0 +1,227 @@
+# Axiolune M2 Finance — Risk Module
+# Module: fin-risk
+# Version: 0.1.0
+# Status: draft
+# Dependencies: fin-foundation, fin-instruments, fin-portfolio-positions, fin-market-data
+# Terminology: docs/ontology/terminology/fin-risk-terms.yaml
+# CQ: docs/ontology/competency-questions/fin-risk-cq.yaml
+# Key decision: Risk semantics only; runtime risk calculation is separate (runtime/L3)
+
+module:
+  moduleIri: "https://axiolune.ai/ontology/finance/risk"
+  baseIri: "https://axiolune.ai/ontology/finance/risk/"
+  preferredPrefix: "fin-risk"
+  version: "0.1.0"
+  label: "Risk Management"
+  definition: "risk measure definitions, risk limits, exposure observations, and limit breaches that capture risk management semantics with point-in-time exposure tracking"
+  imports:
+    - moduleIri: "https://axiolune.ai/ontology/finance/foundation"
+      version: "0.1.0"
+      artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      importMode: All
+    - moduleIri: "https://axiolune.ai/ontology/finance/instruments"
+      version: "0.1.0"
+      artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      importMode: All
+    - moduleIri: "https://axiolune.ai/ontology/finance/portfolio-positions"
+      version: "0.1.0"
+      artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      importMode: All
+    - moduleIri: "https://axiolune.ai/ontology/finance/market-data"
+      version: "0.1.0"
+      artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      importMode: All
+  exports: []
+  status: draft
+
+domain:
+  # ==================== Code Lists ====================
+
+  RiskMeasureType:
+    iri: "https://axiolune.ai/ontology/finance/risk/RiskMeasureType"
+    namespace: "fin-risk"
+    localName: "RiskMeasureType"
+    label: "Risk Measure Type"
+    definition: "controlled vocabulary of risk measure categories (VaR, CVaR, volatility, exposure, concentration)"
+    values:
+      - VaR
+      - CVaR
+      - Volatility
+      - Exposure
+      - Concentration
+      - Beta
+      - Greeks
+    note: "Common risk metrics in portfolio and trading risk management."
+
+  LimitBreachSeverity:
+    iri: "https://axiolune.ai/ontology/finance/risk/LimitBreachSeverity"
+    namespace: "fin-risk"
+    localName: "LimitBreachSeverity"
+    label: "Limit Breach Severity"
+    definition: "controlled vocabulary indicating severity of risk limit violation (warning, breach, critical)"
+    values:
+      - Warning
+      - Breach
+      - Critical
+    note: "Severity levels for limit monitoring and alerting."
+
+  # ==================== Object Types ====================
+
+  RiskMeasureDefinition:
+    iri: "https://axiolune.ai/ontology/finance/risk/RiskMeasureDefinition"
+    namespace: "fin-risk"
+    localName: "RiskMeasureDefinition"
+    label: "Risk Measure Definition"
+    definition: "specification of a risk metric including calculation method, parameters, time horizon, and confidence level"
+    attributes:
+      - attributeIri: "https://axiolune.ai/ontology/finance/risk/hasMeasureName"
+        minCount: 1
+        maxCount: 1
+      - attributeIri: "https://axiolune.ai/ontology/finance/risk/hasMeasureType"
+        minCount: 1
+        maxCount: 1
+      - attributeIri: "https://axiolune.ai/ontology/finance/risk/hasTimeHorizon"
+        minCount: 0
+        maxCount: 1
+      - attributeIri: "https://axiolune.ai/ontology/finance/risk/hasConfidenceLevel"
+        minCount: 0
+        maxCount: 1
+    note: "Example: VaR 99% 1-day. Does not store computed risk values (those are ExposureObservation)."
+
+  RiskLimit:
+    iri: "https://axiolune.ai/ontology/finance/risk/RiskLimit"
+    namespace: "fin-risk"
+    localName: "RiskLimit"
+    label: "Risk Limit"
+    definition: "authorized maximum or threshold for a risk measure applicable to a portfolio, account, or instrument with defined scope and validity"
+    attributes:
+      - attributeIri: "https://axiolune.ai/ontology/finance/risk/hasLimitValue"
+        minCount: 1
+        maxCount: 1
+      - attributeIri: "https://axiolune.ai/ontology/finance/risk/hasWarningThreshold"
+        minCount: 0
+        maxCount: 1
+    note: "Example: Portfolio VaR limit $1M with $900K warning. RiskLimit is ObjectType (stable governance artifact), not temporal fact."
+
+  # ==================== Association Types ====================
+
+  ExposureObservation:
+    iri: "https://axiolune.ai/ontology/finance/risk/ExposureObservation"
+    namespace: "fin-risk"
+    localName: "ExposureObservation"
+    label: "Exposure Observation"
+    definition: "point-in-time observation of a risk measure value for a portfolio, account, or instrument with calculation timestamp and contributing factors"
+    participants:
+      - roleIri: "https://axiolune.ai/ontology/finance/risk/observedForPortfolio"
+        targetTypeIri: "https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio"
+        minCount: 0
+        maxCount: 1
+      - roleIri: "https://axiolune.ai/ontology/finance/risk/observedForAccount"
+        targetTypeIri: "https://axiolune.ai/ontology/finance/portfolio-positions/Account"
+        minCount: 0
+        maxCount: 1
+      - roleIri: "https://axiolune.ai/ontology/finance/risk/measuredByDefinition"
+        targetTypeIri: "https://axiolune.ai/ontology/finance/risk/RiskMeasureDefinition"
+        minCount: 1
+        maxCount: 1
+    attributes:
+      - attributeIri: "https://axiolune.ai/ontology/finance/risk/hasExposureValue"
+        minCount: 1
+        maxCount: 1
+    patternBindings:
+      - patternIri: "https://axiolune.ai/ontology/foundation/patterns/TemporalFact"
+      - patternIri: "https://axiolune.ai/ontology/foundation/patterns/ProvenancedFact"
+    note: "validTime is business time (e.g., EOD); knowledgeTime is when calculated; availableFrom is when made queryable. At least one of observedForPortfolio or observedForAccount should be present (checked by business logic, not schema)."
+
+  LimitBreach:
+    iri: "https://axiolune.ai/ontology/finance/risk/LimitBreach"
+    namespace: "fin-risk"
+    localName: "LimitBreach"
+    label: "Limit Breach"
+    definition: "detected violation of a risk limit with breach severity, exposure observation, and applicable limit"
+    participants:
+      - roleIri: "https://axiolune.ai/ontology/finance/risk/breachedLimit"
+        targetTypeIri: "https://axiolune.ai/ontology/finance/risk/RiskLimit"
+        minCount: 1
+        maxCount: 1
+      - roleIri: "https://axiolune.ai/ontology/finance/risk/causedByExposure"
+        targetTypeIri: "https://axiolune.ai/ontology/finance/risk/ExposureObservation"
+        minCount: 1
+        maxCount: 1
+    attributes:
+      - attributeIri: "https://axiolune.ai/ontology/finance/risk/hasBreachSeverity"
+        minCount: 1
+        maxCount: 1
+    patternBindings:
+      - patternIri: "https://axiolune.ai/ontology/foundation/patterns/TemporalFact"
+      - patternIri: "https://axiolune.ai/ontology/foundation/patterns/ProvenancedFact"
+    note: "LimitBreach is immutable audit event. Remediation actions are separate (L3/runtime)."
+
+  # ==================== Attribute Types ====================
+
+  hasMeasureName:
+    iri: "https://axiolune.ai/ontology/finance/risk/hasMeasureName"
+    namespace: "fin-risk"
+    localName: "hasMeasureName"
+    label: "has measure name"
+    definition: "human-readable name of the risk measure"
+    datatype: "http://www.w3.org/2001/XMLSchema#string"
+
+  hasMeasureType:
+    iri: "https://axiolune.ai/ontology/finance/risk/hasMeasureType"
+    namespace: "fin-risk"
+    localName: "hasMeasureType"
+    label: "has measure type"
+    definition: "category of the risk measure"
+    codeListIri: "https://axiolune.ai/ontology/finance/risk/RiskMeasureType"
+
+  hasTimeHorizon:
+    iri: "https://axiolune.ai/ontology/finance/risk/hasTimeHorizon"
+    namespace: "fin-risk"
+    localName: "hasTimeHorizon"
+    label: "has time horizon"
+    definition: "time horizon for risk calculation in days (e.g., 1 for 1-day VaR)"
+    datatype: "http://www.w3.org/2001/XMLSchema#integer"
+
+  hasConfidenceLevel:
+    iri: "https://axiolune.ai/ontology/finance/risk/hasConfidenceLevel"
+    namespace: "fin-risk"
+    localName: "hasConfidenceLevel"
+    label: "has confidence level"
+    definition: "confidence level for statistical risk measures (e.g., 0.99 for 99% VaR)"
+    datatype: "http://www.w3.org/2001/XMLSchema#decimal"
+
+  hasLimitValue:
+    iri: "https://axiolune.ai/ontology/finance/risk/hasLimitValue"
+    namespace: "fin-risk"
+    localName: "hasLimitValue"
+    label: "has limit value"
+    definition: "maximum allowed value for the risk measure"
+    moneyTypeDefinition:
+      currencyAttributeIri: "https://axiolune.ai/ontology/finance/foundation/hasCurrency"
+
+  hasWarningThreshold:
+    iri: "https://axiolune.ai/ontology/finance/risk/hasWarningThreshold"
+    namespace: "fin-risk"
+    localName: "hasWarningThreshold"
+    label: "has warning threshold"
+    definition: "threshold value that triggers a warning before breach"
+    moneyTypeDefinition:
+      currencyAttributeIri: "https://axiolune.ai/ontology/finance/foundation/hasCurrency"
+
+  hasExposureValue:
+    iri: "https://axiolune.ai/ontology/finance/risk/hasExposureValue"
+    namespace: "fin-risk"
+    localName: "hasExposureValue"
+    label: "has exposure value"
+    definition: "observed value of the risk measure"
+    moneyTypeDefinition:
+      currencyAttributeIri: "https://axiolune.ai/ontology/finance/foundation/hasCurrency"
+
+  hasBreachSeverity:
+    iri: "https://axiolune.ai/ontology/finance/risk/hasBreachSeverity"
+    namespace: "fin-risk"
+    localName: "hasBreachSeverity"
+    label: "has breach severity"
+    definition: "severity level of the limit violation"
+    codeListIri: "https://axiolune.ai/ontology/finance/risk/LimitBreachSeverity"

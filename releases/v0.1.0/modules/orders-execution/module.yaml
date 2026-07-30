@@ -1,0 +1,436 @@
+# Axiolune M2 Finance — Orders & Execution Module
+# Module: fin-orders-execution
+# Version: 0.1.0
+# Status: draft
+# Dependencies: fin-foundation, fin-instruments, fin-market-structure, fin-market-rules
+# Terminology: docs/ontology/terminology/fin-orders-execution-terms.yaml
+# CQ: docs/ontology/competency-questions/fin-orders-execution-cq.yaml
+# Alignment: FIX Protocol 5.0 SP2, nautilus_trader Order/OrderEvent, Lean OrderTicket/OrderEvent
+# Implementation evidence: nautilus_trader (10 order event types), Lean (OrderStatus enum, OrderEvent)
+# Key decision: Semantic lifecycle model only; no actual order submission (M2-PLAN §6.4)
+
+module:
+  moduleIri: "https://axiolune.ai/ontology/finance/orders-execution"
+  baseIri: "https://axiolune.ai/ontology/finance/orders-execution/"
+  preferredPrefix: "fin-orders"
+  version: "0.1.0"
+  label: "Orders and Execution"
+  definition: "order intent, lifecycle events, execution facts, and external status mappings that capture trade order semantics with event-driven state transitions and explicit execution-to-position derivation"
+  imports:
+    - moduleIri: "https://axiolune.ai/ontology/finance/foundation"
+      version: "0.1.0"
+      artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      importMode: All
+    - moduleIri: "https://axiolune.ai/ontology/finance/instruments"
+      version: "0.1.0"
+      artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      importMode: All
+    - moduleIri: "https://axiolune.ai/ontology/finance/market-structure"
+      version: "0.1.0"
+      artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      importMode: All
+    - moduleIri: "https://axiolune.ai/ontology/finance/market-rules"
+      version: "0.1.0"
+      artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      importMode: All
+  exports: []
+  status: draft
+
+domain:
+  # ==================== Code Lists ====================
+
+  OrderSide:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/OrderSide"
+    namespace: "fin-orders"
+    localName: "OrderSide"
+    label: "Order Side"
+    definition: "controlled vocabulary indicating the direction of an order (buy or sell)"
+    values:
+      - Buy
+      - Sell
+    note: "Aligned with FIX Side (54): 1=Buy, 2=Sell. NautilusTrader OrderSide (BUY/SELL). Does not include NO_ORDER_SIDE sentinel."
+
+  OrderType:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/OrderType"
+    namespace: "fin-orders"
+    localName: "OrderType"
+    label: "Order Type"
+    definition: "controlled vocabulary of order execution instructions (market, limit, stop, stop-limit)"
+    values:
+      - Market
+      - Limit
+      - Stop
+      - StopLimit
+      - MarketIfTouched
+      - LimitIfTouched
+    note: "Aligned with FIX OrdType (40). NautilusTrader OrderType enum. Lean OrderType enum. First release covers common types; complex types (trailing stop, iceberg) deferred."
+
+  TimeInForce:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/TimeInForce"
+    namespace: "fin-orders"
+    localName: "TimeInForce"
+    label: "Time In Force"
+    definition: "controlled vocabulary of order validity duration (GTC, IOC, FOK, DAY)"
+    values:
+      - GTC
+      - IOC
+      - FOK
+      - DAY
+      - GTD
+      - AtTheOpen
+      - AtTheClose
+    note: "Aligned with FIX TimeInForce (59). NautilusTrader TimeInForce enum. GTC=Good-Till-Cancel, IOC=Immediate-Or-Cancel, FOK=Fill-Or-Kill, DAY=Day, GTD=Good-Till-Date."
+
+  OrderLifecycleState:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState"
+    namespace: "fin-orders"
+    localName: "OrderLifecycleState"
+    label: "Order Lifecycle State"
+    definition: "controlled vocabulary of canonical order states in the lifecycle state machine"
+    values:
+      - Initialized
+      - Submitted
+      - Accepted
+      - PartiallyFilled
+      - Filled
+      - Canceled
+      - Rejected
+      - Expired
+    note: "Canonical Axiolune states derived from nautilus_trader (10 event types → 8 canonical states). Lean OrderStatus (15 states). FIX OrdStatus (39). ExternalOrderStatusMapping bridges venue-specific codes to these canonical states."
+
+  LiquiditySide:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/LiquiditySide"
+    namespace: "fin-orders"
+    localName: "LiquiditySide"
+    label: "Liquidity Side"
+    definition: "controlled vocabulary indicating whether an execution was a maker (added liquidity) or taker (removed liquidity)"
+    values:
+      - Maker
+      - Taker
+      - NoLiquiditySide
+    note: "Aligned with FIX LiquidityInd (851). NautilusTrader LiquiditySide. Impacts fee calculation and market microstructure analysis."
+
+  # ==================== Attributes ====================
+
+  hasOrderSide:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/hasOrderSide"
+    namespace: "fin-orders"
+    localName: "hasOrderSide"
+    label: "Has Order Side"
+    definition: "relation from an order intent or execution to its side (Buy or Sell)"
+    valueType: "codelist"
+    codeListReference: "OrderSide"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+
+  hasOrderType:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/hasOrderType"
+    namespace: "fin-orders"
+    localName: "hasOrderType"
+    label: "Has Order Type"
+    definition: "relation from an order intent to its type (Market, Limit, Stop, etc.)"
+    valueType: "codelist"
+    codeListReference: "OrderType"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+
+  hasTimeInForce:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/hasTimeInForce"
+    namespace: "fin-orders"
+    localName: "hasTimeInForce"
+    label: "Has Time In Force"
+    definition: "relation from an order intent to its validity duration"
+    valueType: "codelist"
+    codeListReference: "TimeInForce"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+
+  hasOrderQuantity:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/hasOrderQuantity"
+    namespace: "fin-orders"
+    localName: "hasOrderQuantity"
+    label: "Has Order Quantity"
+    definition: "relation from an order intent to its requested quantity"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+    note: "Should use Quantity type binding from M3 when cross-module type references are wired"
+
+  hasLimitPrice:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/hasLimitPrice"
+    namespace: "fin-orders"
+    localName: "hasLimitPrice"
+    label: "Has Limit Price"
+    definition: "relation from a limit or stop-limit order to its limit price"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "Required for Limit/StopLimit orders; absent for Market orders. Should use Money type binding from M3."
+
+  hasStopPrice:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/hasStopPrice"
+    namespace: "fin-orders"
+    localName: "hasStopPrice"
+    label: "Has Stop Price"
+    definition: "relation from a stop or stop-limit order to its stop trigger price"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "Required for Stop/StopLimit orders; absent for Market/Limit orders. Should use Money type binding from M3."
+
+  hasLifecycleState:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/hasLifecycleState"
+    namespace: "fin-orders"
+    localName: "hasLifecycleState"
+    label: "Has Lifecycle State"
+    definition: "relation from an order lifecycle event to the resulting canonical state"
+    valueType: "codelist"
+    codeListReference: "OrderLifecycleState"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+
+  hasPreviousState:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/hasPreviousState"
+    namespace: "fin-orders"
+    localName: "hasPreviousState"
+    label: "Has Previous State"
+    definition: "relation from an order lifecycle event to the previous canonical state (for state transition validation)"
+    valueType: "codelist"
+    codeListReference: "OrderLifecycleState"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "Absent for Initialized events (no previous state). Required for all subsequent events."
+
+  hasExecutionPrice:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/hasExecutionPrice"
+    namespace: "fin-orders"
+    localName: "hasExecutionPrice"
+    label: "Has Execution Price"
+    definition: "relation from an execution to its actual executed price"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+    note: "Should use Money type binding from M3 when cross-module type references are wired"
+
+  hasExecutionQuantity:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/hasExecutionQuantity"
+    namespace: "fin-orders"
+    localName: "hasExecutionQuantity"
+    label: "Has Execution Quantity"
+    definition: "relation from an execution to its actual executed quantity"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+    note: "Should use Quantity type binding from M3 when cross-module type references are wired"
+
+  hasCommission:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/hasCommission"
+    namespace: "fin-orders"
+    localName: "hasCommission"
+    label: "Has Commission"
+    definition: "relation from an execution to its commission or fee amount"
+    valueType: "decimal"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "Optional; some executions may have zero fees or fees not yet known. Should use Money type binding from M3."
+
+  hasLiquiditySide:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/hasLiquiditySide"
+    namespace: "fin-orders"
+    localName: "hasLiquiditySide"
+    label: "Has Liquidity Side"
+    definition: "relation from an execution to its liquidity classification (maker or taker)"
+    valueType: "codelist"
+    codeListReference: "LiquiditySide"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "Optional; some venues do not report liquidity side"
+
+  hasExternalOrderId:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/hasExternalOrderId"
+    namespace: "fin-orders"
+    localName: "hasExternalOrderId"
+    label: "Has External Order ID"
+    definition: "relation from an order lifecycle event to the venue/broker-assigned order identifier"
+    valueType: "string"
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "Absent for Initialized/Submitted events (not yet assigned by venue). Present after Accepted."
+
+  hasExternalStatus:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/hasExternalStatus"
+    namespace: "fin-orders"
+    localName: "hasExternalStatus"
+    label: "Has External Status"
+    definition: "relation from an external order status mapping to the venue-specific raw status code"
+    valueType: "string"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+
+  hasCanonicalState:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/hasCanonicalState"
+    namespace: "fin-orders"
+    localName: "hasCanonicalState"
+    label: "Has Canonical State"
+    definition: "relation from an external order status mapping to the mapped canonical lifecycle state"
+    valueType: "codelist"
+    codeListReference: "OrderLifecycleState"
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+
+  # ==================== Object Types ====================
+
+  OrderIntent:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/OrderIntent"
+    namespace: "fin-orders"
+    localName: "OrderIntent"
+    label: "Order Intent"
+    definition: "trader or strategy desired trade instruction specifying instrument, side, quantity, type, time-in-force, and price constraints, representing the business intent before venue submission"
+    attributes:
+      - attributeIri: "https://axiolune.ai/ontology/finance/orders-execution/hasOrderSide"
+        minCount: 1
+        maxCount: 1
+      - attributeIri: "https://axiolune.ai/ontology/finance/orders-execution/hasOrderType"
+        minCount: 1
+        maxCount: 1
+      - attributeIri: "https://axiolune.ai/ontology/finance/orders-execution/hasTimeInForce"
+        minCount: 1
+        maxCount: 1
+      - attributeIri: "https://axiolune.ai/ontology/finance/orders-execution/hasOrderQuantity"
+        minCount: 1
+        maxCount: 1
+      - attributeIri: "https://axiolune.ai/ontology/finance/orders-execution/hasLimitPrice"
+        minCount: 0
+        maxCount: 1
+      - attributeIri: "https://axiolune.ai/ontology/finance/orders-execution/hasStopPrice"
+        minCount: 0
+        maxCount: 1
+    note: "Aligned with nautilus_trader OrderInitialized event, Lean OrderTicket, FIX NewOrderSingle. Not the same as an external venue order (ExternalOrderStatusMapping bridges the two). M2-PLAN §6.3: semantic intent model, not actual submission."
+
+  # ==================== Association Types ====================
+
+  OrderLifecycleEvent:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent"
+    namespace: "fin-orders"
+    localName: "OrderLifecycleEvent"
+    label: "Order Lifecycle Event"
+    definition: "immutable state transition fact recording a change in order status, with previous state, resulting state, timestamp, reason, and external identifiers, forming an event-sourced audit trail"
+    participants:
+      - roleIri: "https://axiolune.ai/ontology/finance/orders-execution/transitionsOrder"
+        targetTypeIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderIntent"
+        minCount: 1
+        maxCount: 1
+        label: "transitions order"
+        definition: "the order intent that this lifecycle event applies to"
+      - roleIri: "https://axiolune.ai/ontology/finance/orders-execution/occurredAtVenue"
+        targetTypeIri: "https://axiolune.ai/ontology/finance/market-structure/TradingVenue"
+        minCount: 0
+        maxCount: 1
+        label: "occurred at venue"
+        definition: "the trading venue where this lifecycle event occurred (optional; internal events may not have venue)"
+    attributes:
+      - attributeIri: "https://axiolune.ai/ontology/finance/orders-execution/hasLifecycleState"
+        minCount: 1
+        maxCount: 1
+      - attributeIri: "https://axiolune.ai/ontology/finance/orders-execution/hasPreviousState"
+        minCount: 0
+        maxCount: 1
+      - attributeIri: "https://axiolune.ai/ontology/finance/orders-execution/hasExternalOrderId"
+        minCount: 0
+        maxCount: 1
+    patternBindings:
+      - patternIri: "https://axiolune.ai/ontology/foundation/patterns/TemporalFact"
+        rationale: "Order lifecycle events have valid time (when event occurred in business time), knowledge time (when platform learned of event), and availability time (when event was made queryable)"
+      - patternIri: "https://axiolune.ai/ontology/foundation/patterns/ProvenancedFact"
+        rationale: "Order lifecycle events must track source (venue, broker, internal emulator), revision, and evidence for audit and reconciliation"
+    note: "Event-sourced design per nautilus_trader (10 event types). FIX ExecutionReport (35=8). Lean OrderEvent. State machine enforces valid transitions (e.g., Initialized→Submitted→Accepted, not Initialized→Filled). M2-PLAN §6.3: handles out-of-order, duplicates, missing acknowledgments via reconciliation field."
+
+  Execution:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/Execution"
+    namespace: "fin-orders"
+    localName: "Execution"
+    label: "Execution"
+    definition: "trade execution fact recording actual fill of an order or part thereof, with executed price, quantity, venue, commission, liquidity side, and trade identifier, enabling position derivation"
+    participants:
+      - roleIri: "https://axiolune.ai/ontology/finance/orders-execution/executesOrder"
+        targetTypeIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderIntent"
+        minCount: 1
+        maxCount: 1
+        label: "executes order"
+        definition: "the order intent that this execution partially or fully fills"
+      - roleIri: "https://axiolune.ai/ontology/finance/orders-execution/executedInstrument"
+        targetTypeIri: "https://axiolune.ai/ontology/finance/instruments/FinancialInstrument"
+        minCount: 1
+        maxCount: 1
+        label: "executed instrument"
+        definition: "the financial instrument that was executed"
+      - roleIri: "https://axiolune.ai/ontology/finance/orders-execution/executedAtVenue"
+        targetTypeIri: "https://axiolune.ai/ontology/finance/market-structure/TradingVenue"
+        minCount: 1
+        maxCount: 1
+        label: "executed at venue"
+        definition: "the trading venue where this execution occurred"
+    attributes:
+      - attributeIri: "https://axiolune.ai/ontology/finance/orders-execution/hasOrderSide"
+        minCount: 1
+        maxCount: 1
+      - attributeIri: "https://axiolune.ai/ontology/finance/orders-execution/hasExecutionPrice"
+        minCount: 1
+        maxCount: 1
+      - attributeIri: "https://axiolune.ai/ontology/finance/orders-execution/hasExecutionQuantity"
+        minCount: 1
+        maxCount: 1
+      - attributeIri: "https://axiolune.ai/ontology/finance/orders-execution/hasCommission"
+        minCount: 0
+        maxCount: 1
+      - attributeIri: "https://axiolune.ai/ontology/finance/orders-execution/hasLiquiditySide"
+        minCount: 0
+        maxCount: 1
+    patternBindings:
+      - patternIri: "https://axiolune.ai/ontology/foundation/patterns/TemporalFact"
+        rationale: "Executions have valid time (trade timestamp), knowledge time (when platform received trade report), and availability time (when execution became queryable for position calc)"
+      - patternIri: "https://axiolune.ai/ontology/foundation/patterns/ProvenancedFact"
+        rationale: "Executions must track source (venue trade report, broker confirmation), trade ID, and evidence for reconciliation and audit"
+    note: "Aligned with FIX ExecutionReport with ExecType=Trade (150=F). NautilusTrader OrderFilled event → Execution. Lean OrderEvent with Status=Filled. M2-PLAN §6.3: Execution facts enable position derivation and reconciliation with external HoldingSnapshot."
+
+  ExternalOrderStatusMapping:
+    iri: "https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMapping"
+    namespace: "fin-orders"
+    localName: "ExternalOrderStatusMapping"
+    label: "External Order Status Mapping"
+    definition: "versioned mapping from venue-specific or broker-specific raw order status codes to canonical Axiolune lifecycle states, enabling status translation without polluting canonical vocabulary"
+    participants:
+      - roleIri: "https://axiolune.ai/ontology/finance/orders-execution/appliesToVenue"
+        targetTypeIri: "https://axiolune.ai/ontology/finance/market-structure/TradingVenue"
+        minCount: 1
+        maxCount: 1
+        label: "applies to venue"
+        definition: "the trading venue or broker whose status codes this mapping applies to"
+    attributes:
+      - attributeIri: "https://axiolune.ai/ontology/finance/orders-execution/hasExternalStatus"
+        minCount: 1
+        maxCount: 1
+      - attributeIri: "https://axiolune.ai/ontology/finance/orders-execution/hasCanonicalState"
+        minCount: 1
+        maxCount: 1
+    patternBindings:
+      - patternIri: "https://axiolune.ai/ontology/foundation/patterns/TemporalFact"
+        rationale: "Status mappings are versioned (venues change their status codes over time); valid time tracks mapping effective period"
+      - patternIri: "https://axiolune.ai/ontology/foundation/patterns/ProvenancedFact"
+        rationale: "Status mappings must track source (venue API documentation version), evidence, and approval"
+    note: "M2-PLAN §5.2 fin-orders-execution: 'ExternalOrderStatusMapping bridges venue codes to canonical states, not pollute canonical CodeList'. Examples: Binance 'NEW'→Accepted, 'PARTIALLY_FILLED'→PartiallyFilled, 'FILLED'→Filled, 'CANCELED'→Canceled, 'REJECTED'→Rejected. Each venue/broker gets its own mapping set."

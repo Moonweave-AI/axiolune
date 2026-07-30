@@ -1,0 +1,221 @@
+# fin-orders-execution — Terminology Cards (ISO 704)
+# M2-PLAN §3.2, §3.3: ISO 704 genus/differentia definitions for order and execution concepts
+
+terms:
+  - term: "Order Intent"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderIntent"
+    definition: "trader or strategy desired trade instruction specifying instrument, side, quantity, type, time-in-force, and price constraints, representing the business intent before venue submission"
+    genus: "trade instruction"
+    differentia:
+      - "specifies a financial instrument to trade"
+      - "specifies side (buy or sell)"
+      - "specifies quantity and order type"
+      - "specifies time-in-force and optional price constraints"
+      - "represents business intent, not external venue order"
+    excludes:
+      - "external venue order (bridged via ExternalOrderStatusMapping)"
+      - "execution (the actual fill)"
+      - "order lifecycle event (the state transition)"
+    sources:
+      - reference: "nautilus-trader"
+        locator: "nautilus_trader/model/events/order.pyx::OrderInitialized"
+        note: "OrderInitialized event contains trader_id, strategy_id, instrument_id, side, type, quantity, time_in_force, and price parameters"
+      - reference: "lean"
+        locator: "Common/Orders/Order.cs"
+        note: "Order abstract class with Symbol, Quantity, Type, TimeInForce, Direction properties"
+      - reference: "fibo-2026Q1"
+        locator: "SEC/Securities/SecuritiesListings::ListedSecurity"
+        note: "FIBO has ListedSecurity but no explicit order intent concept; Axiolune defines for trading semantics"
+    status: draft
+
+  - term: "Order Lifecycle Event"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent"
+    definition: "immutable state transition fact recording a change in order status, with previous state, resulting state, timestamp, reason, and external identifiers, forming an event-sourced audit trail"
+    genus: "state transition fact"
+    differentia:
+      - "records a change in order status"
+      - "includes previous and resulting canonical states"
+      - "includes timestamp, reason, and external identifiers"
+      - "is immutable (event-sourced, append-only)"
+      - "forms an audit trail for order lifecycle"
+    excludes:
+      - "the order intent itself (OrderIntent is the subject)"
+      - "execution (the actual trade fill)"
+      - "current order state (derived from event stream, not stored)"
+    sources:
+      - reference: "nautilus-trader"
+        locator: "nautilus_trader/model/events/order.pyx::OrderEvent"
+        note: "Base class for 10 order event types: OrderInitialized, OrderSubmitted, OrderAccepted, OrderRejected, OrderCanceled, OrderExpired, OrderTriggered, OrderPendingUpdate, OrderPendingCancel, OrderUpdated, OrderFilled"
+      - reference: "lean"
+        locator: "Common/Orders/OrderEvent.cs"
+        note: "OrderEvent with OrderId, Status, UtcTime, FillPrice, FillQuantity, Message"
+      - reference: "fibo-2026Q1"
+        locator: "FBC/ProductsAndServices/FinancialProductsAndServices::Trade"
+        note: "FIBO Trade is closer to Execution; no explicit lifecycle event concept"
+    status: draft
+
+  - term: "Execution"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/Execution"
+    definition: "trade execution fact recording actual fill of an order or part thereof, with executed price, quantity, venue, commission, liquidity side, and trade identifier, enabling position derivation"
+    genus: "trade execution fact"
+    differentia:
+      - "records actual fill of an order"
+      - "includes executed price and quantity"
+      - "includes venue, commission, and liquidity side"
+      - "includes trade identifier for reconciliation"
+      - "enables position derivation from execution stream"
+    excludes:
+      - "order intent (the instruction, not the fill)"
+      - "order lifecycle event (state transition, not fill)"
+      - "price observation (market data, not execution)"
+    sources:
+      - reference: "nautilus-trader"
+        locator: "nautilus_trader/model/events/order.pyx::OrderFilled"
+        note: "OrderFilled event with last_qty, last_px, liquidity_side, venue_order_id, trade_id, commission"
+      - reference: "lean"
+        locator: "Common/Orders/OrderEvent.cs"
+        note: "OrderEvent with Status=Filled, FillPrice, FillQuantity, OrderFee"
+      - reference: "fibo-2026Q1"
+        locator: "FBC/ProductsAndServices/FinancialProductsAndServices::Trade"
+        note: "FIBO Trade is transaction between parties; Axiolune Execution is order fill with venue/commission context"
+    status: draft
+
+  - term: "External Order Status Mapping"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMapping"
+    definition: "versioned mapping from venue-specific or broker-specific raw order status codes to canonical Axiolune lifecycle states, enabling status translation without polluting canonical vocabulary"
+    genus: "status code mapping"
+    differentia:
+      - "maps venue-specific raw status codes"
+      - "to canonical Axiolune lifecycle states"
+      - "is versioned (venue APIs change over time)"
+      - "scoped to a specific venue or broker"
+      - "prevents canonical vocabulary pollution"
+    excludes:
+      - "the canonical lifecycle state itself (OrderLifecycleState codelist)"
+      - "the order lifecycle event (the actual state transition)"
+      - "venue identifier (TradingVenue is the mapping target)"
+    sources:
+      - reference: "nautilus-trader"
+        locator: "nautilus_trader/adapters/*/execution.py"
+        note: "Each adapter (binance, betfair, etc.) maps venue status codes to OrderStatus enum"
+      - reference: "lean"
+        locator: "Brokerages/*/BrokerageAdapter.cs"
+        note: "Each brokerage adapter maps broker-specific status to Lean OrderStatus enum"
+    status: draft
+
+  - term: "Order Side"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderSide"
+    definition: "controlled vocabulary indicating the direction of an order (buy or sell)"
+    genus: "order direction"
+    differentia:
+      - "indicates buy (long direction)"
+      - "or sell (short direction)"
+    excludes:
+      - "position side (long/short/flat in portfolio context)"
+      - "quote side (bid/ask in market data context)"
+    sources:
+      - reference: "nautilus-trader"
+        locator: "nautilus_trader/core/rust/model.rs::OrderSide"
+        note: "OrderSide enum: BUY, SELL, NO_ORDER_SIDE (sentinel)"
+      - reference: "lean"
+        locator: "Common/Orders/OrderDirection.cs"
+        note: "OrderDirection enum: Buy, Sell, Hold"
+      - reference: "fibo-2026Q1"
+        locator: "FBC/ProductsAndServices/FinancialProductsAndServices::BuySide"
+        note: "FIBO has BuySide and SellSide as classes; Axiolune uses codelist"
+    status: draft
+
+  - term: "Order Type"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderType"
+    definition: "controlled vocabulary of order execution instructions (market, limit, stop, stop-limit)"
+    genus: "execution instruction type"
+    differentia:
+      - "specifies how the order should be executed"
+      - "includes market (immediate at current price)"
+      - "includes limit (at specified price or better)"
+      - "includes stop (triggered at stop price)"
+      - "includes stop-limit (stop trigger then limit order)"
+    excludes:
+      - "time-in-force (order validity duration)"
+      - "order side (buy or sell direction)"
+    sources:
+      - reference: "nautilus-trader"
+        locator: "nautilus_trader/core/rust/model.rs::OrderType"
+        note: "OrderType enum: MARKET, LIMIT, STOP_MARKET, STOP_LIMIT, MARKET_TO_LIMIT, MARKET_IF_TOUCHED, LIMIT_IF_TOUCHED, TRAILING_STOP_MARKET, TRAILING_STOP_LIMIT"
+      - reference: "lean"
+        locator: "Common/Orders/OrderType.cs"
+        note: "OrderType enum: Market, Limit, StopMarket, StopLimit, MarketOnOpen, MarketOnClose, OptionExercise, ComboMarket, ComboLimit, ComboLegLimit"
+      - reference: "fibo-2026Q1"
+        locator: "FBC/ProductsAndServices/FinancialProductsAndServices::LimitOrder"
+        note: "FIBO has LimitOrder, MarketOrder classes; Axiolune uses codelist for first release"
+    status: draft
+
+  - term: "Time In Force"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/TimeInForce"
+    definition: "controlled vocabulary of order validity duration (GTC, IOC, FOK, DAY)"
+    genus: "order validity duration"
+    differentia:
+      - "specifies how long the order remains active"
+      - "GTC (Good-Till-Cancel): active until filled or canceled"
+      - "IOC (Immediate-Or-Cancel): fill immediately or cancel unfilled portion"
+      - "FOK (Fill-Or-Kill): fill entire order immediately or cancel"
+      - "DAY: active until end of trading day"
+    excludes:
+      - "order type (execution instruction)"
+      - "order expiration timestamp (specific datetime)"
+    sources:
+      - reference: "nautilus-trader"
+        locator: "nautilus_trader/core/rust/model.rs::TimeInForce"
+        note: "TimeInForce enum: GTC, IOC, FOK, GTD, DAY, AT_THE_OPEN, AT_THE_CLOSE"
+      - reference: "lean"
+        locator: "Common/Orders/TimeInForce.cs"
+        note: "TimeInForce enum: GoodTilCanceled, Day, GoodTilDate, ImmediateOrCancel, FillOrKill"
+    status: draft
+
+  - term: "Order Lifecycle State"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState"
+    definition: "controlled vocabulary of canonical order states in the lifecycle state machine"
+    genus: "order state"
+    differentia:
+      - "represents a canonical state in order lifecycle"
+      - "forms a state machine with valid transitions"
+      - "Initialized: order created locally"
+      - "Submitted: order sent to venue"
+      - "Accepted: order accepted by venue"
+      - "PartiallyFilled: order partially executed"
+      - "Filled: order fully executed"
+      - "Canceled: order canceled"
+      - "Rejected: order rejected by venue"
+      - "Expired: order expired per time-in-force"
+    excludes:
+      - "venue-specific status codes (mapped via ExternalOrderStatusMapping)"
+      - "order lifecycle event (the transition, not the state)"
+    sources:
+      - reference: "nautilus-trader"
+        locator: "nautilus_trader/model/orders/base.pyx::OrderStatus"
+        note: "OrderStatus enum derived from 10 event types"
+      - reference: "lean"
+        locator: "Common/Orders/OrderStatus.cs"
+        note: "OrderStatus enum: New, Submitted, PartiallyFilled, Filled, Canceled, None, Invalid, CancelPending, UpdateSubmitted"
+    status: draft
+
+  - term: "Liquidity Side"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/LiquiditySide"
+    definition: "controlled vocabulary indicating whether an execution was a maker (added liquidity) or taker (removed liquidity)"
+    genus: "liquidity classification"
+    differentia:
+      - "Maker: execution added liquidity to order book"
+      - "Taker: execution removed liquidity from order book"
+      - "impacts fee calculation (maker fees typically lower)"
+      - "relevant for market microstructure analysis"
+    excludes:
+      - "order side (buy/sell direction)"
+      - "order type (execution instruction)"
+    sources:
+      - reference: "nautilus-trader"
+        locator: "nautilus_trader/core/rust/model.rs::LiquiditySide"
+        note: "LiquiditySide enum: MAKER, TAKER, NO_LIQUIDITY_SIDE"
+      - reference: "lean"
+        locator: "Common/Orders/OrderEvent.cs"
+        note: "Lean does not explicitly model liquidity side in OrderEvent"
+    status: draft

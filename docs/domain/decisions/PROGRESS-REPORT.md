@@ -2,7 +2,7 @@
 
 **Date**: 2026-07-30  
 **Baseline**: M2-PLAN.md (626 lines, 10-week plan)  
-**Current Phase**: E6 Complete → Starting E7 (Release)
+**Current Phase**: E7 Complete → M2 v0.1.0 Release Candidate
 
 ---
 
@@ -15,14 +15,14 @@
 - **Market-to-Risk**: "Price → Valuation → Exposure → Limit Breach"
 - **Trade-to-Operations**: "Execution → Settlement → Reconciliation"
 
-**Progress**: 6 of 7 epics complete (~86% by epic count, ~90-95% by estimated time)
+**Progress**: 7 of 7 epics complete (100% — M2 v0.1.0 release candidate prepared)
 
 **Quality**: 100% validation pass rates across all modules
 - G0 validation: 10/10 modules pass
 - PIT validation: 43/43 positive pass, 12/12 negative correctly rejected
 - Generated artifacts: 1,760 RDF triples (903 OWL + 857 SHACL)
 
-**Status**: Domain modeling complete. Ready for E7 (Release governance and publication).
+**Status**: M2 v0.1.0 release candidate prepared. All governance artifacts complete. Pending final approval.
 
 ---
 
@@ -326,9 +326,9 @@ HoldingSnapshot (external snapshot from E4)
 | E4 | §6.1, §13 (E4) | ✅ Complete | Portfolio/Positions, **Slice A complete** |
 | E5 | §6.3, §13 (E5) | ✅ Complete | Orders/Execution, **Slice B complete** |
 | E6 | §5.2, §13 (E6) | ✅ **Complete** | Strategy/Research, Risk, Post-trade |
-| E7 | §13 (E7) | ⏳ Next | Release governance, compatibility |
+| E7 | §13 (E7) | ✅ **Complete** | Release governance, compatibility, manifest |
 
-**Progress**: 7/8 gates complete (87.5%), 6/7 epics complete (~86% by epic, ~90-95% by time)
+**Progress**: 7/8 gates complete (87.5%), 7/7 epics complete (100%)
 
 ### Module Coverage
 
@@ -495,12 +495,12 @@ The M2 implementation has successfully delivered all 10 planned modules:
 
 **Velocity**: Completed within 10-week estimate. Domain modeling phase complete.
 
-**Next Milestone**: E7 (Release Governance) to package and publish M2 v0.1.0.
+**Next Milestone**: Final governance approval → Publish M2 v0.1.0.
 
 ---
 
 **Report Date**: 2026-07-30  
-**Report Version**: v4.0 (E6 complete - all 10 modules delivered)  
-**Next Update**: E7 completion (M2 v0.1.0 release)
+**Report Version**: v5.0 (E7 complete - M2 v0.1.0 release candidate)  
+**Next Update**: Post-approval (M2 v0.1.0 published)
 
 Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>

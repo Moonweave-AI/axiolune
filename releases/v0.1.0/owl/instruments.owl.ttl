@@ -1,0 +1,53 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-instruments: <https://axiolune.ai/ontology/finance/instruments/>.
+
+<https://axiolune.ai/ontology/finance/instruments> a owl:Ontology;
+    owl:versionIRI <https://axiolune.ai/ontology/finance/instruments/0.1.0>;
+    rdfs:label "Financial Instruments";
+    rdfs:comment "financial instruments, securities, equities, listings, and issuers that define what is traded";
+    owl:imports <https://axiolune.ai/ontology/finance/foundation>, <https://axiolune.ai/ontology/finance/market-structure>.
+fin-instruments:hasTickSize a owl:DatatypeProperty;
+    rdfs:label "Has Tick Size";
+    rdfs:comment "relation from an instrument listing to its minimum price increment (tick size) as a monetary amount";
+    rdfs:range xsd:decimal.
+fin-instruments:hasLotSize a owl:DatatypeProperty;
+    rdfs:label "Has Lot Size";
+    rdfs:comment "relation from an instrument listing to its standard board lot size as a quantity";
+    rdfs:range xsd:decimal.
+fin-instruments:hasListingDate a owl:DatatypeProperty;
+    rdfs:label "Has Listing Date";
+    rdfs:comment "relation from an instrument listing to the date on which the instrument was first listed on the venue";
+    rdfs:range xsd:dateTime.
+fin-instruments:hasDelistingDate a owl:DatatypeProperty;
+    rdfs:label "Has Delisting Date";
+    rdfs:comment "relation from an instrument listing to the date on which the instrument was delisted from the venue, or null if still listed";
+    rdfs:range xsd:dateTime.
+fin-instruments:isTradedOn a owl:DatatypeProperty;
+    rdfs:label "Is Traded On";
+    rdfs:comment "relation from a financial instrument to a trading venue where it is listed for trading";
+    rdfs:range xsd:string.
+fin-instruments:hasDenominatedCurrency a owl:DatatypeProperty;
+    rdfs:label "Has Denominated Currency";
+    rdfs:comment "relation from a financial instrument to the currency in which it is denominated";
+    rdfs:range xsd:string.
+fin-instruments:FinancialInstrument a owl:Class;
+    rdfs:label "Financial Instrument";
+    rdfs:comment "written contract that gives rise to both a financial asset of one entity and a financial liability of another entity, as defined in IAS 32".
+fin-instruments:Security a owl:Class;
+    rdfs:label "Security";
+    rdfs:comment "financial instrument that can be bought or sold, as defined in the Securities Exchange Act 1934";
+    rdfs:subClassOf fin-instruments:FinancialInstrument.
+fin-instruments:EquityInstrument a owl:Class;
+    rdfs:label "Equity Instrument";
+    rdfs:comment "financial instrument representing an ownership interest in an entity or pool of assets, as defined in ISO 10962";
+    rdfs:subClassOf fin-instruments:Security.
+fin-instruments:InstrumentListing a owl:Class;
+    rdfs:label "Instrument Listing";
+    rdfs:comment "catalog entry for a securities offering managed by an exchange that provides the terms under which that security is made available on that exchange".
+fin-instruments:Issuer a owl:Class;
+    rdfs:label "Issuer";
+    rdfs:comment "role of a party that issues or proposes to issue in a formal filing one or more financial instruments".
