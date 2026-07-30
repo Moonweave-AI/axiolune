@@ -1,0 +1,128 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-portfolio: <https://axiolune.ai/ontology/finance/portfolio-positions/>.
+
+<https://axiolune.ai/ontology/finance/portfolio-positions> a owl:Ontology;
+    owl:versionIRI <https://axiolune.ai/ontology/finance/portfolio-positions/0.1.0>;
+    rdfs:label "Portfolio and Positions";
+    rdfs:comment "account, portfolio, holding snapshots, position lots, and valuation observations that capture portfolio composition and valuation with three-axis temporal semantics and explicit price-to-valuation traceability";
+    owl:imports <https://axiolune.ai/ontology/finance/foundation>, <https://axiolune.ai/ontology/finance/instruments>, <https://axiolune.ai/ontology/finance/market-data>.
+fin-portfolio:PositionSide a owl:Class;
+    rdfs:label "Position Side";
+    rdfs:comment "controlled vocabulary indicating whether a position is long (owns the asset) or short (owes the asset)".
+fin-portfolio:PositionSide_Long a fin-portfolio:PositionSide;
+    rdfs:label "Long".
+fin-portfolio:PositionSide_Short a fin-portfolio:PositionSide;
+    rdfs:label "Short".
+fin-portfolio:PositionSide_Flat a fin-portfolio:PositionSide;
+    rdfs:label "Flat".
+fin-portfolio:ValuationMethod a owl:Class;
+    rdfs:label "Valuation Method";
+    rdfs:comment "controlled vocabulary of valuation methodologies (mark-to-market, mark-to-model, cost basis)".
+fin-portfolio:ValuationMethod_MarkToMarket a fin-portfolio:ValuationMethod;
+    rdfs:label "MarkToMarket".
+fin-portfolio:ValuationMethod_MarkToModel a fin-portfolio:ValuationMethod;
+    rdfs:label "MarkToModel".
+fin-portfolio:ValuationMethod_CostBasis a fin-portfolio:ValuationMethod;
+    rdfs:label "CostBasis".
+fin-portfolio:ValuationMethod_LowerOfCostOrMarket a fin-portfolio:ValuationMethod;
+    rdfs:label "LowerOfCostOrMarket".
+fin-portfolio:AccountType a owl:Class;
+    rdfs:label "Account Type";
+    rdfs:comment "controlled vocabulary of account categories (cash, margin, simulated, managed)".
+fin-portfolio:AccountType_Cash a fin-portfolio:AccountType;
+    rdfs:label "Cash".
+fin-portfolio:AccountType_Margin a fin-portfolio:AccountType;
+    rdfs:label "Margin".
+fin-portfolio:AccountType_Simulated a fin-portfolio:AccountType;
+    rdfs:label "Simulated".
+fin-portfolio:AccountType_Managed a fin-portfolio:AccountType;
+    rdfs:label "Managed".
+fin-portfolio:AccountType_Custodial a fin-portfolio:AccountType;
+    rdfs:label "Custodial".
+fin-portfolio:hasQuantity a owl:DatatypeProperty;
+    rdfs:label "Has Quantity";
+    rdfs:comment "relation from a holding or position to its decimal quantity value";
+    rdfs:range xsd:decimal.
+fin-portfolio:hasMarketValue a owl:DatatypeProperty;
+    rdfs:label "Has Market Value";
+    rdfs:comment "relation from a valuation to its decimal market value amount";
+    rdfs:range xsd:decimal.
+fin-portfolio:hasCostBasis a owl:DatatypeProperty;
+    rdfs:label "Has Cost Basis";
+    rdfs:comment "relation from a position or valuation to its decimal cost basis amount";
+    rdfs:range xsd:decimal.
+fin-portfolio:hasUnrealizedPnL a owl:DatatypeProperty;
+    rdfs:label "Has Unrealized PnL";
+    rdfs:comment "relation from a valuation to its decimal unrealized profit and loss amount";
+    rdfs:range xsd:decimal.
+fin-portfolio:hasPositionSide a owl:DatatypeProperty;
+    rdfs:label "Has Position Side";
+    rdfs:comment "relation from a holding or position to its position side code (Long/Short/Flat)";
+    rdfs:range xsd:string.
+fin-portfolio:hasValuationMethod a owl:DatatypeProperty;
+    rdfs:label "Has Valuation Method";
+    rdfs:comment "relation from a valuation to its valuation methodology code";
+    rdfs:range xsd:string.
+fin-portfolio:hasAccountType a owl:DatatypeProperty;
+    rdfs:label "Has Account Type";
+    rdfs:comment "relation from an account to its account type code";
+    rdfs:range xsd:string.
+fin-portfolio:hasAccountIdentifier a owl:DatatypeProperty;
+    rdfs:label "Has Account Identifier";
+    rdfs:comment "relation from an account to its unique identifier string";
+    rdfs:range xsd:string.
+fin-portfolio:hasPortfolioIdentifier a owl:DatatypeProperty;
+    rdfs:label "Has Portfolio Identifier";
+    rdfs:comment "relation from a portfolio to its unique identifier string";
+    rdfs:range xsd:string.
+fin-portfolio:hasPortfolioName a owl:DatatypeProperty;
+    rdfs:label "Has Portfolio Name";
+    rdfs:comment "relation from a portfolio to its human-readable name";
+    rdfs:range xsd:string.
+fin-portfolio:Account a owl:Class;
+    rdfs:label "Account";
+    rdfs:comment "financial account that serves as the unit of ownership, authorization, and accounting for trading activities and asset holdings".
+fin-portfolio:Portfolio a owl:Class;
+    rdfs:label "Portfolio";
+    rdfs:comment "collection of financial instruments and cash positions managed as a unit for investment objectives, performance tracking, or risk management".
+fin-portfolio:HoldingSnapshot a owl:Class;
+    rdfs:label "Holding Snapshot";
+    rdfs:comment "time-stamped observation of an account or portfolio's holding of a specific financial instrument at a point in time, with three-axis temporal semantics distinguishing the business effective time, knowledge time, and data availability time".
+fin-portfolio:HoldingSnapshot_heldInAccount a owl:ObjectProperty;
+    rdfs:domain fin-portfolio:HoldingSnapshot;
+    rdfs:range fin-portfolio:Account;
+    rdfs:label "heldInAccount".
+fin-portfolio:HoldingSnapshot_heldInPortfolio a owl:ObjectProperty;
+    rdfs:domain fin-portfolio:HoldingSnapshot;
+    rdfs:range fin-portfolio:Portfolio;
+    rdfs:label "heldInPortfolio".
+fin-portfolio:HoldingSnapshot_heldInstrument a owl:ObjectProperty;
+    rdfs:domain fin-portfolio:HoldingSnapshot;
+    rdfs:range <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>;
+    rdfs:label "heldInstrument".
+fin-portfolio:PositionValuation a owl:Class;
+    rdfs:label "Position Valuation";
+    rdfs:comment "time-stamped valuation of a holding that explicitly references the price observation used, the valuation method applied, and the resulting market value, enabling full traceability from price to valuation result".
+fin-portfolio:PositionValuation_valuedHolding a owl:ObjectProperty;
+    rdfs:domain fin-portfolio:PositionValuation;
+    rdfs:range fin-portfolio:HoldingSnapshot;
+    rdfs:label "valuedHolding".
+fin-portfolio:PositionValuation_usedPriceObservation a owl:ObjectProperty;
+    rdfs:domain fin-portfolio:PositionValuation;
+    rdfs:range <https://axiolune.ai/ontology/finance/market-data/PriceObservation>;
+    rdfs:label "usedPriceObservation".
+fin-portfolio:PositionLot a owl:Class;
+    rdfs:label "Position Lot";
+    rdfs:comment "distinct acquisition or disposition of a specific quantity of an instrument, tracked separately for tax basis, holding period, or accounting purposes".
+fin-portfolio:PositionLot_lotForInstrument a owl:ObjectProperty;
+    rdfs:domain fin-portfolio:PositionLot;
+    rdfs:range <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>;
+    rdfs:label "lotForInstrument".
+fin-portfolio:PositionLot_lotInAccount a owl:ObjectProperty;
+    rdfs:domain fin-portfolio:PositionLot;
+    rdfs:range fin-portfolio:Account;
+    rdfs:label "lotInAccount".
