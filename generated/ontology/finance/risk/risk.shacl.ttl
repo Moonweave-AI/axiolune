@@ -1,0 +1,207 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-risk: <https://axiolune.ai/ontology/finance/risk/>.
+
+fin-risk:RiskMeasureTypeShape a sh:NodeShape;
+    sh:targetClass fin-risk:RiskMeasureType;
+    sh:in ("VaR" "CVaR" "Volatility" "Exposure" "Concentration" "Beta" "Greeks");
+    sh:name "Risk Measure Type".
+fin-risk:LimitBreachSeverityShape a sh:NodeShape;
+    sh:targetClass fin-risk:LimitBreachSeverity;
+    sh:in ("Warning" "Breach" "Critical");
+    sh:name "Limit Breach Severity".
+fin-risk:RiskMeasureDefinitionShape a sh:NodeShape;
+    sh:targetClass fin-risk:RiskMeasureDefinition;
+    sh:name "Risk Measure Definition";
+    sh:description "specification of a risk metric including calculation method, parameters, time horizon, and confidence level";
+    sh:property fin-risk:RiskMeasureDefinitionShape_hasMeasureName.
+fin-risk:RiskMeasureDefinitionShape_hasMeasureName a sh:PropertyShape;
+    sh:path fin-risk:hasMeasureName;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string.
+fin-risk:RiskMeasureDefinitionShape sh:property fin-risk:RiskMeasureDefinitionShape_hasMeasureType.
+fin-risk:RiskMeasureDefinitionShape_hasMeasureType a sh:PropertyShape;
+    sh:path fin-risk:hasMeasureType;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("VaR" "CVaR" "Volatility" "Exposure" "Concentration" "Beta" "Greeks").
+fin-risk:RiskMeasureDefinitionShape sh:property fin-risk:RiskMeasureDefinitionShape_hasTimeHorizon.
+fin-risk:RiskMeasureDefinitionShape_hasTimeHorizon a sh:PropertyShape;
+    sh:path fin-risk:hasTimeHorizon;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/QuantityValue>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-risk:RiskMeasureDefinitionShape sh:property fin-risk:RiskMeasureDefinitionShape_hasConfidenceLevel.
+fin-risk:RiskMeasureDefinitionShape_hasConfidenceLevel a sh:PropertyShape;
+    sh:path fin-risk:hasConfidenceLevel;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/QuantityValue>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-risk:RiskLimitShape a sh:NodeShape;
+    sh:targetClass fin-risk:RiskLimit;
+    sh:name "Risk Limit";
+    sh:description "authorized maximum or threshold for a risk measure applicable to a portfolio, account, or instrument with defined scope and validity";
+    sh:property fin-risk:RiskLimitShape_hasLimitValue.
+fin-risk:RiskLimitShape_hasLimitValue a sh:PropertyShape;
+    sh:path fin-risk:hasLimitValue;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-risk:RiskLimitShape sh:property fin-risk:RiskLimitShape_hasWarningThreshold.
+fin-risk:RiskLimitShape_hasWarningThreshold a sh:PropertyShape;
+    sh:path fin-risk:hasWarningThreshold;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-risk:ExposureObservationShape a sh:NodeShape;
+    sh:targetClass fin-risk:ExposureObservation;
+    sh:name "Exposure Observation";
+    sh:description "point-in-time observation of a risk measure value for a portfolio, account, or instrument with calculation timestamp and contributing factors";
+    sh:property fin-risk:ExposureObservationShape_hasExposureValue.
+fin-risk:ExposureObservationShape_hasExposureValue a sh:PropertyShape;
+    sh:path fin-risk:hasExposureValue;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_observedForPortfolio.
+fin-risk:ExposureObservationShape_observedForPortfolio a sh:PropertyShape;
+    sh:path fin-risk:observedForPortfolio;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio>.
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_observedForAccount.
+fin-risk:ExposureObservationShape_observedForAccount a sh:PropertyShape;
+    sh:path fin-risk:observedForAccount;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/portfolio-positions/Account>.
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_measuredByDefinition.
+fin-risk:ExposureObservationShape_measuredByDefinition a sh:PropertyShape;
+    sh:path fin-risk:measuredByDefinition;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-risk:RiskMeasureDefinition.
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_pat_validFrom.
+fin-risk:ExposureObservationShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_pat_knowledgeFrom.
+fin-risk:ExposureObservationShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_pat_availableFrom.
+fin-risk:ExposureObservationShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_pat_validTo.
+fin-risk:ExposureObservationShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_pat_knowledgeTo.
+fin-risk:ExposureObservationShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_pat_availableTo.
+fin-risk:ExposureObservationShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-risk:ExposureObservationShape sh:sparql _:sparql_valid_ExposureObservation.
+_:sparql_valid_ExposureObservation sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-risk:ExposureObservationShape sh:sparql _:sparql_knowledge_ExposureObservation.
+_:sparql_knowledge_ExposureObservation sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-risk:ExposureObservationShape sh:sparql _:sparql_available_ExposureObservation.
+_:sparql_available_ExposureObservation sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_pat_source.
+fin-risk:ExposureObservationShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+fin-risk:LimitBreachShape a sh:NodeShape;
+    sh:targetClass fin-risk:LimitBreach;
+    sh:name "Limit Breach";
+    sh:description "detected violation of a risk limit with breach severity, exposure observation, and applicable limit";
+    sh:property fin-risk:LimitBreachShape_hasBreachSeverity.
+fin-risk:LimitBreachShape_hasBreachSeverity a sh:PropertyShape;
+    sh:path fin-risk:hasBreachSeverity;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Warning" "Breach" "Critical").
+fin-risk:LimitBreachShape sh:property fin-risk:LimitBreachShape_breachedLimit.
+fin-risk:LimitBreachShape_breachedLimit a sh:PropertyShape;
+    sh:path fin-risk:breachedLimit;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-risk:RiskLimit.
+fin-risk:LimitBreachShape sh:property fin-risk:LimitBreachShape_causedByExposure.
+fin-risk:LimitBreachShape_causedByExposure a sh:PropertyShape;
+    sh:path fin-risk:causedByExposure;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-risk:ExposureObservation.
+fin-risk:LimitBreachShape sh:property fin-risk:LimitBreachShape_pat_validFrom.
+fin-risk:LimitBreachShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-risk:LimitBreachShape sh:property fin-risk:LimitBreachShape_pat_knowledgeFrom.
+fin-risk:LimitBreachShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-risk:LimitBreachShape sh:property fin-risk:LimitBreachShape_pat_availableFrom.
+fin-risk:LimitBreachShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-risk:LimitBreachShape sh:property fin-risk:LimitBreachShape_pat_validTo.
+fin-risk:LimitBreachShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-risk:LimitBreachShape sh:property fin-risk:LimitBreachShape_pat_knowledgeTo.
+fin-risk:LimitBreachShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-risk:LimitBreachShape sh:property fin-risk:LimitBreachShape_pat_availableTo.
+fin-risk:LimitBreachShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-risk:LimitBreachShape sh:sparql _:sparql_valid_LimitBreach.
+_:sparql_valid_LimitBreach sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-risk:LimitBreachShape sh:sparql _:sparql_knowledge_LimitBreach.
+_:sparql_knowledge_LimitBreach sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-risk:LimitBreachShape sh:sparql _:sparql_available_LimitBreach.
+_:sparql_available_LimitBreach sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-risk:LimitBreachShape sh:property fin-risk:LimitBreachShape_pat_source.
+fin-risk:LimitBreachShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.

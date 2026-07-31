@@ -1,0 +1,236 @@
+# OrderLifecycleEvent state-machine positive fixtures (CQ-OE6)
+# Canonical state machine per M2-PLAN §6.3:
+#   Initialized→{Submitted,Rejected}, Submitted→{Accepted,Rejected},
+#   Accepted→{PartiallyFilled,Filled,Canceled,Expired}, PartiallyFilled→{Filled,Canceled}
+# Terminal: Filled, Canceled, Rejected, Expired
+
+fixtures:
+  - id: order-sm-pos-001
+    description: "valid full happy path Initialized→Submitted→Accepted→Filled"
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+    expectedResult: accepted
+    events:
+      - iri: https://axiolune.ai/data/orders/sm-pos-001-ev1
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-001-order
+        hasLifecycleState: Submitted
+        hasPreviousState: Initialized
+        validFrom: '2026-07-25T12:00:00Z'
+        knowledgeFrom: '2026-07-25T12:00:01Z'
+        availableFrom: '2026-07-25T12:00:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-pos-001-ev2
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-001-order
+        hasLifecycleState: Accepted
+        hasPreviousState: Submitted
+        validFrom: '2026-07-25T12:01:00Z'
+        knowledgeFrom: '2026-07-25T12:01:01Z'
+        availableFrom: '2026-07-25T12:01:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-pos-001-ev3
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-001-order
+        hasLifecycleState: Filled
+        hasPreviousState: Accepted
+        validFrom: '2026-07-25T12:02:00Z'
+        knowledgeFrom: '2026-07-25T12:02:01Z'
+        availableFrom: '2026-07-25T12:02:02Z'
+
+  - id: order-sm-pos-002
+    description: "valid rejection Initialized→Rejected (terminal)"
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+    expectedResult: accepted
+    events:
+      - iri: https://axiolune.ai/data/orders/sm-pos-002-ev1
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-002-order
+        hasLifecycleState: Rejected
+        hasPreviousState: Initialized
+        validFrom: '2026-07-25T12:00:00Z'
+        knowledgeFrom: '2026-07-25T12:00:01Z'
+        availableFrom: '2026-07-25T12:00:02Z'
+
+  - id: order-sm-pos-003
+    description: "valid Initialized→Denied (terminal) per NautilusTrader"
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+    expectedResult: accepted
+    events:
+      - iri: https://axiolune.ai/data/orders/sm-pos-003-ev1
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-003-order
+        hasLifecycleState: Denied
+        hasPreviousState: Initialized
+        validFrom: '2026-07-25T12:00:00Z'
+        knowledgeFrom: '2026-07-25T12:00:01Z'
+        availableFrom: '2026-07-25T12:00:02Z'
+
+  - id: order-sm-pos-004
+    description: "valid Accepted→PendingUpdate→Accepted→PartiallyFilled→Filled (update cycle)"
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+    expectedResult: accepted
+    events:
+      - iri: https://axiolune.ai/data/orders/sm-pos-004-ev1
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-004-order
+        hasLifecycleState: Submitted
+        hasPreviousState: Initialized
+        validFrom: '2026-07-25T12:00:00Z'
+        knowledgeFrom: '2026-07-25T12:00:01Z'
+        availableFrom: '2026-07-25T12:00:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-pos-004-ev2
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-004-order
+        hasLifecycleState: Accepted
+        hasPreviousState: Submitted
+        validFrom: '2026-07-25T12:01:00Z'
+        knowledgeFrom: '2026-07-25T12:01:01Z'
+        availableFrom: '2026-07-25T12:01:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-pos-004-ev3
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-004-order
+        hasLifecycleState: PendingUpdate
+        hasPreviousState: Accepted
+        validFrom: '2026-07-25T12:02:00Z'
+        knowledgeFrom: '2026-07-25T12:02:01Z'
+        availableFrom: '2026-07-25T12:02:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-pos-004-ev4
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-004-order
+        hasLifecycleState: Accepted
+        hasPreviousState: PendingUpdate
+        validFrom: '2026-07-25T12:03:00Z'
+        knowledgeFrom: '2026-07-25T12:03:01Z'
+        availableFrom: '2026-07-25T12:03:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-pos-004-ev5
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-004-order
+        hasLifecycleState: Filled
+        hasPreviousState: Accepted
+        validFrom: '2026-07-25T12:04:00Z'
+        knowledgeFrom: '2026-07-25T12:04:01Z'
+        availableFrom: '2026-07-25T12:04:02Z'
+
+  - id: order-sm-pos-005
+    description: "valid Accepted→PendingCancel→Canceled (cancel pending cycle)"
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+    expectedResult: accepted
+    events:
+      - iri: https://axiolune.ai/data/orders/sm-pos-005-ev1
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-005-order
+        hasLifecycleState: Submitted
+        hasPreviousState: Initialized
+        validFrom: '2026-07-25T12:00:00Z'
+        knowledgeFrom: '2026-07-25T12:00:01Z'
+        availableFrom: '2026-07-25T12:00:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-pos-005-ev2
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-005-order
+        hasLifecycleState: Accepted
+        hasPreviousState: Submitted
+        validFrom: '2026-07-25T12:01:00Z'
+        knowledgeFrom: '2026-07-25T12:01:01Z'
+        availableFrom: '2026-07-25T12:01:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-pos-005-ev3
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-005-order
+        hasLifecycleState: PendingCancel
+        hasPreviousState: Accepted
+        validFrom: '2026-07-25T12:02:00Z'
+        knowledgeFrom: '2026-07-25T12:02:01Z'
+        availableFrom: '2026-07-25T12:02:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-pos-005-ev4
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-005-order
+        hasLifecycleState: Canceled
+        hasPreviousState: PendingCancel
+        validFrom: '2026-07-25T12:03:00Z'
+        knowledgeFrom: '2026-07-25T12:03:01Z'
+        availableFrom: '2026-07-25T12:03:02Z'
+
+  - id: order-sm-pos-006
+    description: "valid Initialized→Emulated→Submitted→Accepted→Filled (emulation path)"
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+    expectedResult: accepted
+    events:
+      - iri: https://axiolune.ai/data/orders/sm-pos-006-ev1
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-006-order
+        hasLifecycleState: Emulated
+        hasPreviousState: Initialized
+        validFrom: '2026-07-25T12:00:00Z'
+        knowledgeFrom: '2026-07-25T12:00:01Z'
+        availableFrom: '2026-07-25T12:00:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-pos-006-ev2
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-006-order
+        hasLifecycleState: Submitted
+        hasPreviousState: Emulated
+        validFrom: '2026-07-25T12:01:00Z'
+        knowledgeFrom: '2026-07-25T12:01:01Z'
+        availableFrom: '2026-07-25T12:01:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-pos-006-ev3
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-006-order
+        hasLifecycleState: Accepted
+        hasPreviousState: Submitted
+        validFrom: '2026-07-25T12:02:00Z'
+        knowledgeFrom: '2026-07-25T12:02:01Z'
+        availableFrom: '2026-07-25T12:02:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-pos-006-ev4
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-006-order
+        hasLifecycleState: Filled
+        hasPreviousState: Accepted
+        validFrom: '2026-07-25T12:03:00Z'
+        knowledgeFrom: '2026-07-25T12:03:01Z'
+        availableFrom: '2026-07-25T12:03:02Z'
+
+  - id: order-sm-pos-007
+    description: "valid Initialized→Released→Submitted→Accepted→Filled (release path)"
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+    expectedResult: accepted
+    events:
+      - iri: https://axiolune.ai/data/orders/sm-pos-007-ev1
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-007-order
+        hasLifecycleState: Released
+        hasPreviousState: Initialized
+        validFrom: '2026-07-25T12:00:00Z'
+        knowledgeFrom: '2026-07-25T12:00:01Z'
+        availableFrom: '2026-07-25T12:00:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-pos-007-ev2
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-007-order
+        hasLifecycleState: Submitted
+        hasPreviousState: Released
+        validFrom: '2026-07-25T12:01:00Z'
+        knowledgeFrom: '2026-07-25T12:01:01Z'
+        availableFrom: '2026-07-25T12:01:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-pos-007-ev3
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-007-order
+        hasLifecycleState: Accepted
+        hasPreviousState: Submitted
+        validFrom: '2026-07-25T12:02:00Z'
+        knowledgeFrom: '2026-07-25T12:02:01Z'
+        availableFrom: '2026-07-25T12:02:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-pos-007-ev4
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-007-order
+        hasLifecycleState: Filled
+        hasPreviousState: Accepted
+        validFrom: '2026-07-25T12:03:00Z'
+        knowledgeFrom: '2026-07-25T12:03:01Z'
+        availableFrom: '2026-07-25T12:03:02Z'
+
+  - id: order-sm-pos-008
+    description: "valid Accepted→Triggered→Filled (stop/conditional trigger path)"
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+    expectedResult: accepted
+    events:
+      - iri: https://axiolune.ai/data/orders/sm-pos-008-ev1
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-008-order
+        hasLifecycleState: Submitted
+        hasPreviousState: Initialized
+        validFrom: '2026-07-25T12:00:00Z'
+        knowledgeFrom: '2026-07-25T12:00:01Z'
+        availableFrom: '2026-07-25T12:00:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-pos-008-ev2
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-008-order
+        hasLifecycleState: Accepted
+        hasPreviousState: Submitted
+        validFrom: '2026-07-25T12:01:00Z'
+        knowledgeFrom: '2026-07-25T12:01:01Z'
+        availableFrom: '2026-07-25T12:01:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-pos-008-ev3
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-008-order
+        hasLifecycleState: Triggered
+        hasPreviousState: Accepted
+        validFrom: '2026-07-25T12:02:00Z'
+        knowledgeFrom: '2026-07-25T12:02:01Z'
+        availableFrom: '2026-07-25T12:02:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-pos-008-ev4
+        transitionsOrder: https://axiolune.ai/data/orders/sm-pos-008-order
+        hasLifecycleState: Filled
+        hasPreviousState: Triggered
+        validFrom: '2026-07-25T12:03:00Z'
+        knowledgeFrom: '2026-07-25T12:03:01Z'
+        availableFrom: '2026-07-25T12:03:02Z'

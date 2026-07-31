@@ -1,0 +1,45 @@
+# FactorObservation negatives — availability fail-closed + revision hygiene
+fixtures:
+  - id: factor-obs-missing-availableFrom
+    description: FactorObservation without availableFrom must reject (ADR-012 fail-closed)
+    type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
+    instance:
+      iri: https://axiolune.ai/data/factors/obs-bad-no-avail
+      type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
+      observesFactor: https://axiolune.ai/data/factors/def-roe
+      observedInstrument: https://axiolune.ai/data/instruments/AX-EQ-AAPL
+      hasFactorPeriod: 2024Q1
+      hasFactorValue:
+        type: QuantityValue
+        hasNumericAmount: '0.10'
+        hasUnitCode: share
+      validFrom: '2024-01-01T00:00:00Z'
+      knowledgeFrom: '2024-04-15T08:00:00Z'
+      source: qlib-pit-synthetic
+    expectedResult: rejected
+    expectedViolation: missing-availability-time
+  - id: factor-obs-future-availability
+    description: asOfAvailable before availableFrom must not accept observation
+    type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
+    instance:
+      iri: https://axiolune.ai/data/factors/obs-future-avail
+      type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
+      observesFactor: https://axiolune.ai/data/factors/def-roe
+      observedInstrument: https://axiolune.ai/data/instruments/AX-EQ-AAPL
+      hasFactorPeriod: 2024Q2
+      hasFactorValue:
+        type: QuantityValue
+        hasNumericAmount: '0.20'
+        hasUnitCode: share
+      validFrom: '2024-04-01T00:00:00Z'
+      validTo: '2024-07-01T00:00:00Z'
+      knowledgeFrom: '2024-07-20T08:00:00Z'
+      availableFrom: '2024-07-20T08:05:00Z'
+      source: qlib-pit-synthetic
+    pitQuery:
+      asOfValid: '2024-06-15T00:00:00Z'
+      asOfKnowledge: '2024-07-20T08:00:00Z'
+      asOfAvailable: '2024-07-20T08:00:00Z'
+    expectedResult: rejected
+    expectedViolation: future-availability
+    note: availableFrom 08:05 > asOfAvailable 08:00

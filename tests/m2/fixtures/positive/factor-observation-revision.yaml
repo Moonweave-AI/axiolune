@@ -1,0 +1,66 @@
+# FactorObservation revision-chain fixtures (Qlib PIT: date, period, value, _next)
+# Gate: validate-pit.cjs via test-all-domain (filename matches factor|strategy)
+fixtures:
+  - id: factor-obs-revision-chain-positive
+    description: >-
+      Two revisions for same (instrument, period=2024Q1); v1.nextRevision→v2 (Qlib _next). Machine assertion of revision
+      selection is NOT done by validate-pit (axis-only). See tests/m2/competency-queries/cq-factor-revision.yaml +
+      scripts/domain/run-factor-revision-cq.cjs: CQ-F1 asOfKnowledge=2024-04-20 selects v1; CQ-F2
+      asOfKnowledge=2024-05-15 selects v2.
+    type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
+    instances:
+      - iri: https://axiolune.ai/data/factors/obs-roe-aapl-2024q1-v1
+        type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
+        observesFactor: https://axiolune.ai/data/factors/def-roe
+        observedInstrument: https://axiolune.ai/data/instruments/AX-EQ-AAPL
+        nextRevision: https://axiolune.ai/data/factors/obs-roe-aapl-2024q1-v2
+        hasFactorPeriod: 2024Q1
+        hasFactorValue:
+          type: QuantityValue
+          hasNumericAmount: '0.185'
+          hasUnitCode: share
+        validFrom: '2024-01-01T00:00:00Z'
+        validTo: '2024-04-01T00:00:00Z'
+        knowledgeFrom: '2024-04-15T08:00:00Z'
+        knowledgeTo: '2024-05-10T08:00:00Z'
+        availableFrom: '2024-04-15T08:05:00Z'
+        availableTo: '2024-05-10T08:05:00Z'
+        source: qlib-pit-synthetic
+        sourceRevision: v1
+      - iri: https://axiolune.ai/data/factors/obs-roe-aapl-2024q1-v2
+        type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
+        observesFactor: https://axiolune.ai/data/factors/def-roe
+        observedInstrument: https://axiolune.ai/data/instruments/AX-EQ-AAPL
+        hasFactorPeriod: 2024Q1
+        hasFactorValue:
+          type: QuantityValue
+          hasNumericAmount: '0.191'
+          hasUnitCode: share
+        validFrom: '2024-01-01T00:00:00Z'
+        validTo: '2024-04-01T00:00:00Z'
+        knowledgeFrom: '2024-05-10T08:00:00Z'
+        availableFrom: '2024-05-10T08:05:00Z'
+        source: qlib-pit-synthetic
+        sourceRevision: v2
+        note: terminal revision — nextRevision absent (Qlib NA_INDEX)
+    expectedResult: accepted
+    note: 'Round-3 regression: FactorObservation + nextRevision in gate'
+  - id: factor-obs-single-terminal
+    description: Single FactorObservation with period+value and no nextRevision
+    type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
+    instance:
+      iri: https://axiolune.ai/data/factors/obs-mom-aapl-2024-06
+      type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
+      observesFactor: https://axiolune.ai/data/factors/def-momentum-20d
+      observedInstrument: https://axiolune.ai/data/instruments/AX-EQ-AAPL
+      hasFactorPeriod: 2024-06
+      hasFactorValue:
+        type: QuantityValue
+        hasNumericAmount: '0.042'
+        hasUnitCode: share
+      validFrom: '2024-06-01T00:00:00Z'
+      validTo: '2024-07-01T00:00:00Z'
+      knowledgeFrom: '2024-07-01T16:00:00Z'
+      availableFrom: '2024-07-01T16:01:00Z'
+      source: qlib-pit-synthetic
+    expectedResult: accepted

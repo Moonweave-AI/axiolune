@@ -11,7 +11,22 @@ M3 defines meta-types (`OntologyModuleDefinition`, `ObjectTypeDefinition`, `Asso
 
 ## Decision
 
+### 0. Source layout (canonical path)
+
+Domain (M2) finance modules live under:
+
+```text
+ontology/domain/finance/
+  registry/
+  foundation/
+  ...
+scripts/domain/          # validators + generators + test-all-domain
+```
+
+The earlier draft path `ontology/m2/` was renamed to `ontology/domain/` for phase clarity (M3=`meta`, M2=`domain`). M2-PLAN §4.4 examples that still say `ontology/m2/` are superseded by this ADR for layout only; semantic contracts in the plan remain authoritative.
+
 ### 1. File root: `module` + `domain` envelope
+
 
 Every M2 YAML file has exactly two top-level keys:
 
@@ -100,8 +115,13 @@ The G0 validator checks:
 | IRI uniqueness | No duplicate IRIs across the module | Two elements same iri |
 | IRI format | Absolute IRI or registered CURIE | Unregistered prefix |
 | Import lock | Every import has version + artifactDigest (sha256) + importMode | Missing digest |
+| Dialect unity | Forbidden: `participants`, `attributes` (as uses), `patternIri`, `attributeIri` | E5 alternate dialect |
+| Pattern IRI | `patternBindings[].pattern` under `…/meta/patterns/` | `…/foundation/patterns/` |
 | Type inference | Element's fields match at least one M3 meta-type | Unknown required field combination |
 | Sidecar separation | No `kind:` field; no evidence fields in domain YAML | `kind: ObjectTypeDefinition` |
+
+`--strict` additionally rejects all-zero placeholder digests and bare `decimal` money/quantity attributes.
+
 
 ### 6. Generator contract
 

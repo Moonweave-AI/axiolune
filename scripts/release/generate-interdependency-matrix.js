@@ -9,7 +9,7 @@ const path = require('path');
 const yaml = require('js-yaml');
 
 const REPO_ROOT = path.resolve(__dirname, '../..');
-const M2_MODULES_DIR = path.join(REPO_ROOT, 'ontology/m2/finance');
+const M2_MODULES_DIR = path.join(REPO_ROOT, 'ontology/domain/finance');
 
 function loadModule(modulePath) {
   const content = fs.readFileSync(modulePath, 'utf8');
@@ -160,9 +160,9 @@ function main() {
   // Check for cycles
   const cycles = detectCycles(dependencies);
   if (cycles.length > 0) {
-    console.error('\nâŒ ERROR: Circular dependencies detected!');
+    console.error('\nâ?ERROR: Circular dependencies detected!');
     for (const cycle of cycles) {
-      console.error('  Cycle:', cycle.map(iri => iri.split('/').pop()).join(' â†’ '));
+      console.error('  Cycle:', cycle.map(iri => iri.split('/').pop()).join(' â†?'));
     }
     process.exit(1);
   }
@@ -172,7 +172,7 @@ function main() {
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   fs.writeFileSync(outputPath, yaml.dump(matrix, { lineWidth: 120, noRefs: true }));
 
-  console.log(`âœ“ Interdependency matrix written to: ${outputPath}`);
+  console.log(`âœ?Interdependency matrix written to: ${outputPath}`);
   console.log(`  Total modules: ${matrix.totalModules}`);
   console.log(`  No circular dependencies detected`);
 }

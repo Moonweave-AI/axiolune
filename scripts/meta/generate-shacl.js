@@ -94,8 +94,9 @@ let patternShapes = 0;
 const patternList = (patterns.CrossDomainPatterns && patterns.CrossDomainPatterns.patterns) || [];
 for (const p of patternList) {
   if (!Array.isArray(p.injectedAttributes) || p.injectedAttributes.length === 0) continue;
-  const pClass = namedNode(AX + p.localName);
-  const pShape = namedNode(AX + p.localName + 'Shape');
+  // Use the pattern's canonical IRI (from source) so projection is consistent with M2 bindings.
+  const pClass = namedNode(p.iri || (AX + p.localName));
+  const pShape = namedNode((p.iri || (AX + p.localName)) + 'Shape');
   add(pClass, namedNode(RDF + 'type'), namedNode('http://www.w3.org/2002/07/owl#Class'));
   add(pClass, namedNode('http://www.w3.org/2000/01/rdf-schema#subClassOf'), factClass);
   add(pShape, namedNode(RDF + 'type'), sh('NodeShape'));

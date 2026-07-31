@@ -33,7 +33,7 @@ mkdir -p "${RELEASE_DIR}"/{modules,owl,shacl,evidence,tests,docs}
   echo ""
 
   echo "## Module Sources"
-  find ontology/m2/finance -name "module.yaml" -type f -exec sha256sum {} \; | sort -k2
+  find ontology/domain/finance -name "module.yaml" -type f -exec sha256sum {} \; | sort -k2
 
   echo ""
   echo "## Generated OWL"

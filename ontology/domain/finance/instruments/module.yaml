@@ -1,0 +1,312 @@
+# Axiolune M2 Finance — Instruments Module
+# Module: fin-instruments
+# Version: 0.1.0
+# Status: draft
+# Dependencies: fin-foundation (ISIN, isIssuedBy, LegalEntity)
+#              fin-market-structure (TradingVenue, InstrumentListing venue reference)
+# Terminology: docs/ontology/terminology/fin-instruments-terms.yaml
+# CQ: docs/ontology/competency-questions/fin-instruments-cq.yaml
+# Alignment: FIBO FBC/FinancialInstruments + SEC/Securities + SEC/Equities
+# Implementation evidence: nautilus_trader (19 instrument types), Lean (12 SecurityType)
+module:
+  moduleIri: https://axiolune.ai/ontology/finance/instruments
+  baseIri: https://axiolune.ai/ontology/finance/instruments/
+  preferredPrefix: fin-instruments
+  version: 0.2.0
+  label: Financial Instruments
+  definition: financial instruments, securities, equities, listings, and issuers that define what is traded
+  imports:
+    - moduleIri: https://axiolune.ai/ontology/finance/foundation
+      version: 0.1.0
+      artifactDigest: sha256:e64d6782499a636bb016bed59056cbcffef160c9ad43d78ff93a479285998295
+      importMode: All
+    - moduleIri: https://axiolune.ai/ontology/finance/market-structure
+      version: 0.1.0
+      artifactDigest: sha256:53ad88cebb3a0525721bcbe8620cc49fae1cd051511df395b7212e0b283d9d7e
+      importMode: All
+  exports: []
+  status: approved
+domain:
+  hasTickSize:
+    iri: https://axiolune.ai/ontology/finance/instruments/hasTickSize
+    namespace: fin-instruments
+    localName: hasTickSize
+    label: Has Tick Size
+    definition: relation from an instrument listing to its minimum price increment (tick size) as a monetary amount
+    valueType: https://axiolune.ai/ontology/finance/foundation/MonetaryAmount
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: MoneyType binding; corresponds to nautilus_trader price_increment; FIBO Listing.hasTickSize
+  hasLotSize:
+    iri: https://axiolune.ai/ontology/finance/instruments/hasLotSize
+    namespace: fin-instruments
+    localName: hasLotSize
+    label: Has Lot Size
+    definition: relation from an instrument listing to its standard board lot size as a quantity
+    valueType: https://axiolune.ai/ontology/finance/foundation/QuantityValue
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: QuantityType binding; corresponds to nautilus_trader lot_size; FIBO Listing.hasLotSize
+  hasListingDate:
+    iri: https://axiolune.ai/ontology/finance/instruments/hasListingDate
+    namespace: fin-instruments
+    localName: hasListingDate
+    label: Has Listing Date
+    definition: relation from an instrument listing to the date on which the instrument was first listed on the venue
+    valueType: instant
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+    note: FIBO Listing.hasListingDate
+  hasDelistingDate:
+    iri: https://axiolune.ai/ontology/finance/instruments/hasDelistingDate
+    namespace: fin-instruments
+    localName: hasDelistingDate
+    label: Has Delisting Date
+    definition: >-
+      relation from an instrument listing to the date on which the instrument was delisted from the venue, or null if
+      still listed
+    valueType: instant
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: FIBO Listing.hasDelistingDate; null = still listed
+  isIssuedBy:
+    iri: https://axiolune.ai/ontology/finance/instruments/isIssuedBy
+    namespace: fin-instruments
+    localName: isIssuedBy
+    label: Is Issued By
+    definition: binary relation from a financial instrument to the legal entity that issued it
+    domain: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+    range: https://axiolune.ai/ontology/finance/foundation/LegalEntity
+    alignments:
+      - vocabulary: FIBO
+        targetIri: https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/isIssuedBy
+        relation: rdfs:subPropertyOf
+        sourceRelease:
+          vocabulary: FIBO
+          release: local-evidence-bundle
+          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
+          lockRef: fibo-local-evidence
+          claimedReleaseLabel: 2026Q1
+          releaseNote: >-
+            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
+            maturity.
+        rationale: Instrument→LegalEntity issuer edge; RelationTypeDefinition not Attribute (review M3)
+        verification:
+          status: proposed
+  isTradedOn:
+    iri: https://axiolune.ai/ontology/finance/instruments/isTradedOn
+    namespace: fin-instruments
+    localName: isTradedOn
+    label: Is Traded On
+    definition: binary relation from a financial instrument to a trading venue where it is listed for trading
+    domain: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+    range: https://axiolune.ai/ontology/finance/market-structure/TradingVenue
+    note: RelationTypeDefinition; FIBO ListedSecurity.isTradedOn; domain is FinancialInstrument, not InstrumentListing
+  isListedOn:
+    iri: https://axiolune.ai/ontology/finance/instruments/isListedOn
+    namespace: fin-instruments
+    localName: isListedOn
+    label: Is Listed On
+    definition: binary relation from an instrument listing to the trading venue on which it is listed
+    domain: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+    range: https://axiolune.ai/ontology/finance/market-structure/TradingVenue
+    note: RelationTypeDefinition for InstrumentListing; do not reuse isTradedOn (domain mismatch)
+  hasDenominatedCurrency:
+    iri: https://axiolune.ai/ontology/finance/instruments/hasDenominatedCurrency
+    namespace: fin-instruments
+    localName: hasDenominatedCurrency
+    label: Has Denominated Currency
+    definition: relation from a financial instrument to the currency in which it is denominated
+    valueType: https://axiolune.ai/ontology/finance/foundation/Currency
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: references a Currency individual; FIBO FinancialInstrument.isDenominatedIn
+  FinancialInstrument:
+    iri: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+    namespace: fin-instruments
+    localName: FinancialInstrument
+    label: Financial Instrument
+    definition: >-
+      written contract that gives rise to both a financial asset of one entity and a financial liability of another
+      entity, as defined in IAS 32
+    superTypes: []
+    attributeUses:
+      - attribute: https://axiolune.ai/ontology/finance/foundation/hasPrimaryIdentifier
+        minCount: 0
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/instruments/hasDenominatedCurrency
+        minCount: 0
+        maxCount: 1
+    note: Issuer link is RelationType isIssuedBy (Instrument→LegalEntity), not an AttributeUse
+    alignments:
+      - vocabulary: FIBO
+        targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/FinancialInstrument
+        relation: rdfs:subClassOf
+        sourceRelease:
+          vocabulary: FIBO
+          release: local-evidence-bundle
+          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
+          lockRef: fibo-local-evidence
+          claimedReleaseLabel: 2026Q1
+          releaseNote: >-
+            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
+            maturity.
+        rationale: Axiolune Financial instrument is a domain-level subclass of FIBO FinancialInstrument (IAS 32 definition)
+        verification:
+          status: proposed
+  Security:
+    iri: https://axiolune.ai/ontology/finance/instruments/Security
+    namespace: fin-instruments
+    localName: Security
+    label: Security
+    definition: financial instrument that can be bought or sold, as defined in the Securities Exchange Act 1934
+    superTypes:
+      - https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+    attributeUses: []
+    alignments:
+      - vocabulary: FIBO
+        targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/Security
+        relation: rdfs:subClassOf
+        sourceRelease:
+          vocabulary: FIBO
+          release: local-evidence-bundle
+          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
+          lockRef: fibo-local-evidence
+          claimedReleaseLabel: 2026Q1
+          releaseNote: >-
+            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
+            maturity.
+        rationale: Axiolune Security is a domain-level subclass of FIBO Security
+        verification:
+          status: proposed
+  EquitySecurity:
+    iri: https://axiolune.ai/ontology/finance/instruments/EquitySecurity
+    namespace: fin-instruments
+    localName: EquitySecurity
+    label: Equity Security
+    definition: security representing an ownership interest in an entity or pool of assets, as defined in ISO 10962
+    superTypes:
+      - https://axiolune.ai/ontology/finance/instruments/Security
+    attributeUses: []
+    alignments:
+      - vocabulary: FIBO
+        targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/EquityInstrument
+        relation: rdfs:subClassOf
+        sourceRelease:
+          vocabulary: FIBO
+          release: local-evidence-bundle
+          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
+          lockRef: fibo-local-evidence
+          claimedReleaseLabel: 2026Q1
+          releaseNote: >-
+            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
+            maturity.
+        rationale: M2-PLAN uses EquitySecurity; aligned as subclass of FIBO EquityInstrument (ISO 10962)
+        verification:
+          status: proposed
+  SecuritiesOffering:
+    iri: https://axiolune.ai/ontology/finance/instruments/SecuritiesOffering
+    namespace: fin-instruments
+    localName: SecuritiesOffering
+    label: Securities Offering
+    definition: >-
+      offering of a security (or securities) for sale; distinct from the instrument contract and from an exchange
+      listing
+    superTypes: []
+    attributeUses: []
+    alignments:
+      - vocabulary: FIBO
+        targetIri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesIssuance/SecuritiesOffering
+        relation: rdfs:subClassOf
+        sourceRelease:
+          vocabulary: FIBO
+          release: local-evidence
+          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
+          lockRef: fibo-local-evidence
+        rationale: FIBO Listing lists an Offering, not the Instrument directly (SecuritiesListings.rdf)
+        verification:
+          status: proposed
+    note: 'Round-2 FIBO chain: Instrument → Security → SecuritiesOffering → InstrumentListing'
+  listsOffering:
+    iri: https://axiolune.ai/ontology/finance/instruments/listsOffering
+    namespace: fin-instruments
+    localName: listsOffering
+    label: Lists Offering
+    definition: binary relation from an InstrumentListing to the SecuritiesOffering it catalogs on a venue
+    domain: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+    range: https://axiolune.ai/ontology/finance/instruments/SecuritiesOffering
+    note: FIBO Listing.lists → SecuritiesOffering
+  InstrumentListing:
+    iri: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+    namespace: fin-instruments
+    localName: InstrumentListing
+    label: Instrument Listing
+    definition: >-
+      catalog entry for a securities offering managed by an exchange that provides the terms under which that security
+      is made available on that exchange
+    superTypes: []
+    patternBindings:
+      - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+    attributeUses:
+      - attribute: https://axiolune.ai/ontology/finance/instruments/hasTickSize
+        minCount: 0
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/instruments/hasLotSize
+        minCount: 0
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/instruments/hasListingDate
+        minCount: 1
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/instruments/hasDelistingDate
+        minCount: 0
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/instruments/hasDenominatedCurrency
+        minCount: 0
+        maxCount: 1
+    alignments:
+      - vocabulary: FIBO
+        targetIri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/Listing
+        relation: rdfs:subClassOf
+        sourceRelease:
+          vocabulary: FIBO
+          release: local-evidence-bundle
+          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
+          lockRef: fibo-local-evidence
+          claimedReleaseLabel: 2026Q1
+          releaseNote: >-
+            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
+            maturity.
+        rationale: Axiolune InstrumentListing is a domain-level subclass of FIBO Listing
+        verification:
+          status: proposed
+  Issuer:
+    iri: https://axiolune.ai/ontology/finance/instruments/Issuer
+    namespace: fin-instruments
+    localName: Issuer
+    label: Issuer
+    definition: role of a party that issues or proposes to issue in a formal filing one or more financial instruments
+    superTypes: []
+    attributeUses: []
+    alignments:
+      - vocabulary: FIBO
+        targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/Issuer
+        relation: rdfs:subClassOf
+        sourceRelease:
+          vocabulary: FIBO
+          release: local-evidence-bundle
+          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
+          lockRef: fibo-local-evidence
+          claimedReleaseLabel: 2026Q1
+          releaseNote: >-
+            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
+            maturity.
+        rationale: >-
+          Axiolune Issuer is a domain-level subclass of FIBO Issuer, the role of a party that issues financial
+          instruments
+        verification:
+          status: proposed

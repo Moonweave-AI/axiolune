@@ -1,85 +1,156 @@
-# Axiolune M2 Finance — External References Lock
-# Locks external knowledge sources for reproducible builds (M2-PLAN §3.2, §3.4).
-# Each entry fixes the release/commit, license, retrieval date, and artifact digest
-# of an external source used as evidence for M2 concept definitions.
-
+lockVersion: 0.3.0
+updated: '2026-07-31'
+note: >-
+  Round-6: FIBO pinned to observed latest versionIRI date 20260701 (master checkout, not a formal git tag —
+  no .git present). Digest is content-addressed over all 295 RDF ontology artifacts (not documentation),
+  making it reproducible and upgrade-detectable. Zero digests prohibited; paywalled ISO uses
+  sha256:unavailable-paywalled; local evidence uses SHA-256 over listed evidenceFiles.
 references:
-  # ---- FIBO ----
-  - id: "fibo-2026Q1"
-    authority: "EDM Council / OMG"
-    releaseOrCommit: "2026Q1"
-    artifactUrl: "https://github.com/edmcouncil/fibo"
-    artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
-    license: "MIT"
-    retrievalDate: "2026-07-30"
-    maturity: "Release"
-    note: "Version-independent IRIs used as canonical; version-specific IRIs noted per alignment. Commons (cmns-*) definitions referenced via FIBO imports but Commons .rdf sources not in local reference tree."
-    localPath: "docs/meta/reference/ontology-design-reference/fibo/"
-
-  # ---- ISO standards (referenced, not locally stored) ----
-  - id: "iso-6166"
-    authority: "ISO"
-    releaseOrCommit: "ISO 6166:2021"
-    artifactUrl: "https://www.iso.org/standard/78502.html"
-    artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
-    license: "ISO Copyright (paywalled)"
-    retrievalDate: "2026-07-30"
-    note: "ISIN specification; definition referenced from FIBO SEC/SecuritiesIdentification"
-
-  - id: "iso-10383"
-    authority: "ISO"
-    releaseOrCommit: "ISO 10383:2012"
-    artifactUrl: "https://www.iso.org/standard/61140.html"
-    artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
-    license: "ISO Copyright (paywalled)"
-    retrievalDate: "2026-07-30"
-    note: "MIC specification; definition referenced from FIBO FBC/Markets"
-
-  - id: "iso-17442"
-    authority: "ISO / GLEIF"
-    releaseOrCommit: "ISO 17442:2020"
-    artifactUrl: "https://www.iso.org/standard/78829.html"
-    artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
-    license: "ISO Copyright (paywalled)"
-    retrievalDate: "2026-07-30"
-    note: "LEI specification; definition referenced from FIBO BE/LegalEntities/LEIEntities"
-
-  - id: "iso-10962"
-    authority: "ISO"
-    releaseOrCommit: "ISO 10962:2021"
-    artifactUrl: "https://www.iso.org/standard/73690.html"
-    artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
-    license: "ISO Copyright (paywalled)"
-    retrievalDate: "2026-07-30"
-    note: "CFI (Classification of Financial Instruments) specification"
-
-  # ---- Quantitative trading system references (implementation evidence) ----
-  - id: "nautilus-trader"
-    authority: "Nautech Systems"
-    releaseOrCommit: "v1.195.0"
-    artifactUrl: "https://github.com/nautechsystems/nautilus_trader"
-    artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
-    license: "LGPL-3.0"
-    retrievalDate: "2026-07-30"
-    note: "Instrument hierarchy (19 types), order FSM (15 states), event-sourced positions. Used as implementation evidence, not canonical ontology source."
-    localPath: "docs/meta/reference/project-reference/nautilus_trader/"
-
-  - id: "lean"
-    authority: "QuantConnect"
-    releaseOrCommit: "master"
-    artifactUrl: "https://github.com/QuantConnect/Lean"
-    artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
-    license: "Apache-2.0"
-    retrievalDate: "2026-07-30"
-    note: "SecurityType enum (12 types), Greeks, combo orders. Implementation evidence only."
-    localPath: "docs/meta/reference/project-reference/Lean/"
-
-  - id: "qlib"
-    authority: "Microsoft"
-    releaseOrCommit: "master"
-    artifactUrl: "https://github.com/microsoft/qlib"
-    artifactDigest: "sha256:0000000000000000000000000000000000000000000000000000000000000000"
-    license: "MIT"
-    retrievalDate: "2026-07-30"
-    note: "PITProvider (period-time vs observation-time), Expression DSL. Implementation evidence only."
-    localPath: "docs/meta/reference/project-reference/qlib/"
+  - id: fibo-local-evidence
+    authority: EDM Council / OMG
+    releaseOrCommit: master-checkout (latest observed versionIRI 20260701; no formal git tag — no .git present)
+    pinnedVersionIRI: 'https://spec.edmcouncil.org/fibo/ontology/20260701'
+    artifactUrl: https://github.com/edmcouncil/fibo
+    license: MIT
+    retrievalDate: '2026-07-30'
+    maturity: local-evidence-bundle-rdf
+    importPolicy: linked-data-alignment
+    note: >-
+      FinRegOnt/Axiolune policy: do NOT owl:imports AboutFIBO wholesale in development. Use ext-fibo-release-* adapter
+      when formal import is required. Digest below is over all 295 RDF ontology files (owl:versionIRI-bearing),
+      not just the 6 documentation/evidence files listed; see evidenceFiles for human-readable subset.
+    localPath: reference/ontology-design-reference/fibo/
+    evidenceFiles:
+      - reference/ontology-design-reference/fibo/ONTOLOGY_GUIDE.md
+      - reference/ontology-design-reference/fibo/CONTRIBUTING.md
+      - reference/ontology-design-reference/fibo/SEC/Securities/SecuritiesListings.rdf
+      - reference/ontology-design-reference/fibo/SEC/Securities/SecuritiesIssuance.rdf
+      - reference/ontology-design-reference/fibo/FBC/FinancialInstruments/FinancialInstruments.rdf
+      - reference/ontology-design-reference/fibo/FBC/FinancialInstruments/InstrumentPricing.rdf
+    artifactDigest: sha256:d1d266a238c45606e4f495c8c6c840ec67907e6696627f35dd1564305158a7cf
+    artifactDigestScope: all 295 *.rdf files under localPath (content-addressed ontology bundle, sorted by path)
+  - id: finregont-fibo-import-pattern
+    authority: FinRegOnt
+    releaseOrCommit: local-checkout
+    artifactUrl: https://github.com/edmcouncil (pattern reference)
+    license: see local tree
+    retrievalDate: '2026-07-30'
+    note: >-
+      Documents conditional FIBO import swap: ALL for development vs harness for production. Axiolune follows selective
+      alignment, not ALL import.
+    localPath: reference/ontology-design-reference/FinRegOnt/
+    evidenceFiles:
+      - reference/ontology-design-reference/FinRegOnt/ref/FIBO_import.ttl
+    artifactDigest: sha256:f73529aa50b10ba9b4358c6c174a053adac6d783581b9cf282e12e30e46f471e
+  - id: bian-payment-order-sample
+    authority: BIAN
+    releaseOrCommit: local-checkout
+    artifactUrl: https://bian.org/
+    license: see BIAN terms
+    retrievalDate: '2026-07-30'
+    note: Service-domain CSV sample (PaymentOrder) for banking service taxonomy reference-only.
+    localPath: reference/ontology-design-reference/BIAN/PaymentOrder/
+    evidenceFiles:
+      - reference/ontology-design-reference/BIAN/PaymentOrder/PaymentOrderServiceOperations.csv
+      - reference/ontology-design-reference/BIAN/PaymentOrder/PaymentOrderSpecification.csv
+    artifactDigest: sha256:2576503bfa95f5fe80b07dbf7a69a43012087a82360ee8cb60878016ddead8c7
+  - id: iso-6166
+    authority: ISO
+    releaseOrCommit: ISO 6166:2021
+    artifactUrl: https://www.iso.org/standard/78502.html
+    artifactDigest: sha256:unavailable-paywalled
+    license: ISO Copyright (paywalled)
+    retrievalDate: '2026-07-30'
+    note: >-
+      ISIN; definition evidenced via FIBO SEC/SecuritiesIdentification + local fibo RDF. Digest unavailable until
+      licensed artifact stored.
+  - id: iso-10383
+    authority: ISO
+    releaseOrCommit: ISO 10383:2012
+    artifactUrl: https://www.iso.org/obp/ui/en/
+    artifactDigest: sha256:unavailable-paywalled
+    license: ISO Copyright (paywalled)
+    retrievalDate: '2026-07-30'
+    note: MIC; evidenced via FIBO FBC/Markets.
+  - id: iso-17442
+    authority: ISO / GLEIF
+    releaseOrCommit: ISO 17442:2020
+    artifactUrl: https://www.iso.org/standard/78829.html
+    artifactDigest: sha256:unavailable-paywalled
+    license: ISO Copyright (paywalled)
+    retrievalDate: '2026-07-30'
+    note: LEI; evidenced via FIBO BE/LEIEntities + GLEIF public materials.
+  - id: iso-10962
+    authority: ISO
+    releaseOrCommit: ISO 10962:2021
+    artifactUrl: https://www.iso.org/standard/73690.html
+    artifactDigest: sha256:unavailable-paywalled
+    license: ISO Copyright (paywalled)
+    retrievalDate: '2026-07-30'
+    note: CFI classification.
+  - id: nautilus-trader
+    authority: Nautech Systems
+    releaseOrCommit: local-checkout
+    artifactUrl: https://github.com/nautechsystems/nautilus_trader
+    license: LGPL-3.0
+    retrievalDate: '2026-07-30'
+    note: OrderStatus includes PendingUpdate/PendingCancel; OrderEventAny is event-log model. Implementation evidence only.
+    localPath: reference/project-reference/nautilus_trader/
+    evidenceFiles:
+      - reference/project-reference/nautilus_trader/crates/model/src/enums.rs
+      - reference/project-reference/nautilus_trader/crates/model/src/events/order/any.rs
+    artifactDigest: sha256:63e3aa76ce6fdf8b26372d7ffd39421c6ba9392fd773f7d40c154bf381ed6b62
+  - id: lean
+    authority: QuantConnect
+    releaseOrCommit: local-checkout
+    artifactUrl: https://github.com/QuantConnect/Lean
+    license: Apache-2.0
+    retrievalDate: '2026-07-30'
+    note: OrderStatus has CancelPending/UpdateSubmitted; OrderEvent carries Status. Implementation evidence only.
+    localPath: reference/project-reference/Lean/
+    evidenceFiles:
+      - reference/project-reference/Lean/Common/Orders/OrderTypes.cs
+      - reference/project-reference/Lean/Common/Orders/OrderEvent.cs
+    artifactDigest: sha256:a14cf492b31fab2928ba6767c3f22f2c86b489b0b89adcd80f3451db41d2f1db
+  - id: qlib
+    authority: Microsoft
+    releaseOrCommit: local-checkout
+    artifactUrl: https://github.com/microsoft/qlib
+    license: MIT
+    retrievalDate: '2026-07-30'
+    note: >-
+      PIT is (publication date, period, value, _next) revision chain — distinct from market-data three-axis bar PIT.
+      Informs FactorObservation design.
+    localPath: reference/project-reference/qlib/
+    evidenceFiles:
+      - reference/project-reference/qlib/docs/advanced/PIT.rst
+      - reference/project-reference/qlib/qlib/data/data.py
+      - reference/project-reference/qlib/qlib/utils/__init__.py
+    artifactDigest: sha256:4e1742b60eafe9dba83182e8effbd418d632115425e84c4f48dfaca155369a21
+  - id: rqalpha
+    authority: Ricequant
+    releaseOrCommit: local-checkout
+    artifactUrl: https://github.com/ricequant/rqalpha
+    license: Apache-2.0 (non-commercial clause — check)
+    retrievalDate: '2026-07-30'
+    note: >-
+      stock_t1 / price_limits / close_today are runtime behaviors → model as RuleApplicability facts, not static venue
+      attributes.
+    localPath: reference/project-reference/rqalpha/
+    evidenceFiles:
+      - reference/project-reference/rqalpha/rqalpha/mod/rqalpha_mod_sys_accounts/__init__.py
+      - reference/project-reference/rqalpha/rqalpha/utils/price_limits.py
+      - reference/project-reference/rqalpha/rqalpha/portfolio/position.py
+    artifactDigest: sha256:6e5049e7ebe720bc2a73646c2bd98714a5b1dad6ad0c1e9d735cf5d78a1fc15f
+  - id: vnpy
+    authority: vn.py
+    releaseOrCommit: local-checkout
+    artifactUrl: https://github.com/vnpy/vnpy
+    license: MIT
+    retrievalDate: '2026-07-30'
+    note: Offset.CLOSETODAY + SHFE/INE split; backtest limit-up/down. RuleApplicability evidence.
+    localPath: reference/project-reference/vnpy/
+    evidenceFiles:
+      - reference/project-reference/vnpy/vnpy/trader/constant.py
+      - reference/project-reference/vnpy/vnpy/trader/converter.py
+    artifactDigest: sha256:ee6eb1aa46e159c80f6e622f8b4406833840467926fe5b4446e41866fed347fa

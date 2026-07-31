@@ -1,0 +1,227 @@
+module:
+  moduleIri: https://axiolune.ai/ontology/finance/market-rules
+  baseIri: https://axiolune.ai/ontology/finance/market-rules/
+  preferredPrefix: fin-market-rules
+  version: 0.2.0
+  label: Market Rules
+  definition: >-
+    trading, settlement, and admission rules with scoped applicability, versioning, and temporal validity that govern
+    how instruments are traded on venues
+  imports:
+    - moduleIri: https://axiolune.ai/ontology/finance/foundation
+      version: 0.1.0
+      artifactDigest: sha256:e64d6782499a636bb016bed59056cbcffef160c9ad43d78ff93a479285998295
+      importMode: All
+    - moduleIri: https://axiolune.ai/ontology/finance/market-structure
+      version: 0.1.0
+      artifactDigest: sha256:53ad88cebb3a0525721bcbe8620cc49fae1cd051511df395b7212e0b283d9d7e
+      importMode: All
+  exports: []
+  status: approved
+domain:
+  RuleType:
+    iri: https://axiolune.ai/ontology/finance/market-rules/RuleType
+    namespace: fin-market-rules
+    localName: RuleType
+    label: Rule Type
+    definition: controlled vocabulary of market rule types governing trading and settlement behavior
+    values:
+      - PriceLimit
+      - TickSchedule
+      - LotSchedule
+      - SettlementCycle
+      - TradingHours
+      - MarginRequirement
+      - PositionLimit
+      - ShortSellingRestriction
+      - CircuitBreaker
+      - CloseTodayOffset
+      - TPlusTradingRestriction
+    version: 0.1.0
+    maintainer: Axiolune
+    vocabulary: https://axiolune.ai/ontology/finance/market-rules/RuleType
+    note: >-
+      Axiolune-native code list. CloseTodayOffset / TPlusTradingRestriction added Round-2 from vnpy Offset.CLOSETODAY
+      and rqalpha stock_t1 — expressed as RuleApplicability facts, not static Venue attributes.
+  RuleLifecycleStatus:
+    iri: https://axiolune.ai/ontology/finance/market-rules/RuleLifecycleStatus
+    namespace: fin-market-rules
+    localName: RuleLifecycleStatus
+    label: Rule Lifecycle Status
+    definition: controlled vocabulary of lifecycle states for a market rule applicability binding
+    values:
+      - active
+      - superseded
+      - expired
+      - proposed
+    version: 0.1.0
+    maintainer: Axiolune
+    vocabulary: https://axiolune.ai/ontology/finance/market-rules/RuleLifecycleStatus
+    note: Axiolune-native code list
+  InstrumentClass:
+    iri: https://axiolune.ai/ontology/finance/market-rules/InstrumentClass
+    namespace: fin-market-rules
+    localName: InstrumentClass
+    label: Instrument Class
+    definition: controlled vocabulary of broad instrument classes used for rule scoping
+    values:
+      - Equity
+      - Bond
+      - Future
+      - Option
+      - Swap
+      - Fund
+      - Commodity
+    version: 0.1.0
+    maintainer: Axiolune
+    vocabulary: https://axiolune.ai/ontology/finance/market-rules/InstrumentClass
+    note: Axiolune-native code list for rule applicability scoping
+  hasRuleType:
+    iri: https://axiolune.ai/ontology/finance/market-rules/hasRuleType
+    namespace: fin-market-rules
+    localName: hasRuleType
+    label: Has Rule Type
+    definition: relation from a market rule to its type classification from the RuleType code list
+    valueType: codelist
+    codeListReference: RuleType
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+  hasRuleParameterValue:
+    iri: https://axiolune.ai/ontology/finance/market-rules/hasRuleParameterValue
+    namespace: fin-market-rules
+    localName: hasRuleParameterValue
+    label: Has Rule Parameter Value
+    definition: relation from a market rule to its primary parameter value (e.g. 0.10 for a 10% price limit, 1 for T+1 settlement)
+    valueType: https://axiolune.ai/ontology/finance/foundation/QuantityValue
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+  hasRuleParameterUnit:
+    iri: https://axiolune.ai/ontology/finance/market-rules/hasRuleParameterUnit
+    namespace: fin-market-rules
+    localName: hasRuleParameterUnit
+    label: Has Rule Parameter Unit
+    definition: relation from a market rule to the unit of its parameter value (e.g. percent, days, shares)
+    valueType: string
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+  hasRuleSource:
+    iri: https://axiolune.ai/ontology/finance/market-rules/hasRuleSource
+    namespace: fin-market-rules
+    localName: hasRuleSource
+    label: Has Rule Source
+    definition: relation from a market rule to the authority or document that established it
+    valueType: string
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: e.g. exchange notice, regulatory filing
+  hasRuleRevision:
+    iri: https://axiolune.ai/ontology/finance/market-rules/hasRuleRevision
+    namespace: fin-market-rules
+    localName: hasRuleRevision
+    label: Has Rule Revision
+    definition: relation from a market rule to its revision number or version identifier
+    valueType: string
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+  hasLifecycleStatus:
+    iri: https://axiolune.ai/ontology/finance/market-rules/hasLifecycleStatus
+    namespace: fin-market-rules
+    localName: hasLifecycleStatus
+    label: Has Lifecycle Status
+    definition: relation from a rule applicability to its lifecycle status from the RuleLifecycleStatus code list
+    valueType: codelist
+    codeListReference: RuleLifecycleStatus
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+  appliesToInstrumentClass:
+    iri: https://axiolune.ai/ontology/finance/market-rules/appliesToInstrumentClass
+    namespace: fin-market-rules
+    localName: appliesToInstrumentClass
+    label: Applies To Instrument Class
+    definition: relation from a rule applicability to the instrument class it applies to
+    valueType: codelist
+    codeListReference: InstrumentClass
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: references an InstrumentClass code list value; null = applies to all classes
+  MarketRule:
+    iri: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+    namespace: fin-market-rules
+    localName: MarketRule
+    label: Market Rule
+    definition: >-
+      named trading or settlement rule that governs how instruments are traded, matched, or settled on a trading venue,
+      with a rule type, parameter value, unit, source, and revision
+    superTypes: []
+    attributeUses:
+      - attribute: https://axiolune.ai/ontology/finance/market-rules/hasRuleType
+        minCount: 1
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/market-rules/hasRuleParameterValue
+        minCount: 0
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/market-rules/hasRuleParameterUnit
+        minCount: 0
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/market-rules/hasRuleSource
+        minCount: 0
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/market-rules/hasRuleRevision
+        minCount: 0
+        maxCount: 1
+    note: >-
+      Axiolune-native; FIBO has no MarketRule class. T+1, price limits, tick schedules, settlement cycles are instances
+      of MarketRule bound to venues/segments/instruments via RuleApplicability.
+  SettlementConvention:
+    iri: https://axiolune.ai/ontology/finance/market-rules/SettlementConvention
+    namespace: fin-market-rules
+    localName: SettlementConvention
+    label: Settlement Convention
+    definition: market rule that defines the standard settlement cycle (e.g. T+1, T+2) for trades executed on a venue
+    superTypes:
+      - https://axiolune.ai/ontology/finance/market-rules/MarketRule
+    attributeUses: []
+    note: Axiolune-native; parameter value = N (days), unit = 'days'. E.g. T+1 = parameterValue 1, unit 'days'.
+  RuleApplicability:
+    iri: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability
+    namespace: fin-market-rules
+    localName: RuleApplicability
+    label: Rule Applicability
+    definition: >-
+      association that binds a market rule to a specific scope defined by venue, market segment, instrument class,
+      and/or investor category, with valid-time and knowledge-time intervals, source, revision, and lifecycle status
+    participantRoles:
+      - roleName: appliesRule
+        range: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+        minCount: 1
+        maxCount: 1
+        roleIri: https://axiolune.ai/ontology/finance/market-rules/appliesRule
+        label: applies rule
+        definition: the market rule being scoped by this applicability fact
+      - roleName: scopedToVenue
+        range: https://axiolune.ai/ontology/finance/market-structure/TradingVenue
+        minCount: 0
+        maxCount: 1
+        roleIri: https://axiolune.ai/ontology/finance/market-rules/scopedToVenue
+        label: scoped to venue
+        definition: optional venue scope (null = all venues in higher policy)
+    attributeUses:
+      - attribute: https://axiolune.ai/ontology/finance/market-rules/appliesToInstrumentClass
+        minCount: 0
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/market-rules/hasLifecycleStatus
+        minCount: 1
+        maxCount: 1
+    note: >-
+      Binds a MarketRule to a scope with temporal validity. T+1 / price-limit / close-today are instances of this
+      association (rqalpha/vnpy evidence), not parallel ChinaEquity ontologies.
+    patternBindings:
+      - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+      - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact

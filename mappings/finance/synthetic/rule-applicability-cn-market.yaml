@@ -1,0 +1,66 @@
+# Synthetic RuleApplicability instances (Round-2)
+# Evidence: rqalpha stock_t1 / price_limits; vnpy CLOSETODAY — as facts, not venue attributes.
+
+fixtures:
+  - id: rule-app-tplus1-equity-xshg
+    description: "A-share equity T+1 trading restriction scoped to XSHG equity class"
+    type: "https://axiolune.ai/ontology/finance/market-rules/RuleApplicability"
+    instance:
+      iri: "https://axiolune.ai/data/rules/app-tplus1-xshg-equity"
+      appliesRule: "https://axiolune.ai/data/rules/rule-tplus1-equity"
+      scopedToVenue: "https://axiolune.ai/data/venues/XSHG"
+      appliesToInstrumentClass: "Equity"
+      hasLifecycleStatus: "active"
+      validFrom: "2023-01-01T00:00:00Z"
+      knowledgeFrom: "2023-01-01T00:00:00Z"
+      availableFrom: "2023-01-01T00:00:00Z"
+      source: "rqalpha-stock_t1-evidence"
+    expectedResult: "accepted"
+    note: "rqalpha mod config stock_t1:True → RuleApplicability fact"
+
+  - id: rule-app-price-limit-10pct
+    description: "10% daily price limit applicability for main-board equity"
+    type: "https://axiolune.ai/ontology/finance/market-rules/RuleApplicability"
+    instance:
+      iri: "https://axiolune.ai/data/rules/app-limit-10-xshg"
+      appliesRule: "https://axiolune.ai/data/rules/rule-price-limit-10pct"
+      scopedToVenue: "https://axiolune.ai/data/venues/XSHG"
+      appliesToInstrumentClass: "Equity"
+      hasLifecycleStatus: "active"
+      validFrom: "2020-01-01T00:00:00Z"
+      knowledgeFrom: "2020-01-01T00:00:00Z"
+      availableFrom: "2020-01-01T00:00:00Z"
+      source: "rqalpha-price_limits-evidence"
+    expectedResult: "accepted"
+
+  - id: rule-app-close-today-shfe
+    description: "SHFE/INE close-today offset requirement"
+    type: "https://axiolune.ai/ontology/finance/market-rules/RuleApplicability"
+    instance:
+      iri: "https://axiolune.ai/data/rules/app-closetoday-shfe"
+      appliesRule: "https://axiolune.ai/data/rules/rule-close-today-offset"
+      scopedToVenue: "https://axiolune.ai/data/venues/SHFE"
+      appliesToInstrumentClass: "Future"
+      hasLifecycleStatus: "active"
+      validFrom: "2015-01-01T00:00:00Z"
+      knowledgeFrom: "2015-01-01T00:00:00Z"
+      availableFrom: "2015-01-01T00:00:00Z"
+      source: "vnpy-converter-closetoday-evidence"
+    expectedResult: "accepted"
+    note: "vnpy Offset.CLOSETODAY + SHFE/INE split close"
+
+rules:
+  - iri: "https://axiolune.ai/data/rules/rule-tplus1-equity"
+    type: "https://axiolune.ai/ontology/finance/market-rules/SettlementConvention"
+    hasRuleType: "TPlusTradingRestriction"
+    hasRuleParameterValue: "1"
+    hasRuleParameterUnit: "days"
+  - iri: "https://axiolune.ai/data/rules/rule-price-limit-10pct"
+    type: "https://axiolune.ai/ontology/finance/market-rules/MarketRule"
+    hasRuleType: "PriceLimit"
+    hasRuleParameterValue: "0.10"
+    hasRuleParameterUnit: "percent"
+  - iri: "https://axiolune.ai/data/rules/rule-close-today-offset"
+    type: "https://axiolune.ai/ontology/finance/market-rules/MarketRule"
+    hasRuleType: "CloseTodayOffset"
+    hasRuleParameterUnit: "offset-enum"

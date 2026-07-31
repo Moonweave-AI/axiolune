@@ -25,12 +25,12 @@ echo ""
 mkdir -p "${RELEASE_DIR}"/{modules,owl,shacl,evidence/terminology,evidence/competency-questions,evidence/alignments,tests/fixtures/positive,tests/fixtures/negative,tests/reports,docs}
 
 echo "1. Copying module sources..."
-for module_dir in ontology/m2/finance/*/; do
+for module_dir in ontology/domain/finance/*/; do
   if [ -f "${module_dir}module.yaml" ]; then
     module_name=$(basename "$module_dir")
     mkdir -p "${RELEASE_DIR}/modules/${module_name}"
     cp "${module_dir}module.yaml" "${RELEASE_DIR}/modules/${module_name}/"
-    echo "  âœ“ ${module_name}"
+    echo "  âœ?${module_name}"
   fi
 done
 
@@ -38,14 +38,14 @@ echo ""
 echo "2. Copying generated OWL ontologies..."
 find generated/ontology/finance -name "*.owl.ttl" | while read -r owl_file; do
   cp "$owl_file" "${RELEASE_DIR}/owl/"
-  echo "  âœ“ $(basename "$owl_file")"
+  echo "  âœ?$(basename "$owl_file")"
 done
 
 echo ""
 echo "3. Copying generated SHACL shapes..."
 find generated/ontology/finance -name "*.shacl.ttl" | while read -r shacl_file; do
   cp "$shacl_file" "${RELEASE_DIR}/shacl/"
-  echo "  âœ“ $(basename "$shacl_file")"
+  echo "  âœ?$(basename "$shacl_file")"
 done
 
 echo ""
@@ -53,18 +53,18 @@ echo "4. Copying evidence artifacts..."
 if [ -d "docs/ontology/terminology" ]; then
   cp docs/ontology/terminology/*.yaml "${RELEASE_DIR}/evidence/terminology/" 2>/dev/null || true
   TERM_COUNT=$(ls -1 "${RELEASE_DIR}/evidence/terminology/" 2>/dev/null | wc -l)
-  echo "  âœ“ ${TERM_COUNT} terminology cards"
+  echo "  âœ?${TERM_COUNT} terminology cards"
 fi
 
 if [ -d "docs/ontology/competency-questions" ]; then
   cp docs/ontology/competency-questions/*.yaml "${RELEASE_DIR}/evidence/competency-questions/" 2>/dev/null || true
   CQ_COUNT=$(ls -1 "${RELEASE_DIR}/evidence/competency-questions/" 2>/dev/null | wc -l)
-  echo "  âœ“ ${CQ_COUNT} competency questions"
+  echo "  âœ?${CQ_COUNT} competency questions"
 fi
 
 if [ -f "docs/ontology/references.lock.yaml" ]; then
   cp docs/ontology/references.lock.yaml "${RELEASE_DIR}/evidence/"
-  echo "  âœ“ references.lock.yaml"
+  echo "  âœ?references.lock.yaml"
 fi
 
 echo ""
@@ -72,13 +72,13 @@ echo "5. Copying test fixtures..."
 if [ -d "tests/m2/fixtures/positive" ]; then
   cp tests/m2/fixtures/positive/*.yaml "${RELEASE_DIR}/tests/fixtures/positive/" 2>/dev/null || true
   POS_COUNT=$(ls -1 "${RELEASE_DIR}/tests/fixtures/positive/" 2>/dev/null | wc -l)
-  echo "  âœ“ ${POS_COUNT} positive fixtures"
+  echo "  âœ?${POS_COUNT} positive fixtures"
 fi
 
 if [ -d "tests/m2/fixtures/negative" ]; then
   cp tests/m2/fixtures/negative/*.yaml "${RELEASE_DIR}/tests/fixtures/negative/" 2>/dev/null || true
   NEG_COUNT=$(ls -1 "${RELEASE_DIR}/tests/fixtures/negative/" 2>/dev/null | wc -l)
-  echo "  âœ“ ${NEG_COUNT} negative fixtures"
+  echo "  âœ?${NEG_COUNT} negative fixtures"
 fi
 
 echo ""
@@ -92,7 +92,7 @@ echo "7. Copying digests..."
 cp "${RELEASE_DIR}/digests.txt" "${RELEASE_DIR}/digests.txt.bak" 2>/dev/null || true
 
 echo ""
-echo "âœ“ Release bundle complete: ${RELEASE_DIR}"
+echo "âœ?Release bundle complete: ${RELEASE_DIR}"
 echo ""
 echo "Contents:"
 echo "  Modules: $(ls -1 ${RELEASE_DIR}/modules | wc -l) directories"

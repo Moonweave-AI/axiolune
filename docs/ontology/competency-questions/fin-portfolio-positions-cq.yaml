@@ -4,14 +4,14 @@
 # Reference: M2-PLAN.md §6.2 (Slice A CQs)
 # Method: Grüninger & Fox (1995) competency-question driven ontology design
 
-competency_questions:
+cqs:
   - id: CQ-PP1
-    question: "What accounts exist in the system and what are their types?"
-    businessContext: "Account enumeration and classification for authorization, reporting, and reconciliation"
+    question: What accounts exist in the system and what are their types?
+    businessContext: Account enumeration and classification for authorization, reporting, and reconciliation
     scopeConstraints:
-      - "limited to accounts that have been materialized and are queryable"
-      - "account type must be from the controlled AccountType vocabulary"
-    expectedResult: "list of Account IRIs with their identifiers and account types"
+      - limited to accounts that have been materialized and are queryable
+      - account type must be from the controlled AccountType vocabulary
+    expectedResult: list of Account IRIs with their identifiers and account types
     queryPattern: |
       SELECT ?account ?accountId ?accountType
       WHERE {
@@ -20,19 +20,18 @@ competency_questions:
                  fin-portfolio:hasAccountType ?accountType .
       }
     dependsOnElements:
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/Account"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/hasAccountIdentifier"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/hasAccountType"
-    riskLevel: "low"
-    status: "active"
-
+      - https://axiolune.ai/ontology/finance/portfolio-positions/Account
+      - https://axiolune.ai/ontology/finance/portfolio-positions/hasAccountIdentifier
+      - https://axiolune.ai/ontology/finance/portfolio-positions/hasAccountType
+    riskLevel: low
+    status: active
   - id: CQ-PP2
-    question: "What portfolios exist and who manages them?"
-    businessContext: "Portfolio inventory for performance tracking, risk aggregation, and management reporting"
+    question: What portfolios exist and who manages them?
+    businessContext: Portfolio inventory for performance tracking, risk aggregation, and management reporting
     scopeConstraints:
-      - "limited to portfolios that have been materialized"
-      - "manager relationship may be absent if not yet modeled"
-    expectedResult: "list of Portfolio IRIs with their identifiers, names, and optional manager relationships"
+      - limited to portfolios that have been materialized
+      - manager relationship may be absent if not yet modeled
+    expectedResult: list of Portfolio IRIs with their identifiers, names, and optional manager relationships
     queryPattern: |
       SELECT ?portfolio ?portfolioId ?portfolioName
       WHERE {
@@ -41,22 +40,27 @@ competency_questions:
         OPTIONAL { ?portfolio fin-portfolio:hasPortfolioName ?portfolioName . }
       }
     dependsOnElements:
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/hasPortfolioIdentifier"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/hasPortfolioName"
-    riskLevel: "low"
-    status: "active"
-
+      - https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
+      - https://axiolune.ai/ontology/finance/portfolio-positions/hasPortfolioIdentifier
+      - https://axiolune.ai/ontology/finance/portfolio-positions/hasPortfolioName
+    riskLevel: low
+    status: active
   - id: CQ-S3
-    question: "At a specified three-axis as-of time (validTime, knowledgeTime, availabilityTime), what instruments does a portfolio hold and in what quantities?"
-    businessContext: "Point-in-time portfolio composition query for historical analysis, compliance reporting, and backtesting; must not leak future knowledge or unavailable data"
+    question: >-
+      At a specified three-axis as-of time (validTime, knowledgeTime, availabilityTime), what instruments does a
+      portfolio hold and in what quantities?
+    businessContext: >-
+      Point-in-time portfolio composition query for historical analysis, compliance reporting, and backtesting; must not
+      leak future knowledge or unavailable data
     scopeConstraints:
-      - "must enforce all three temporal axes per ADR-012"
-      - "validFrom <= asOfValid < validTo (or validTo is unbounded)"
-      - "knowledgeFrom <= asOfKnowledge < knowledgeTo (or knowledgeTo is unbounded)"
-      - "availableFrom <= asOfAvailable (fail-closed if availableFrom missing)"
-      - "must reject snapshots that violate any temporal constraint"
-    expectedResult: "list of (instrument IRI, quantity, position side, currency) tuples for holdings that satisfy all three-axis constraints; empty list if no holdings satisfy constraints or if future data would leak"
+      - must enforce all three temporal axes per ADR-012
+      - validFrom <= asOfValid < validTo (or validTo is unbounded)
+      - knowledgeFrom <= asOfKnowledge < knowledgeTo (or knowledgeTo is unbounded)
+      - availableFrom <= asOfAvailable (fail-closed if availableFrom missing)
+      - must reject snapshots that violate any temporal constraint
+    expectedResult: >-
+      list of (instrument IRI, quantity, position side, currency) tuples for holdings that satisfy all three-axis
+      constraints; empty list if no holdings satisfy constraints or if future data would leak
     queryPattern: |
       SELECT ?instrument ?quantity ?positionSide ?currency
       WHERE {
@@ -83,38 +87,43 @@ competency_questions:
         FILTER(?portfolio = ?portfolioIri)
       }
     dependsOnElements:
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/heldInPortfolio"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/heldInstrument"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/hasQuantity"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/hasPositionSide"
-      - "https://axiolune.ai/ontology/meta/patterns/TemporalFact"
+      - https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
+      - https://axiolune.ai/ontology/finance/portfolio-positions/heldInPortfolio
+      - https://axiolune.ai/ontology/finance/portfolio-positions/heldInstrument
+      - https://axiolune.ai/ontology/finance/portfolio-positions/hasQuantity
+      - https://axiolune.ai/ontology/finance/portfolio-positions/hasPositionSide
+      - https://axiolune.ai/ontology/meta/patterns/TemporalFact
     testFixtures:
-      - fixture: "portfolio-positive-001"
-        description: "single holding snapshot within valid three-axis window"
-        expectedOutcome: "returns holding"
-      - fixture: "portfolio-negative-001"
-        description: "holding snapshot with asOfValid before validFrom"
-        expectedOutcome: "returns empty (temporal constraint violation)"
-      - fixture: "portfolio-negative-002"
-        description: "holding snapshot with asOfKnowledge before knowledgeFrom"
-        expectedOutcome: "returns empty (knowledge not yet available)"
-      - fixture: "portfolio-negative-003"
-        description: "holding snapshot with asOfAvailable before availableFrom"
-        expectedOutcome: "returns empty (data not yet available, prevents look-ahead bias)"
-    riskLevel: "high"
-    status: "active"
-    mapsToSliceA: "CQ-S3"
-
+      - fixture: portfolio-positive-001
+        description: single holding snapshot within valid three-axis window
+        expectedOutcome: returns holding
+      - fixture: portfolio-negative-001
+        description: holding snapshot with asOfValid before validFrom
+        expectedOutcome: returns empty (temporal constraint violation)
+      - fixture: portfolio-negative-002
+        description: holding snapshot with asOfKnowledge before knowledgeFrom
+        expectedOutcome: returns empty (knowledge not yet available)
+      - fixture: portfolio-negative-003
+        description: holding snapshot with asOfAvailable before availableFrom
+        expectedOutcome: returns empty (data not yet available, prevents look-ahead bias)
+    riskLevel: high
+    status: active
+    mapsToSliceA: CQ-S3
   - id: CQ-S4
-    question: "For a given portfolio valuation, which specific price observations were used to compute the market value of each holding, and what is the full traceability chain from price to valuation?"
-    businessContext: "Valuation audit trail for regulatory compliance, performance attribution, and dispute resolution; must demonstrate that valuations used only historically-available prices"
+    question: >-
+      For a given portfolio valuation, which specific price observations were used to compute the market value of each
+      holding, and what is the full traceability chain from price to valuation?
+    businessContext: >-
+      Valuation audit trail for regulatory compliance, performance attribution, and dispute resolution; must demonstrate
+      that valuations used only historically-available prices
     scopeConstraints:
-      - "valuation must reference exactly one HoldingSnapshot"
-      - "valuation must reference exactly one PriceObservation via usedPriceObservation"
-      - "price observation's availableFrom must be <= valuation's asOfAvailable (no future price leakage)"
-      - "price observation's instrument must match holding's instrument"
-    expectedResult: "list of (holding IRI, instrument IRI, price value, price currency, price availableFrom, valuation market value, valuation currency, valuation method) tuples demonstrating complete price-to-valuation traceability"
+      - valuation must reference exactly one HoldingSnapshot
+      - valuation must reference exactly one PriceObservation via usedPriceObservation
+      - price observation's availableFrom must be <= valuation's asOfAvailable (no future price leakage)
+      - price observation's instrument must match holding's instrument
+    expectedResult: >-
+      list of (holding IRI, instrument IRI, price value, price currency, price availableFrom, valuation market value,
+      valuation currency, valuation method) tuples demonstrating complete price-to-valuation traceability
     queryPattern: |
       SELECT ?holding ?instrument ?priceValue ?priceCurrency ?priceAvailableFrom
              ?marketValue ?valuationCurrency ?valuationMethod
@@ -140,37 +149,36 @@ competency_questions:
         FILTER(?priceAvailableFrom <= ?valuationAvailableFrom)  # no future price leakage
       }
     dependsOnElements:
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/valuedHolding"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/usedPriceObservation"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/hasMarketValue"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/hasValuationMethod"
-      - "https://axiolune.ai/ontology/finance/market-data/PriceObservation"
-      - "https://axiolune.ai/ontology/finance/market-data/observedInstrument"
-      - "https://axiolune.ai/ontology/finance/market-data/hasPriceValue"
-      - "https://axiolune.ai/ontology/meta/patterns/TemporalFact"
+      - https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation
+      - https://axiolune.ai/ontology/finance/portfolio-positions/valuedHolding
+      - https://axiolune.ai/ontology/finance/portfolio-positions/usedPriceObservation
+      - https://axiolune.ai/ontology/finance/portfolio-positions/hasMarketValue
+      - https://axiolune.ai/ontology/finance/portfolio-positions/hasValuationMethod
+      - https://axiolune.ai/ontology/finance/market-data/PriceObservation
+      - https://axiolune.ai/ontology/finance/market-data/observedInstrument
+      - https://axiolune.ai/ontology/finance/market-data/hasPriceValue
+      - https://axiolune.ai/ontology/meta/patterns/TemporalFact
     testFixtures:
-      - fixture: "valuation-positive-001"
-        description: "valuation with valid price reference (price available before valuation)"
-        expectedOutcome: "returns complete traceability chain"
-      - fixture: "valuation-negative-001"
-        description: "valuation using price with availableFrom > valuation's asOfAvailable"
-        expectedOutcome: "returns empty or fails constraint (future price leakage detected)"
-      - fixture: "valuation-negative-002"
-        description: "valuation referencing price for different instrument"
-        expectedOutcome: "returns empty or fails constraint (instrument mismatch)"
-    riskLevel: "high"
-    status: "active"
-    mapsToSliceA: "CQ-S4"
-
+      - fixture: valuation-positive-001
+        description: valuation with valid price reference (price available before valuation)
+        expectedOutcome: returns complete traceability chain
+      - fixture: valuation-negative-001
+        description: valuation using price with availableFrom > valuation's asOfAvailable
+        expectedOutcome: returns empty or fails constraint (future price leakage detected)
+      - fixture: valuation-negative-002
+        description: valuation referencing price for different instrument
+        expectedOutcome: returns empty or fails constraint (instrument mismatch)
+    riskLevel: high
+    status: active
+    mapsToSliceA: CQ-S4
   - id: CQ-PP5
-    question: "What is the aggregate market value of a portfolio at a given three-axis as-of time?"
-    businessContext: "Portfolio-level valuation for performance reporting, NAV calculation, and risk aggregation"
+    question: What is the aggregate market value of a portfolio at a given three-axis as-of time?
+    businessContext: Portfolio-level valuation for performance reporting, NAV calculation, and risk aggregation
     scopeConstraints:
-      - "must sum PositionValuation.hasMarketValue for all holdings in portfolio"
-      - "all valuations must satisfy three-axis temporal constraints"
-      - "valuations must all be in the same currency or be currency-converted (conversion out of scope for E4)"
-    expectedResult: "sum of market values in the portfolio's reporting currency, with count of holdings included"
+      - must sum PositionValuation.hasMarketValue for all holdings in portfolio
+      - all valuations must satisfy three-axis temporal constraints
+      - valuations must all be in the same currency or be currency-converted (conversion out of scope for E4)
+    expectedResult: sum of market values in the portfolio's reporting currency, with count of holdings included
     queryPattern: |
       SELECT ?portfolio (SUM(?marketValue) AS ?totalValue) (COUNT(?valuation) AS ?holdingCount)
       WHERE {
@@ -195,22 +203,21 @@ competency_questions:
       }
       GROUP BY ?portfolio
     dependsOnElements:
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/valuedHolding"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/hasMarketValue"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/heldInPortfolio"
-      - "https://axiolune.ai/ontology/meta/patterns/TemporalFact"
-    riskLevel: "medium"
-    status: "active"
-
+      - https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation
+      - https://axiolune.ai/ontology/finance/portfolio-positions/valuedHolding
+      - https://axiolune.ai/ontology/finance/portfolio-positions/hasMarketValue
+      - https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
+      - https://axiolune.ai/ontology/finance/portfolio-positions/heldInPortfolio
+      - https://axiolune.ai/ontology/meta/patterns/TemporalFact
+    riskLevel: medium
+    status: active
   - id: CQ-PP6
-    question: "What position lots exist for a given instrument in an account, and what are their cost bases?"
-    businessContext: "Tax lot tracking for capital gains calculation, wash sale detection, and accounting"
+    question: What position lots exist for a given instrument in an account, and what are their cost bases?
+    businessContext: Tax lot tracking for capital gains calculation, wash sale detection, and accounting
     scopeConstraints:
-      - "limited to lots for specified instrument and account"
-      - "lot may have optional cost basis (not all systems track it)"
-    expectedResult: "list of (lot IRI, quantity, cost basis, position side) tuples"
+      - limited to lots for specified instrument and account
+      - lot may have optional cost basis (not all systems track it)
+    expectedResult: list of (lot IRI, quantity, cost basis, position side) tuples
     queryPattern: |
       SELECT ?lot ?quantity ?costBasis ?positionSide
       WHERE {
@@ -224,23 +231,22 @@ competency_questions:
         FILTER(?instrument = ?instrumentIri && ?account = ?accountIri)
       }
     dependsOnElements:
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/lotForInstrument"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/lotInAccount"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/hasQuantity"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/hasCostBasis"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/hasPositionSide"
-    riskLevel: "medium"
-    status: "active"
-
+      - https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot
+      - https://axiolune.ai/ontology/finance/portfolio-positions/lotForInstrument
+      - https://axiolune.ai/ontology/finance/portfolio-positions/lotInAccount
+      - https://axiolune.ai/ontology/finance/portfolio-positions/hasQuantity
+      - https://axiolune.ai/ontology/finance/portfolio-positions/hasCostBasis
+      - https://axiolune.ai/ontology/finance/portfolio-positions/hasPositionSide
+    riskLevel: medium
+    status: active
   - id: CQ-PP7
-    question: "What is the unrealized PnL for a valuation, and how is it derived from cost basis and market value?"
-    businessContext: "Performance measurement, margin calculation, and risk reporting"
+    question: What is the unrealized PnL for a valuation, and how is it derived from cost basis and market value?
+    businessContext: Performance measurement, margin calculation, and risk reporting
     scopeConstraints:
-      - "unrealized PnL = market value - cost basis"
-      - "both market value and cost basis must be in same currency"
-      - "cost basis may be absent (in which case PnL cannot be computed)"
-    expectedResult: "list of (valuation IRI, market value, cost basis, unrealized PnL, currency) tuples"
+      - unrealized PnL = market value - cost basis
+      - both market value and cost basis must be in same currency
+      - cost basis may be absent (in which case PnL cannot be computed)
+    expectedResult: list of (valuation IRI, market value, cost basis, unrealized PnL, currency) tuples
     queryPattern: |
       SELECT ?valuation ?marketValue ?costBasis ?unrealizedPnL ?currency
       WHERE {
@@ -253,10 +259,10 @@ competency_questions:
         }
       }
     dependsOnElements:
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/hasMarketValue"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/hasCostBasis"
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/hasUnrealizedPnL"
-      - "https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode"
-    riskLevel: "medium"
-    status: "active"
+      - https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation
+      - https://axiolune.ai/ontology/finance/portfolio-positions/hasMarketValue
+      - https://axiolune.ai/ontology/finance/portfolio-positions/hasCostBasis
+      - https://axiolune.ai/ontology/finance/portfolio-positions/hasUnrealizedPnL
+      - https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode
+    riskLevel: medium
+    status: active

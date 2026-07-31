@@ -47,7 +47,9 @@ if (!owlStore || !shaclStore || !sparqlStore) { console.log('\n❌ parse failed'
 function dataGraph(props, type) {
   const inst = 'http://test/inst';
   const lines = ['@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .', `@prefix ax: <${AX}> .`];
-  const cls = type ? `<${AX}${type}>` : `<${AX}PatternFact>`;
+  // Pattern types live under .../meta/patterns/<Name>; the generic PatternFact is under .../meta/
+  const typeIri = type && type !== 'PatternFact' ? `${AX}patterns/${type}` : `${AX}${type || 'PatternFact'}`;
+  const cls = `<${typeIri}>`;
   const pps = Object.entries(props).map(([k, v]) => {
     const [val, dt] = Array.isArray(v) ? v : [v, null];
     const obj = dt ? `"${val}"^^xsd:${dt}` : (v === null ? '""' : `"${val}"`);

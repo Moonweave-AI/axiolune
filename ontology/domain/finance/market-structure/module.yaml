@@ -1,0 +1,234 @@
+# Axiolune M2 Finance — Market Structure Module
+# Module: fin-market-structure
+# Version: 0.1.0
+# Status: draft
+# Dependencies: none (self-contained)
+# Terminology: docs/ontology/terminology/fin-market-structure-terms.yaml
+# CQ: docs/ontology/competency-questions/fin-market-structure-cq.yaml
+# Alignment: FIBO FBC/FunctionalEntities/Markets
+module:
+  moduleIri: https://axiolune.ai/ontology/finance/market-structure
+  baseIri: https://axiolune.ai/ontology/finance/market-structure/
+  preferredPrefix: fin-market-structure
+  version: 0.2.0
+  label: Market Structure
+  definition: >-
+    trading venues, market segments, trading sessions, and trading calendars that define where and when financial
+    instruments are traded
+  imports: []
+  exports: []
+  status: approved
+domain:
+  hasMarketIdentifierCode:
+    iri: https://axiolune.ai/ontology/finance/market-structure/hasMarketIdentifierCode
+    namespace: fin-market-structure
+    localName: hasMarketIdentifierCode
+    label: Has Market Identifier Code
+    definition: relation from a trading venue to its ISO 10383 market identifier code (MIC)
+    valueType: string
+    pattern: ^[A-Z]{4}([A-Z]{4})?$
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+  VenueType:
+    iri: https://axiolune.ai/ontology/finance/market-structure/VenueType
+    namespace: fin-market-structure
+    localName: VenueType
+    label: Venue Type
+    definition: controlled vocabulary of trading venue regulatory classifications
+    values:
+      - RegulatedExchange
+      - MultilateralTradingFacility
+      - OrganizedTradingFacility
+      - AlternativeTradingSystem
+      - SystematicInternaliser
+      - DesignatedContractMarket
+      - SwapExecutionFacility
+    version: 0.1.0
+    maintainer: Axiolune
+    vocabulary: https://axiolune.ai/ontology/finance/market-structure/VenueType
+  hasVenueType:
+    iri: https://axiolune.ai/ontology/finance/market-structure/hasVenueType
+    namespace: fin-market-structure
+    localName: hasVenueType
+    label: Has Venue Type
+    definition: relation from a trading venue to its regulatory classification (e.g. regulated exchange, MTF, OTF, ATS)
+    valueType: codelist
+    codeListReference: VenueType
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+  isPartOfVenue:
+    iri: https://axiolune.ai/ontology/finance/market-structure/isPartOfVenue
+    namespace: fin-market-structure
+    localName: isPartOfVenue
+    label: Is Part Of Venue
+    definition: relation from a market segment to its parent operating-level trading venue
+    valueType: https://axiolune.ai/ontology/finance/market-structure/TradingVenue
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+  SessionType:
+    iri: https://axiolune.ai/ontology/finance/market-structure/SessionType
+    namespace: fin-market-structure
+    localName: SessionType
+    label: Session Type
+    definition: controlled vocabulary of trading session classifications
+    values:
+      - PreMarket
+      - Regular
+      - PostMarket
+      - OpeningAuction
+      - ClosingAuction
+      - IntradayAuction
+      - Intermission
+    version: 0.1.0
+    maintainer: Axiolune
+    vocabulary: https://axiolune.ai/ontology/finance/market-structure/SessionType
+  hasSessionType:
+    iri: https://axiolune.ai/ontology/finance/market-structure/hasSessionType
+    namespace: fin-market-structure
+    localName: hasSessionType
+    label: Has Session Type
+    definition: >-
+      relation from a trading session to its type classification (e.g. pre-market, regular, post-market, auction,
+      closing)
+    valueType: codelist
+    codeListReference: SessionType
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+  hasSessionStartTime:
+    iri: https://axiolune.ai/ontology/finance/market-structure/hasSessionStartTime
+    namespace: fin-market-structure
+    localName: hasSessionStartTime
+    label: Has Session Start Time
+    definition: relation from a trading session to its scheduled start time
+    valueType: instant
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+  hasSessionEndTime:
+    iri: https://axiolune.ai/ontology/finance/market-structure/hasSessionEndTime
+    namespace: fin-market-structure
+    localName: hasSessionEndTime
+    label: Has Session End Time
+    definition: relation from a trading session to its scheduled end time
+    valueType: instant
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+  TradingVenue:
+    iri: https://axiolune.ai/ontology/finance/market-structure/TradingVenue
+    namespace: fin-market-structure
+    localName: TradingVenue
+    label: Trading Venue
+    definition: >-
+      organization, association, or group that constitutes, maintains, or provides a facility for bringing together
+      purchasers and sellers of financial instruments, identified by a MIC (ISO 10383)
+    superTypes: []
+    attributeUses:
+      - attribute: https://axiolune.ai/ontology/finance/market-structure/hasMarketIdentifierCode
+        minCount: 1
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/market-structure/hasVenueType
+        minCount: 0
+        maxCount: 1
+    alignments:
+      - vocabulary: FIBO
+        targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/Markets/Exchange
+        relation: rdfs:subClassOf
+        sourceRelease:
+          vocabulary: FIBO
+          release: local-evidence-bundle
+          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
+          lockRef: fibo-local-evidence
+          claimedReleaseLabel: 2026Q1
+          releaseNote: >-
+            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
+            maturity.
+        rationale: Axiolune TradingVenue is a domain-level subclass of FIBO Exchange, the venue umbrella concept per ISO 10383
+        verification:
+          status: proposed
+  MarketSegment:
+    iri: https://axiolune.ai/ontology/finance/market-structure/MarketSegment
+    namespace: fin-market-structure
+    localName: MarketSegment
+    label: Market Segment
+    definition: >-
+      section of a trading venue that specializes in one or more specific instruments or that is regulated differently
+      from other sections of the same venue
+    superTypes: []
+    attributeUses:
+      - attribute: https://axiolune.ai/ontology/finance/market-structure/hasMarketIdentifierCode
+        minCount: 1
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/market-structure/isPartOfVenue
+        minCount: 1
+        maxCount: 1
+    alignments:
+      - vocabulary: FIBO
+        targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/Markets/MarketSegmentLevelMarket
+        relation: rdfs:subClassOf
+        sourceRelease:
+          vocabulary: FIBO
+          release: local-evidence-bundle
+          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
+          lockRef: fibo-local-evidence
+          claimedReleaseLabel: 2026Q1
+          releaseNote: >-
+            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
+            maturity.
+        rationale: Axiolune MarketSegment is a domain-level subclass of FIBO MarketSegmentLevelMarket
+        verification:
+          status: proposed
+  TradingSession:
+    iri: https://axiolune.ai/ontology/finance/market-structure/TradingSession
+    namespace: fin-market-structure
+    localName: TradingSession
+    label: Trading Session
+    definition: >-
+      scheduled time period during which a trading venue accepts orders and executes trades, characterized by a session
+      type such as pre-market, regular, post-market, or auction
+    superTypes: []
+    attributeUses:
+      - attribute: https://axiolune.ai/ontology/finance/market-structure/hasSessionType
+        minCount: 1
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/market-structure/hasSessionStartTime
+        minCount: 1
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/market-structure/hasSessionEndTime
+        minCount: 1
+        maxCount: 1
+    note: >-
+      No FIBO equivalent exists (gap); modeled natively based on nautilus_trader MarketStatus and exchange session
+      semantics
+  TradingCalendar:
+    iri: https://axiolune.ai/ontology/finance/market-structure/TradingCalendar
+    namespace: fin-market-structure
+    localName: TradingCalendar
+    label: Trading Calendar
+    definition: >-
+      schedule of trading sessions for a trading venue across calendar dates, defining which dates and times the venue
+      is open for trading
+    superTypes: []
+    attributeUses: []
+    alignments:
+      - vocabulary: FIBO
+        targetIri: https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/BusinessCalendar
+        relation: rdfs:subClassOf
+        sourceRelease:
+          vocabulary: FIBO
+          release: local-evidence-bundle
+          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
+          lockRef: fibo-local-evidence
+          claimedReleaseLabel: 2026Q1
+          releaseNote: >-
+            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
+            maturity.
+        rationale: >-
+          Axiolune TradingCalendar extends FIBO BusinessCalendar with trading-session-specific scheduling (FIBO has no
+          session schedule)
+        verification:
+          status: proposed

@@ -1,0 +1,389 @@
+# Axiolune M2 Finance — Foundation Module
+# Module: fin-foundation
+# Version: 0.1.0
+# Status: draft
+# ADR: ADR-013 (M2 Authoring Profile)
+# Dependencies: M3 core (no M2 imports yet — this is the base layer)
+# Terminology: docs/ontology/terminology/fin-foundation-terms.yaml
+# CQ: docs/ontology/competency-questions/fin-foundation-cq.yaml
+# Alignment: FIBO FND/BE/SEC/FBC + ISO 6166/10383/17442/4217
+module:
+  moduleIri: https://axiolune.ai/ontology/finance/foundation
+  baseIri: https://axiolune.ai/ontology/finance/foundation/
+  preferredPrefix: fin-foundation
+  version: 0.2.0
+  label: Financial Foundation
+  definition: >-
+    financial identity, identifiers, currency, jurisdiction, and party vocabulary shared across all finance domain
+    modules
+  imports: []
+  exports: []
+  status: approved
+domain:
+  ISIN:
+    iri: https://axiolune.ai/ontology/finance/foundation/ISIN
+    namespace: fin-foundation
+    localName: ISIN
+    label: International Securities Identification Number
+    definition: >-
+      12-character alphanumeric code that identifies a security as specified by ISO 6166, consisting of a 2-character
+      ISO 3166-1 country code, a 9-character national securities identifying number, and a Luhn check digit
+    pattern: ^[A-Z]{2}[A-Z0-9]{9}[0-9]$
+    checkAlgorithm: Luhn
+    length: 12
+    alignments:
+      - vocabulary: FIBO
+        targetIri: >-
+          https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesIdentification/InternationalSecuritiesIdentificationNumber
+        relation: rdfs:subClassOf
+        sourceRelease:
+          vocabulary: FIBO
+          release: local-evidence-bundle
+          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
+          lockRef: fibo-local-evidence
+          claimedReleaseLabel: 2026Q1
+          releaseNote: >-
+            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
+            maturity.
+        rationale: >-
+          Axiolune ISIN is a concrete identifier conforming to ISO 6166, subsumed by FIBO's securities identification
+          hierarchy
+        verification:
+          status: proposed
+  LEI:
+    iri: https://axiolune.ai/ontology/finance/foundation/LEI
+    namespace: fin-foundation
+    localName: LEI
+    label: Legal Entity Identifier
+    definition: >-
+      20-character alphanumeric code that uniquely identifies a legal entity as defined in ISO 17442, consisting of a
+      4-character LOU prefix, 12-character entity-specific identifier, and 2 check digits
+    pattern: ^[A-Z0-9]{18}[0-9]{2}$
+    checkAlgorithm: ISO 17442
+    length: 20
+    alignments:
+      - vocabulary: FIBO
+        targetIri: https://spec.edmcouncil.org/fibo/ontology/BE/LegalEntities/LEIEntities/LegalEntityIdentifier
+        relation: rdfs:subClassOf
+        sourceRelease:
+          vocabulary: FIBO
+          release: local-evidence-bundle
+          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
+          lockRef: fibo-local-evidence
+          claimedReleaseLabel: 2026Q1
+          releaseNote: >-
+            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
+            maturity.
+        rationale: >-
+          Axiolune LEI is a concrete identifier conforming to ISO 17442, subsumed by FIBO's legal entity identification
+          hierarchy
+        verification:
+          status: proposed
+  MIC:
+    iri: https://axiolune.ai/ontology/finance/foundation/MIC
+    namespace: fin-foundation
+    localName: MIC
+    label: Market Identifier Code
+    definition: >-
+      market identifier code that uniquely identifies an exchange, trading platform, or market as specified by ISO
+      10383, comprising a 4-character alphanumeric operating-level code or a 4+4 character segment-level code
+    pattern: ^[A-Z]{4}([A-Z]{4})?$
+    length: 4
+    alignments:
+      - vocabulary: FIBO
+        targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/Markets/MarketIdentifier
+        relation: rdfs:subClassOf
+        sourceRelease:
+          vocabulary: FIBO
+          release: local-evidence-bundle
+          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
+          lockRef: fibo-local-evidence
+          claimedReleaseLabel: 2026Q1
+          releaseNote: >-
+            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
+            maturity.
+        rationale: Axiolune MIC is a concrete identifier conforming to ISO 10383, subsumed by FIBO's market identifier hierarchy
+        verification:
+          status: proposed
+  hasPrimaryIdentifier:
+    iri: https://axiolune.ai/ontology/finance/foundation/hasPrimaryIdentifier
+    namespace: fin-foundation
+    localName: hasPrimaryIdentifier
+    label: Has Primary Identifier
+    definition: relation from a financial instrument to its primary externally-issued identifier such as an ISIN
+    valueType: string
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: >-
+      value references an IdentifierTypeDefinition instance (ISIN/LEI/MIC); G1 uses string for simplicity until
+      cross-module type references are wired
+  hasLegalName:
+    iri: https://axiolune.ai/ontology/finance/foundation/hasLegalName
+    namespace: fin-foundation
+    localName: hasLegalName
+    label: Has Legal Name
+    definition: relation from a legal entity to its registered legal name
+    valueType: string
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    alignments:
+      - vocabulary: FIBO
+        targetIri: https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/hasLegalName
+        relation: rdfs:subPropertyOf
+        sourceRelease:
+          vocabulary: FIBO
+          release: local-evidence-bundle
+          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
+          lockRef: fibo-local-evidence
+          claimedReleaseLabel: 2026Q1
+          releaseNote: >-
+            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
+            maturity.
+        rationale: hasLegalName in Axiolune is a domain-level subproperty of FIBO's generic hasLegalName
+        verification:
+          status: proposed
+  MonetaryAmount:
+    iri: https://axiolune.ai/ontology/finance/foundation/MonetaryAmount
+    namespace: fin-foundation
+    localName: MonetaryAmount
+    label: Monetary Amount
+    definition: >-
+      structured monetary amount with numeric magnitude, ISO 4217 currency code, and optional scale; financial amounts
+      MUST NOT use bare decimal literals
+    superTypes: []
+    attributeUses:
+      - attribute: https://axiolune.ai/ontology/finance/foundation/hasNumericAmount
+        minCount: 1
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode
+        minCount: 1
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/foundation/hasScale
+        minCount: 0
+        maxCount: 1
+    alignments:
+      - vocabulary: FIBO
+        targetIri: https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/MonetaryAmount
+        relation: skos:closeMatch
+        sourceRelease:
+          vocabulary: FIBO
+          release: local-evidence-bundle
+          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
+          lockRef: fibo-local-evidence
+        rationale: >-
+          FIBO MonetaryAmount requires hasAmount + hasCurrency; Axiolune uses hasNumericAmount + hasCurrencyCode (ISO
+          4217 string) as local-evidence stand-in without importing Currency individuals
+        verification:
+          status: proposed
+    note: >-
+      Round-5 P0: real structure (was empty shell). Consuming attributes with valueType=MonetaryAmount are
+      owl:ObjectProperty / sh:class MonetaryAmount — bare xsd:decimal on those paths is forbidden.
+  QuantityValue:
+    iri: https://axiolune.ai/ontology/finance/foundation/QuantityValue
+    namespace: fin-foundation
+    localName: QuantityValue
+    label: Quantity Value
+    definition: structured measurement with numeric magnitude and unit code; quantities MUST NOT use bare decimal
+    superTypes: []
+    attributeUses:
+      - attribute: https://axiolune.ai/ontology/finance/foundation/hasNumericAmount
+        minCount: 1
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/foundation/hasUnitCode
+        minCount: 1
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/foundation/hasScale
+        minCount: 0
+        maxCount: 1
+    note: >-
+      Round-5 P0: real structure. Unit codes are open strings for draft (share, contract, ratio, 1); codelist lock
+      later.
+  hasNumericAmount:
+    iri: https://axiolune.ai/ontology/finance/foundation/hasNumericAmount
+    namespace: fin-foundation
+    localName: hasNumericAmount
+    label: Has Numeric Amount
+    definition: numeric magnitude of a MonetaryAmount or QuantityValue (aligned to FIBO hasAmount / Commons hasNumericValue)
+    valueType: decimal
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+  hasScale:
+    iri: https://axiolune.ai/ontology/finance/foundation/hasScale
+    namespace: fin-foundation
+    localName: hasScale
+    label: Has Scale
+    definition: optional decimal scale / fractional digits for the numeric amount
+    valueType: integer
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+  hasUnitCode:
+    iri: https://axiolune.ai/ontology/finance/foundation/hasUnitCode
+    namespace: fin-foundation
+    localName: hasUnitCode
+    label: Has Unit Code
+    definition: unit of measure code for a QuantityValue (e.g. share, contract, ratio, 1)
+    valueType: string
+    defaultCardinality:
+      minCount: 1
+      maxCount: 1
+  FinancialIdentifierAssignment:
+    iri: https://axiolune.ai/ontology/finance/foundation/FinancialIdentifierAssignment
+    namespace: fin-foundation
+    localName: FinancialIdentifierAssignment
+    label: Financial Identifier Assignment
+    definition: >-
+      association binding an identifier value of a declared identifier type to a party or instrument under an issuing
+      authority and effective interval
+    participantRoles:
+      - roleName: assignsIdentifier
+        range: https://axiolune.ai/ontology/finance/foundation/Party
+        minCount: 0
+        maxCount: 1
+        roleIri: https://axiolune.ai/ontology/finance/foundation/assignsIdentifier
+      - roleName: identifiesSubject
+        range: https://axiolune.ai/ontology/finance/foundation/Party
+        minCount: 0
+        maxCount: 1
+        roleIri: https://axiolune.ai/ontology/finance/foundation/identifiesSubject
+        label: identifies subject
+        definition: >-
+          the party (or party-backed subject) to which the identifier is assigned; instrument-specific binding is a
+          future instruments-module concern
+    attributeUses:
+      - attribute: https://axiolune.ai/ontology/finance/foundation/hasPrimaryIdentifier
+        minCount: 1
+        maxCount: 1
+    patternBindings:
+      - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+      - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    note: M2-PLAN §5.2 foundation core concept; identity assignment is a fact, not a bare string property
+  hasCurrencyCode:
+    iri: https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode
+    namespace: fin-foundation
+    localName: hasCurrencyCode
+    label: Has Currency Code
+    definition: relation from a financial concept to its ISO 4217 3-character alphabetic currency code
+    valueType: string
+    pattern: ^[A-Z]{3}$
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: ISO 4217 alphabetic code (e.g. USD, EUR, CNY, JPY)
+  Party:
+    iri: https://axiolune.ai/ontology/finance/foundation/Party
+    namespace: fin-foundation
+    localName: Party
+    label: Party
+    definition: >-
+      autonomous agent that can participate in legal or financial relationships, including natural persons and legal
+      entities
+    superTypes: []
+    attributeUses: []
+    alignments:
+      - vocabulary: FIBO
+        targetIri: https://www.omg.org/spec/Commons/PartiesAndSituations/Party
+        relation: rdfs:subClassOf
+        sourceRelease:
+          vocabulary: FIBO
+          release: local-evidence-bundle
+          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
+          lockRef: fibo-local-evidence
+          claimedReleaseLabel: 2026Q1
+          releaseNote: >-
+            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
+            maturity.
+        rationale: Axiolune Party is a domain-level subclass of Commons Party, the FIBO foundational party concept
+        verification:
+          status: proposed
+  LegalEntity:
+    iri: https://axiolune.ai/ontology/finance/foundation/LegalEntity
+    namespace: fin-foundation
+    localName: LegalEntity
+    label: Legal Entity
+    definition: >-
+      organization that is legally or financially responsible for the performance of financial transactions and is
+      capable of accruing liability on its own part, excluding natural persons but including governments and
+      supranational entities
+    superTypes:
+      - https://axiolune.ai/ontology/finance/foundation/Party
+    attributeUses:
+      - attribute: https://axiolune.ai/ontology/finance/foundation/hasLegalName
+        minCount: 0
+        maxCount: 1
+    alignments:
+      - vocabulary: FIBO
+        targetIri: https://www.omg.org/spec/Commons/Organizations/LegalEntity
+        relation: rdfs:subClassOf
+        sourceRelease:
+          vocabulary: FIBO
+          release: local-evidence-bundle
+          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
+          lockRef: fibo-local-evidence
+          claimedReleaseLabel: 2026Q1
+          releaseNote: >-
+            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
+            maturity.
+        rationale: >-
+          Axiolune LegalEntity is a domain-level subclass of Commons LegalEntity, the FIBO foundational legal entity
+          concept per ISO 17442
+        verification:
+          status: proposed
+  Currency:
+    iri: https://axiolune.ai/ontology/finance/foundation/Currency
+    namespace: fin-foundation
+    localName: Currency
+    label: Currency
+    definition: >-
+      medium of exchange value defined by reference to the geographical location of the monetary authorities responsible
+      for it, as specified in ISO 4217
+    superTypes: []
+    attributeUses:
+      - attribute: https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode
+        minCount: 1
+        maxCount: 1
+    alignments:
+      - vocabulary: FIBO
+        targetIri: https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/Currency
+        relation: rdfs:subClassOf
+        sourceRelease:
+          vocabulary: FIBO
+          release: local-evidence-bundle
+          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
+          lockRef: fibo-local-evidence
+          claimedReleaseLabel: 2026Q1
+          releaseNote: >-
+            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
+            maturity.
+        rationale: Axiolune Currency is a domain-level subclass of FIBO Currency (ISO 4217)
+        verification:
+          status: proposed
+  Jurisdiction:
+    iri: https://axiolune.ai/ontology/finance/foundation/Jurisdiction
+    namespace: fin-foundation
+    localName: Jurisdiction
+    label: Jurisdiction
+    definition: >-
+      legal authority that has the power to make and enforce rules of conduct within a defined geographical or
+      functional scope
+    superTypes: []
+    attributeUses: []
+    alignments:
+      - vocabulary: FIBO
+        targetIri: https://www.omg.org/spec/Commons/RegulatoryAgencies/Jurisdiction
+        relation: rdfs:subClassOf
+        sourceRelease:
+          vocabulary: FIBO
+          release: local-evidence-bundle
+          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
+          lockRef: fibo-local-evidence
+          claimedReleaseLabel: 2026Q1
+          releaseNote: >-
+            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
+            maturity.
+        rationale: Axiolune Jurisdiction is a domain-level subclass of Commons Jurisdiction
+        verification:
+          status: proposed

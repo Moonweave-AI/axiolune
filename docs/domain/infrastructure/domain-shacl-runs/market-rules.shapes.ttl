@@ -1,0 +1,139 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-market-rules: <https://axiolune.ai/ontology/finance/market-rules/>.
+
+fin-market-rules:RuleTypeShape a sh:PropertyShape;
+    sh:path fin-market-rules:RuleType;
+    sh:hasValue fin-market-rules:RuleType_PriceLimit, fin-market-rules:RuleType_TickSchedule, fin-market-rules:RuleType_LotSchedule, fin-market-rules:RuleType_SettlementCycle, fin-market-rules:RuleType_TradingHours, fin-market-rules:RuleType_MarginRequirement, fin-market-rules:RuleType_PositionLimit, fin-market-rules:RuleType_ShortSellingRestriction, fin-market-rules:RuleType_CircuitBreaker, fin-market-rules:RuleType_CloseTodayOffset, fin-market-rules:RuleType_TPlusTradingRestriction;
+    sh:name "Rule Type".
+fin-market-rules:RuleLifecycleStatusShape a sh:PropertyShape;
+    sh:path fin-market-rules:RuleLifecycleStatus;
+    sh:hasValue fin-market-rules:RuleLifecycleStatus_active, fin-market-rules:RuleLifecycleStatus_superseded, fin-market-rules:RuleLifecycleStatus_expired, fin-market-rules:RuleLifecycleStatus_proposed;
+    sh:name "Rule Lifecycle Status".
+fin-market-rules:MarketRuleShape a sh:NodeShape;
+    sh:targetClass fin-market-rules:MarketRule;
+    sh:name "Market Rule";
+    sh:description "named trading or settlement rule that governs how instruments are traded, matched, or settled on a trading venue, with a rule type, parameter value, unit, source, and revision";
+    sh:property fin-market-rules:MarketRuleShape_hasRuleType.
+fin-market-rules:MarketRuleShape_hasRuleType a sh:PropertyShape;
+    sh:path fin-market-rules:hasRuleType;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-rules:MarketRuleShape sh:property fin-market-rules:MarketRuleShape_hasRuleParameterValue.
+fin-market-rules:MarketRuleShape_hasRuleParameterValue a sh:PropertyShape;
+    sh:path fin-market-rules:hasRuleParameterValue;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-market-rules:MarketRuleShape sh:property fin-market-rules:MarketRuleShape_hasRuleParameterUnit.
+fin-market-rules:MarketRuleShape_hasRuleParameterUnit a sh:PropertyShape;
+    sh:path fin-market-rules:hasRuleParameterUnit;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-market-rules:MarketRuleShape sh:property fin-market-rules:MarketRuleShape_hasRuleSource.
+fin-market-rules:MarketRuleShape_hasRuleSource a sh:PropertyShape;
+    sh:path fin-market-rules:hasRuleSource;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-market-rules:MarketRuleShape sh:property fin-market-rules:MarketRuleShape_hasRuleRevision.
+fin-market-rules:MarketRuleShape_hasRuleRevision a sh:PropertyShape;
+    sh:path fin-market-rules:hasRuleRevision;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-market-rules:SettlementConventionShape a sh:NodeShape;
+    sh:targetClass fin-market-rules:SettlementConvention;
+    sh:name "Settlement Convention";
+    sh:description "market rule that defines the standard settlement cycle (e.g. T+1, T+2) for trades executed on a venue".
+fin-market-rules:RuleApplicabilityShape a sh:NodeShape;
+    sh:targetClass fin-market-rules:RuleApplicability;
+    sh:name "Rule Applicability";
+    sh:description "association that binds a market rule to a specific scope defined by venue, market segment, instrument class, and/or investor category, with valid-time and knowledge-time intervals, source, revision, and lifecycle status";
+    sh:property fin-market-rules:RuleApplicabilityShape_appliesToInstrumentClass.
+fin-market-rules:RuleApplicabilityShape_appliesToInstrumentClass a sh:PropertyShape;
+    sh:path fin-market-rules:appliesToInstrumentClass;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-market-rules:RuleApplicabilityShape sh:property fin-market-rules:RuleApplicabilityShape_hasLifecycleStatus.
+fin-market-rules:RuleApplicabilityShape_hasLifecycleStatus a sh:PropertyShape;
+    sh:path fin-market-rules:hasLifecycleStatus;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-rules:RuleApplicabilityShape sh:property fin-market-rules:RuleApplicabilityShape_appliesRule.
+fin-market-rules:RuleApplicabilityShape_appliesRule a sh:PropertyShape;
+    sh:path fin-market-rules:appliesRule;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-market-rules:MarketRule.
+fin-market-rules:RuleApplicabilityShape sh:property fin-market-rules:RuleApplicabilityShape_scopedToVenue.
+fin-market-rules:RuleApplicabilityShape_scopedToVenue a sh:PropertyShape;
+    sh:path fin-market-rules:scopedToVenue;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>.
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-foundation: <https://axiolune.ai/ontology/finance/foundation/>.
+
+fin-foundation:MonetaryAmountShape a sh:NodeShape;
+    sh:targetClass fin-foundation:MonetaryAmount;
+    sh:name "Monetary Amount";
+    sh:description "structured monetary amount with currency code and scale; financial amounts MUST NOT use bare decimal";
+    sh:property fin-foundation:MonetaryAmountShape_hasCurrencyCode.
+fin-foundation:MonetaryAmountShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path fin-foundation:hasCurrencyCode;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-foundation:QuantityValueShape a sh:NodeShape;
+    sh:targetClass fin-foundation:QuantityValue;
+    sh:name "Quantity Value";
+    sh:description "structured measurement with unit and precision; quantities MUST NOT use bare decimal".
+fin-foundation:FinancialIdentifierAssignmentShape a sh:NodeShape;
+    sh:targetClass fin-foundation:FinancialIdentifierAssignment;
+    sh:name "Financial Identifier Assignment";
+    sh:description "association binding an identifier value of a declared identifier type to a party or instrument under an issuing authority and effective interval";
+    sh:property fin-foundation:FinancialIdentifierAssignmentShape_hasPrimaryIdentifier.
+fin-foundation:FinancialIdentifierAssignmentShape_hasPrimaryIdentifier a sh:PropertyShape;
+    sh:path fin-foundation:hasPrimaryIdentifier;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-foundation:FinancialIdentifierAssignmentShape sh:property fin-foundation:FinancialIdentifierAssignmentShape_assignsIdentifier.
+fin-foundation:FinancialIdentifierAssignmentShape_assignsIdentifier a sh:PropertyShape;
+    sh:path fin-foundation:FinancialIdentifierAssignment_assignsIdentifier;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class fin-foundation:Party.
+fin-foundation:hasCurrencyCodeShape a sh:PropertyShape;
+    sh:path fin-foundation:hasCurrencyCode;
+    sh:pattern "^[A-Z]{3}$";
+    sh:datatype xsd:string;
+    sh:name "Has Currency Code".
+fin-foundation:PartyShape a sh:NodeShape;
+    sh:targetClass fin-foundation:Party;
+    sh:name "Party";
+    sh:description "autonomous agent that can participate in legal or financial relationships, including natural persons and legal entities".
+fin-foundation:LegalEntityShape a sh:NodeShape;
+    sh:targetClass fin-foundation:LegalEntity;
+    sh:name "Legal Entity";
+    sh:description "organization that is legally or financially responsible for the performance of financial transactions and is capable of accruing liability on its own part, excluding natural persons but including governments and supranational entities";
+    sh:property fin-foundation:LegalEntityShape_hasLegalName.
+fin-foundation:LegalEntityShape_hasLegalName a sh:PropertyShape;
+    sh:path fin-foundation:hasLegalName;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-foundation:CurrencyShape a sh:NodeShape;
+    sh:targetClass fin-foundation:Currency;
+    sh:name "Currency";
+    sh:description "medium of exchange value defined by reference to the geographical location of the monetary authorities responsible for it, as specified in ISO 4217";
+    sh:property fin-foundation:CurrencyShape_hasCurrencyCode.
+fin-foundation:CurrencyShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path fin-foundation:hasCurrencyCode;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-foundation:JurisdictionShape a sh:NodeShape;
+    sh:targetClass fin-foundation:Jurisdiction;
+    sh:name "Jurisdiction";
+    sh:description "legal authority that has the power to make and enforce rules of conduct within a defined geographical or functional scope".

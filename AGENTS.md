@@ -1,39 +1,37 @@
-# AGENTS.md — Axiolune Ontology Meta-Model
+# AGENTS.md — Axiolune Ontology
 
 ## Repository layout (phase-separated)
 
 ```
-ontology/meta/          # M3 meta-model YAML + digests + projection (IRI-stable, do NOT move)
+ontology/meta/           # M3 meta-model YAML + digests + projection (IRI-stable, do NOT move)
+ontology/domain/         # M2 domain ontology (finance modules under ontology/domain/finance/)
 scripts/meta/            # M3 validators + generators + tests (run from repo root)
+scripts/domain/          # M2 validators + generators + test-all-domain
 scripts/archive/         # one-shot migration scripts (completed, kept for audit)
 docs/meta/               # M3-phase docs: decisions (ADRs), reports, design, reference
-  decisions/             # ADR-001..012 + superseded/
-  reports/               # acceptance reports + raw test-all output
-  reference/             # external reference projects (read-only)
+docs/domain/             # M2-phase docs: planning (M2-PLAN), decisions (ADR-013+)
+  decisions/             # ADR-013+ domain ADRs + honest PROGRESS-REPORT
 assets/                  # banner/logo
 ```
-Future phases (M2 domain ontology, M1 runtime) get their own `ontology/domain/`, `scripts/domain/`,
-`docs/domain/`, `docs/runtime/` trees to avoid mixing with this phase.
 
-## Quick verification (run before declaring the meta-model done)
+Do **not** claim M2 module `approved` / release complete unless M2-PLAN §0.1 evidence is machine-verified.
+Do **not** fabricate validation results. Prefer `node scripts/domain/test-all-domain.js` for the domain gate.
+
+## Quick verification
+
+### M3 meta-model
 
 ```
 node scripts/meta/test-all.js
 ```
 
-This single command runs the full meta-model gate (exit 0 = pass):
-1. `validate-yaml.js` — 4 meta-model YAML syntax
-2. `verify-meta-model.js` — digest consistency, import lock, closures, temporal, single-truth-source
-3. `deep-analysis-v0.5.js` — ADR-011 / ADR-012 compliance
-4. `validate-references.js` — real reference + constraint + targetElement + import version-label closure
-5. `validate-structure.js` — deep structural validation (root, module, required fields, IRI/enum)
-6. `validate-structure.js --strict` — unknown-key typo detection on type-classifiers
-7. `test-structure-negative.js` — 14 negative tests (proves the validator rejects malformed input)
-8. `generate-owl.js` + `generate-shacl.js` — M3 -> M2 projection (OWL2-DL + SHACL)
-9. `test-projection.js` — n3 parse of OWL/SHACL + rdf-validate-shacl good/bad M1 validation
-10. projection drift check — committed `.ttl` == regenerated (catches stale artifacts)
+### M2 domain
 
-## Individual commands
+```
+node scripts/domain/test-all-domain.js
+```
+
+## Individual M3 commands
 
 ```
 node scripts/meta/validate-yaml.js ontology/meta/*.yaml        # syntax
@@ -43,6 +41,21 @@ node scripts/meta/validate-structure.js                         # deep structura
 node scripts/meta/test-structure-negative.js                    # negative tests
 node scripts/meta/generate-owl.js && node scripts/meta/generate-shacl.js   # regenerate projection
 node scripts/meta/test-projection.js                            # projection verification
+```
+
+M3 `test-all.js` runs the full meta-model gate (exit 0 = pass): YAML, digests/imports, ADR-011/012, references, structure (+strict), negative tests, OWL/SHACL projection, projection parse/validate, drift check.
+
+## Individual M2 domain commands
+
+```
+node scripts/domain/validate-m2-core.js --all
+node scripts/domain/validate-m2-core.js --all --strict
+node scripts/domain/normalize-authoring-dialect.cjs --write
+node scripts/domain/compute-digests.cjs
+node scripts/domain/generate-m2-owl.cjs ontology/domain/finance/<mod>/module.yaml
+node scripts/domain/generate-m2-shacl.cjs ontology/domain/finance/<mod>/module.yaml
+node scripts/domain/validate-pit.cjs tests/m2/fixtures/negative/<file>.yaml
+node scripts/domain/test-all-domain.js
 ```
 
 ## Meta-model structure & conventions
@@ -63,3 +76,19 @@ node scripts/meta/test-projection.js                            # projection ver
 - `availableFrom`/`availableTo` are the canonical availability axis; `availableAt` is deprecated (removal 0.6.0).
 - Do not fabricate validation/test/projection results. Anything not machine-run must be marked "unverified".
 - Generated SHACL Tier-1 (format/range + per-pattern shapes) is machine-verified by `rdf-validate-shacl` (incl. TemporalFactShape requiring validFrom/knowledgeFrom at minCount 1); Tier-2 is split into parameter-free direct `sh:sparql` (BOUND() syntax) and parameterized `sh:ConstraintComponent` (NoFutureKnowledge/AvailabilityBeforeUse with sh:parameter + sh:SPARQLSelectValidator) — parse-verified only; enforcement needs a SPARQL-capable SHACL engine (e.g. pyshacl).
+
+## Learned User Preferences
+
+- For M2 completeness reviews, read `reference/` project-by-project and file-by-file (FIBO/BIAN/regulatory ontologies and trading-engine source); treat them as authoritative alignment inputs alongside M2-PLAN.md.
+- Do not cite `docs/domain/decisions/superseded/` or `releases/superseded/` as completion or approval evidence.
+- `test-all-domain` PASS and module count do not substitute M2-PLAN §0.1's six acceptance criteria; keep Stop-Ship / draft until all are machine-verified.
+- When SHACL smoke or other runtime prerequisites are missing, report `pending-*` status honestly — never fabricate PASS.
+
+## Learned Workspace Facts
+
+- `reference/` splits into `ontology-design-reference/` (FIBO, BIAN, FinRegOnt) and `project-reference/` (nautilus_trader, Lean, qlib, rqalpha, vnpy, lumibot, …).
+- `docs/ontology/references/references.lock.yaml` uses `localPath` → `reference/` with real SHA-256 digests; paywalled sources are `unavailable-paywalled`, not zero placeholders.
+- Canonical honest M2 progress lives in `docs/domain/decisions/PROGRESS-REPORT.md`; stale E3–E7 completion narratives are archived under `docs/domain/decisions/superseded/`.
+- All 11 finance modules remain `status: draft` until ADR-014 authorizes an `approved` release.
+- pySHACL smoke evidence (`docs/domain/infrastructure/shacl-smoke-evidence.json`) is separate from domain SHACL shapes Adopt; structural negative fixtures may still be SHACL-execution pending.
+- FIBO alignment uses the `ext-fibo-release-local` adapter with `imports: []` — no full-ontology import anti-pattern (per FinRegOnt lesson).

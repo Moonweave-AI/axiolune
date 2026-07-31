@@ -1,0 +1,221 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-portfolio: <https://axiolune.ai/ontology/finance/portfolio-positions/>.
+
+fin-portfolio:PositionSideShape a sh:PropertyShape;
+    sh:path fin-portfolio:PositionSide;
+    sh:hasValue fin-portfolio:PositionSide_Long, fin-portfolio:PositionSide_Short, fin-portfolio:PositionSide_Flat;
+    sh:name "Position Side".
+fin-portfolio:ValuationMethodShape a sh:PropertyShape;
+    sh:path fin-portfolio:ValuationMethod;
+    sh:hasValue fin-portfolio:ValuationMethod_MarkToMarket, fin-portfolio:ValuationMethod_MarkToModel, fin-portfolio:ValuationMethod_CostBasis, fin-portfolio:ValuationMethod_LowerOfCostOrMarket;
+    sh:name "Valuation Method".
+fin-portfolio:AccountTypeShape a sh:PropertyShape;
+    sh:path fin-portfolio:AccountType;
+    sh:hasValue fin-portfolio:AccountType_Cash, fin-portfolio:AccountType_Margin, fin-portfolio:AccountType_Simulated, fin-portfolio:AccountType_Managed, fin-portfolio:AccountType_Custodial;
+    sh:name "Account Type".
+fin-portfolio:AccountShape a sh:NodeShape;
+    sh:targetClass fin-portfolio:Account;
+    sh:name "Account";
+    sh:description "financial account that serves as the unit of ownership, authorization, and accounting for trading activities and asset holdings";
+    sh:property fin-portfolio:AccountShape_hasAccountIdentifier.
+fin-portfolio:AccountShape_hasAccountIdentifier a sh:PropertyShape;
+    sh:path fin-portfolio:hasAccountIdentifier;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-portfolio:AccountShape sh:property fin-portfolio:AccountShape_hasAccountType.
+fin-portfolio:AccountShape_hasAccountType a sh:PropertyShape;
+    sh:path fin-portfolio:hasAccountType;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-portfolio:PortfolioShape a sh:NodeShape;
+    sh:targetClass fin-portfolio:Portfolio;
+    sh:name "Portfolio";
+    sh:description "collection of financial instruments and cash positions managed as a unit for investment objectives, performance tracking, or risk management";
+    sh:property fin-portfolio:PortfolioShape_hasPortfolioIdentifier.
+fin-portfolio:PortfolioShape_hasPortfolioIdentifier a sh:PropertyShape;
+    sh:path fin-portfolio:hasPortfolioIdentifier;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-portfolio:PortfolioShape sh:property fin-portfolio:PortfolioShape_hasPortfolioName.
+fin-portfolio:PortfolioShape_hasPortfolioName a sh:PropertyShape;
+    sh:path fin-portfolio:hasPortfolioName;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-portfolio:HoldingSnapshotShape a sh:NodeShape;
+    sh:targetClass fin-portfolio:HoldingSnapshot;
+    sh:name "Holding Snapshot";
+    sh:description "time-stamped observation of an account or portfolio's holding of a specific financial instrument at a point in time, with three-axis temporal semantics distinguishing the business effective time, knowledge time, and data availability time";
+    sh:property fin-portfolio:HoldingSnapshotShape_hasQuantity.
+fin-portfolio:HoldingSnapshotShape_hasQuantity a sh:PropertyShape;
+    sh:path fin-portfolio:hasQuantity;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-portfolio:HoldingSnapshotShape sh:property fin-portfolio:HoldingSnapshotShape_hasPositionSide.
+fin-portfolio:HoldingSnapshotShape_hasPositionSide a sh:PropertyShape;
+    sh:path fin-portfolio:hasPositionSide;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-portfolio:HoldingSnapshotShape sh:property fin-portfolio:HoldingSnapshotShape_hasCurrencyCode.
+fin-portfolio:HoldingSnapshotShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode>;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-portfolio:HoldingSnapshotShape sh:property fin-portfolio:HoldingSnapshotShape_heldInAccount.
+fin-portfolio:HoldingSnapshotShape_heldInAccount a sh:PropertyShape;
+    sh:path fin-portfolio:HoldingSnapshot_heldInAccount;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class fin-portfolio:Account.
+fin-portfolio:HoldingSnapshotShape sh:property fin-portfolio:HoldingSnapshotShape_heldInPortfolio.
+fin-portfolio:HoldingSnapshotShape_heldInPortfolio a sh:PropertyShape;
+    sh:path fin-portfolio:HoldingSnapshot_heldInPortfolio;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class fin-portfolio:Portfolio.
+fin-portfolio:HoldingSnapshotShape sh:property fin-portfolio:HoldingSnapshotShape_heldInstrument.
+fin-portfolio:HoldingSnapshotShape_heldInstrument a sh:PropertyShape;
+    sh:path fin-portfolio:HoldingSnapshot_heldInstrument;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>.
+fin-portfolio:PositionValuationShape a sh:NodeShape;
+    sh:targetClass fin-portfolio:PositionValuation;
+    sh:name "Position Valuation";
+    sh:description "time-stamped valuation of a holding that explicitly references the price observation used, the valuation method applied, and the resulting market value, enabling full traceability from price to valuation result";
+    sh:property fin-portfolio:PositionValuationShape_hasMarketValue.
+fin-portfolio:PositionValuationShape_hasMarketValue a sh:PropertyShape;
+    sh:path fin-portfolio:hasMarketValue;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-portfolio:PositionValuationShape sh:property fin-portfolio:PositionValuationShape_hasCostBasis.
+fin-portfolio:PositionValuationShape_hasCostBasis a sh:PropertyShape;
+    sh:path fin-portfolio:hasCostBasis;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-portfolio:PositionValuationShape sh:property fin-portfolio:PositionValuationShape_hasUnrealizedPnL.
+fin-portfolio:PositionValuationShape_hasUnrealizedPnL a sh:PropertyShape;
+    sh:path fin-portfolio:hasUnrealizedPnL;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-portfolio:PositionValuationShape sh:property fin-portfolio:PositionValuationShape_hasValuationMethod.
+fin-portfolio:PositionValuationShape_hasValuationMethod a sh:PropertyShape;
+    sh:path fin-portfolio:hasValuationMethod;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-portfolio:PositionValuationShape sh:property fin-portfolio:PositionValuationShape_hasCurrencyCode.
+fin-portfolio:PositionValuationShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode>;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-portfolio:PositionValuationShape sh:property fin-portfolio:PositionValuationShape_valuedHolding.
+fin-portfolio:PositionValuationShape_valuedHolding a sh:PropertyShape;
+    sh:path fin-portfolio:PositionValuation_valuedHolding;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-portfolio:HoldingSnapshot.
+fin-portfolio:PositionValuationShape sh:property fin-portfolio:PositionValuationShape_usedPriceObservation.
+fin-portfolio:PositionValuationShape_usedPriceObservation a sh:PropertyShape;
+    sh:path fin-portfolio:PositionValuation_usedPriceObservation;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/market-data/PriceObservation>.
+fin-portfolio:PositionLotShape a sh:NodeShape;
+    sh:targetClass fin-portfolio:PositionLot;
+    sh:name "Position Lot";
+    sh:description "distinct acquisition or disposition of a specific quantity of an instrument, tracked separately for tax basis, holding period, or accounting purposes";
+    sh:property fin-portfolio:PositionLotShape_hasQuantity.
+fin-portfolio:PositionLotShape_hasQuantity a sh:PropertyShape;
+    sh:path fin-portfolio:hasQuantity;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-portfolio:PositionLotShape sh:property fin-portfolio:PositionLotShape_hasCostBasis.
+fin-portfolio:PositionLotShape_hasCostBasis a sh:PropertyShape;
+    sh:path fin-portfolio:hasCostBasis;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-portfolio:PositionLotShape sh:property fin-portfolio:PositionLotShape_hasPositionSide.
+fin-portfolio:PositionLotShape_hasPositionSide a sh:PropertyShape;
+    sh:path fin-portfolio:hasPositionSide;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-portfolio:PositionLotShape sh:property fin-portfolio:PositionLotShape_lotForInstrument.
+fin-portfolio:PositionLotShape_lotForInstrument a sh:PropertyShape;
+    sh:path fin-portfolio:PositionLot_lotForInstrument;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>.
+fin-portfolio:PositionLotShape sh:property fin-portfolio:PositionLotShape_lotInAccount.
+fin-portfolio:PositionLotShape_lotInAccount a sh:PropertyShape;
+    sh:path fin-portfolio:PositionLot_lotInAccount;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-portfolio:Account.
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-foundation: <https://axiolune.ai/ontology/finance/foundation/>.
+
+fin-foundation:MonetaryAmountShape a sh:NodeShape;
+    sh:targetClass fin-foundation:MonetaryAmount;
+    sh:name "Monetary Amount";
+    sh:description "structured monetary amount with currency code and scale; financial amounts MUST NOT use bare decimal";
+    sh:property fin-foundation:MonetaryAmountShape_hasCurrencyCode.
+fin-foundation:MonetaryAmountShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path fin-foundation:hasCurrencyCode;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-foundation:QuantityValueShape a sh:NodeShape;
+    sh:targetClass fin-foundation:QuantityValue;
+    sh:name "Quantity Value";
+    sh:description "structured measurement with unit and precision; quantities MUST NOT use bare decimal".
+fin-foundation:FinancialIdentifierAssignmentShape a sh:NodeShape;
+    sh:targetClass fin-foundation:FinancialIdentifierAssignment;
+    sh:name "Financial Identifier Assignment";
+    sh:description "association binding an identifier value of a declared identifier type to a party or instrument under an issuing authority and effective interval";
+    sh:property fin-foundation:FinancialIdentifierAssignmentShape_hasPrimaryIdentifier.
+fin-foundation:FinancialIdentifierAssignmentShape_hasPrimaryIdentifier a sh:PropertyShape;
+    sh:path fin-foundation:hasPrimaryIdentifier;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-foundation:FinancialIdentifierAssignmentShape sh:property fin-foundation:FinancialIdentifierAssignmentShape_assignsIdentifier.
+fin-foundation:FinancialIdentifierAssignmentShape_assignsIdentifier a sh:PropertyShape;
+    sh:path fin-foundation:FinancialIdentifierAssignment_assignsIdentifier;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class fin-foundation:Party.
+fin-foundation:hasCurrencyCodeShape a sh:PropertyShape;
+    sh:path fin-foundation:hasCurrencyCode;
+    sh:pattern "^[A-Z]{3}$";
+    sh:datatype xsd:string;
+    sh:name "Has Currency Code".
+fin-foundation:PartyShape a sh:NodeShape;
+    sh:targetClass fin-foundation:Party;
+    sh:name "Party";
+    sh:description "autonomous agent that can participate in legal or financial relationships, including natural persons and legal entities".
+fin-foundation:LegalEntityShape a sh:NodeShape;
+    sh:targetClass fin-foundation:LegalEntity;
+    sh:name "Legal Entity";
+    sh:description "organization that is legally or financially responsible for the performance of financial transactions and is capable of accruing liability on its own part, excluding natural persons but including governments and supranational entities";
+    sh:property fin-foundation:LegalEntityShape_hasLegalName.
+fin-foundation:LegalEntityShape_hasLegalName a sh:PropertyShape;
+    sh:path fin-foundation:hasLegalName;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-foundation:CurrencyShape a sh:NodeShape;
+    sh:targetClass fin-foundation:Currency;
+    sh:name "Currency";
+    sh:description "medium of exchange value defined by reference to the geographical location of the monetary authorities responsible for it, as specified in ISO 4217";
+    sh:property fin-foundation:CurrencyShape_hasCurrencyCode.
+fin-foundation:CurrencyShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path fin-foundation:hasCurrencyCode;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-foundation:JurisdictionShape a sh:NodeShape;
+    sh:targetClass fin-foundation:Jurisdiction;
+    sh:name "Jurisdiction";
+    sh:description "legal authority that has the power to make and enforce rules of conduct within a defined geographical or functional scope".

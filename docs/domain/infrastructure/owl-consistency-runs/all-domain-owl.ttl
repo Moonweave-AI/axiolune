@@ -1,0 +1,1314 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+
+@prefix ext-fibo: <https://axiolune.ai/ontology/finance/ext-fibo-release-local/>.
+
+<https://axiolune.ai/ontology/finance/ext-fibo-release-local> a owl:Ontology;
+    owl:versionIRI <https://axiolune.ai/ontology/finance/ext-fibo-release-local/0.2.0>;
+    rdfs:label "External FIBO Release Adapter (local evidence)";
+    rdfs:comment "SemVer adapter locking a local FIBO evidence bundle for alignment; not a wholesale FIBO import".
+ext-fibo:FiboEvidenceBundle a owl:Class;
+    rdfs:label "FIBO Evidence Bundle";
+    rdfs:comment "documentation object recording the locked local FIBO evidence files and import policy for Axiolune alignments".
+
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+
+@prefix fin-foundation: <https://axiolune.ai/ontology/finance/foundation/>.
+
+<https://axiolune.ai/ontology/finance/foundation> a owl:Ontology;
+    owl:versionIRI <https://axiolune.ai/ontology/finance/foundation/0.2.0>;
+    rdfs:label "Financial Foundation";
+    rdfs:comment "financial identity, identifiers, currency, jurisdiction, and party vocabulary shared across all finance domain modules".
+fin-foundation:ISIN a owl:DatatypeProperty;
+    rdfs:label "International Securities Identification Number";
+    rdfs:comment "12-character alphanumeric code that identifies a security as specified by ISO 6166, consisting of a 2-character ISO 3166-1 country code, a 9-character national securities identifying number, and a Luhn check digit";
+    rdfs:range xsd:string.
+fin-foundation:LEI a owl:DatatypeProperty;
+    rdfs:label "Legal Entity Identifier";
+    rdfs:comment "20-character alphanumeric code that uniquely identifies a legal entity as defined in ISO 17442, consisting of a 4-character LOU prefix, 12-character entity-specific identifier, and 2 check digits";
+    rdfs:range xsd:string.
+fin-foundation:MIC a owl:DatatypeProperty;
+    rdfs:label "Market Identifier Code";
+    rdfs:comment "market identifier code that uniquely identifies an exchange, trading platform, or market as specified by ISO 10383, comprising a 4-character alphanumeric operating-level code or a 4+4 character segment-level code";
+    rdfs:range xsd:string.
+fin-foundation:hasPrimaryIdentifier a owl:DatatypeProperty;
+    rdfs:label "Has Primary Identifier";
+    rdfs:comment "relation from a financial instrument to its primary externally-issued identifier such as an ISIN";
+    rdfs:range xsd:string.
+fin-foundation:hasLegalName a owl:DatatypeProperty;
+    rdfs:label "Has Legal Name";
+    rdfs:comment "relation from a legal entity to its registered legal name";
+    rdfs:range xsd:string.
+fin-foundation:MonetaryAmount a owl:Class;
+    rdfs:label "Monetary Amount";
+    rdfs:comment "structured monetary amount with numeric magnitude, ISO 4217 currency code, and optional scale; financial amounts MUST NOT use bare decimal literals".
+fin-foundation:QuantityValue a owl:Class;
+    rdfs:label "Quantity Value";
+    rdfs:comment "structured measurement with numeric magnitude and unit code; quantities MUST NOT use bare decimal".
+fin-foundation:hasNumericAmount a owl:DatatypeProperty;
+    rdfs:label "Has Numeric Amount";
+    rdfs:comment "numeric magnitude of a MonetaryAmount or QuantityValue (aligned to FIBO hasAmount / Commons hasNumericValue)";
+    rdfs:range xsd:decimal.
+fin-foundation:hasScale a owl:DatatypeProperty;
+    rdfs:label "Has Scale";
+    rdfs:comment "optional decimal scale / fractional digits for the numeric amount";
+    rdfs:range xsd:integer.
+fin-foundation:hasUnitCode a owl:DatatypeProperty;
+    rdfs:label "Has Unit Code";
+    rdfs:comment "unit of measure code for a QuantityValue (e.g. share, contract, ratio, 1)";
+    rdfs:range xsd:string.
+fin-foundation:FinancialIdentifierAssignment a owl:Class;
+    rdfs:label "Financial Identifier Assignment";
+    rdfs:comment "association binding an identifier value of a declared identifier type to a party or instrument under an issuing authority and effective interval".
+fin-foundation:assignsIdentifier a owl:ObjectProperty;
+    rdfs:domain fin-foundation:FinancialIdentifierAssignment;
+    rdfs:range fin-foundation:Party;
+    rdfs:label "assignsIdentifier".
+fin-foundation:identifiesSubject a owl:ObjectProperty;
+    rdfs:domain fin-foundation:FinancialIdentifierAssignment;
+    rdfs:range fin-foundation:Party;
+    rdfs:label "identifiesSubject".
+fin-foundation:hasCurrencyCode a owl:DatatypeProperty;
+    rdfs:label "Has Currency Code";
+    rdfs:comment "relation from a financial concept to its ISO 4217 3-character alphabetic currency code";
+    rdfs:range xsd:string.
+fin-foundation:Party a owl:Class;
+    rdfs:label "Party";
+    rdfs:comment "autonomous agent that can participate in legal or financial relationships, including natural persons and legal entities".
+fin-foundation:LegalEntity a owl:Class;
+    rdfs:label "Legal Entity";
+    rdfs:comment "organization that is legally or financially responsible for the performance of financial transactions and is capable of accruing liability on its own part, excluding natural persons but including governments and supranational entities";
+    rdfs:subClassOf fin-foundation:Party.
+fin-foundation:Currency a owl:Class;
+    rdfs:label "Currency";
+    rdfs:comment "medium of exchange value defined by reference to the geographical location of the monetary authorities responsible for it, as specified in ISO 4217".
+fin-foundation:Jurisdiction a owl:Class;
+    rdfs:label "Jurisdiction";
+    rdfs:comment "legal authority that has the power to make and enforce rules of conduct within a defined geographical or functional scope".
+fin-foundation:ISIN rdfs:subClassOf <https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesIdentification/InternationalSecuritiesIdentificationNumber>.
+fin-foundation:LEI rdfs:subClassOf <https://spec.edmcouncil.org/fibo/ontology/BE/LegalEntities/LEIEntities/LegalEntityIdentifier>.
+fin-foundation:MIC rdfs:subClassOf <https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/Markets/MarketIdentifier>.
+fin-foundation:hasLegalName rdfs:subPropertyOf <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/hasLegalName>.
+fin-foundation:MonetaryAmount skos:closeMatch <https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/MonetaryAmount>.
+fin-foundation:Party rdfs:subClassOf <https://www.omg.org/spec/Commons/PartiesAndSituations/Party>.
+fin-foundation:LegalEntity rdfs:subClassOf <https://www.omg.org/spec/Commons/Organizations/LegalEntity>.
+fin-foundation:Currency rdfs:subClassOf <https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/Currency>.
+fin-foundation:Jurisdiction rdfs:subClassOf <https://www.omg.org/spec/Commons/RegulatoryAgencies/Jurisdiction>.
+
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+
+@prefix fin-instruments: <https://axiolune.ai/ontology/finance/instruments/>.
+
+<https://axiolune.ai/ontology/finance/instruments> a owl:Ontology;
+    owl:versionIRI <https://axiolune.ai/ontology/finance/instruments/0.2.0>;
+    rdfs:label "Financial Instruments";
+    rdfs:comment "financial instruments, securities, equities, listings, and issuers that define what is traded";
+    owl:imports <https://axiolune.ai/ontology/finance/foundation>, <https://axiolune.ai/ontology/finance/market-structure>.
+fin-instruments:hasTickSize a owl:ObjectProperty;
+    rdfs:label "Has Tick Size";
+    rdfs:comment "relation from an instrument listing to its minimum price increment (tick size) as a monetary amount";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-instruments:hasLotSize a owl:ObjectProperty;
+    rdfs:label "Has Lot Size";
+    rdfs:comment "relation from an instrument listing to its standard board lot size as a quantity";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/QuantityValue>.
+fin-instruments:hasListingDate a owl:DatatypeProperty;
+    rdfs:label "Has Listing Date";
+    rdfs:comment "relation from an instrument listing to the date on which the instrument was first listed on the venue";
+    rdfs:range xsd:dateTime.
+fin-instruments:hasDelistingDate a owl:DatatypeProperty;
+    rdfs:label "Has Delisting Date";
+    rdfs:comment "relation from an instrument listing to the date on which the instrument was delisted from the venue, or null if still listed";
+    rdfs:range xsd:dateTime.
+fin-instruments:isIssuedBy a owl:ObjectProperty;
+    rdfs:label "Is Issued By";
+    rdfs:comment "binary relation from a financial instrument to the legal entity that issued it";
+    rdfs:domain fin-instruments:FinancialInstrument;
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/LegalEntity>.
+fin-instruments:isTradedOn a owl:ObjectProperty;
+    rdfs:label "Is Traded On";
+    rdfs:comment "binary relation from a financial instrument to a trading venue where it is listed for trading";
+    rdfs:domain fin-instruments:FinancialInstrument;
+    rdfs:range <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>.
+fin-instruments:isListedOn a owl:ObjectProperty;
+    rdfs:label "Is Listed On";
+    rdfs:comment "binary relation from an instrument listing to the trading venue on which it is listed";
+    rdfs:domain fin-instruments:InstrumentListing;
+    rdfs:range <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>.
+fin-instruments:hasDenominatedCurrency a owl:ObjectProperty;
+    rdfs:label "Has Denominated Currency";
+    rdfs:comment "relation from a financial instrument to the currency in which it is denominated";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/Currency>.
+fin-instruments:FinancialInstrument a owl:Class;
+    rdfs:label "Financial Instrument";
+    rdfs:comment "written contract that gives rise to both a financial asset of one entity and a financial liability of another entity, as defined in IAS 32".
+fin-instruments:Security a owl:Class;
+    rdfs:label "Security";
+    rdfs:comment "financial instrument that can be bought or sold, as defined in the Securities Exchange Act 1934";
+    rdfs:subClassOf fin-instruments:FinancialInstrument.
+fin-instruments:EquitySecurity a owl:Class;
+    rdfs:label "Equity Security";
+    rdfs:comment "security representing an ownership interest in an entity or pool of assets, as defined in ISO 10962";
+    rdfs:subClassOf fin-instruments:Security.
+fin-instruments:SecuritiesOffering a owl:Class;
+    rdfs:label "Securities Offering";
+    rdfs:comment "offering of a security (or securities) for sale; distinct from the instrument contract and from an exchange listing".
+fin-instruments:listsOffering a owl:ObjectProperty;
+    rdfs:label "Lists Offering";
+    rdfs:comment "binary relation from an InstrumentListing to the SecuritiesOffering it catalogs on a venue";
+    rdfs:domain fin-instruments:InstrumentListing;
+    rdfs:range fin-instruments:SecuritiesOffering.
+fin-instruments:InstrumentListing a owl:Class;
+    rdfs:label "Instrument Listing";
+    rdfs:comment "catalog entry for a securities offering managed by an exchange that provides the terms under which that security is made available on that exchange".
+fin-instruments:Issuer a owl:Class;
+    rdfs:label "Issuer";
+    rdfs:comment "role of a party that issues or proposes to issue in a formal filing one or more financial instruments".
+fin-instruments:isIssuedBy rdfs:subPropertyOf <https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/isIssuedBy>.
+fin-instruments:FinancialInstrument rdfs:subClassOf <https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/FinancialInstrument>.
+fin-instruments:Security rdfs:subClassOf <https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/Security>.
+fin-instruments:EquitySecurity rdfs:subClassOf <https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/EquityInstrument>.
+fin-instruments:SecuritiesOffering rdfs:subClassOf <https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesIssuance/SecuritiesOffering>.
+fin-instruments:InstrumentListing rdfs:subClassOf <https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/Listing>.
+fin-instruments:Issuer rdfs:subClassOf <https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/Issuer>.
+
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+
+@prefix fin-market-data: <https://axiolune.ai/ontology/finance/market-data/>.
+
+<https://axiolune.ai/ontology/finance/market-data> a owl:Ontology;
+    owl:versionIRI <https://axiolune.ai/ontology/finance/market-data/0.2.0>;
+    rdfs:label "Market Data";
+    rdfs:comment "price observations, quote observations, trade observations, bars, and data provenance that capture market activity with three-axis temporal semantics (valid/knowledge/availability time) per ADR-012";
+    owl:imports <https://axiolune.ai/ontology/finance/foundation>, <https://axiolune.ai/ontology/finance/market-structure>, <https://axiolune.ai/ontology/finance/instruments>.
+fin-market-data:PriceKind a owl:Class;
+    rdfs:label "Price Kind";
+    rdfs:comment "controlled vocabulary of price observation types that distinguish the semantic role of a price value in market data".
+fin-market-data:PriceKind_Last a fin-market-data:PriceKind;
+    rdfs:label "Last".
+fin-market-data:PriceKind_Bid a fin-market-data:PriceKind;
+    rdfs:label "Bid".
+fin-market-data:PriceKind_Ask a fin-market-data:PriceKind;
+    rdfs:label "Ask".
+fin-market-data:PriceKind_Mid a fin-market-data:PriceKind;
+    rdfs:label "Mid".
+fin-market-data:PriceKind_Open a fin-market-data:PriceKind;
+    rdfs:label "Open".
+fin-market-data:PriceKind_High a fin-market-data:PriceKind;
+    rdfs:label "High".
+fin-market-data:PriceKind_Low a fin-market-data:PriceKind;
+    rdfs:label "Low".
+fin-market-data:PriceKind_Close a fin-market-data:PriceKind;
+    rdfs:label "Close".
+fin-market-data:PriceKind_Settlement a fin-market-data:PriceKind;
+    rdfs:label "Settlement".
+fin-market-data:PriceKind_VWAP a fin-market-data:PriceKind;
+    rdfs:label "VWAP".
+fin-market-data:PriceKind_TWAP a fin-market-data:PriceKind;
+    rdfs:label "TWAP".
+fin-market-data:QuoteSide a owl:Class;
+    rdfs:label "Quote Side";
+    rdfs:comment "controlled vocabulary indicating whether a quote is a bid (buy) or ask (sell) side quotation".
+fin-market-data:QuoteSide_Bid a fin-market-data:QuoteSide;
+    rdfs:label "Bid".
+fin-market-data:QuoteSide_Ask a fin-market-data:QuoteSide;
+    rdfs:label "Ask".
+fin-market-data:BarAggregation a owl:Class;
+    rdfs:label "Bar Aggregation";
+    rdfs:comment "controlled vocabulary of bar aggregation methods (time, tick, volume, dollar)".
+fin-market-data:BarAggregation_Time a fin-market-data:BarAggregation;
+    rdfs:label "Time".
+fin-market-data:BarAggregation_Tick a fin-market-data:BarAggregation;
+    rdfs:label "Tick".
+fin-market-data:BarAggregation_Volume a fin-market-data:BarAggregation;
+    rdfs:label "Volume".
+fin-market-data:BarAggregation_Dollar a fin-market-data:BarAggregation;
+    rdfs:label "Dollar".
+fin-market-data:BarAggregation_Range a fin-market-data:BarAggregation;
+    rdfs:label "Range".
+fin-market-data:BarAggregation_Renko a fin-market-data:BarAggregation;
+    rdfs:label "Renko".
+fin-market-data:hasPriceValue a owl:ObjectProperty;
+    rdfs:label "Has Price Value";
+    rdfs:comment "relation from a price observation to its decimal price value";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-market-data:hasPriceKind a owl:DatatypeProperty;
+    rdfs:label "Has Price Kind";
+    rdfs:comment "relation from a price observation to its price kind from the PriceKind code list";
+    rdfs:range xsd:string.
+fin-market-data:hasQuoteSide a owl:DatatypeProperty;
+    rdfs:label "Has Quote Side";
+    rdfs:comment "relation from a quote observation to its side (Bid or Ask) from the QuoteSide code list";
+    rdfs:range xsd:string.
+fin-market-data:hasBidPrice a owl:ObjectProperty;
+    rdfs:label "Has Bid Price";
+    rdfs:comment "relation from a quote observation to the bid price value";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-market-data:hasAskPrice a owl:ObjectProperty;
+    rdfs:label "Has Ask Price";
+    rdfs:comment "relation from a quote observation to the ask price value";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-market-data:hasBidSize a owl:ObjectProperty;
+    rdfs:label "Has Bid Size";
+    rdfs:comment "relation from a quote observation to the bid quantity";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/QuantityValue>.
+fin-market-data:hasAskSize a owl:ObjectProperty;
+    rdfs:label "Has Ask Size";
+    rdfs:comment "relation from a quote observation to the ask quantity";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/QuantityValue>.
+fin-market-data:hasTradePrice a owl:ObjectProperty;
+    rdfs:label "Has Trade Price";
+    rdfs:comment "relation from a trade observation to the execution price";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-market-data:hasTradeSize a owl:ObjectProperty;
+    rdfs:label "Has Trade Size";
+    rdfs:comment "relation from a trade observation to the executed quantity";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/QuantityValue>.
+fin-market-data:hasOpenPrice a owl:ObjectProperty;
+    rdfs:label "Has Open Price";
+    rdfs:comment "relation from a bar to the first trade price in the bar period";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-market-data:hasHighPrice a owl:ObjectProperty;
+    rdfs:label "Has High Price";
+    rdfs:comment "relation from a bar to the highest trade price in the bar period";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-market-data:hasLowPrice a owl:ObjectProperty;
+    rdfs:label "Has Low Price";
+    rdfs:comment "relation from a bar to the lowest trade price in the bar period";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-market-data:hasClosePrice a owl:ObjectProperty;
+    rdfs:label "Has Close Price";
+    rdfs:comment "relation from a bar to the last trade price in the bar period";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-market-data:hasVolume a owl:ObjectProperty;
+    rdfs:label "Has Volume";
+    rdfs:comment "relation from a bar or trade observation to the total quantity traded";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/QuantityValue>.
+fin-market-data:hasBarAggregation a owl:DatatypeProperty;
+    rdfs:label "Has Bar Aggregation";
+    rdfs:comment "relation from a bar to its aggregation method from the BarAggregation code list";
+    rdfs:range xsd:string.
+fin-market-data:hasBarDuration a owl:DatatypeProperty;
+    rdfs:label "Has Bar Duration";
+    rdfs:comment "relation from a time-aggregated bar to its duration (e.g. 1 minute, 5 minutes, 1 hour)";
+    rdfs:range xsd:duration.
+fin-market-data:PriceObservation a owl:Class;
+    rdfs:label "Price Observation";
+    rdfs:comment "time-stamped observation of a price for a financial instrument at a specific venue with a defined price kind, currency, source, and three-axis temporal semantics (valid-time = market event time, knowledge-time = when platform learned, availability-time = when queryable per ADR-012)".
+fin-market-data:observedInstrument a owl:ObjectProperty;
+    rdfs:domain fin-market-data:PriceObservation;
+    rdfs:range <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>;
+    rdfs:label "observedInstrument".
+fin-market-data:observedAtVenue a owl:ObjectProperty;
+    rdfs:domain fin-market-data:PriceObservation;
+    rdfs:range <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>;
+    rdfs:label "observedAtVenue".
+fin-market-data:QuoteObservation a owl:Class;
+    rdfs:label "Quote Observation";
+    rdfs:comment "time-stamped observation of bid and/or ask prices with sizes for a financial instrument at a specific venue, with three-axis temporal semantics per ADR-012".
+fin-market-data:observedInstrument a owl:ObjectProperty;
+    rdfs:domain fin-market-data:QuoteObservation;
+    rdfs:range <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>;
+    rdfs:label "observedInstrument".
+fin-market-data:observedAtVenue a owl:ObjectProperty;
+    rdfs:domain fin-market-data:QuoteObservation;
+    rdfs:range <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>;
+    rdfs:label "observedAtVenue".
+fin-market-data:TradeObservation a owl:Class;
+    rdfs:label "Trade Observation";
+    rdfs:comment "time-stamped observation of an executed trade for a financial instrument at a specific venue with price, size, currency, source, and three-axis temporal semantics per ADR-012".
+fin-market-data:observedInstrument a owl:ObjectProperty;
+    rdfs:domain fin-market-data:TradeObservation;
+    rdfs:range <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>;
+    rdfs:label "observedInstrument".
+fin-market-data:observedAtVenue a owl:ObjectProperty;
+    rdfs:domain fin-market-data:TradeObservation;
+    rdfs:range <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>;
+    rdfs:label "observedAtVenue".
+fin-market-data:Bar a owl:Class;
+    rdfs:label "Bar";
+    rdfs:comment "aggregated market data observation over a time period, tick count, volume, or dollar amount, with open/high/low/close prices, volume, aggregation method, and three-axis temporal semantics per ADR-012".
+fin-market-data:observedInstrument a owl:ObjectProperty;
+    rdfs:domain fin-market-data:Bar;
+    rdfs:range <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>;
+    rdfs:label "observedInstrument".
+fin-market-data:observedAtVenue a owl:ObjectProperty;
+    rdfs:domain fin-market-data:Bar;
+    rdfs:range <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>;
+    rdfs:label "observedAtVenue".
+
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+
+@prefix fin-market-rules: <https://axiolune.ai/ontology/finance/market-rules/>.
+
+<https://axiolune.ai/ontology/finance/market-rules> a owl:Ontology;
+    owl:versionIRI <https://axiolune.ai/ontology/finance/market-rules/0.2.0>;
+    rdfs:label "Market Rules";
+    rdfs:comment "trading, settlement, and admission rules with scoped applicability, versioning, and temporal validity that govern how instruments are traded on venues";
+    owl:imports <https://axiolune.ai/ontology/finance/foundation>, <https://axiolune.ai/ontology/finance/market-structure>.
+fin-market-rules:RuleType a owl:Class;
+    rdfs:label "Rule Type";
+    rdfs:comment "controlled vocabulary of market rule types governing trading and settlement behavior".
+fin-market-rules:RuleType_PriceLimit a fin-market-rules:RuleType;
+    rdfs:label "PriceLimit".
+fin-market-rules:RuleType_TickSchedule a fin-market-rules:RuleType;
+    rdfs:label "TickSchedule".
+fin-market-rules:RuleType_LotSchedule a fin-market-rules:RuleType;
+    rdfs:label "LotSchedule".
+fin-market-rules:RuleType_SettlementCycle a fin-market-rules:RuleType;
+    rdfs:label "SettlementCycle".
+fin-market-rules:RuleType_TradingHours a fin-market-rules:RuleType;
+    rdfs:label "TradingHours".
+fin-market-rules:RuleType_MarginRequirement a fin-market-rules:RuleType;
+    rdfs:label "MarginRequirement".
+fin-market-rules:RuleType_PositionLimit a fin-market-rules:RuleType;
+    rdfs:label "PositionLimit".
+fin-market-rules:RuleType_ShortSellingRestriction a fin-market-rules:RuleType;
+    rdfs:label "ShortSellingRestriction".
+fin-market-rules:RuleType_CircuitBreaker a fin-market-rules:RuleType;
+    rdfs:label "CircuitBreaker".
+fin-market-rules:RuleType_CloseTodayOffset a fin-market-rules:RuleType;
+    rdfs:label "CloseTodayOffset".
+fin-market-rules:RuleType_TPlusTradingRestriction a fin-market-rules:RuleType;
+    rdfs:label "TPlusTradingRestriction".
+fin-market-rules:RuleLifecycleStatus a owl:Class;
+    rdfs:label "Rule Lifecycle Status";
+    rdfs:comment "controlled vocabulary of lifecycle states for a market rule applicability binding".
+fin-market-rules:RuleLifecycleStatus_active a fin-market-rules:RuleLifecycleStatus;
+    rdfs:label "active".
+fin-market-rules:RuleLifecycleStatus_superseded a fin-market-rules:RuleLifecycleStatus;
+    rdfs:label "superseded".
+fin-market-rules:RuleLifecycleStatus_expired a fin-market-rules:RuleLifecycleStatus;
+    rdfs:label "expired".
+fin-market-rules:RuleLifecycleStatus_proposed a fin-market-rules:RuleLifecycleStatus;
+    rdfs:label "proposed".
+fin-market-rules:InstrumentClass a owl:Class;
+    rdfs:label "Instrument Class";
+    rdfs:comment "controlled vocabulary of broad instrument classes used for rule scoping".
+fin-market-rules:InstrumentClass_Equity a fin-market-rules:InstrumentClass;
+    rdfs:label "Equity".
+fin-market-rules:InstrumentClass_Bond a fin-market-rules:InstrumentClass;
+    rdfs:label "Bond".
+fin-market-rules:InstrumentClass_Future a fin-market-rules:InstrumentClass;
+    rdfs:label "Future".
+fin-market-rules:InstrumentClass_Option a fin-market-rules:InstrumentClass;
+    rdfs:label "Option".
+fin-market-rules:InstrumentClass_Swap a fin-market-rules:InstrumentClass;
+    rdfs:label "Swap".
+fin-market-rules:InstrumentClass_Fund a fin-market-rules:InstrumentClass;
+    rdfs:label "Fund".
+fin-market-rules:InstrumentClass_Commodity a fin-market-rules:InstrumentClass;
+    rdfs:label "Commodity".
+fin-market-rules:hasRuleType a owl:DatatypeProperty;
+    rdfs:label "Has Rule Type";
+    rdfs:comment "relation from a market rule to its type classification from the RuleType code list";
+    rdfs:range xsd:string.
+fin-market-rules:hasRuleParameterValue a owl:ObjectProperty;
+    rdfs:label "Has Rule Parameter Value";
+    rdfs:comment "relation from a market rule to its primary parameter value (e.g. 0.10 for a 10% price limit, 1 for T+1 settlement)";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/QuantityValue>.
+fin-market-rules:hasRuleParameterUnit a owl:DatatypeProperty;
+    rdfs:label "Has Rule Parameter Unit";
+    rdfs:comment "relation from a market rule to the unit of its parameter value (e.g. percent, days, shares)";
+    rdfs:range xsd:string.
+fin-market-rules:hasRuleSource a owl:DatatypeProperty;
+    rdfs:label "Has Rule Source";
+    rdfs:comment "relation from a market rule to the authority or document that established it";
+    rdfs:range xsd:string.
+fin-market-rules:hasRuleRevision a owl:DatatypeProperty;
+    rdfs:label "Has Rule Revision";
+    rdfs:comment "relation from a market rule to its revision number or version identifier";
+    rdfs:range xsd:string.
+fin-market-rules:hasLifecycleStatus a owl:DatatypeProperty;
+    rdfs:label "Has Lifecycle Status";
+    rdfs:comment "relation from a rule applicability to its lifecycle status from the RuleLifecycleStatus code list";
+    rdfs:range xsd:string.
+fin-market-rules:appliesToInstrumentClass a owl:DatatypeProperty;
+    rdfs:label "Applies To Instrument Class";
+    rdfs:comment "relation from a rule applicability to the instrument class it applies to";
+    rdfs:range xsd:string.
+fin-market-rules:MarketRule a owl:Class;
+    rdfs:label "Market Rule";
+    rdfs:comment "named trading or settlement rule that governs how instruments are traded, matched, or settled on a trading venue, with a rule type, parameter value, unit, source, and revision".
+fin-market-rules:SettlementConvention a owl:Class;
+    rdfs:label "Settlement Convention";
+    rdfs:comment "market rule that defines the standard settlement cycle (e.g. T+1, T+2) for trades executed on a venue";
+    rdfs:subClassOf fin-market-rules:MarketRule.
+fin-market-rules:RuleApplicability a owl:Class;
+    rdfs:label "Rule Applicability";
+    rdfs:comment "association that binds a market rule to a specific scope defined by venue, market segment, instrument class, and/or investor category, with valid-time and knowledge-time intervals, source, revision, and lifecycle status".
+fin-market-rules:appliesRule a owl:ObjectProperty;
+    rdfs:domain fin-market-rules:RuleApplicability;
+    rdfs:range fin-market-rules:MarketRule;
+    rdfs:label "appliesRule".
+fin-market-rules:scopedToVenue a owl:ObjectProperty;
+    rdfs:domain fin-market-rules:RuleApplicability;
+    rdfs:range <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>;
+    rdfs:label "scopedToVenue".
+
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+
+@prefix fin-market-structure: <https://axiolune.ai/ontology/finance/market-structure/>.
+
+<https://axiolune.ai/ontology/finance/market-structure> a owl:Ontology;
+    owl:versionIRI <https://axiolune.ai/ontology/finance/market-structure/0.2.0>;
+    rdfs:label "Market Structure";
+    rdfs:comment "trading venues, market segments, trading sessions, and trading calendars that define where and when financial instruments are traded".
+fin-market-structure:hasMarketIdentifierCode a owl:DatatypeProperty;
+    rdfs:label "Has Market Identifier Code";
+    rdfs:comment "relation from a trading venue to its ISO 10383 market identifier code (MIC)";
+    rdfs:range xsd:string.
+fin-market-structure:VenueType a owl:Class;
+    rdfs:label "Venue Type";
+    rdfs:comment "controlled vocabulary of trading venue regulatory classifications".
+fin-market-structure:VenueType_RegulatedExchange a fin-market-structure:VenueType;
+    rdfs:label "RegulatedExchange".
+fin-market-structure:VenueType_MultilateralTradingFacility a fin-market-structure:VenueType;
+    rdfs:label "MultilateralTradingFacility".
+fin-market-structure:VenueType_OrganizedTradingFacility a fin-market-structure:VenueType;
+    rdfs:label "OrganizedTradingFacility".
+fin-market-structure:VenueType_AlternativeTradingSystem a fin-market-structure:VenueType;
+    rdfs:label "AlternativeTradingSystem".
+fin-market-structure:VenueType_SystematicInternaliser a fin-market-structure:VenueType;
+    rdfs:label "SystematicInternaliser".
+fin-market-structure:VenueType_DesignatedContractMarket a fin-market-structure:VenueType;
+    rdfs:label "DesignatedContractMarket".
+fin-market-structure:VenueType_SwapExecutionFacility a fin-market-structure:VenueType;
+    rdfs:label "SwapExecutionFacility".
+fin-market-structure:hasVenueType a owl:DatatypeProperty;
+    rdfs:label "Has Venue Type";
+    rdfs:comment "relation from a trading venue to its regulatory classification (e.g. regulated exchange, MTF, OTF, ATS)";
+    rdfs:range xsd:string.
+fin-market-structure:isPartOfVenue a owl:ObjectProperty;
+    rdfs:label "Is Part Of Venue";
+    rdfs:comment "relation from a market segment to its parent operating-level trading venue";
+    rdfs:range fin-market-structure:TradingVenue.
+fin-market-structure:SessionType a owl:Class;
+    rdfs:label "Session Type";
+    rdfs:comment "controlled vocabulary of trading session classifications".
+fin-market-structure:SessionType_PreMarket a fin-market-structure:SessionType;
+    rdfs:label "PreMarket".
+fin-market-structure:SessionType_Regular a fin-market-structure:SessionType;
+    rdfs:label "Regular".
+fin-market-structure:SessionType_PostMarket a fin-market-structure:SessionType;
+    rdfs:label "PostMarket".
+fin-market-structure:SessionType_OpeningAuction a fin-market-structure:SessionType;
+    rdfs:label "OpeningAuction".
+fin-market-structure:SessionType_ClosingAuction a fin-market-structure:SessionType;
+    rdfs:label "ClosingAuction".
+fin-market-structure:SessionType_IntradayAuction a fin-market-structure:SessionType;
+    rdfs:label "IntradayAuction".
+fin-market-structure:SessionType_Intermission a fin-market-structure:SessionType;
+    rdfs:label "Intermission".
+fin-market-structure:hasSessionType a owl:DatatypeProperty;
+    rdfs:label "Has Session Type";
+    rdfs:comment "relation from a trading session to its type classification (e.g. pre-market, regular, post-market, auction, closing)";
+    rdfs:range xsd:string.
+fin-market-structure:hasSessionStartTime a owl:DatatypeProperty;
+    rdfs:label "Has Session Start Time";
+    rdfs:comment "relation from a trading session to its scheduled start time";
+    rdfs:range xsd:dateTime.
+fin-market-structure:hasSessionEndTime a owl:DatatypeProperty;
+    rdfs:label "Has Session End Time";
+    rdfs:comment "relation from a trading session to its scheduled end time";
+    rdfs:range xsd:dateTime.
+fin-market-structure:TradingVenue a owl:Class;
+    rdfs:label "Trading Venue";
+    rdfs:comment "organization, association, or group that constitutes, maintains, or provides a facility for bringing together purchasers and sellers of financial instruments, identified by a MIC (ISO 10383)".
+fin-market-structure:MarketSegment a owl:Class;
+    rdfs:label "Market Segment";
+    rdfs:comment "section of a trading venue that specializes in one or more specific instruments or that is regulated differently from other sections of the same venue".
+fin-market-structure:TradingSession a owl:Class;
+    rdfs:label "Trading Session";
+    rdfs:comment "scheduled time period during which a trading venue accepts orders and executes trades, characterized by a session type such as pre-market, regular, post-market, or auction".
+fin-market-structure:TradingCalendar a owl:Class;
+    rdfs:label "Trading Calendar";
+    rdfs:comment "schedule of trading sessions for a trading venue across calendar dates, defining which dates and times the venue is open for trading".
+fin-market-structure:TradingVenue rdfs:subClassOf <https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/Markets/Exchange>.
+fin-market-structure:MarketSegment rdfs:subClassOf <https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/Markets/MarketSegmentLevelMarket>.
+fin-market-structure:TradingCalendar rdfs:subClassOf <https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/BusinessCalendar>.
+
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+
+@prefix fin-orders: <https://axiolune.ai/ontology/finance/orders-execution/>.
+
+<https://axiolune.ai/ontology/finance/orders-execution> a owl:Ontology;
+    owl:versionIRI <https://axiolune.ai/ontology/finance/orders-execution/0.2.0>;
+    rdfs:label "Orders and Execution";
+    rdfs:comment "order intent, lifecycle events, execution facts, and external status mappings that capture trade order semantics with event-driven state transitions and explicit execution-to-position derivation";
+    owl:imports <https://axiolune.ai/ontology/finance/foundation>, <https://axiolune.ai/ontology/finance/instruments>, <https://axiolune.ai/ontology/finance/market-structure>.
+fin-orders:OrderSide a owl:Class;
+    rdfs:label "Order Side";
+    rdfs:comment "controlled vocabulary indicating the direction of an order (buy or sell)".
+fin-orders:OrderSide_Buy a fin-orders:OrderSide;
+    rdfs:label "Buy".
+fin-orders:OrderSide_Sell a fin-orders:OrderSide;
+    rdfs:label "Sell".
+fin-orders:OrderType a owl:Class;
+    rdfs:label "Order Type";
+    rdfs:comment "controlled vocabulary of order execution instructions (market, limit, stop, stop-limit)".
+fin-orders:OrderType_Market a fin-orders:OrderType;
+    rdfs:label "Market".
+fin-orders:OrderType_Limit a fin-orders:OrderType;
+    rdfs:label "Limit".
+fin-orders:OrderType_Stop a fin-orders:OrderType;
+    rdfs:label "Stop".
+fin-orders:OrderType_StopLimit a fin-orders:OrderType;
+    rdfs:label "StopLimit".
+fin-orders:OrderType_MarketIfTouched a fin-orders:OrderType;
+    rdfs:label "MarketIfTouched".
+fin-orders:OrderType_LimitIfTouched a fin-orders:OrderType;
+    rdfs:label "LimitIfTouched".
+fin-orders:TimeInForce a owl:Class;
+    rdfs:label "Time In Force";
+    rdfs:comment "controlled vocabulary of order validity duration (GTC, IOC, FOK, DAY)".
+fin-orders:TimeInForce_GTC a fin-orders:TimeInForce;
+    rdfs:label "GTC".
+fin-orders:TimeInForce_IOC a fin-orders:TimeInForce;
+    rdfs:label "IOC".
+fin-orders:TimeInForce_FOK a fin-orders:TimeInForce;
+    rdfs:label "FOK".
+fin-orders:TimeInForce_DAY a fin-orders:TimeInForce;
+    rdfs:label "DAY".
+fin-orders:TimeInForce_GTD a fin-orders:TimeInForce;
+    rdfs:label "GTD".
+fin-orders:TimeInForce_AtTheOpen a fin-orders:TimeInForce;
+    rdfs:label "AtTheOpen".
+fin-orders:TimeInForce_AtTheClose a fin-orders:TimeInForce;
+    rdfs:label "AtTheClose".
+fin-orders:OrderLifecycleState a owl:Class;
+    rdfs:label "Order Lifecycle State";
+    rdfs:comment "controlled vocabulary of canonical order states in the lifecycle state machine".
+fin-orders:OrderLifecycleState_Initialized a fin-orders:OrderLifecycleState;
+    rdfs:label "Initialized".
+fin-orders:OrderLifecycleState_Denied a fin-orders:OrderLifecycleState;
+    rdfs:label "Denied".
+fin-orders:OrderLifecycleState_Emulated a fin-orders:OrderLifecycleState;
+    rdfs:label "Emulated".
+fin-orders:OrderLifecycleState_Released a fin-orders:OrderLifecycleState;
+    rdfs:label "Released".
+fin-orders:OrderLifecycleState_Submitted a fin-orders:OrderLifecycleState;
+    rdfs:label "Submitted".
+fin-orders:OrderLifecycleState_Accepted a fin-orders:OrderLifecycleState;
+    rdfs:label "Accepted".
+fin-orders:OrderLifecycleState_Rejected a fin-orders:OrderLifecycleState;
+    rdfs:label "Rejected".
+fin-orders:OrderLifecycleState_PendingUpdate a fin-orders:OrderLifecycleState;
+    rdfs:label "PendingUpdate".
+fin-orders:OrderLifecycleState_PendingCancel a fin-orders:OrderLifecycleState;
+    rdfs:label "PendingCancel".
+fin-orders:OrderLifecycleState_PartiallyFilled a fin-orders:OrderLifecycleState;
+    rdfs:label "PartiallyFilled".
+fin-orders:OrderLifecycleState_Filled a fin-orders:OrderLifecycleState;
+    rdfs:label "Filled".
+fin-orders:OrderLifecycleState_Canceled a fin-orders:OrderLifecycleState;
+    rdfs:label "Canceled".
+fin-orders:OrderLifecycleState_Expired a fin-orders:OrderLifecycleState;
+    rdfs:label "Expired".
+fin-orders:OrderLifecycleState_Triggered a fin-orders:OrderLifecycleState;
+    rdfs:label "Triggered".
+fin-orders:OrderEventKind a owl:Class;
+    rdfs:label "Order Event Kind";
+    rdfs:comment "controlled vocabulary of immutable order event kinds in the event-sourced audit trail".
+fin-orders:OrderEventKind_Initialized a fin-orders:OrderEventKind;
+    rdfs:label "Initialized".
+fin-orders:OrderEventKind_Denied a fin-orders:OrderEventKind;
+    rdfs:label "Denied".
+fin-orders:OrderEventKind_Submitted a fin-orders:OrderEventKind;
+    rdfs:label "Submitted".
+fin-orders:OrderEventKind_Accepted a fin-orders:OrderEventKind;
+    rdfs:label "Accepted".
+fin-orders:OrderEventKind_Rejected a fin-orders:OrderEventKind;
+    rdfs:label "Rejected".
+fin-orders:OrderEventKind_PendingUpdate a fin-orders:OrderEventKind;
+    rdfs:label "PendingUpdate".
+fin-orders:OrderEventKind_PendingCancel a fin-orders:OrderEventKind;
+    rdfs:label "PendingCancel".
+fin-orders:OrderEventKind_Updated a fin-orders:OrderEventKind;
+    rdfs:label "Updated".
+fin-orders:OrderEventKind_ModifyRejected a fin-orders:OrderEventKind;
+    rdfs:label "ModifyRejected".
+fin-orders:OrderEventKind_CancelRejected a fin-orders:OrderEventKind;
+    rdfs:label "CancelRejected".
+fin-orders:OrderEventKind_PartiallyFilled a fin-orders:OrderEventKind;
+    rdfs:label "PartiallyFilled".
+fin-orders:OrderEventKind_Filled a fin-orders:OrderEventKind;
+    rdfs:label "Filled".
+fin-orders:OrderEventKind_Canceled a fin-orders:OrderEventKind;
+    rdfs:label "Canceled".
+fin-orders:OrderEventKind_Expired a fin-orders:OrderEventKind;
+    rdfs:label "Expired".
+fin-orders:OrderEventKind_Triggered a fin-orders:OrderEventKind;
+    rdfs:label "Triggered".
+fin-orders:LiquiditySide a owl:Class;
+    rdfs:label "Liquidity Side";
+    rdfs:comment "controlled vocabulary indicating whether an execution was a maker (added liquidity) or taker (removed liquidity)".
+fin-orders:LiquiditySide_Maker a fin-orders:LiquiditySide;
+    rdfs:label "Maker".
+fin-orders:LiquiditySide_Taker a fin-orders:LiquiditySide;
+    rdfs:label "Taker".
+fin-orders:LiquiditySide_NoLiquiditySide a fin-orders:LiquiditySide;
+    rdfs:label "NoLiquiditySide".
+fin-orders:hasOrderSide a owl:DatatypeProperty;
+    rdfs:label "Has Order Side";
+    rdfs:comment "relation from an order intent or execution to its side (Buy or Sell)";
+    rdfs:range xsd:string.
+fin-orders:hasOrderType a owl:DatatypeProperty;
+    rdfs:label "Has Order Type";
+    rdfs:comment "relation from an order intent to its type (Market, Limit, Stop, etc.)";
+    rdfs:range xsd:string.
+fin-orders:hasTimeInForce a owl:DatatypeProperty;
+    rdfs:label "Has Time In Force";
+    rdfs:comment "relation from an order intent to its validity duration";
+    rdfs:range xsd:string.
+fin-orders:hasOrderQuantity a owl:ObjectProperty;
+    rdfs:label "Has Order Quantity";
+    rdfs:comment "relation from an order intent to its requested quantity";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/QuantityValue>.
+fin-orders:hasLimitPrice a owl:ObjectProperty;
+    rdfs:label "Has Limit Price";
+    rdfs:comment "relation from a limit or stop-limit order to its limit price";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-orders:hasStopPrice a owl:ObjectProperty;
+    rdfs:label "Has Stop Price";
+    rdfs:comment "relation from a stop or stop-limit order to its stop trigger price";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-orders:hasLifecycleState a owl:DatatypeProperty;
+    rdfs:label "Has Lifecycle State";
+    rdfs:comment "relation from an order lifecycle event to the resulting canonical state";
+    rdfs:range xsd:string.
+fin-orders:hasEventKind a owl:DatatypeProperty;
+    rdfs:label "Has Event Kind";
+    rdfs:comment "relation from an order lifecycle event to its event-log kind (distinct from resulting lifecycle state)";
+    rdfs:range xsd:string.
+fin-orders:hasPreviousState a owl:DatatypeProperty;
+    rdfs:label "Has Previous State";
+    rdfs:comment "relation from an order lifecycle event to the previous canonical state (for state transition validation)";
+    rdfs:range xsd:string.
+fin-orders:hasExecutionPrice a owl:ObjectProperty;
+    rdfs:label "Has Execution Price";
+    rdfs:comment "relation from an execution to its actual executed price";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-orders:hasExecutionQuantity a owl:ObjectProperty;
+    rdfs:label "Has Execution Quantity";
+    rdfs:comment "relation from an execution to its actual executed quantity";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/QuantityValue>.
+fin-orders:hasCommission a owl:ObjectProperty;
+    rdfs:label "Has Commission";
+    rdfs:comment "relation from an execution to its commission or fee amount";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-orders:hasLiquiditySide a owl:DatatypeProperty;
+    rdfs:label "Has Liquidity Side";
+    rdfs:comment "relation from an execution to its liquidity classification (maker or taker)";
+    rdfs:range xsd:string.
+fin-orders:hasExternalOrderId a owl:DatatypeProperty;
+    rdfs:label "Has External Order ID";
+    rdfs:comment "relation from an order lifecycle event to the venue/broker-assigned order identifier";
+    rdfs:range xsd:string.
+fin-orders:hasExternalStatus a owl:DatatypeProperty;
+    rdfs:label "Has External Status";
+    rdfs:comment "relation from an external order status mapping to the venue-specific raw status code";
+    rdfs:range xsd:string.
+fin-orders:hasCanonicalState a owl:DatatypeProperty;
+    rdfs:label "Has Canonical State";
+    rdfs:comment "relation from an external order status mapping to the mapped canonical lifecycle state";
+    rdfs:range xsd:string.
+fin-orders:OrderIntent a owl:Class;
+    rdfs:label "Order Intent";
+    rdfs:comment "trader or strategy desired trade instruction specifying instrument, side, quantity, type, time-in-force, and price constraints, representing the business intent before venue submission".
+fin-orders:intentsInstrument a owl:ObjectProperty;
+    rdfs:domain fin-orders:OrderIntent;
+    rdfs:range <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>;
+    rdfs:label "intentsInstrument".
+fin-orders:intentsListing a owl:ObjectProperty;
+    rdfs:domain fin-orders:OrderIntent;
+    rdfs:range <https://axiolune.ai/ontology/finance/instruments/InstrumentListing>;
+    rdfs:label "intentsListing".
+fin-orders:OrderLifecycleEvent a owl:Class;
+    rdfs:label "Order Lifecycle Event";
+    rdfs:comment "immutable state transition fact recording a change in order status, with previous state, resulting state, timestamp, reason, and external identifiers, forming an event-sourced audit trail".
+fin-orders:transitionsOrder a owl:ObjectProperty;
+    rdfs:domain fin-orders:OrderLifecycleEvent;
+    rdfs:range fin-orders:OrderIntent;
+    rdfs:label "transitionsOrder".
+fin-orders:occurredAtVenue a owl:ObjectProperty;
+    rdfs:domain fin-orders:OrderLifecycleEvent;
+    rdfs:range <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>;
+    rdfs:label "occurredAtVenue".
+fin-orders:Execution a owl:Class;
+    rdfs:label "Execution";
+    rdfs:comment "trade execution fact recording actual fill of an order or part thereof, with executed price, quantity, venue, commission, liquidity side, and trade identifier, enabling position derivation".
+fin-orders:executesOrder a owl:ObjectProperty;
+    rdfs:domain fin-orders:Execution;
+    rdfs:range fin-orders:OrderIntent;
+    rdfs:label "executesOrder".
+fin-orders:executedInstrument a owl:ObjectProperty;
+    rdfs:domain fin-orders:Execution;
+    rdfs:range <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>;
+    rdfs:label "executedInstrument".
+fin-orders:executedAtVenue a owl:ObjectProperty;
+    rdfs:domain fin-orders:Execution;
+    rdfs:range <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>;
+    rdfs:label "executedAtVenue".
+fin-orders:ExternalOrderStatusMapping a owl:Class;
+    rdfs:label "External Order Status Mapping";
+    rdfs:comment "versioned mapping from venue-specific or broker-specific raw order status codes to canonical Axiolune lifecycle states, enabling status translation without polluting canonical vocabulary".
+fin-orders:appliesToVenue a owl:ObjectProperty;
+    rdfs:domain fin-orders:ExternalOrderStatusMapping;
+    rdfs:range <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>;
+    rdfs:label "appliesToVenue".
+fin-orders:mapsToCanonicalLifecycleState a owl:ObjectProperty;
+    rdfs:domain fin-orders:ExternalOrderStatusMapping;
+    rdfs:range fin-orders:OrderLifecycleState;
+    rdfs:label "mapsToCanonicalLifecycleState".
+
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+
+@prefix fin-portfolio: <https://axiolune.ai/ontology/finance/portfolio-positions/>.
+
+<https://axiolune.ai/ontology/finance/portfolio-positions> a owl:Ontology;
+    owl:versionIRI <https://axiolune.ai/ontology/finance/portfolio-positions/0.2.0>;
+    rdfs:label "Portfolio and Positions";
+    rdfs:comment "account, portfolio, holding snapshots, position lots, and valuation observations that capture portfolio composition and valuation with three-axis temporal semantics and explicit price-to-valuation traceability";
+    owl:imports <https://axiolune.ai/ontology/finance/foundation>, <https://axiolune.ai/ontology/finance/instruments>, <https://axiolune.ai/ontology/finance/market-data>.
+fin-portfolio:PositionSide a owl:Class;
+    rdfs:label "Position Side";
+    rdfs:comment "controlled vocabulary indicating whether a position is long (owns the asset) or short (owes the asset)".
+fin-portfolio:PositionSide_Long a fin-portfolio:PositionSide;
+    rdfs:label "Long".
+fin-portfolio:PositionSide_Short a fin-portfolio:PositionSide;
+    rdfs:label "Short".
+fin-portfolio:PositionSide_Flat a fin-portfolio:PositionSide;
+    rdfs:label "Flat".
+fin-portfolio:ValuationMethod a owl:Class;
+    rdfs:label "Valuation Method";
+    rdfs:comment "controlled vocabulary of valuation methodologies (mark-to-market, mark-to-model, cost basis)".
+fin-portfolio:ValuationMethod_MarkToMarket a fin-portfolio:ValuationMethod;
+    rdfs:label "MarkToMarket".
+fin-portfolio:ValuationMethod_MarkToModel a fin-portfolio:ValuationMethod;
+    rdfs:label "MarkToModel".
+fin-portfolio:ValuationMethod_CostBasis a fin-portfolio:ValuationMethod;
+    rdfs:label "CostBasis".
+fin-portfolio:ValuationMethod_LowerOfCostOrMarket a fin-portfolio:ValuationMethod;
+    rdfs:label "LowerOfCostOrMarket".
+fin-portfolio:AccountType a owl:Class;
+    rdfs:label "Account Type";
+    rdfs:comment "controlled vocabulary of account categories (cash, margin, simulated, managed)".
+fin-portfolio:AccountType_Cash a fin-portfolio:AccountType;
+    rdfs:label "Cash".
+fin-portfolio:AccountType_Margin a fin-portfolio:AccountType;
+    rdfs:label "Margin".
+fin-portfolio:AccountType_Simulated a fin-portfolio:AccountType;
+    rdfs:label "Simulated".
+fin-portfolio:AccountType_Managed a fin-portfolio:AccountType;
+    rdfs:label "Managed".
+fin-portfolio:AccountType_Custodial a fin-portfolio:AccountType;
+    rdfs:label "Custodial".
+fin-portfolio:hasQuantity a owl:ObjectProperty;
+    rdfs:label "Has Quantity";
+    rdfs:comment "relation from a holding or position to its decimal quantity value";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/QuantityValue>.
+fin-portfolio:hasMarketValue a owl:ObjectProperty;
+    rdfs:label "Has Market Value";
+    rdfs:comment "relation from a valuation to its decimal market value amount";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-portfolio:hasCostBasis a owl:ObjectProperty;
+    rdfs:label "Has Cost Basis";
+    rdfs:comment "relation from a position or valuation to its decimal cost basis amount";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-portfolio:hasUnrealizedPnL a owl:ObjectProperty;
+    rdfs:label "Has Unrealized PnL";
+    rdfs:comment "relation from a valuation to its decimal unrealized profit and loss amount";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-portfolio:hasPositionSide a owl:DatatypeProperty;
+    rdfs:label "Has Position Side";
+    rdfs:comment "relation from a holding or position to its position side code (Long/Short/Flat)";
+    rdfs:range xsd:string.
+fin-portfolio:hasValuationMethod a owl:DatatypeProperty;
+    rdfs:label "Has Valuation Method";
+    rdfs:comment "relation from a valuation to its valuation methodology code";
+    rdfs:range xsd:string.
+fin-portfolio:hasAccountType a owl:DatatypeProperty;
+    rdfs:label "Has Account Type";
+    rdfs:comment "relation from an account to its account type code";
+    rdfs:range xsd:string.
+fin-portfolio:hasAccountIdentifier a owl:DatatypeProperty;
+    rdfs:label "Has Account Identifier";
+    rdfs:comment "relation from an account to its unique identifier string";
+    rdfs:range xsd:string.
+fin-portfolio:hasPortfolioIdentifier a owl:DatatypeProperty;
+    rdfs:label "Has Portfolio Identifier";
+    rdfs:comment "relation from a portfolio to its unique identifier string";
+    rdfs:range xsd:string.
+fin-portfolio:hasPortfolioName a owl:DatatypeProperty;
+    rdfs:label "Has Portfolio Name";
+    rdfs:comment "relation from a portfolio to its human-readable name";
+    rdfs:range xsd:string.
+fin-portfolio:Account a owl:Class;
+    rdfs:label "Account";
+    rdfs:comment "financial account that serves as the unit of ownership, authorization, and accounting for trading activities and asset holdings".
+fin-portfolio:Portfolio a owl:Class;
+    rdfs:label "Portfolio";
+    rdfs:comment "collection of financial instruments and cash positions managed as a unit for investment objectives, performance tracking, or risk management".
+fin-portfolio:HoldingSnapshot a owl:Class;
+    rdfs:label "Holding Snapshot";
+    rdfs:comment "time-stamped observation of an account or portfolio's holding of a specific financial instrument at a point in time, with three-axis temporal semantics distinguishing the business effective time, knowledge time, and data availability time".
+fin-portfolio:heldInAccount a owl:ObjectProperty;
+    rdfs:domain fin-portfolio:HoldingSnapshot;
+    rdfs:range fin-portfolio:Account;
+    rdfs:label "heldInAccount".
+fin-portfolio:heldInPortfolio a owl:ObjectProperty;
+    rdfs:domain fin-portfolio:HoldingSnapshot;
+    rdfs:range fin-portfolio:Portfolio;
+    rdfs:label "heldInPortfolio".
+fin-portfolio:heldInstrument a owl:ObjectProperty;
+    rdfs:domain fin-portfolio:HoldingSnapshot;
+    rdfs:range <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>;
+    rdfs:label "heldInstrument".
+fin-portfolio:PositionValuation a owl:Class;
+    rdfs:label "Position Valuation";
+    rdfs:comment "time-stamped valuation of a holding that explicitly references the price observation used, the valuation method applied, and the resulting market value, enabling full traceability from price to valuation result".
+fin-portfolio:valuedHolding a owl:ObjectProperty;
+    rdfs:domain fin-portfolio:PositionValuation;
+    rdfs:range fin-portfolio:HoldingSnapshot;
+    rdfs:label "valuedHolding".
+fin-portfolio:usedPriceObservation a owl:ObjectProperty;
+    rdfs:domain fin-portfolio:PositionValuation;
+    rdfs:range <https://axiolune.ai/ontology/finance/market-data/PriceObservation>;
+    rdfs:label "usedPriceObservation".
+fin-portfolio:PositionLot a owl:Class;
+    rdfs:label "Position Lot";
+    rdfs:comment "distinct acquisition or disposition of a specific quantity of an instrument, tracked separately for tax basis, holding period, or accounting purposes".
+fin-portfolio:lotForInstrument a owl:ObjectProperty;
+    rdfs:domain fin-portfolio:PositionLot;
+    rdfs:range <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>;
+    rdfs:label "lotForInstrument".
+fin-portfolio:lotInAccount a owl:ObjectProperty;
+    rdfs:domain fin-portfolio:PositionLot;
+    rdfs:range fin-portfolio:Account;
+    rdfs:label "lotInAccount".
+fin-portfolio:Account skos:relatedMatch <https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/ClientsAndAccounts/Account>.
+fin-portfolio:Portfolio rdfs:subClassOf <https://spec.edmcouncil.org/fibo/ontology/SEC/Portfolios/PortfolioManagement/Portfolio>.
+fin-portfolio:HoldingSnapshot skos:relatedMatch <https://spec.edmcouncil.org/fibo/ontology/SEC/Portfolios/PortfolioManagement/PortfolioHolding>.
+
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+
+@prefix fin-post-trade: <https://axiolune.ai/ontology/finance/post-trade-operations/>.
+
+<https://axiolune.ai/ontology/finance/post-trade-operations> a owl:Ontology;
+    owl:versionIRI <https://axiolune.ai/ontology/finance/post-trade-operations/0.2.0>;
+    rdfs:label "Post-Trade Operations";
+    rdfs:comment "corporate action events, settlement instructions, and reconciliation breaks that capture post-trade processing and operational risk semantics";
+    owl:imports <https://axiolune.ai/ontology/finance/foundation>, <https://axiolune.ai/ontology/finance/instruments>, <https://axiolune.ai/ontology/finance/portfolio-positions>, <https://axiolune.ai/ontology/finance/orders-execution>.
+fin-post-trade:CorporateActionType a owl:Class;
+    rdfs:label "Corporate Action Type";
+    rdfs:comment "controlled vocabulary of corporate action categories (dividend, split, merger, spinoff)".
+fin-post-trade:CorporateActionType_Dividend a fin-post-trade:CorporateActionType;
+    rdfs:label "Dividend".
+fin-post-trade:CorporateActionType_Split a fin-post-trade:CorporateActionType;
+    rdfs:label "Split".
+fin-post-trade:CorporateActionType_Merger a fin-post-trade:CorporateActionType;
+    rdfs:label "Merger".
+fin-post-trade:CorporateActionType_Spinoff a fin-post-trade:CorporateActionType;
+    rdfs:label "Spinoff".
+fin-post-trade:CorporateActionType_RightsIssue a fin-post-trade:CorporateActionType;
+    rdfs:label "RightsIssue".
+fin-post-trade:CorporateActionType_Delisting a fin-post-trade:CorporateActionType;
+    rdfs:label "Delisting".
+fin-post-trade:SettlementStatus a owl:Class;
+    rdfs:label "Settlement Status";
+    rdfs:comment "controlled vocabulary of settlement states (pending, settled, failed, canceled)".
+fin-post-trade:SettlementStatus_Pending a fin-post-trade:SettlementStatus;
+    rdfs:label "Pending".
+fin-post-trade:SettlementStatus_Settled a fin-post-trade:SettlementStatus;
+    rdfs:label "Settled".
+fin-post-trade:SettlementStatus_Failed a fin-post-trade:SettlementStatus;
+    rdfs:label "Failed".
+fin-post-trade:SettlementStatus_Canceled a fin-post-trade:SettlementStatus;
+    rdfs:label "Canceled".
+fin-post-trade:ReconciliationStatus a owl:Class;
+    rdfs:label "Reconciliation Status";
+    rdfs:comment "controlled vocabulary of reconciliation outcomes (matched, break, investigating, resolved)".
+fin-post-trade:ReconciliationStatus_Matched a fin-post-trade:ReconciliationStatus;
+    rdfs:label "Matched".
+fin-post-trade:ReconciliationStatus_Break a fin-post-trade:ReconciliationStatus;
+    rdfs:label "Break".
+fin-post-trade:ReconciliationStatus_Investigating a fin-post-trade:ReconciliationStatus;
+    rdfs:label "Investigating".
+fin-post-trade:ReconciliationStatus_Resolved a fin-post-trade:ReconciliationStatus;
+    rdfs:label "Resolved".
+fin-post-trade:CorporateActionEvent a owl:Class;
+    rdfs:label "Corporate Action Event";
+    rdfs:comment "scheduled or announced corporate action affecting instrument holders with ex-date, record date, payment date, and impact details".
+fin-post-trade:affectsInstrument a owl:ObjectProperty;
+    rdfs:domain fin-post-trade:CorporateActionEvent;
+    rdfs:range <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>;
+    rdfs:label "affectsInstrument".
+fin-post-trade:announcedBy a owl:ObjectProperty;
+    rdfs:domain fin-post-trade:CorporateActionEvent;
+    rdfs:range <https://axiolune.ai/ontology/finance/instruments/Issuer>;
+    rdfs:label "announcedBy".
+fin-post-trade:SettlementInstruction a owl:Class;
+    rdfs:label "Settlement Instruction";
+    rdfs:comment "instruction to settle a trade execution with settlement date, status, counterparty, and clearing details".
+fin-post-trade:settlesExecution a owl:ObjectProperty;
+    rdfs:domain fin-post-trade:SettlementInstruction;
+    rdfs:range <https://axiolune.ai/ontology/finance/orders-execution/Execution>;
+    rdfs:label "settlesExecution".
+fin-post-trade:instructsCounterparty a owl:ObjectProperty;
+    rdfs:domain fin-post-trade:SettlementInstruction;
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/Party>;
+    rdfs:label "instructsCounterparty".
+fin-post-trade:ReconciliationBreak a owl:Class;
+    rdfs:label "Reconciliation Break";
+    rdfs:comment "detected discrepancy between internal records and external source (broker, custodian, counterparty) with break details and resolution status".
+fin-post-trade:breaksForPortfolio a owl:ObjectProperty;
+    rdfs:domain fin-post-trade:ReconciliationBreak;
+    rdfs:range <https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio>;
+    rdfs:label "breaksForPortfolio".
+fin-post-trade:breaksForAccount a owl:ObjectProperty;
+    rdfs:domain fin-post-trade:ReconciliationBreak;
+    rdfs:range <https://axiolune.ai/ontology/finance/portfolio-positions/Account>;
+    rdfs:label "breaksForAccount".
+fin-post-trade:hasActionType a owl:DatatypeProperty;
+    rdfs:label "has action type";
+    rdfs:comment "category of the corporate action";
+    rdfs:range xsd:string.
+fin-post-trade:hasExDate a owl:DatatypeProperty;
+    rdfs:label "has ex-date";
+    rdfs:comment "ex-dividend or ex-rights date after which new buyers do not receive the action benefit";
+    rdfs:range xsd:dateTime.
+fin-post-trade:hasPaymentDate a owl:DatatypeProperty;
+    rdfs:label "has payment date";
+    rdfs:comment "date when dividend or other corporate action payment is made";
+    rdfs:range xsd:dateTime.
+fin-post-trade:hasSettlementDate a owl:DatatypeProperty;
+    rdfs:label "has settlement date";
+    rdfs:comment "date when trade settlement occurs (T+N from trade date)";
+    rdfs:range xsd:dateTime.
+fin-post-trade:hasSettlementStatus a owl:DatatypeProperty;
+    rdfs:label "has settlement status";
+    rdfs:comment "current state of the settlement process";
+    rdfs:range xsd:string.
+fin-post-trade:hasReconciliationStatus a owl:DatatypeProperty;
+    rdfs:label "has reconciliation status";
+    rdfs:comment "current state of the reconciliation investigation";
+    rdfs:range xsd:string.
+fin-post-trade:hasBreakAmount a owl:ObjectProperty;
+    rdfs:label "has break amount";
+    rdfs:comment "monetary value of the discrepancy";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+
+@prefix fin-risk: <https://axiolune.ai/ontology/finance/risk/>.
+
+<https://axiolune.ai/ontology/finance/risk> a owl:Ontology;
+    owl:versionIRI <https://axiolune.ai/ontology/finance/risk/0.2.0>;
+    rdfs:label "Risk Management";
+    rdfs:comment "risk measure definitions, risk limits, exposure observations, and limit breaches that capture risk management semantics with point-in-time exposure tracking";
+    owl:imports <https://axiolune.ai/ontology/finance/foundation>, <https://axiolune.ai/ontology/finance/portfolio-positions>.
+fin-risk:RiskMeasureType a owl:Class;
+    rdfs:label "Risk Measure Type";
+    rdfs:comment "controlled vocabulary of risk measure categories (VaR, CVaR, volatility, exposure, concentration)".
+fin-risk:RiskMeasureType_VaR a fin-risk:RiskMeasureType;
+    rdfs:label "VaR".
+fin-risk:RiskMeasureType_CVaR a fin-risk:RiskMeasureType;
+    rdfs:label "CVaR".
+fin-risk:RiskMeasureType_Volatility a fin-risk:RiskMeasureType;
+    rdfs:label "Volatility".
+fin-risk:RiskMeasureType_Exposure a fin-risk:RiskMeasureType;
+    rdfs:label "Exposure".
+fin-risk:RiskMeasureType_Concentration a fin-risk:RiskMeasureType;
+    rdfs:label "Concentration".
+fin-risk:RiskMeasureType_Beta a fin-risk:RiskMeasureType;
+    rdfs:label "Beta".
+fin-risk:RiskMeasureType_Greeks a fin-risk:RiskMeasureType;
+    rdfs:label "Greeks".
+fin-risk:LimitBreachSeverity a owl:Class;
+    rdfs:label "Limit Breach Severity";
+    rdfs:comment "controlled vocabulary indicating severity of risk limit violation (warning, breach, critical)".
+fin-risk:LimitBreachSeverity_Warning a fin-risk:LimitBreachSeverity;
+    rdfs:label "Warning".
+fin-risk:LimitBreachSeverity_Breach a fin-risk:LimitBreachSeverity;
+    rdfs:label "Breach".
+fin-risk:LimitBreachSeverity_Critical a fin-risk:LimitBreachSeverity;
+    rdfs:label "Critical".
+fin-risk:RiskMeasureDefinition a owl:Class;
+    rdfs:label "Risk Measure Definition";
+    rdfs:comment "specification of a risk metric including calculation method, parameters, time horizon, and confidence level".
+fin-risk:RiskLimit a owl:Class;
+    rdfs:label "Risk Limit";
+    rdfs:comment "authorized maximum or threshold for a risk measure applicable to a portfolio, account, or instrument with defined scope and validity".
+fin-risk:ExposureObservation a owl:Class;
+    rdfs:label "Exposure Observation";
+    rdfs:comment "point-in-time observation of a risk measure value for a portfolio, account, or instrument with calculation timestamp and contributing factors".
+fin-risk:observedForPortfolio a owl:ObjectProperty;
+    rdfs:domain fin-risk:ExposureObservation;
+    rdfs:range <https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio>;
+    rdfs:label "observedForPortfolio".
+fin-risk:observedForAccount a owl:ObjectProperty;
+    rdfs:domain fin-risk:ExposureObservation;
+    rdfs:range <https://axiolune.ai/ontology/finance/portfolio-positions/Account>;
+    rdfs:label "observedForAccount".
+fin-risk:measuredByDefinition a owl:ObjectProperty;
+    rdfs:domain fin-risk:ExposureObservation;
+    rdfs:range fin-risk:RiskMeasureDefinition;
+    rdfs:label "measuredByDefinition".
+fin-risk:LimitBreach a owl:Class;
+    rdfs:label "Limit Breach";
+    rdfs:comment "detected violation of a risk limit with breach severity, exposure observation, and applicable limit".
+fin-risk:breachedLimit a owl:ObjectProperty;
+    rdfs:domain fin-risk:LimitBreach;
+    rdfs:range fin-risk:RiskLimit;
+    rdfs:label "breachedLimit".
+fin-risk:causedByExposure a owl:ObjectProperty;
+    rdfs:domain fin-risk:LimitBreach;
+    rdfs:range fin-risk:ExposureObservation;
+    rdfs:label "causedByExposure".
+fin-risk:hasMeasureName a owl:DatatypeProperty;
+    rdfs:label "has measure name";
+    rdfs:comment "human-readable name of the risk measure";
+    rdfs:range xsd:string.
+fin-risk:hasMeasureType a owl:DatatypeProperty;
+    rdfs:label "has measure type";
+    rdfs:comment "category of the risk measure";
+    rdfs:range xsd:string.
+fin-risk:hasTimeHorizon a owl:ObjectProperty;
+    rdfs:label "has time horizon";
+    rdfs:comment "time horizon for risk calculation as a quantity with unit (e.g., 1 day for 1-day VaR)";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/QuantityValue>.
+fin-risk:hasConfidenceLevel a owl:ObjectProperty;
+    rdfs:label "has confidence level";
+    rdfs:comment "confidence level for statistical risk measures as a ratio quantity (e.g., 0.99 for 99% VaR)";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/QuantityValue>.
+fin-risk:hasLimitValue a owl:ObjectProperty;
+    rdfs:label "has limit value";
+    rdfs:comment "maximum allowed value for the risk measure";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-risk:hasWarningThreshold a owl:ObjectProperty;
+    rdfs:label "has warning threshold";
+    rdfs:comment "threshold value that triggers a warning before breach";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-risk:hasExposureValue a owl:ObjectProperty;
+    rdfs:label "has exposure value";
+    rdfs:comment "observed value of the risk measure";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-risk:hasBreachSeverity a owl:DatatypeProperty;
+    rdfs:label "has breach severity";
+    rdfs:comment "severity level of the limit violation";
+    rdfs:range xsd:string.
+
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+
+@prefix fin-strategy: <https://axiolune.ai/ontology/finance/strategy-research/>.
+
+<https://axiolune.ai/ontology/finance/strategy-research> a owl:Ontology;
+    owl:versionIRI <https://axiolune.ai/ontology/finance/strategy-research/0.2.0>;
+    rdfs:label "Strategy and Research";
+    rdfs:comment "factor definitions, signal generation, strategy specifications, backtest execution, and performance observations that capture quantitative research and strategy development semantics";
+    owl:imports <https://axiolune.ai/ontology/finance/foundation>, <https://axiolune.ai/ontology/finance/instruments>, <https://axiolune.ai/ontology/finance/portfolio-positions>.
+fin-strategy:SignalDirection a owl:Class;
+    rdfs:label "Signal Direction";
+    rdfs:comment "controlled vocabulary indicating the directional bias of a trading signal (long, short, neutral, exit)".
+fin-strategy:SignalDirection_Long a fin-strategy:SignalDirection;
+    rdfs:label "Long".
+fin-strategy:SignalDirection_Short a fin-strategy:SignalDirection;
+    rdfs:label "Short".
+fin-strategy:SignalDirection_Neutral a fin-strategy:SignalDirection;
+    rdfs:label "Neutral".
+fin-strategy:SignalDirection_Exit a fin-strategy:SignalDirection;
+    rdfs:label "Exit".
+fin-strategy:FactorCategory a owl:Class;
+    rdfs:label "Factor Category";
+    rdfs:comment "controlled vocabulary of factor types (fundamental, technical, alternative, macro)".
+fin-strategy:FactorCategory_Fundamental a fin-strategy:FactorCategory;
+    rdfs:label "Fundamental".
+fin-strategy:FactorCategory_Technical a fin-strategy:FactorCategory;
+    rdfs:label "Technical".
+fin-strategy:FactorCategory_Alternative a fin-strategy:FactorCategory;
+    rdfs:label "Alternative".
+fin-strategy:FactorCategory_Macro a fin-strategy:FactorCategory;
+    rdfs:label "Macro".
+fin-strategy:FactorCategory_Statistical a fin-strategy:FactorCategory;
+    rdfs:label "Statistical".
+fin-strategy:FactorCategory_Sentiment a fin-strategy:FactorCategory;
+    rdfs:label "Sentiment".
+fin-strategy:BacktestStatus a owl:Class;
+    rdfs:label "Backtest Status";
+    rdfs:comment "controlled vocabulary of backtest execution states (pending, running, completed, failed, canceled)".
+fin-strategy:BacktestStatus_Pending a fin-strategy:BacktestStatus;
+    rdfs:label "Pending".
+fin-strategy:BacktestStatus_Running a fin-strategy:BacktestStatus;
+    rdfs:label "Running".
+fin-strategy:BacktestStatus_Completed a fin-strategy:BacktestStatus;
+    rdfs:label "Completed".
+fin-strategy:BacktestStatus_Failed a fin-strategy:BacktestStatus;
+    rdfs:label "Failed".
+fin-strategy:BacktestStatus_Canceled a fin-strategy:BacktestStatus;
+    rdfs:label "Canceled".
+fin-strategy:FactorDefinition a owl:Class;
+    rdfs:label "Factor Definition";
+    rdfs:comment "specification of a quantitative factor including its calculation logic, input requirements, universe scope, and validity conditions".
+fin-strategy:StrategyDefinition a owl:Class;
+    rdfs:label "Strategy Definition";
+    rdfs:comment "specification of a trading strategy including its logic, parameters, universe, risk controls, and execution rules".
+fin-strategy:Signal a owl:Class;
+    rdfs:label "Signal";
+    rdfs:comment "point-in-time trading signal generated by a factor or strategy for a specific instrument with directional bias, strength, and validity period".
+fin-strategy:generatedByFactor a owl:ObjectProperty;
+    rdfs:domain fin-strategy:Signal;
+    rdfs:range fin-strategy:FactorDefinition;
+    rdfs:label "generatedByFactor".
+fin-strategy:generatedByStrategy a owl:ObjectProperty;
+    rdfs:domain fin-strategy:Signal;
+    rdfs:range fin-strategy:StrategyDefinition;
+    rdfs:label "generatedByStrategy".
+fin-strategy:signalForInstrument a owl:ObjectProperty;
+    rdfs:domain fin-strategy:Signal;
+    rdfs:range <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>;
+    rdfs:label "signalForInstrument".
+fin-strategy:BacktestRun a owl:Class;
+    rdfs:label "Backtest Run";
+    rdfs:comment "execution of a strategy definition over historical data with specified parameters, date range, initial capital, and resulting performance metrics".
+fin-strategy:backtestsStrategy a owl:ObjectProperty;
+    rdfs:domain fin-strategy:BacktestRun;
+    rdfs:range fin-strategy:StrategyDefinition;
+    rdfs:label "backtestsStrategy".
+fin-strategy:usedPortfolio a owl:ObjectProperty;
+    rdfs:domain fin-strategy:BacktestRun;
+    rdfs:range <https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio>;
+    rdfs:label "usedPortfolio".
+fin-strategy:PerformanceObservation a owl:Class;
+    rdfs:label "Performance Observation";
+    rdfs:comment "point-in-time or period-aggregate performance metrics for a backtest run or live strategy including returns, drawdown, Sharpe ratio, and other statistics".
+fin-strategy:observedInBacktest a owl:ObjectProperty;
+    rdfs:domain fin-strategy:PerformanceObservation;
+    rdfs:range fin-strategy:BacktestRun;
+    rdfs:label "observedInBacktest".
+fin-strategy:observedForStrategy a owl:ObjectProperty;
+    rdfs:domain fin-strategy:PerformanceObservation;
+    rdfs:range fin-strategy:StrategyDefinition;
+    rdfs:label "observedForStrategy".
+fin-strategy:hasFactorName a owl:DatatypeProperty;
+    rdfs:label "has factor name";
+    rdfs:comment "human-readable name of the factor";
+    rdfs:range xsd:string.
+fin-strategy:hasFactorCategory a owl:DatatypeProperty;
+    rdfs:label "has factor category";
+    rdfs:comment "category classification of the factor (fundamental, technical, etc.)";
+    rdfs:range xsd:string.
+fin-strategy:hasFactorFormula a owl:DatatypeProperty;
+    rdfs:label "has factor formula";
+    rdfs:comment "textual or symbolic representation of the factor calculation logic";
+    rdfs:range xsd:string.
+fin-strategy:hasStrategyName a owl:DatatypeProperty;
+    rdfs:label "has strategy name";
+    rdfs:comment "human-readable name of the strategy";
+    rdfs:range xsd:string.
+fin-strategy:hasStrategyDescription a owl:DatatypeProperty;
+    rdfs:label "has strategy description";
+    rdfs:comment "textual description of the strategy logic and objectives";
+    rdfs:range xsd:string.
+fin-strategy:hasSignalDirection a owl:DatatypeProperty;
+    rdfs:label "has signal direction";
+    rdfs:comment "directional bias of the signal (long, short, neutral, exit)";
+    rdfs:range xsd:string.
+fin-strategy:hasSignalStrength a owl:ObjectProperty;
+    rdfs:label "has signal strength";
+    rdfs:comment "numerical measure of signal confidence or magnitude, typically normalized [-1, 1] or [0, 1]";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/QuantityValue>.
+fin-strategy:hasBacktestStatus a owl:DatatypeProperty;
+    rdfs:label "has backtest status";
+    rdfs:comment "execution state of the backtest run";
+    rdfs:range xsd:string.
+fin-strategy:hasStartDate a owl:DatatypeProperty;
+    rdfs:label "has start date";
+    rdfs:comment "start date of the backtest simulation period";
+    rdfs:range xsd:dateTime.
+fin-strategy:hasEndDate a owl:DatatypeProperty;
+    rdfs:label "has end date";
+    rdfs:comment "end date of the backtest simulation period";
+    rdfs:range xsd:dateTime.
+fin-strategy:hasInitialCapital a owl:ObjectProperty;
+    rdfs:label "has initial capital";
+    rdfs:comment "starting capital amount for the backtest run";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>.
+fin-strategy:hasCumulativeReturn a owl:ObjectProperty;
+    rdfs:label "has cumulative return";
+    rdfs:comment "cumulative return percentage at the observation point";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/QuantityValue>.
+fin-strategy:hasMaxDrawdown a owl:ObjectProperty;
+    rdfs:label "has max drawdown";
+    rdfs:comment "maximum peak-to-trough decline as percentage";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/QuantityValue>.
+fin-strategy:hasSharpeRatio a owl:ObjectProperty;
+    rdfs:label "has Sharpe ratio";
+    rdfs:comment "risk-adjusted return metric (mean excess return divided by standard deviation of returns)";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/QuantityValue>.
+fin-strategy:hasFactorPeriod a owl:DatatypeProperty;
+    rdfs:label "Has Factor Period";
+    rdfs:comment "reporting period key for a factor observation (e.g. 200704), distinct from publication/knowledge time";
+    rdfs:range xsd:string.
+fin-strategy:hasFactorValue a owl:ObjectProperty;
+    rdfs:label "Has Factor Value";
+    rdfs:comment "observed factor numeric value for a (instrument, period) under a publication/knowledge/availability triple";
+    rdfs:range <https://axiolune.ai/ontology/finance/foundation/QuantityValue>.
+fin-strategy:FactorObservation a owl:Class;
+    rdfs:label "Factor Observation";
+    rdfs:comment "revision-aware observation of a factor value for an instrument and reporting period, with publication (knowledge) time distinct from period and availability time (Qlib PIT model)".
+fin-strategy:observesFactor a owl:ObjectProperty;
+    rdfs:domain fin-strategy:FactorObservation;
+    rdfs:range fin-strategy:FactorDefinition;
+    rdfs:label "observesFactor".
+fin-strategy:observedInstrument a owl:ObjectProperty;
+    rdfs:domain fin-strategy:FactorObservation;
+    rdfs:range <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>;
+    rdfs:label "observedInstrument".
+fin-strategy:nextRevision a owl:ObjectProperty;
+    rdfs:domain fin-strategy:FactorObservation;
+    rdfs:range fin-strategy:FactorObservation;
+    rdfs:label "nextRevision".

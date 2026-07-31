@@ -1,0 +1,108 @@
+# Slice A — synthetic tabular source contract (M2-PLAN §6.1 / §10)
+# Status: draft evidence for Instrument → PriceObservation → HoldingSnapshot → PositionValuation
+# Not production data. Digests are of the committed fixture payloads.
+
+datasetId: "axiolune:synthetic:slice-a:v0.1"
+label: "Slice A synthetic finance tables"
+definition: "immutable synthetic relational snapshot proving SemanticMappingDefinition coverage for Slice A CQ-S1..S5"
+sourceType: relationalDatabase
+schemaVersion: "0.1.0"
+timezone: "UTC"
+snapshotId: "slice-a-2026-07-30-r1"
+snapshotDigest: "sha256:pending-compute-on-lock"
+owner: "axiolune-m2"
+license: "internal-synthetic-only"
+
+tables:
+  - name: instruments
+    primaryKey: [instrument_id]
+    columns:
+      - { name: instrument_id, type: string, required: true }
+      - { name: isin, type: string, required: true }
+      - { name: internal_id, type: string, required: true }
+      - { name: issuer_lei, type: string, required: true }
+      - { name: issuer_name, type: string, required: true }
+      - { name: currency, type: string, required: true }
+
+  - name: listings
+    primaryKey: [listing_id]
+    columns:
+      - { name: listing_id, type: string, required: true }
+      - { name: instrument_id, type: string, required: true }
+      - { name: venue_mic, type: string, required: true }
+      - { name: listing_date, type: date, required: true }
+
+  - name: price_observations
+    primaryKey: [obs_id]
+    columns:
+      - { name: obs_id, type: string, required: true }
+      - { name: instrument_id, type: string, required: true }
+      - { name: venue_mic, type: string, required: true }
+      - { name: price_value, type: decimal, required: true }
+      - { name: price_kind, type: string, required: true }
+      - { name: currency, type: string, required: true }
+      - { name: valid_from, type: instant, required: true }
+      - { name: valid_to, type: instant, required: false }
+      - { name: knowledge_from, type: instant, required: true }
+      - { name: knowledge_to, type: instant, required: false }
+      - { name: available_from, type: instant, required: true }
+      - { name: available_to, type: instant, required: false }
+      - { name: source, type: string, required: true }
+      - { name: source_revision, type: string, required: true }
+
+  - name: holding_snapshots
+    primaryKey: [holding_id]
+    columns:
+      - { name: holding_id, type: string, required: true }
+      - { name: portfolio_id, type: string, required: true }
+      - { name: instrument_id, type: string, required: true }
+      - { name: quantity, type: decimal, required: true }
+      - { name: side, type: string, required: true }
+      - { name: valid_from, type: instant, required: true }
+      - { name: knowledge_from, type: instant, required: true }
+      - { name: available_from, type: instant, required: true }
+      - { name: source, type: string, required: true }
+
+  - name: position_valuations
+    primaryKey: [valuation_id]
+    columns:
+      - { name: valuation_id, type: string, required: true }
+      - { name: holding_id, type: string, required: true }
+      - { name: price_obs_id, type: string, required: true }
+      - { name: market_value, type: decimal, required: true }
+      - { name: currency, type: string, required: true }
+      - { name: valid_from, type: instant, required: true }
+      - { name: knowledge_from, type: instant, required: true }
+      - { name: available_from, type: instant, required: true }
+
+rows:
+  instruments:
+    - { instrument_id: "inst-aapl", isin: "US0378331005", internal_id: "AX-EQ-AAPL", issuer_lei: "HWUPKR0MPOU8FGXBT394", issuer_name: "Apple Inc.", currency: "USD" }
+  listings:
+    - { listing_id: "lst-aapl-xnas", instrument_id: "inst-aapl", venue_mic: "XNAS", listing_date: "1980-12-12" }
+  price_observations:
+    - {
+        obs_id: "px-aapl-001", instrument_id: "inst-aapl", venue_mic: "XNAS",
+        price_value: "150.25", price_kind: "Last", currency: "USD",
+        valid_from: "2026-07-29T14:30:00Z", valid_to: "2026-07-29T14:30:01Z",
+        knowledge_from: "2026-07-29T14:30:00.123Z",
+        available_from: "2026-07-29T14:30:00.500Z",
+        source: "synthetic-nasdaq", source_revision: "1"
+      }
+  holding_snapshots:
+    - {
+        holding_id: "hold-001", portfolio_id: "port-demo", instrument_id: "inst-aapl",
+        quantity: "100", side: "Long",
+        valid_from: "2026-07-29T00:00:00Z",
+        knowledge_from: "2026-07-29T21:00:00Z",
+        available_from: "2026-07-29T21:05:00Z",
+        source: "synthetic-portfolio-eod"
+      }
+  position_valuations:
+    - {
+        valuation_id: "val-001", holding_id: "hold-001", price_obs_id: "px-aapl-001",
+        market_value: "15025.00", currency: "USD",
+        valid_from: "2026-07-29T21:05:00Z",
+        knowledge_from: "2026-07-29T21:05:00Z",
+        available_from: "2026-07-29T21:05:00Z"
+      }

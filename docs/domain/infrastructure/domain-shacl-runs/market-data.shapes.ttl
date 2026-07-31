@@ -1,0 +1,243 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-market-data: <https://axiolune.ai/ontology/finance/market-data/>.
+
+fin-market-data:PriceKindShape a sh:PropertyShape;
+    sh:path fin-market-data:PriceKind;
+    sh:hasValue fin-market-data:PriceKind_Last, fin-market-data:PriceKind_Bid, fin-market-data:PriceKind_Ask, fin-market-data:PriceKind_Mid, fin-market-data:PriceKind_Open, fin-market-data:PriceKind_High, fin-market-data:PriceKind_Low, fin-market-data:PriceKind_Close, fin-market-data:PriceKind_Settlement, fin-market-data:PriceKind_VWAP, fin-market-data:PriceKind_TWAP;
+    sh:name "Price Kind".
+fin-market-data:QuoteSideShape a sh:PropertyShape;
+    sh:path fin-market-data:QuoteSide;
+    sh:hasValue fin-market-data:QuoteSide_Bid, fin-market-data:QuoteSide_Ask;
+    sh:name "Quote Side".
+fin-market-data:BarAggregationShape a sh:PropertyShape;
+    sh:path fin-market-data:BarAggregation;
+    sh:hasValue fin-market-data:BarAggregation_Time, fin-market-data:BarAggregation_Tick, fin-market-data:BarAggregation_Volume, fin-market-data:BarAggregation_Dollar, fin-market-data:BarAggregation_Range, fin-market-data:BarAggregation_Renko;
+    sh:name "Bar Aggregation".
+fin-market-data:PriceObservationShape a sh:NodeShape;
+    sh:targetClass fin-market-data:PriceObservation;
+    sh:name "Price Observation";
+    sh:description "time-stamped observation of a price for a financial instrument at a specific venue with a defined price kind, currency, source, and three-axis temporal semantics (valid-time = market event time, knowledge-time = when platform learned, availability-time = when queryable per ADR-012)";
+    sh:property fin-market-data:PriceObservationShape_hasPriceValue.
+fin-market-data:PriceObservationShape_hasPriceValue a sh:PropertyShape;
+    sh:path fin-market-data:hasPriceValue;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:PriceObservationShape sh:property fin-market-data:PriceObservationShape_hasPriceKind.
+fin-market-data:PriceObservationShape_hasPriceKind a sh:PropertyShape;
+    sh:path fin-market-data:hasPriceKind;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:PriceObservationShape sh:property fin-market-data:PriceObservationShape_hasCurrencyCode.
+fin-market-data:PriceObservationShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode>;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:PriceObservationShape sh:property fin-market-data:PriceObservationShape_observedInstrument.
+fin-market-data:PriceObservationShape_observedInstrument a sh:PropertyShape;
+    sh:path fin-market-data:PriceObservation_observedInstrument;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>.
+fin-market-data:PriceObservationShape sh:property fin-market-data:PriceObservationShape_observedAtVenue.
+fin-market-data:PriceObservationShape_observedAtVenue a sh:PropertyShape;
+    sh:path fin-market-data:PriceObservation_observedAtVenue;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>.
+fin-market-data:QuoteObservationShape a sh:NodeShape;
+    sh:targetClass fin-market-data:QuoteObservation;
+    sh:name "Quote Observation";
+    sh:description "time-stamped observation of bid and/or ask prices with sizes for a financial instrument at a specific venue, with three-axis temporal semantics per ADR-012";
+    sh:property fin-market-data:QuoteObservationShape_hasBidPrice.
+fin-market-data:QuoteObservationShape_hasBidPrice a sh:PropertyShape;
+    sh:path fin-market-data:hasBidPrice;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_hasAskPrice.
+fin-market-data:QuoteObservationShape_hasAskPrice a sh:PropertyShape;
+    sh:path fin-market-data:hasAskPrice;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_hasBidSize.
+fin-market-data:QuoteObservationShape_hasBidSize a sh:PropertyShape;
+    sh:path fin-market-data:hasBidSize;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_hasAskSize.
+fin-market-data:QuoteObservationShape_hasAskSize a sh:PropertyShape;
+    sh:path fin-market-data:hasAskSize;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_hasCurrencyCode.
+fin-market-data:QuoteObservationShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode>;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_observedInstrument.
+fin-market-data:QuoteObservationShape_observedInstrument a sh:PropertyShape;
+    sh:path fin-market-data:QuoteObservation_observedInstrument;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>.
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_observedAtVenue.
+fin-market-data:QuoteObservationShape_observedAtVenue a sh:PropertyShape;
+    sh:path fin-market-data:QuoteObservation_observedAtVenue;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>.
+fin-market-data:TradeObservationShape a sh:NodeShape;
+    sh:targetClass fin-market-data:TradeObservation;
+    sh:name "Trade Observation";
+    sh:description "time-stamped observation of an executed trade for a financial instrument at a specific venue with price, size, currency, source, and three-axis temporal semantics per ADR-012";
+    sh:property fin-market-data:TradeObservationShape_hasTradePrice.
+fin-market-data:TradeObservationShape_hasTradePrice a sh:PropertyShape;
+    sh:path fin-market-data:hasTradePrice;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:TradeObservationShape sh:property fin-market-data:TradeObservationShape_hasTradeSize.
+fin-market-data:TradeObservationShape_hasTradeSize a sh:PropertyShape;
+    sh:path fin-market-data:hasTradeSize;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:TradeObservationShape sh:property fin-market-data:TradeObservationShape_hasCurrencyCode.
+fin-market-data:TradeObservationShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode>;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:TradeObservationShape sh:property fin-market-data:TradeObservationShape_observedInstrument.
+fin-market-data:TradeObservationShape_observedInstrument a sh:PropertyShape;
+    sh:path fin-market-data:TradeObservation_observedInstrument;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>.
+fin-market-data:TradeObservationShape sh:property fin-market-data:TradeObservationShape_observedAtVenue.
+fin-market-data:TradeObservationShape_observedAtVenue a sh:PropertyShape;
+    sh:path fin-market-data:TradeObservation_observedAtVenue;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>.
+fin-market-data:BarShape a sh:NodeShape;
+    sh:targetClass fin-market-data:Bar;
+    sh:name "Bar";
+    sh:description "aggregated market data observation over a time period, tick count, volume, or dollar amount, with open/high/low/close prices, volume, aggregation method, and three-axis temporal semantics per ADR-012";
+    sh:property fin-market-data:BarShape_hasOpenPrice.
+fin-market-data:BarShape_hasOpenPrice a sh:PropertyShape;
+    sh:path fin-market-data:hasOpenPrice;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_hasHighPrice.
+fin-market-data:BarShape_hasHighPrice a sh:PropertyShape;
+    sh:path fin-market-data:hasHighPrice;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_hasLowPrice.
+fin-market-data:BarShape_hasLowPrice a sh:PropertyShape;
+    sh:path fin-market-data:hasLowPrice;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_hasClosePrice.
+fin-market-data:BarShape_hasClosePrice a sh:PropertyShape;
+    sh:path fin-market-data:hasClosePrice;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_hasVolume.
+fin-market-data:BarShape_hasVolume a sh:PropertyShape;
+    sh:path fin-market-data:hasVolume;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_hasBarAggregation.
+fin-market-data:BarShape_hasBarAggregation a sh:PropertyShape;
+    sh:path fin-market-data:hasBarAggregation;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_hasBarDuration.
+fin-market-data:BarShape_hasBarDuration a sh:PropertyShape;
+    sh:path fin-market-data:hasBarDuration;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_hasCurrencyCode.
+fin-market-data:BarShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode>;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_observedInstrument.
+fin-market-data:BarShape_observedInstrument a sh:PropertyShape;
+    sh:path fin-market-data:Bar_observedInstrument;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_observedAtVenue.
+fin-market-data:BarShape_observedAtVenue a sh:PropertyShape;
+    sh:path fin-market-data:Bar_observedAtVenue;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>.
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-foundation: <https://axiolune.ai/ontology/finance/foundation/>.
+
+fin-foundation:MonetaryAmountShape a sh:NodeShape;
+    sh:targetClass fin-foundation:MonetaryAmount;
+    sh:name "Monetary Amount";
+    sh:description "structured monetary amount with currency code and scale; financial amounts MUST NOT use bare decimal";
+    sh:property fin-foundation:MonetaryAmountShape_hasCurrencyCode.
+fin-foundation:MonetaryAmountShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path fin-foundation:hasCurrencyCode;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-foundation:QuantityValueShape a sh:NodeShape;
+    sh:targetClass fin-foundation:QuantityValue;
+    sh:name "Quantity Value";
+    sh:description "structured measurement with unit and precision; quantities MUST NOT use bare decimal".
+fin-foundation:FinancialIdentifierAssignmentShape a sh:NodeShape;
+    sh:targetClass fin-foundation:FinancialIdentifierAssignment;
+    sh:name "Financial Identifier Assignment";
+    sh:description "association binding an identifier value of a declared identifier type to a party or instrument under an issuing authority and effective interval";
+    sh:property fin-foundation:FinancialIdentifierAssignmentShape_hasPrimaryIdentifier.
+fin-foundation:FinancialIdentifierAssignmentShape_hasPrimaryIdentifier a sh:PropertyShape;
+    sh:path fin-foundation:hasPrimaryIdentifier;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-foundation:FinancialIdentifierAssignmentShape sh:property fin-foundation:FinancialIdentifierAssignmentShape_assignsIdentifier.
+fin-foundation:FinancialIdentifierAssignmentShape_assignsIdentifier a sh:PropertyShape;
+    sh:path fin-foundation:FinancialIdentifierAssignment_assignsIdentifier;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class fin-foundation:Party.
+fin-foundation:hasCurrencyCodeShape a sh:PropertyShape;
+    sh:path fin-foundation:hasCurrencyCode;
+    sh:pattern "^[A-Z]{3}$";
+    sh:datatype xsd:string;
+    sh:name "Has Currency Code".
+fin-foundation:PartyShape a sh:NodeShape;
+    sh:targetClass fin-foundation:Party;
+    sh:name "Party";
+    sh:description "autonomous agent that can participate in legal or financial relationships, including natural persons and legal entities".
+fin-foundation:LegalEntityShape a sh:NodeShape;
+    sh:targetClass fin-foundation:LegalEntity;
+    sh:name "Legal Entity";
+    sh:description "organization that is legally or financially responsible for the performance of financial transactions and is capable of accruing liability on its own part, excluding natural persons but including governments and supranational entities";
+    sh:property fin-foundation:LegalEntityShape_hasLegalName.
+fin-foundation:LegalEntityShape_hasLegalName a sh:PropertyShape;
+    sh:path fin-foundation:hasLegalName;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-foundation:CurrencyShape a sh:NodeShape;
+    sh:targetClass fin-foundation:Currency;
+    sh:name "Currency";
+    sh:description "medium of exchange value defined by reference to the geographical location of the monetary authorities responsible for it, as specified in ISO 4217";
+    sh:property fin-foundation:CurrencyShape_hasCurrencyCode.
+fin-foundation:CurrencyShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path fin-foundation:hasCurrencyCode;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-foundation:JurisdictionShape a sh:NodeShape;
+    sh:targetClass fin-foundation:Jurisdiction;
+    sh:name "Jurisdiction";
+    sh:description "legal authority that has the power to make and enforce rules of conduct within a defined geographical or functional scope".

@@ -1,0 +1,44 @@
+# FactorObservation revision-selection competency probes (R4-M1)
+# Evidence model: Qlib PIT (date/publication, period, value, _next)
+# Runner: scripts/domain/run-factor-revision-cq.cjs
+# Fixture: tests/m2/fixtures/positive/factor-observation-revision.yaml
+
+moduleScope:
+  - fin-strategy-research
+
+reference:
+  - "reference/project-reference/qlib/docs/advanced/PIT.rst"
+  - "reference/project-reference/qlib/scripts/dump_pit.py"
+
+probes:
+  - id: CQ-FR1
+    question: "在 v2 发布之前的 asOfKnowledge，同一 (instrument, period) 应选中 v1 修订值"
+    asOf:
+      asOfValid: "2024-02-15T00:00:00Z"
+      asOfKnowledge: "2024-04-20T12:00:00Z"
+      asOfAvailable: "2024-04-20T12:00:00Z"
+    expected:
+      observationIri: "https://axiolune.ai/data/factors/obs-roe-aapl-2024q1-v1"
+      factorValue: "0.185"
+      sourceRevision: "v1"
+    assertNotNaiveTerminal: true
+    note: "Must walk nextRevision and stop at knowledge window covering asOfKnowledge — not return terminal v2"
+
+  - id: CQ-FR2
+    question: "在 v2 发布之后的 asOfKnowledge，应选中 v2（沿 nextRevision 前进）"
+    asOf:
+      asOfValid: "2024-02-15T00:00:00Z"
+      asOfKnowledge: "2024-05-15T12:00:00Z"
+      asOfAvailable: "2024-05-15T12:00:00Z"
+    expected:
+      observationIri: "https://axiolune.ai/data/factors/obs-roe-aapl-2024q1-v2"
+      factorValue: "0.191"
+      sourceRevision: "v2"
+
+  - id: CQ-FR3
+    question: "asOfAvailable 早于 v1.availableFrom 时不得选中任何修订（fail-closed）"
+    asOf:
+      asOfValid: "2024-02-15T00:00:00Z"
+      asOfKnowledge: "2024-04-20T12:00:00Z"
+      asOfAvailable: "2024-04-15T08:00:00Z"
+    expectedResult: empty

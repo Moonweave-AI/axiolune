@@ -1,0 +1,233 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-orders: <https://axiolune.ai/ontology/finance/orders-execution/>.
+
+fin-orders:OrderSideShape a sh:PropertyShape;
+    sh:path fin-orders:OrderSide;
+    sh:hasValue fin-orders:OrderSide_Buy, fin-orders:OrderSide_Sell;
+    sh:name "Order Side".
+fin-orders:OrderTypeShape a sh:PropertyShape;
+    sh:path fin-orders:OrderType;
+    sh:hasValue fin-orders:OrderType_Market, fin-orders:OrderType_Limit, fin-orders:OrderType_Stop, fin-orders:OrderType_StopLimit, fin-orders:OrderType_MarketIfTouched, fin-orders:OrderType_LimitIfTouched;
+    sh:name "Order Type".
+fin-orders:TimeInForceShape a sh:PropertyShape;
+    sh:path fin-orders:TimeInForce;
+    sh:hasValue fin-orders:TimeInForce_GTC, fin-orders:TimeInForce_IOC, fin-orders:TimeInForce_FOK, fin-orders:TimeInForce_DAY, fin-orders:TimeInForce_GTD, fin-orders:TimeInForce_AtTheOpen, fin-orders:TimeInForce_AtTheClose;
+    sh:name "Time In Force".
+fin-orders:OrderLifecycleStateShape a sh:PropertyShape;
+    sh:path fin-orders:OrderLifecycleState;
+    sh:hasValue fin-orders:OrderLifecycleState_Initialized, fin-orders:OrderLifecycleState_Denied, fin-orders:OrderLifecycleState_Emulated, fin-orders:OrderLifecycleState_Released, fin-orders:OrderLifecycleState_Submitted, fin-orders:OrderLifecycleState_Accepted, fin-orders:OrderLifecycleState_Rejected, fin-orders:OrderLifecycleState_PendingUpdate, fin-orders:OrderLifecycleState_PendingCancel, fin-orders:OrderLifecycleState_PartiallyFilled, fin-orders:OrderLifecycleState_Filled, fin-orders:OrderLifecycleState_Canceled, fin-orders:OrderLifecycleState_Expired, fin-orders:OrderLifecycleState_Triggered;
+    sh:name "Order Lifecycle State".
+fin-orders:OrderEventKindShape a sh:PropertyShape;
+    sh:path fin-orders:OrderEventKind;
+    sh:hasValue fin-orders:OrderEventKind_Initialized, fin-orders:OrderEventKind_Denied, fin-orders:OrderEventKind_Submitted, fin-orders:OrderEventKind_Accepted, fin-orders:OrderEventKind_Rejected, fin-orders:OrderEventKind_PendingUpdate, fin-orders:OrderEventKind_PendingCancel, fin-orders:OrderEventKind_Updated, fin-orders:OrderEventKind_ModifyRejected, fin-orders:OrderEventKind_CancelRejected, fin-orders:OrderEventKind_PartiallyFilled, fin-orders:OrderEventKind_Filled, fin-orders:OrderEventKind_Canceled, fin-orders:OrderEventKind_Expired, fin-orders:OrderEventKind_Triggered;
+    sh:name "Order Event Kind".
+fin-orders:LiquiditySideShape a sh:PropertyShape;
+    sh:path fin-orders:LiquiditySide;
+    sh:hasValue fin-orders:LiquiditySide_Maker, fin-orders:LiquiditySide_Taker, fin-orders:LiquiditySide_NoLiquiditySide;
+    sh:name "Liquidity Side".
+fin-orders:OrderIntentShape a sh:NodeShape;
+    sh:targetClass fin-orders:OrderIntent;
+    sh:name "Order Intent";
+    sh:description "trader or strategy desired trade instruction specifying instrument, side, quantity, type, time-in-force, and price constraints, representing the business intent before venue submission";
+    sh:property fin-orders:OrderIntentShape_hasOrderSide.
+fin-orders:OrderIntentShape_hasOrderSide a sh:PropertyShape;
+    sh:path fin-orders:hasOrderSide;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:OrderIntentShape sh:property fin-orders:OrderIntentShape_hasOrderType.
+fin-orders:OrderIntentShape_hasOrderType a sh:PropertyShape;
+    sh:path fin-orders:hasOrderType;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:OrderIntentShape sh:property fin-orders:OrderIntentShape_hasTimeInForce.
+fin-orders:OrderIntentShape_hasTimeInForce a sh:PropertyShape;
+    sh:path fin-orders:hasTimeInForce;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:OrderIntentShape sh:property fin-orders:OrderIntentShape_hasOrderQuantity.
+fin-orders:OrderIntentShape_hasOrderQuantity a sh:PropertyShape;
+    sh:path fin-orders:hasOrderQuantity;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:OrderIntentShape sh:property fin-orders:OrderIntentShape_hasLimitPrice.
+fin-orders:OrderIntentShape_hasLimitPrice a sh:PropertyShape;
+    sh:path fin-orders:hasLimitPrice;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-orders:OrderIntentShape sh:property fin-orders:OrderIntentShape_hasStopPrice.
+fin-orders:OrderIntentShape_hasStopPrice a sh:PropertyShape;
+    sh:path fin-orders:hasStopPrice;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-orders:OrderLifecycleEventShape a sh:NodeShape;
+    sh:targetClass fin-orders:OrderLifecycleEvent;
+    sh:name "Order Lifecycle Event";
+    sh:description "immutable state transition fact recording a change in order status, with previous state, resulting state, timestamp, reason, and external identifiers, forming an event-sourced audit trail";
+    sh:property fin-orders:OrderLifecycleEventShape_hasLifecycleState.
+fin-orders:OrderLifecycleEventShape_hasLifecycleState a sh:PropertyShape;
+    sh:path fin-orders:hasLifecycleState;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:OrderLifecycleEventShape sh:property fin-orders:OrderLifecycleEventShape_hasEventKind.
+fin-orders:OrderLifecycleEventShape_hasEventKind a sh:PropertyShape;
+    sh:path fin-orders:hasEventKind;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:OrderLifecycleEventShape sh:property fin-orders:OrderLifecycleEventShape_hasPreviousState.
+fin-orders:OrderLifecycleEventShape_hasPreviousState a sh:PropertyShape;
+    sh:path fin-orders:hasPreviousState;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-orders:OrderLifecycleEventShape sh:property fin-orders:OrderLifecycleEventShape_hasExternalOrderId.
+fin-orders:OrderLifecycleEventShape_hasExternalOrderId a sh:PropertyShape;
+    sh:path fin-orders:hasExternalOrderId;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-orders:OrderLifecycleEventShape sh:property fin-orders:OrderLifecycleEventShape_transitionsOrder.
+fin-orders:OrderLifecycleEventShape_transitionsOrder a sh:PropertyShape;
+    sh:path fin-orders:transitionsOrder;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-orders:OrderIntent.
+fin-orders:OrderLifecycleEventShape sh:property fin-orders:OrderLifecycleEventShape_occurredAtVenue.
+fin-orders:OrderLifecycleEventShape_occurredAtVenue a sh:PropertyShape;
+    sh:path fin-orders:occurredAtVenue;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>.
+fin-orders:ExecutionShape a sh:NodeShape;
+    sh:targetClass fin-orders:Execution;
+    sh:name "Execution";
+    sh:description "trade execution fact recording actual fill of an order or part thereof, with executed price, quantity, venue, commission, liquidity side, and trade identifier, enabling position derivation";
+    sh:property fin-orders:ExecutionShape_hasOrderSide.
+fin-orders:ExecutionShape_hasOrderSide a sh:PropertyShape;
+    sh:path fin-orders:hasOrderSide;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_hasExecutionPrice.
+fin-orders:ExecutionShape_hasExecutionPrice a sh:PropertyShape;
+    sh:path fin-orders:hasExecutionPrice;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_hasExecutionQuantity.
+fin-orders:ExecutionShape_hasExecutionQuantity a sh:PropertyShape;
+    sh:path fin-orders:hasExecutionQuantity;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_hasCommission.
+fin-orders:ExecutionShape_hasCommission a sh:PropertyShape;
+    sh:path fin-orders:hasCommission;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_hasLiquiditySide.
+fin-orders:ExecutionShape_hasLiquiditySide a sh:PropertyShape;
+    sh:path fin-orders:hasLiquiditySide;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_executesOrder.
+fin-orders:ExecutionShape_executesOrder a sh:PropertyShape;
+    sh:path fin-orders:executesOrder;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-orders:OrderIntent.
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_executedInstrument.
+fin-orders:ExecutionShape_executedInstrument a sh:PropertyShape;
+    sh:path fin-orders:executedInstrument;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>.
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_executedAtVenue.
+fin-orders:ExecutionShape_executedAtVenue a sh:PropertyShape;
+    sh:path fin-orders:executedAtVenue;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>.
+fin-orders:ExternalOrderStatusMappingShape a sh:NodeShape;
+    sh:targetClass fin-orders:ExternalOrderStatusMapping;
+    sh:name "External Order Status Mapping";
+    sh:description "versioned mapping from venue-specific or broker-specific raw order status codes to canonical Axiolune lifecycle states, enabling status translation without polluting canonical vocabulary";
+    sh:property fin-orders:ExternalOrderStatusMappingShape_hasExternalStatus.
+fin-orders:ExternalOrderStatusMappingShape_hasExternalStatus a sh:PropertyShape;
+    sh:path fin-orders:hasExternalStatus;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:ExternalOrderStatusMappingShape sh:property fin-orders:ExternalOrderStatusMappingShape_hasCanonicalState.
+fin-orders:ExternalOrderStatusMappingShape_hasCanonicalState a sh:PropertyShape;
+    sh:path fin-orders:hasCanonicalState;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:ExternalOrderStatusMappingShape sh:property fin-orders:ExternalOrderStatusMappingShape_appliesToVenue.
+fin-orders:ExternalOrderStatusMappingShape_appliesToVenue a sh:PropertyShape;
+    sh:path fin-orders:appliesToVenue;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>.
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-foundation: <https://axiolune.ai/ontology/finance/foundation/>.
+
+fin-foundation:MonetaryAmountShape a sh:NodeShape;
+    sh:targetClass fin-foundation:MonetaryAmount;
+    sh:name "Monetary Amount";
+    sh:description "structured monetary amount with currency code and scale; financial amounts MUST NOT use bare decimal";
+    sh:property fin-foundation:MonetaryAmountShape_hasCurrencyCode.
+fin-foundation:MonetaryAmountShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path fin-foundation:hasCurrencyCode;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-foundation:QuantityValueShape a sh:NodeShape;
+    sh:targetClass fin-foundation:QuantityValue;
+    sh:name "Quantity Value";
+    sh:description "structured measurement with unit and precision; quantities MUST NOT use bare decimal".
+fin-foundation:FinancialIdentifierAssignmentShape a sh:NodeShape;
+    sh:targetClass fin-foundation:FinancialIdentifierAssignment;
+    sh:name "Financial Identifier Assignment";
+    sh:description "association binding an identifier value of a declared identifier type to a party or instrument under an issuing authority and effective interval";
+    sh:property fin-foundation:FinancialIdentifierAssignmentShape_hasPrimaryIdentifier.
+fin-foundation:FinancialIdentifierAssignmentShape_hasPrimaryIdentifier a sh:PropertyShape;
+    sh:path fin-foundation:hasPrimaryIdentifier;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-foundation:FinancialIdentifierAssignmentShape sh:property fin-foundation:FinancialIdentifierAssignmentShape_assignsIdentifier.
+fin-foundation:FinancialIdentifierAssignmentShape_assignsIdentifier a sh:PropertyShape;
+    sh:path fin-foundation:FinancialIdentifierAssignment_assignsIdentifier;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class fin-foundation:Party.
+fin-foundation:hasCurrencyCodeShape a sh:PropertyShape;
+    sh:path fin-foundation:hasCurrencyCode;
+    sh:pattern "^[A-Z]{3}$";
+    sh:datatype xsd:string;
+    sh:name "Has Currency Code".
+fin-foundation:PartyShape a sh:NodeShape;
+    sh:targetClass fin-foundation:Party;
+    sh:name "Party";
+    sh:description "autonomous agent that can participate in legal or financial relationships, including natural persons and legal entities".
+fin-foundation:LegalEntityShape a sh:NodeShape;
+    sh:targetClass fin-foundation:LegalEntity;
+    sh:name "Legal Entity";
+    sh:description "organization that is legally or financially responsible for the performance of financial transactions and is capable of accruing liability on its own part, excluding natural persons but including governments and supranational entities";
+    sh:property fin-foundation:LegalEntityShape_hasLegalName.
+fin-foundation:LegalEntityShape_hasLegalName a sh:PropertyShape;
+    sh:path fin-foundation:hasLegalName;
+    sh:minCount 0;
+    sh:maxCount 1.
+fin-foundation:CurrencyShape a sh:NodeShape;
+    sh:targetClass fin-foundation:Currency;
+    sh:name "Currency";
+    sh:description "medium of exchange value defined by reference to the geographical location of the monetary authorities responsible for it, as specified in ISO 4217";
+    sh:property fin-foundation:CurrencyShape_hasCurrencyCode.
+fin-foundation:CurrencyShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path fin-foundation:hasCurrencyCode;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-foundation:JurisdictionShape a sh:NodeShape;
+    sh:targetClass fin-foundation:Jurisdiction;
+    sh:name "Jurisdiction";
+    sh:description "legal authority that has the power to make and enforce rules of conduct within a defined geographical or functional scope".

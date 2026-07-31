@@ -1,0 +1,231 @@
+# Axiolune M2 Finance — Post-Trade Operations Module
+# Module: fin-post-trade-operations
+# Version: 0.1.0
+# Status: draft
+# Dependencies: fin-foundation, fin-instruments, fin-portfolio-positions, fin-orders-execution
+# Terminology: docs/ontology/terminology/fin-post-trade-operations-terms.yaml
+# CQ: docs/ontology/competency-questions/fin-post-trade-operations-cq.yaml
+
+module:
+  moduleIri: https://axiolune.ai/ontology/finance/post-trade-operations
+  baseIri: https://axiolune.ai/ontology/finance/post-trade-operations/
+  preferredPrefix: fin-post-trade
+  version: 0.2.0
+  label: Post-Trade Operations
+  definition: >-
+    corporate action events, settlement instructions, and reconciliation breaks that capture post-trade processing and
+    operational risk semantics
+  imports:
+    - moduleIri: https://axiolune.ai/ontology/finance/foundation
+      version: 0.1.0
+      artifactDigest: sha256:e64d6782499a636bb016bed59056cbcffef160c9ad43d78ff93a479285998295
+      importMode: All
+    - moduleIri: https://axiolune.ai/ontology/finance/instruments
+      version: 0.1.0
+      artifactDigest: sha256:081b14706df28e69f9b98308709c767885a58e2d958c265bf7b16768e3b901b7
+      importMode: All
+    - moduleIri: https://axiolune.ai/ontology/finance/portfolio-positions
+      version: 0.1.0
+      artifactDigest: sha256:211bc89c44260a21f809e360f35a3456dc7b6da544173aa4a2366e1fd18bae50
+      importMode: All
+    - moduleIri: https://axiolune.ai/ontology/finance/orders-execution
+      version: 0.1.0
+      artifactDigest: sha256:e7bf74c920118621d36b1eeac517f2c3b2e231023d9cb79c4cc376eb3c9c403c
+      importMode: All
+  exports: []
+  status: approved
+domain:
+  CorporateActionType:
+    iri: https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionType
+    namespace: fin-post-trade
+    localName: CorporateActionType
+    label: Corporate Action Type
+    definition: controlled vocabulary of corporate action categories (dividend, split, merger, spinoff)
+    values:
+      - Dividend
+      - Split
+      - Merger
+      - Spinoff
+      - RightsIssue
+      - Delisting
+    note: Common corporate actions affecting instrument holdings and valuations.
+    version: 0.1.0
+    maintainer: Axiolune
+    vocabulary: https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionType
+  SettlementStatus:
+    iri: https://axiolune.ai/ontology/finance/post-trade-operations/SettlementStatus
+    namespace: fin-post-trade
+    localName: SettlementStatus
+    label: Settlement Status
+    definition: controlled vocabulary of settlement states (pending, settled, failed, canceled)
+    values:
+      - Pending
+      - Settled
+      - Failed
+      - Canceled
+    note: Settlement lifecycle states for trade clearing and settlement.
+    version: 0.1.0
+    maintainer: Axiolune
+    vocabulary: https://axiolune.ai/ontology/finance/post-trade-operations/SettlementStatus
+  ReconciliationStatus:
+    iri: https://axiolune.ai/ontology/finance/post-trade-operations/ReconciliationStatus
+    namespace: fin-post-trade
+    localName: ReconciliationStatus
+    label: Reconciliation Status
+    definition: controlled vocabulary of reconciliation outcomes (matched, break, investigating, resolved)
+    values:
+      - Matched
+      - Break
+      - Investigating
+      - Resolved
+    note: Reconciliation process states for position and cash reconciliation.
+    version: 0.1.0
+    maintainer: Axiolune
+    vocabulary: https://axiolune.ai/ontology/finance/post-trade-operations/ReconciliationStatus
+  CorporateActionEvent:
+    iri: https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionEvent
+    namespace: fin-post-trade
+    localName: CorporateActionEvent
+    label: Corporate Action Event
+    definition: >-
+      scheduled or announced corporate action affecting instrument holders with ex-date, record date, payment date, and
+      impact details
+    patternBindings:
+      - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+      - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    note: validFrom is announcement date; exDate/paymentDate are action-specific dates.
+    participantRoles:
+      - roleName: affectsInstrument
+        range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+        minCount: 1
+        maxCount: 1
+        roleIri: https://axiolune.ai/ontology/finance/post-trade-operations/affectsInstrument
+      - roleName: announcedBy
+        range: https://axiolune.ai/ontology/finance/instruments/Issuer
+        minCount: 0
+        maxCount: 1
+        roleIri: https://axiolune.ai/ontology/finance/post-trade-operations/announcedBy
+        label: announced by
+        definition: optional issuer that announced the corporate action
+    attributeUses:
+      - attribute: https://axiolune.ai/ontology/finance/post-trade-operations/hasActionType
+        minCount: 1
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/post-trade-operations/hasExDate
+        minCount: 0
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/post-trade-operations/hasPaymentDate
+        minCount: 0
+        maxCount: 1
+  SettlementInstruction:
+    iri: https://axiolune.ai/ontology/finance/post-trade-operations/SettlementInstruction
+    namespace: fin-post-trade
+    localName: SettlementInstruction
+    label: Settlement Instruction
+    definition: instruction to settle a trade execution with settlement date, status, counterparty, and clearing details
+    patternBindings:
+      - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+      - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    note: validFrom is instruction creation; settlement date is when settlement occurs.
+    participantRoles:
+      - roleName: settlesExecution
+        range: https://axiolune.ai/ontology/finance/orders-execution/Execution
+        minCount: 1
+        maxCount: 1
+        roleIri: https://axiolune.ai/ontology/finance/post-trade-operations/settlesExecution
+      - roleName: instructsCounterparty
+        range: https://axiolune.ai/ontology/finance/foundation/Party
+        minCount: 0
+        maxCount: 1
+        roleIri: https://axiolune.ai/ontology/finance/post-trade-operations/instructsCounterparty
+        label: instructs counterparty
+        definition: optional counterparty to whom the settlement instruction is directed
+    attributeUses:
+      - attribute: https://axiolune.ai/ontology/finance/post-trade-operations/hasSettlementDate
+        minCount: 1
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/post-trade-operations/hasSettlementStatus
+        minCount: 1
+        maxCount: 1
+  ReconciliationBreak:
+    iri: https://axiolune.ai/ontology/finance/post-trade-operations/ReconciliationBreak
+    namespace: fin-post-trade
+    localName: ReconciliationBreak
+    label: Reconciliation Break
+    definition: >-
+      detected discrepancy between internal records and external source (broker, custodian, counterparty) with break
+      details and resolution status
+    patternBindings:
+      - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+      - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    note: ReconciliationBreak is immutable audit event. Resolution actions are separate.
+    participantRoles:
+      - roleName: breaksForPortfolio
+        range: https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
+        minCount: 0
+        maxCount: 1
+        roleIri: https://axiolune.ai/ontology/finance/post-trade-operations/breaksForPortfolio
+      - roleName: breaksForAccount
+        range: https://axiolune.ai/ontology/finance/portfolio-positions/Account
+        minCount: 0
+        maxCount: 1
+        roleIri: https://axiolune.ai/ontology/finance/post-trade-operations/breaksForAccount
+    attributeUses:
+      - attribute: https://axiolune.ai/ontology/finance/post-trade-operations/hasReconciliationStatus
+        minCount: 1
+        maxCount: 1
+      - attribute: https://axiolune.ai/ontology/finance/post-trade-operations/hasBreakAmount
+        minCount: 0
+        maxCount: 1
+  hasActionType:
+    iri: https://axiolune.ai/ontology/finance/post-trade-operations/hasActionType
+    namespace: fin-post-trade
+    localName: hasActionType
+    label: has action type
+    definition: category of the corporate action
+    valueType: codelist
+    codeListReference: CorporateActionType
+  hasExDate:
+    iri: https://axiolune.ai/ontology/finance/post-trade-operations/hasExDate
+    namespace: fin-post-trade
+    localName: hasExDate
+    label: has ex-date
+    definition: ex-dividend or ex-rights date after which new buyers do not receive the action benefit
+    valueType: instant
+  hasPaymentDate:
+    iri: https://axiolune.ai/ontology/finance/post-trade-operations/hasPaymentDate
+    namespace: fin-post-trade
+    localName: hasPaymentDate
+    label: has payment date
+    definition: date when dividend or other corporate action payment is made
+    valueType: instant
+  hasSettlementDate:
+    iri: https://axiolune.ai/ontology/finance/post-trade-operations/hasSettlementDate
+    namespace: fin-post-trade
+    localName: hasSettlementDate
+    label: has settlement date
+    definition: date when trade settlement occurs (T+N from trade date)
+    valueType: instant
+  hasSettlementStatus:
+    iri: https://axiolune.ai/ontology/finance/post-trade-operations/hasSettlementStatus
+    namespace: fin-post-trade
+    localName: hasSettlementStatus
+    label: has settlement status
+    definition: current state of the settlement process
+    valueType: codelist
+    codeListReference: SettlementStatus
+  hasReconciliationStatus:
+    iri: https://axiolune.ai/ontology/finance/post-trade-operations/hasReconciliationStatus
+    namespace: fin-post-trade
+    localName: hasReconciliationStatus
+    label: has reconciliation status
+    definition: current state of the reconciliation investigation
+    valueType: codelist
+    codeListReference: ReconciliationStatus
+  hasBreakAmount:
+    iri: https://axiolune.ai/ontology/finance/post-trade-operations/hasBreakAmount
+    namespace: fin-post-trade
+    localName: hasBreakAmount
+    label: has break amount
+    definition: monetary value of the discrepancy
+    valueType: https://axiolune.ai/ontology/finance/foundation/MonetaryAmount

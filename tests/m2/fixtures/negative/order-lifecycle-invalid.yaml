@@ -1,0 +1,109 @@
+# OrderLifecycleEvent state-machine negative fixtures (CQ-OE6)
+# Each negative must be rejected by the canonical state machine validator.
+# Chains are valid until the intended violation to ensure the violation is the actual reason.
+
+fixtures:
+  - id: order-sm-neg-001
+    description: "invalid Initialized→Filled without Accepted (skips Submitted/Accepted)"
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+    expectedResult: rejected
+    violationType: invalid-state-transition
+    events:
+      - iri: https://axiolune.ai/data/orders/sm-neg-001-ev1
+        transitionsOrder: https://axiolune.ai/data/orders/sm-neg-001-order
+        hasLifecycleState: Filled
+        hasPreviousState: Initialized
+        validFrom: '2026-07-25T12:00:00Z'
+        knowledgeFrom: '2026-07-25T12:00:01Z'
+        availableFrom: '2026-07-25T12:00:02Z'
+
+  - id: order-sm-neg-002
+    description: "backward transition Filled→PartiallyFilled (terminal to non-terminal)"
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+    expectedResult: rejected
+    violationType: invalid-state-transition
+    events:
+      - iri: https://axiolune.ai/data/orders/sm-neg-002-ev1
+        transitionsOrder: https://axiolune.ai/data/orders/sm-neg-002-order
+        hasLifecycleState: Submitted
+        hasPreviousState: Initialized
+        validFrom: '2026-07-25T12:00:00Z'
+        knowledgeFrom: '2026-07-25T12:00:01Z'
+        availableFrom: '2026-07-25T12:00:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-neg-002-ev2
+        transitionsOrder: https://axiolune.ai/data/orders/sm-neg-002-order
+        hasLifecycleState: Accepted
+        hasPreviousState: Submitted
+        validFrom: '2026-07-25T12:01:00Z'
+        knowledgeFrom: '2026-07-25T12:01:01Z'
+        availableFrom: '2026-07-25T12:01:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-neg-002-ev3
+        transitionsOrder: https://axiolune.ai/data/orders/sm-neg-002-order
+        hasLifecycleState: Filled
+        hasPreviousState: Accepted
+        validFrom: '2026-07-25T12:02:00Z'
+        knowledgeFrom: '2026-07-25T12:02:01Z'
+        availableFrom: '2026-07-25T12:02:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-neg-002-ev4
+        transitionsOrder: https://axiolune.ai/data/orders/sm-neg-002-order
+        hasLifecycleState: PartiallyFilled
+        hasPreviousState: Filled
+        validFrom: '2026-07-25T12:03:00Z'
+        knowledgeFrom: '2026-07-25T12:03:01Z'
+        availableFrom: '2026-07-25T12:03:02Z'
+
+  - id: order-sm-neg-003
+    description: "terminal to active Canceled→Accepted"
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+    expectedResult: rejected
+    violationType: invalid-state-transition
+    events:
+      - iri: https://axiolune.ai/data/orders/sm-neg-003-ev1
+        transitionsOrder: https://axiolune.ai/data/orders/sm-neg-003-order
+        hasLifecycleState: Submitted
+        hasPreviousState: Initialized
+        validFrom: '2026-07-25T12:00:00Z'
+        knowledgeFrom: '2026-07-25T12:00:01Z'
+        availableFrom: '2026-07-25T12:00:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-neg-003-ev2
+        transitionsOrder: https://axiolune.ai/data/orders/sm-neg-003-order
+        hasLifecycleState: Accepted
+        hasPreviousState: Submitted
+        validFrom: '2026-07-25T12:01:00Z'
+        knowledgeFrom: '2026-07-25T12:01:01Z'
+        availableFrom: '2026-07-25T12:01:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-neg-003-ev3
+        transitionsOrder: https://axiolune.ai/data/orders/sm-neg-003-order
+        hasLifecycleState: Canceled
+        hasPreviousState: Accepted
+        validFrom: '2026-07-25T12:02:00Z'
+        knowledgeFrom: '2026-07-25T12:02:01Z'
+        availableFrom: '2026-07-25T12:02:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-neg-003-ev4
+        transitionsOrder: https://axiolune.ai/data/orders/sm-neg-003-order
+        hasLifecycleState: Accepted
+        hasPreviousState: Canceled
+        validFrom: '2026-07-25T12:03:00Z'
+        knowledgeFrom: '2026-07-25T12:03:01Z'
+        availableFrom: '2026-07-25T12:03:02Z'
+
+  - id: order-sm-neg-004
+    description: "previousState mismatch — event claims previousState=Accepted but prior event state=Submitted"
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+    expectedResult: rejected
+    violationType: previousState-mismatch
+    events:
+      - iri: https://axiolune.ai/data/orders/sm-neg-004-ev1
+        transitionsOrder: https://axiolune.ai/data/orders/sm-neg-004-order
+        hasLifecycleState: Submitted
+        hasPreviousState: Initialized
+        validFrom: '2026-07-25T12:00:00Z'
+        knowledgeFrom: '2026-07-25T12:00:01Z'
+        availableFrom: '2026-07-25T12:00:02Z'
+      - iri: https://axiolune.ai/data/orders/sm-neg-004-ev2
+        transitionsOrder: https://axiolune.ai/data/orders/sm-neg-004-order
+        hasLifecycleState: Filled
+        hasPreviousState: Accepted
+        validFrom: '2026-07-25T12:01:00Z'
+        knowledgeFrom: '2026-07-25T12:01:01Z'
+        availableFrom: '2026-07-25T12:01:02Z'

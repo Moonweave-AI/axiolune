@@ -1,0 +1,128 @@
+# SemanticMappingDefinition — Slice A synthetic (ADR-011 authoring artifact)
+# Status: draft
+#
+# Round-3 honesty:
+# - This file IS the mapping truth source for the synthetic Slice A runner.
+# - Runner: scripts/domain/run-slice-a.cjs (minimal-slot-interpreter-v0)
+# - Capability: field→slot, iriTemplate, temporal/provenance field bindings, table joins.
+# - NOT claimed: full ADR-011 (named transformations, R2RML projection, RDF URDNA2015 canon,
+#   SPARQL promotion, SHACL engine against staging named graph).
+# - CQ-S5 digest is deterministic JSON canon of interpreter output (not RDF dataset canon).
+
+iri: "https://axiolune.ai/mapping/finance/synthetic/slice-a-v0.1"
+namespace: "ax-map"
+localName: "SliceAInstrumentPriceHoldingValuation"
+label: "Slice A Instrument→Price→Holding→Valuation mapping"
+definition: "SemanticMappingDefinition from synthetic tabular snapshot to Slice A ontology types"
+version: "0.1.0"
+status: draft
+runnerCapability: "minimal-slot-interpreter-v0"
+
+source:
+  datasetId: "axiolune:synthetic:slice-a:v0.1"
+  sourceContract: "mappings/finance/synthetic/slice-a-source-contract.yaml"
+  rowSet:
+    tables:
+      - instruments
+      - listings
+      - price_observations
+      - holding_snapshots
+      - position_valuations
+    joins:
+      - { left: "price_observations.instrument_id", right: "instruments.instrument_id" }
+      - { left: "listings.instrument_id", right: "instruments.instrument_id" }
+      - { left: "holding_snapshots.instrument_id", right: "instruments.instrument_id" }
+      - { left: "position_valuations.holding_id", right: "holding_snapshots.holding_id" }
+      - { left: "position_valuations.price_obs_id", right: "price_observations.obs_id" }
+
+targets:
+  - targetTypeIri: "https://axiolune.ai/ontology/finance/foundation/LegalEntity"
+    fromTable: instruments
+    identity:
+      logicalKey: ["instruments.issuer_lei"]
+      iriTemplate: "https://axiolune.ai/data/parties/lei-{instruments.issuer_lei}"
+    slotMappings:
+      - { slot: "https://axiolune.ai/ontology/finance/foundation/hasLegalName", binding: { field: "instruments.issuer_name" } }
+      - { slotLocal: "lei", binding: { field: "instruments.issuer_lei" } }
+
+  - targetTypeIri: "https://axiolune.ai/ontology/finance/instruments/FinancialInstrument"
+    fromTable: instruments
+    identity:
+      logicalKey: ["instruments.isin", "instruments.internal_id"]
+      iriTemplate: "https://axiolune.ai/data/instruments/{instruments.internal_id}"
+    slotMappings:
+      - { slot: "https://axiolune.ai/ontology/finance/foundation/hasPrimaryIdentifier", binding: { field: "instruments.isin" } }
+      - { slotLocal: "internalId", binding: { field: "instruments.internal_id" } }
+      - { slotLocal: "isIssuedBy", binding: { iriTemplate: "https://axiolune.ai/data/parties/lei-{instruments.issuer_lei}" } }
+      - { slotLocal: "issuerName", binding: { field: "instruments.issuer_name" } }
+      - { slotLocal: "currency", binding: { field: "instruments.currency" } }
+
+  - targetTypeIri: "https://axiolune.ai/ontology/finance/instruments/InstrumentListing"
+    fromTable: listings
+    identity:
+      logicalKey: ["listings.listing_id"]
+      iriTemplate: "https://axiolune.ai/data/listings/{listings.listing_id}"
+    slotMappings:
+      - { slotLocal: "listsInstrument", binding: { iriTemplate: "https://axiolune.ai/data/instruments/{instruments.internal_id}" } }
+      - { slotLocal: "venueMic", binding: { field: "listings.venue_mic" } }
+      - { slotLocal: "listingDate", binding: { field: "listings.listing_date" } }
+
+  - targetTypeIri: "https://axiolune.ai/ontology/finance/market-data/PriceObservation"
+    fromTable: price_observations
+    identity:
+      logicalKey: ["price_observations.obs_id"]
+      versionKey: ["price_observations.source_revision"]
+      iriTemplate: "https://axiolune.ai/data/market-data/{price_observations.obs_id}"
+    slotMappings:
+      - { slotRole: "observedInstrument", binding: { iriTemplate: "https://axiolune.ai/data/instruments/{instruments.internal_id}" } }
+      - { slot: "https://axiolune.ai/ontology/finance/market-data/hasPriceValue", binding: { field: "price_observations.price_value" }, slotLocal: "hasPriceValue" }
+      - { slot: "https://axiolune.ai/ontology/finance/market-data/hasPriceKind", binding: { field: "price_observations.price_kind" }, slotLocal: "hasPriceKind" }
+      - { slot: "https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode", binding: { field: "price_observations.currency" }, slotLocal: "hasCurrencyCode" }
+      - { slotLocal: "venueMic", binding: { field: "price_observations.venue_mic" } }
+    temporal:
+      validFrom: { field: "price_observations.valid_from" }
+      validTo: { field: "price_observations.valid_to" }
+      knowledgeFrom: { field: "price_observations.knowledge_from" }
+      knowledgeTo: { field: "price_observations.knowledge_to" }
+      availableFrom: { field: "price_observations.available_from" }
+      availableTo: { field: "price_observations.available_to" }
+    provenance:
+      source: { field: "price_observations.source" }
+      sourceRevision: { field: "price_observations.source_revision" }
+
+  - targetTypeIri: "https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot"
+    fromTable: holding_snapshots
+    identity:
+      logicalKey: ["holding_snapshots.holding_id"]
+      iriTemplate: "https://axiolune.ai/data/holdings/{holding_snapshots.holding_id}"
+    slotMappings:
+      - { slotLocal: "heldInPortfolio", binding: { iriTemplate: "https://axiolune.ai/data/portfolios/{holding_snapshots.portfolio_id}" } }
+      - { slotLocal: "heldInstrument", binding: { iriTemplate: "https://axiolune.ai/data/instruments/{instruments.internal_id}" } }
+      - { slot: "https://axiolune.ai/ontology/finance/portfolio-positions/hasQuantity", binding: { field: "holding_snapshots.quantity" }, slotLocal: "hasQuantity" }
+      - { slotLocal: "hasPositionSide", binding: { field: "holding_snapshots.side" } }
+    temporal:
+      validFrom: { field: "holding_snapshots.valid_from" }
+      knowledgeFrom: { field: "holding_snapshots.knowledge_from" }
+      availableFrom: { field: "holding_snapshots.available_from" }
+    provenance:
+      source: { field: "holding_snapshots.source" }
+
+  - targetTypeIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation"
+    fromTable: position_valuations
+    identity:
+      logicalKey: ["position_valuations.valuation_id"]
+      iriTemplate: "https://axiolune.ai/data/valuations/{position_valuations.valuation_id}"
+    slotMappings:
+      - { slot: "https://axiolune.ai/ontology/finance/portfolio-positions/hasMarketValue", binding: { field: "position_valuations.market_value" }, slotLocal: "hasMarketValue" }
+      - { slotRole: "usesPriceObservation", binding: { iriTemplate: "https://axiolune.ai/data/market-data/{position_valuations.price_obs_id}" }, slotLocal: "usesPriceObservation" }
+      - { slotRole: "valuesHolding", binding: { iriTemplate: "https://axiolune.ai/data/holdings/{position_valuations.holding_id}" }, slotLocal: "valuesHolding" }
+      - { slotLocal: "hasCurrencyCode", binding: { field: "position_valuations.currency" } }
+    temporal:
+      validFrom: { field: "position_valuations.valid_from" }
+      knowledgeFrom: { field: "position_valuations.knowledge_from" }
+      availableFrom: { field: "position_valuations.available_from" }
+
+notes:
+  - "Runner interprets this file; hand-materialize paths are prohibited in run-slice-a.cjs (Round-3)."
+  - "availableFrom is mandatory for TemporalFact targets; missing values fail-closed."
+  - "CQ-S5 uses deterministic JSON serialization of interpreter output — NOT RDF Dataset Canonicalization (URDNA2015)."

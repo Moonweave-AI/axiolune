@@ -1,0 +1,2421 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix ext-fibo: <https://axiolune.ai/ontology/finance/ext-fibo-release-local/>.
+
+ext-fibo:FiboEvidenceBundleShape a sh:NodeShape;
+    sh:targetClass ext-fibo:FiboEvidenceBundle;
+    sh:name "FIBO Evidence Bundle";
+    sh:description "documentation object recording the locked local FIBO evidence files and import policy for Axiolune alignments".
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-foundation: <https://axiolune.ai/ontology/finance/foundation/>.
+
+fin-foundation:MonetaryAmountShape a sh:NodeShape;
+    sh:targetClass fin-foundation:MonetaryAmount;
+    sh:name "Monetary Amount";
+    sh:description "structured monetary amount with numeric magnitude, ISO 4217 currency code, and optional scale; financial amounts MUST NOT use bare decimal literals";
+    sh:property fin-foundation:MonetaryAmountShape_hasNumericAmount.
+fin-foundation:MonetaryAmountShape_hasNumericAmount a sh:PropertyShape;
+    sh:path fin-foundation:hasNumericAmount;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:decimal.
+fin-foundation:MonetaryAmountShape sh:property fin-foundation:MonetaryAmountShape_hasCurrencyCode.
+fin-foundation:MonetaryAmountShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path fin-foundation:hasCurrencyCode;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:pattern "^[A-Z]{3}$".
+fin-foundation:MonetaryAmountShape sh:property fin-foundation:MonetaryAmountShape_hasScale.
+fin-foundation:MonetaryAmountShape_hasScale a sh:PropertyShape;
+    sh:path fin-foundation:hasScale;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:integer.
+fin-foundation:QuantityValueShape a sh:NodeShape;
+    sh:targetClass fin-foundation:QuantityValue;
+    sh:name "Quantity Value";
+    sh:description "structured measurement with numeric magnitude and unit code; quantities MUST NOT use bare decimal";
+    sh:property fin-foundation:QuantityValueShape_hasNumericAmount.
+fin-foundation:QuantityValueShape_hasNumericAmount a sh:PropertyShape;
+    sh:path fin-foundation:hasNumericAmount;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:decimal.
+fin-foundation:QuantityValueShape sh:property fin-foundation:QuantityValueShape_hasUnitCode.
+fin-foundation:QuantityValueShape_hasUnitCode a sh:PropertyShape;
+    sh:path fin-foundation:hasUnitCode;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string.
+fin-foundation:QuantityValueShape sh:property fin-foundation:QuantityValueShape_hasScale.
+fin-foundation:QuantityValueShape_hasScale a sh:PropertyShape;
+    sh:path fin-foundation:hasScale;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:integer.
+fin-foundation:FinancialIdentifierAssignmentShape a sh:NodeShape;
+    sh:targetClass fin-foundation:FinancialIdentifierAssignment;
+    sh:name "Financial Identifier Assignment";
+    sh:description "association binding an identifier value of a declared identifier type to a party or instrument under an issuing authority and effective interval";
+    sh:property fin-foundation:FinancialIdentifierAssignmentShape_hasPrimaryIdentifier.
+fin-foundation:FinancialIdentifierAssignmentShape_hasPrimaryIdentifier a sh:PropertyShape;
+    sh:path fin-foundation:hasPrimaryIdentifier;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string.
+fin-foundation:FinancialIdentifierAssignmentShape sh:property fin-foundation:FinancialIdentifierAssignmentShape_assignsIdentifier.
+fin-foundation:FinancialIdentifierAssignmentShape_assignsIdentifier a sh:PropertyShape;
+    sh:path fin-foundation:assignsIdentifier;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class fin-foundation:Party.
+fin-foundation:FinancialIdentifierAssignmentShape sh:property fin-foundation:FinancialIdentifierAssignmentShape_identifiesSubject.
+fin-foundation:FinancialIdentifierAssignmentShape_identifiesSubject a sh:PropertyShape;
+    sh:path fin-foundation:identifiesSubject;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class fin-foundation:Party.
+fin-foundation:FinancialIdentifierAssignmentShape sh:property fin-foundation:FinancialIdentifierAssignmentShape_pat_validFrom.
+fin-foundation:FinancialIdentifierAssignmentShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-foundation:FinancialIdentifierAssignmentShape sh:property fin-foundation:FinancialIdentifierAssignmentShape_pat_knowledgeFrom.
+fin-foundation:FinancialIdentifierAssignmentShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-foundation:FinancialIdentifierAssignmentShape sh:property fin-foundation:FinancialIdentifierAssignmentShape_pat_availableFrom.
+fin-foundation:FinancialIdentifierAssignmentShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-foundation:FinancialIdentifierAssignmentShape sh:property fin-foundation:FinancialIdentifierAssignmentShape_pat_validTo.
+fin-foundation:FinancialIdentifierAssignmentShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-foundation:FinancialIdentifierAssignmentShape sh:property fin-foundation:FinancialIdentifierAssignmentShape_pat_knowledgeTo.
+fin-foundation:FinancialIdentifierAssignmentShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-foundation:FinancialIdentifierAssignmentShape sh:property fin-foundation:FinancialIdentifierAssignmentShape_pat_availableTo.
+fin-foundation:FinancialIdentifierAssignmentShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-foundation:FinancialIdentifierAssignmentShape sh:sparql _:sparql_valid_FinancialIdentifierAssignment.
+_:sparql_valid_FinancialIdentifierAssignment sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-foundation:FinancialIdentifierAssignmentShape sh:sparql _:sparql_knowledge_FinancialIdentifierAssignment.
+_:sparql_knowledge_FinancialIdentifierAssignment sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-foundation:FinancialIdentifierAssignmentShape sh:sparql _:sparql_available_FinancialIdentifierAssignment.
+_:sparql_available_FinancialIdentifierAssignment sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-foundation:FinancialIdentifierAssignmentShape sh:property fin-foundation:FinancialIdentifierAssignmentShape_pat_source.
+fin-foundation:FinancialIdentifierAssignmentShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+fin-foundation:hasCurrencyCodeShape a sh:PropertyShape;
+    sh:path fin-foundation:hasCurrencyCode;
+    sh:pattern "^[A-Z]{3}$";
+    sh:datatype xsd:string;
+    sh:name "Has Currency Code".
+fin-foundation:PartyShape a sh:NodeShape;
+    sh:targetClass fin-foundation:Party;
+    sh:name "Party";
+    sh:description "autonomous agent that can participate in legal or financial relationships, including natural persons and legal entities".
+fin-foundation:LegalEntityShape a sh:NodeShape;
+    sh:targetClass fin-foundation:LegalEntity;
+    sh:name "Legal Entity";
+    sh:description "organization that is legally or financially responsible for the performance of financial transactions and is capable of accruing liability on its own part, excluding natural persons but including governments and supranational entities";
+    sh:property fin-foundation:LegalEntityShape_hasLegalName.
+fin-foundation:LegalEntityShape_hasLegalName a sh:PropertyShape;
+    sh:path fin-foundation:hasLegalName;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:string.
+fin-foundation:CurrencyShape a sh:NodeShape;
+    sh:targetClass fin-foundation:Currency;
+    sh:name "Currency";
+    sh:description "medium of exchange value defined by reference to the geographical location of the monetary authorities responsible for it, as specified in ISO 4217";
+    sh:property fin-foundation:CurrencyShape_hasCurrencyCode.
+fin-foundation:CurrencyShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path fin-foundation:hasCurrencyCode;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:pattern "^[A-Z]{3}$".
+fin-foundation:JurisdictionShape a sh:NodeShape;
+    sh:targetClass fin-foundation:Jurisdiction;
+    sh:name "Jurisdiction";
+    sh:description "legal authority that has the power to make and enforce rules of conduct within a defined geographical or functional scope".
+fin-foundation:ISINPatternShape a sh:NodeShape;
+    sh:targetClass fin-foundation:ISIN;
+    sh:property fin-foundation:ISINPatternShape_value.
+fin-foundation:ISINPatternShape_value a sh:PropertyShape;
+    sh:path fin-foundation:ISIN;
+    sh:datatype xsd:string;
+    sh:pattern "^[A-Z]{2}[A-Z0-9]{9}[0-9]$";
+    sh:name "International Securities Identification Number".
+fin-foundation:LEIPatternShape a sh:NodeShape;
+    sh:targetClass fin-foundation:LEI;
+    sh:property fin-foundation:LEIPatternShape_value.
+fin-foundation:LEIPatternShape_value a sh:PropertyShape;
+    sh:path fin-foundation:LEI;
+    sh:datatype xsd:string;
+    sh:pattern "^[A-Z0-9]{18}[0-9]{2}$";
+    sh:name "Legal Entity Identifier".
+fin-foundation:MICPatternShape a sh:NodeShape;
+    sh:targetClass fin-foundation:MIC;
+    sh:property fin-foundation:MICPatternShape_value.
+fin-foundation:MICPatternShape_value a sh:PropertyShape;
+    sh:path fin-foundation:MIC;
+    sh:datatype xsd:string;
+    sh:pattern "^[A-Z]{4}([A-Z]{4})?$";
+    sh:name "Market Identifier Code".
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-instruments: <https://axiolune.ai/ontology/finance/instruments/>.
+
+fin-instruments:FinancialInstrumentShape a sh:NodeShape;
+    sh:targetClass fin-instruments:FinancialInstrument;
+    sh:name "Financial Instrument";
+    sh:description "written contract that gives rise to both a financial asset of one entity and a financial liability of another entity, as defined in IAS 32";
+    sh:property fin-instruments:FinancialInstrumentShape_hasPrimaryIdentifier.
+fin-instruments:FinancialInstrumentShape_hasPrimaryIdentifier a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/finance/foundation/hasPrimaryIdentifier>;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:string.
+fin-instruments:FinancialInstrumentShape sh:property fin-instruments:FinancialInstrumentShape_hasDenominatedCurrency.
+fin-instruments:FinancialInstrumentShape_hasDenominatedCurrency a sh:PropertyShape;
+    sh:path fin-instruments:hasDenominatedCurrency;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/Currency>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-instruments:SecurityShape a sh:NodeShape;
+    sh:targetClass fin-instruments:Security;
+    sh:name "Security";
+    sh:description "financial instrument that can be bought or sold, as defined in the Securities Exchange Act 1934".
+fin-instruments:EquitySecurityShape a sh:NodeShape;
+    sh:targetClass fin-instruments:EquitySecurity;
+    sh:name "Equity Security";
+    sh:description "security representing an ownership interest in an entity or pool of assets, as defined in ISO 10962".
+fin-instruments:SecuritiesOfferingShape a sh:NodeShape;
+    sh:targetClass fin-instruments:SecuritiesOffering;
+    sh:name "Securities Offering";
+    sh:description "offering of a security (or securities) for sale; distinct from the instrument contract and from an exchange listing".
+fin-instruments:InstrumentListingShape a sh:NodeShape;
+    sh:targetClass fin-instruments:InstrumentListing;
+    sh:name "Instrument Listing";
+    sh:description "catalog entry for a securities offering managed by an exchange that provides the terms under which that security is made available on that exchange";
+    sh:property fin-instruments:InstrumentListingShape_hasTickSize.
+fin-instruments:InstrumentListingShape_hasTickSize a sh:PropertyShape;
+    sh:path fin-instruments:hasTickSize;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-instruments:InstrumentListingShape sh:property fin-instruments:InstrumentListingShape_hasLotSize.
+fin-instruments:InstrumentListingShape_hasLotSize a sh:PropertyShape;
+    sh:path fin-instruments:hasLotSize;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/QuantityValue>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-instruments:InstrumentListingShape sh:property fin-instruments:InstrumentListingShape_hasListingDate.
+fin-instruments:InstrumentListingShape_hasListingDate a sh:PropertyShape;
+    sh:path fin-instruments:hasListingDate;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:dateTime.
+fin-instruments:InstrumentListingShape sh:property fin-instruments:InstrumentListingShape_hasDelistingDate.
+fin-instruments:InstrumentListingShape_hasDelistingDate a sh:PropertyShape;
+    sh:path fin-instruments:hasDelistingDate;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:dateTime.
+fin-instruments:InstrumentListingShape sh:property fin-instruments:InstrumentListingShape_hasDenominatedCurrency.
+fin-instruments:InstrumentListingShape_hasDenominatedCurrency a sh:PropertyShape;
+    sh:path fin-instruments:hasDenominatedCurrency;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/Currency>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-instruments:InstrumentListingShape sh:property fin-instruments:InstrumentListingShape_pat_validFrom.
+fin-instruments:InstrumentListingShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-instruments:InstrumentListingShape sh:property fin-instruments:InstrumentListingShape_pat_knowledgeFrom.
+fin-instruments:InstrumentListingShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-instruments:InstrumentListingShape sh:property fin-instruments:InstrumentListingShape_pat_availableFrom.
+fin-instruments:InstrumentListingShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-instruments:InstrumentListingShape sh:property fin-instruments:InstrumentListingShape_pat_validTo.
+fin-instruments:InstrumentListingShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-instruments:InstrumentListingShape sh:property fin-instruments:InstrumentListingShape_pat_knowledgeTo.
+fin-instruments:InstrumentListingShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-instruments:InstrumentListingShape sh:property fin-instruments:InstrumentListingShape_pat_availableTo.
+fin-instruments:InstrumentListingShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-instruments:InstrumentListingShape sh:sparql _:sparql_valid_InstrumentListing.
+_:sparql_valid_InstrumentListing sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-instruments:InstrumentListingShape sh:sparql _:sparql_knowledge_InstrumentListing.
+_:sparql_knowledge_InstrumentListing sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-instruments:InstrumentListingShape sh:sparql _:sparql_available_InstrumentListing.
+_:sparql_available_InstrumentListing sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-instruments:IssuerShape a sh:NodeShape;
+    sh:targetClass fin-instruments:Issuer;
+    sh:name "Issuer";
+    sh:description "role of a party that issues or proposes to issue in a formal filing one or more financial instruments".
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-market-data: <https://axiolune.ai/ontology/finance/market-data/>.
+
+fin-market-data:PriceKindShape a sh:NodeShape;
+    sh:targetClass fin-market-data:PriceKind;
+    sh:in ("Last" "Bid" "Ask" "Mid" "Open" "High" "Low" "Close" "Settlement" "VWAP" "TWAP");
+    sh:name "Price Kind".
+fin-market-data:QuoteSideShape a sh:NodeShape;
+    sh:targetClass fin-market-data:QuoteSide;
+    sh:in ("Bid" "Ask");
+    sh:name "Quote Side".
+fin-market-data:BarAggregationShape a sh:NodeShape;
+    sh:targetClass fin-market-data:BarAggregation;
+    sh:in ("Time" "Tick" "Volume" "Dollar" "Range" "Renko");
+    sh:name "Bar Aggregation".
+fin-market-data:PriceObservationShape a sh:NodeShape;
+    sh:targetClass fin-market-data:PriceObservation;
+    sh:name "Price Observation";
+    sh:description "time-stamped observation of a price for a financial instrument at a specific venue with a defined price kind, currency, source, and three-axis temporal semantics (valid-time = market event time, knowledge-time = when platform learned, availability-time = when queryable per ADR-012)";
+    sh:property fin-market-data:PriceObservationShape_hasPriceValue.
+fin-market-data:PriceObservationShape_hasPriceValue a sh:PropertyShape;
+    sh:path fin-market-data:hasPriceValue;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-market-data:PriceObservationShape sh:property fin-market-data:PriceObservationShape_hasPriceKind.
+fin-market-data:PriceObservationShape_hasPriceKind a sh:PropertyShape;
+    sh:path fin-market-data:hasPriceKind;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Last" "Bid" "Ask" "Mid" "Open" "High" "Low" "Close" "Settlement" "VWAP" "TWAP").
+fin-market-data:PriceObservationShape sh:property fin-market-data:PriceObservationShape_hasCurrencyCode.
+fin-market-data:PriceObservationShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode>;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:pattern "^[A-Z]{3}$".
+fin-market-data:PriceObservationShape sh:property fin-market-data:PriceObservationShape_observedInstrument.
+fin-market-data:PriceObservationShape_observedInstrument a sh:PropertyShape;
+    sh:path fin-market-data:observedInstrument;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>.
+fin-market-data:PriceObservationShape sh:property fin-market-data:PriceObservationShape_observedAtVenue.
+fin-market-data:PriceObservationShape_observedAtVenue a sh:PropertyShape;
+    sh:path fin-market-data:observedAtVenue;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>.
+fin-market-data:PriceObservationShape sh:property fin-market-data:PriceObservationShape_pat_validFrom.
+fin-market-data:PriceObservationShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:PriceObservationShape sh:property fin-market-data:PriceObservationShape_pat_knowledgeFrom.
+fin-market-data:PriceObservationShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:PriceObservationShape sh:property fin-market-data:PriceObservationShape_pat_availableFrom.
+fin-market-data:PriceObservationShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:PriceObservationShape sh:property fin-market-data:PriceObservationShape_pat_validTo.
+fin-market-data:PriceObservationShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-market-data:PriceObservationShape sh:property fin-market-data:PriceObservationShape_pat_knowledgeTo.
+fin-market-data:PriceObservationShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-market-data:PriceObservationShape sh:property fin-market-data:PriceObservationShape_pat_availableTo.
+fin-market-data:PriceObservationShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-market-data:PriceObservationShape sh:sparql _:sparql_valid_PriceObservation.
+_:sparql_valid_PriceObservation sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-market-data:PriceObservationShape sh:sparql _:sparql_knowledge_PriceObservation.
+_:sparql_knowledge_PriceObservation sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-market-data:PriceObservationShape sh:sparql _:sparql_available_PriceObservation.
+_:sparql_available_PriceObservation sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-market-data:PriceObservationShape sh:property fin-market-data:PriceObservationShape_pat_source.
+fin-market-data:PriceObservationShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+fin-market-data:QuoteObservationShape a sh:NodeShape;
+    sh:targetClass fin-market-data:QuoteObservation;
+    sh:name "Quote Observation";
+    sh:description "time-stamped observation of bid and/or ask prices with sizes for a financial instrument at a specific venue, with three-axis temporal semantics per ADR-012";
+    sh:property fin-market-data:QuoteObservationShape_hasBidPrice.
+fin-market-data:QuoteObservationShape_hasBidPrice a sh:PropertyShape;
+    sh:path fin-market-data:hasBidPrice;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_hasAskPrice.
+fin-market-data:QuoteObservationShape_hasAskPrice a sh:PropertyShape;
+    sh:path fin-market-data:hasAskPrice;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_hasBidSize.
+fin-market-data:QuoteObservationShape_hasBidSize a sh:PropertyShape;
+    sh:path fin-market-data:hasBidSize;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/QuantityValue>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_hasAskSize.
+fin-market-data:QuoteObservationShape_hasAskSize a sh:PropertyShape;
+    sh:path fin-market-data:hasAskSize;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/QuantityValue>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_hasQuoteSide.
+fin-market-data:QuoteObservationShape_hasQuoteSide a sh:PropertyShape;
+    sh:path fin-market-data:hasQuoteSide;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Bid" "Ask").
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_hasCurrencyCode.
+fin-market-data:QuoteObservationShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode>;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:pattern "^[A-Z]{3}$".
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_observedInstrument.
+fin-market-data:QuoteObservationShape_observedInstrument a sh:PropertyShape;
+    sh:path fin-market-data:observedInstrument;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>.
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_observedAtVenue.
+fin-market-data:QuoteObservationShape_observedAtVenue a sh:PropertyShape;
+    sh:path fin-market-data:observedAtVenue;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>.
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_pat_validFrom.
+fin-market-data:QuoteObservationShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_pat_knowledgeFrom.
+fin-market-data:QuoteObservationShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_pat_availableFrom.
+fin-market-data:QuoteObservationShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_pat_validTo.
+fin-market-data:QuoteObservationShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_pat_knowledgeTo.
+fin-market-data:QuoteObservationShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_pat_availableTo.
+fin-market-data:QuoteObservationShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-market-data:QuoteObservationShape sh:sparql _:sparql_valid_QuoteObservation.
+_:sparql_valid_QuoteObservation sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-market-data:QuoteObservationShape sh:sparql _:sparql_knowledge_QuoteObservation.
+_:sparql_knowledge_QuoteObservation sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-market-data:QuoteObservationShape sh:sparql _:sparql_available_QuoteObservation.
+_:sparql_available_QuoteObservation sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-market-data:QuoteObservationShape sh:property fin-market-data:QuoteObservationShape_pat_source.
+fin-market-data:QuoteObservationShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+fin-market-data:TradeObservationShape a sh:NodeShape;
+    sh:targetClass fin-market-data:TradeObservation;
+    sh:name "Trade Observation";
+    sh:description "time-stamped observation of an executed trade for a financial instrument at a specific venue with price, size, currency, source, and three-axis temporal semantics per ADR-012";
+    sh:property fin-market-data:TradeObservationShape_hasTradePrice.
+fin-market-data:TradeObservationShape_hasTradePrice a sh:PropertyShape;
+    sh:path fin-market-data:hasTradePrice;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-market-data:TradeObservationShape sh:property fin-market-data:TradeObservationShape_hasTradeSize.
+fin-market-data:TradeObservationShape_hasTradeSize a sh:PropertyShape;
+    sh:path fin-market-data:hasTradeSize;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/QuantityValue>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-market-data:TradeObservationShape sh:property fin-market-data:TradeObservationShape_hasCurrencyCode.
+fin-market-data:TradeObservationShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode>;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:pattern "^[A-Z]{3}$".
+fin-market-data:TradeObservationShape sh:property fin-market-data:TradeObservationShape_observedInstrument.
+fin-market-data:TradeObservationShape_observedInstrument a sh:PropertyShape;
+    sh:path fin-market-data:observedInstrument;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>.
+fin-market-data:TradeObservationShape sh:property fin-market-data:TradeObservationShape_observedAtVenue.
+fin-market-data:TradeObservationShape_observedAtVenue a sh:PropertyShape;
+    sh:path fin-market-data:observedAtVenue;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>.
+fin-market-data:TradeObservationShape sh:property fin-market-data:TradeObservationShape_pat_validFrom.
+fin-market-data:TradeObservationShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:TradeObservationShape sh:property fin-market-data:TradeObservationShape_pat_knowledgeFrom.
+fin-market-data:TradeObservationShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:TradeObservationShape sh:property fin-market-data:TradeObservationShape_pat_availableFrom.
+fin-market-data:TradeObservationShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:TradeObservationShape sh:property fin-market-data:TradeObservationShape_pat_validTo.
+fin-market-data:TradeObservationShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-market-data:TradeObservationShape sh:property fin-market-data:TradeObservationShape_pat_knowledgeTo.
+fin-market-data:TradeObservationShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-market-data:TradeObservationShape sh:property fin-market-data:TradeObservationShape_pat_availableTo.
+fin-market-data:TradeObservationShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-market-data:TradeObservationShape sh:sparql _:sparql_valid_TradeObservation.
+_:sparql_valid_TradeObservation sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-market-data:TradeObservationShape sh:sparql _:sparql_knowledge_TradeObservation.
+_:sparql_knowledge_TradeObservation sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-market-data:TradeObservationShape sh:sparql _:sparql_available_TradeObservation.
+_:sparql_available_TradeObservation sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-market-data:TradeObservationShape sh:property fin-market-data:TradeObservationShape_pat_source.
+fin-market-data:TradeObservationShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+fin-market-data:BarShape a sh:NodeShape;
+    sh:targetClass fin-market-data:Bar;
+    sh:name "Bar";
+    sh:description "aggregated market data observation over a time period, tick count, volume, or dollar amount, with open/high/low/close prices, volume, aggregation method, and three-axis temporal semantics per ADR-012";
+    sh:property fin-market-data:BarShape_hasOpenPrice.
+fin-market-data:BarShape_hasOpenPrice a sh:PropertyShape;
+    sh:path fin-market-data:hasOpenPrice;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_hasHighPrice.
+fin-market-data:BarShape_hasHighPrice a sh:PropertyShape;
+    sh:path fin-market-data:hasHighPrice;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_hasLowPrice.
+fin-market-data:BarShape_hasLowPrice a sh:PropertyShape;
+    sh:path fin-market-data:hasLowPrice;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_hasClosePrice.
+fin-market-data:BarShape_hasClosePrice a sh:PropertyShape;
+    sh:path fin-market-data:hasClosePrice;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_hasVolume.
+fin-market-data:BarShape_hasVolume a sh:PropertyShape;
+    sh:path fin-market-data:hasVolume;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/QuantityValue>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_hasBarAggregation.
+fin-market-data:BarShape_hasBarAggregation a sh:PropertyShape;
+    sh:path fin-market-data:hasBarAggregation;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Time" "Tick" "Volume" "Dollar" "Range" "Renko").
+fin-market-data:BarShape sh:property fin-market-data:BarShape_hasBarDuration.
+fin-market-data:BarShape_hasBarDuration a sh:PropertyShape;
+    sh:path fin-market-data:hasBarDuration;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:duration.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_hasCurrencyCode.
+fin-market-data:BarShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode>;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:pattern "^[A-Z]{3}$".
+fin-market-data:BarShape sh:property fin-market-data:BarShape_observedInstrument.
+fin-market-data:BarShape_observedInstrument a sh:PropertyShape;
+    sh:path fin-market-data:observedInstrument;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_observedAtVenue.
+fin-market-data:BarShape_observedAtVenue a sh:PropertyShape;
+    sh:path fin-market-data:observedAtVenue;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_pat_validFrom.
+fin-market-data:BarShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_pat_knowledgeFrom.
+fin-market-data:BarShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_pat_availableFrom.
+fin-market-data:BarShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_pat_validTo.
+fin-market-data:BarShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_pat_knowledgeTo.
+fin-market-data:BarShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-market-data:BarShape sh:property fin-market-data:BarShape_pat_availableTo.
+fin-market-data:BarShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-market-data:BarShape sh:sparql _:sparql_valid_Bar.
+_:sparql_valid_Bar sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-market-data:BarShape sh:sparql _:sparql_knowledge_Bar.
+_:sparql_knowledge_Bar sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-market-data:BarShape sh:sparql _:sparql_available_Bar.
+_:sparql_available_Bar sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-market-data:BarShape sh:property fin-market-data:BarShape_pat_source.
+fin-market-data:BarShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-market-rules: <https://axiolune.ai/ontology/finance/market-rules/>.
+
+fin-market-rules:RuleTypeShape a sh:NodeShape;
+    sh:targetClass fin-market-rules:RuleType;
+    sh:in ("PriceLimit" "TickSchedule" "LotSchedule" "SettlementCycle" "TradingHours" "MarginRequirement" "PositionLimit" "ShortSellingRestriction" "CircuitBreaker" "CloseTodayOffset" "TPlusTradingRestriction");
+    sh:name "Rule Type".
+fin-market-rules:RuleLifecycleStatusShape a sh:NodeShape;
+    sh:targetClass fin-market-rules:RuleLifecycleStatus;
+    sh:in ("active" "superseded" "expired" "proposed");
+    sh:name "Rule Lifecycle Status".
+fin-market-rules:InstrumentClassShape a sh:NodeShape;
+    sh:targetClass fin-market-rules:InstrumentClass;
+    sh:in ("Equity" "Bond" "Future" "Option" "Swap" "Fund" "Commodity");
+    sh:name "Instrument Class".
+fin-market-rules:MarketRuleShape a sh:NodeShape;
+    sh:targetClass fin-market-rules:MarketRule;
+    sh:name "Market Rule";
+    sh:description "named trading or settlement rule that governs how instruments are traded, matched, or settled on a trading venue, with a rule type, parameter value, unit, source, and revision";
+    sh:property fin-market-rules:MarketRuleShape_hasRuleType.
+fin-market-rules:MarketRuleShape_hasRuleType a sh:PropertyShape;
+    sh:path fin-market-rules:hasRuleType;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("PriceLimit" "TickSchedule" "LotSchedule" "SettlementCycle" "TradingHours" "MarginRequirement" "PositionLimit" "ShortSellingRestriction" "CircuitBreaker" "CloseTodayOffset" "TPlusTradingRestriction").
+fin-market-rules:MarketRuleShape sh:property fin-market-rules:MarketRuleShape_hasRuleParameterValue.
+fin-market-rules:MarketRuleShape_hasRuleParameterValue a sh:PropertyShape;
+    sh:path fin-market-rules:hasRuleParameterValue;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/QuantityValue>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-market-rules:MarketRuleShape sh:property fin-market-rules:MarketRuleShape_hasRuleParameterUnit.
+fin-market-rules:MarketRuleShape_hasRuleParameterUnit a sh:PropertyShape;
+    sh:path fin-market-rules:hasRuleParameterUnit;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:string.
+fin-market-rules:MarketRuleShape sh:property fin-market-rules:MarketRuleShape_hasRuleSource.
+fin-market-rules:MarketRuleShape_hasRuleSource a sh:PropertyShape;
+    sh:path fin-market-rules:hasRuleSource;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:string.
+fin-market-rules:MarketRuleShape sh:property fin-market-rules:MarketRuleShape_hasRuleRevision.
+fin-market-rules:MarketRuleShape_hasRuleRevision a sh:PropertyShape;
+    sh:path fin-market-rules:hasRuleRevision;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:string.
+fin-market-rules:SettlementConventionShape a sh:NodeShape;
+    sh:targetClass fin-market-rules:SettlementConvention;
+    sh:name "Settlement Convention";
+    sh:description "market rule that defines the standard settlement cycle (e.g. T+1, T+2) for trades executed on a venue".
+fin-market-rules:RuleApplicabilityShape a sh:NodeShape;
+    sh:targetClass fin-market-rules:RuleApplicability;
+    sh:name "Rule Applicability";
+    sh:description "association that binds a market rule to a specific scope defined by venue, market segment, instrument class, and/or investor category, with valid-time and knowledge-time intervals, source, revision, and lifecycle status";
+    sh:property fin-market-rules:RuleApplicabilityShape_appliesToInstrumentClass.
+fin-market-rules:RuleApplicabilityShape_appliesToInstrumentClass a sh:PropertyShape;
+    sh:path fin-market-rules:appliesToInstrumentClass;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Equity" "Bond" "Future" "Option" "Swap" "Fund" "Commodity").
+fin-market-rules:RuleApplicabilityShape sh:property fin-market-rules:RuleApplicabilityShape_hasLifecycleStatus.
+fin-market-rules:RuleApplicabilityShape_hasLifecycleStatus a sh:PropertyShape;
+    sh:path fin-market-rules:hasLifecycleStatus;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("active" "superseded" "expired" "proposed").
+fin-market-rules:RuleApplicabilityShape sh:property fin-market-rules:RuleApplicabilityShape_appliesRule.
+fin-market-rules:RuleApplicabilityShape_appliesRule a sh:PropertyShape;
+    sh:path fin-market-rules:appliesRule;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-market-rules:MarketRule.
+fin-market-rules:RuleApplicabilityShape sh:property fin-market-rules:RuleApplicabilityShape_scopedToVenue.
+fin-market-rules:RuleApplicabilityShape_scopedToVenue a sh:PropertyShape;
+    sh:path fin-market-rules:scopedToVenue;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>.
+fin-market-rules:RuleApplicabilityShape sh:property fin-market-rules:RuleApplicabilityShape_pat_validFrom.
+fin-market-rules:RuleApplicabilityShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-rules:RuleApplicabilityShape sh:property fin-market-rules:RuleApplicabilityShape_pat_knowledgeFrom.
+fin-market-rules:RuleApplicabilityShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-rules:RuleApplicabilityShape sh:property fin-market-rules:RuleApplicabilityShape_pat_availableFrom.
+fin-market-rules:RuleApplicabilityShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-market-rules:RuleApplicabilityShape sh:property fin-market-rules:RuleApplicabilityShape_pat_validTo.
+fin-market-rules:RuleApplicabilityShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-market-rules:RuleApplicabilityShape sh:property fin-market-rules:RuleApplicabilityShape_pat_knowledgeTo.
+fin-market-rules:RuleApplicabilityShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-market-rules:RuleApplicabilityShape sh:property fin-market-rules:RuleApplicabilityShape_pat_availableTo.
+fin-market-rules:RuleApplicabilityShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-market-rules:RuleApplicabilityShape sh:sparql _:sparql_valid_RuleApplicability.
+_:sparql_valid_RuleApplicability sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-market-rules:RuleApplicabilityShape sh:sparql _:sparql_knowledge_RuleApplicability.
+_:sparql_knowledge_RuleApplicability sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-market-rules:RuleApplicabilityShape sh:sparql _:sparql_available_RuleApplicability.
+_:sparql_available_RuleApplicability sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-market-rules:RuleApplicabilityShape sh:property fin-market-rules:RuleApplicabilityShape_pat_source.
+fin-market-rules:RuleApplicabilityShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-market-structure: <https://axiolune.ai/ontology/finance/market-structure/>.
+
+fin-market-structure:hasMarketIdentifierCodeShape a sh:PropertyShape;
+    sh:path fin-market-structure:hasMarketIdentifierCode;
+    sh:pattern "^[A-Z]{4}([A-Z]{4})?$";
+    sh:datatype xsd:string;
+    sh:name "Has Market Identifier Code".
+fin-market-structure:VenueTypeShape a sh:NodeShape;
+    sh:targetClass fin-market-structure:VenueType;
+    sh:in ("RegulatedExchange" "MultilateralTradingFacility" "OrganizedTradingFacility" "AlternativeTradingSystem" "SystematicInternaliser" "DesignatedContractMarket" "SwapExecutionFacility");
+    sh:name "Venue Type".
+fin-market-structure:SessionTypeShape a sh:NodeShape;
+    sh:targetClass fin-market-structure:SessionType;
+    sh:in ("PreMarket" "Regular" "PostMarket" "OpeningAuction" "ClosingAuction" "IntradayAuction" "Intermission");
+    sh:name "Session Type".
+fin-market-structure:TradingVenueShape a sh:NodeShape;
+    sh:targetClass fin-market-structure:TradingVenue;
+    sh:name "Trading Venue";
+    sh:description "organization, association, or group that constitutes, maintains, or provides a facility for bringing together purchasers and sellers of financial instruments, identified by a MIC (ISO 10383)";
+    sh:property fin-market-structure:TradingVenueShape_hasMarketIdentifierCode.
+fin-market-structure:TradingVenueShape_hasMarketIdentifierCode a sh:PropertyShape;
+    sh:path fin-market-structure:hasMarketIdentifierCode;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:pattern "^[A-Z]{4}([A-Z]{4})?$".
+fin-market-structure:TradingVenueShape sh:property fin-market-structure:TradingVenueShape_hasVenueType.
+fin-market-structure:TradingVenueShape_hasVenueType a sh:PropertyShape;
+    sh:path fin-market-structure:hasVenueType;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("RegulatedExchange" "MultilateralTradingFacility" "OrganizedTradingFacility" "AlternativeTradingSystem" "SystematicInternaliser" "DesignatedContractMarket" "SwapExecutionFacility").
+fin-market-structure:MarketSegmentShape a sh:NodeShape;
+    sh:targetClass fin-market-structure:MarketSegment;
+    sh:name "Market Segment";
+    sh:description "section of a trading venue that specializes in one or more specific instruments or that is regulated differently from other sections of the same venue";
+    sh:property fin-market-structure:MarketSegmentShape_hasMarketIdentifierCode.
+fin-market-structure:MarketSegmentShape_hasMarketIdentifierCode a sh:PropertyShape;
+    sh:path fin-market-structure:hasMarketIdentifierCode;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:pattern "^[A-Z]{4}([A-Z]{4})?$".
+fin-market-structure:MarketSegmentShape sh:property fin-market-structure:MarketSegmentShape_isPartOfVenue.
+fin-market-structure:MarketSegmentShape_isPartOfVenue a sh:PropertyShape;
+    sh:path fin-market-structure:isPartOfVenue;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-market-structure:TradingVenue;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-market-structure:TradingSessionShape a sh:NodeShape;
+    sh:targetClass fin-market-structure:TradingSession;
+    sh:name "Trading Session";
+    sh:description "scheduled time period during which a trading venue accepts orders and executes trades, characterized by a session type such as pre-market, regular, post-market, or auction";
+    sh:property fin-market-structure:TradingSessionShape_hasSessionType.
+fin-market-structure:TradingSessionShape_hasSessionType a sh:PropertyShape;
+    sh:path fin-market-structure:hasSessionType;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("PreMarket" "Regular" "PostMarket" "OpeningAuction" "ClosingAuction" "IntradayAuction" "Intermission").
+fin-market-structure:TradingSessionShape sh:property fin-market-structure:TradingSessionShape_hasSessionStartTime.
+fin-market-structure:TradingSessionShape_hasSessionStartTime a sh:PropertyShape;
+    sh:path fin-market-structure:hasSessionStartTime;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:dateTime.
+fin-market-structure:TradingSessionShape sh:property fin-market-structure:TradingSessionShape_hasSessionEndTime.
+fin-market-structure:TradingSessionShape_hasSessionEndTime a sh:PropertyShape;
+    sh:path fin-market-structure:hasSessionEndTime;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:dateTime.
+fin-market-structure:TradingCalendarShape a sh:NodeShape;
+    sh:targetClass fin-market-structure:TradingCalendar;
+    sh:name "Trading Calendar";
+    sh:description "schedule of trading sessions for a trading venue across calendar dates, defining which dates and times the venue is open for trading".
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-orders: <https://axiolune.ai/ontology/finance/orders-execution/>.
+
+fin-orders:OrderSideShape a sh:NodeShape;
+    sh:targetClass fin-orders:OrderSide;
+    sh:in ("Buy" "Sell");
+    sh:name "Order Side".
+fin-orders:OrderTypeShape a sh:NodeShape;
+    sh:targetClass fin-orders:OrderType;
+    sh:in ("Market" "Limit" "Stop" "StopLimit" "MarketIfTouched" "LimitIfTouched");
+    sh:name "Order Type".
+fin-orders:TimeInForceShape a sh:NodeShape;
+    sh:targetClass fin-orders:TimeInForce;
+    sh:in ("GTC" "IOC" "FOK" "DAY" "GTD" "AtTheOpen" "AtTheClose");
+    sh:name "Time In Force".
+fin-orders:OrderLifecycleStateShape a sh:NodeShape;
+    sh:targetClass fin-orders:OrderLifecycleState;
+    sh:in ("Initialized" "Denied" "Emulated" "Released" "Submitted" "Accepted" "Rejected" "PendingUpdate" "PendingCancel" "PartiallyFilled" "Filled" "Canceled" "Expired" "Triggered");
+    sh:name "Order Lifecycle State".
+fin-orders:OrderEventKindShape a sh:NodeShape;
+    sh:targetClass fin-orders:OrderEventKind;
+    sh:in ("Initialized" "Denied" "Submitted" "Accepted" "Rejected" "PendingUpdate" "PendingCancel" "Updated" "ModifyRejected" "CancelRejected" "PartiallyFilled" "Filled" "Canceled" "Expired" "Triggered");
+    sh:name "Order Event Kind".
+fin-orders:LiquiditySideShape a sh:NodeShape;
+    sh:targetClass fin-orders:LiquiditySide;
+    sh:in ("Maker" "Taker" "NoLiquiditySide");
+    sh:name "Liquidity Side".
+fin-orders:OrderIntentShape a sh:NodeShape;
+    sh:targetClass fin-orders:OrderIntent;
+    sh:name "Order Intent";
+    sh:description "trader or strategy desired trade instruction specifying instrument, side, quantity, type, time-in-force, and price constraints, representing the business intent before venue submission";
+    sh:property fin-orders:OrderIntentShape_hasOrderSide.
+fin-orders:OrderIntentShape_hasOrderSide a sh:PropertyShape;
+    sh:path fin-orders:hasOrderSide;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Buy" "Sell").
+fin-orders:OrderIntentShape sh:property fin-orders:OrderIntentShape_hasOrderType.
+fin-orders:OrderIntentShape_hasOrderType a sh:PropertyShape;
+    sh:path fin-orders:hasOrderType;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Market" "Limit" "Stop" "StopLimit" "MarketIfTouched" "LimitIfTouched").
+fin-orders:OrderIntentShape sh:property fin-orders:OrderIntentShape_hasTimeInForce.
+fin-orders:OrderIntentShape_hasTimeInForce a sh:PropertyShape;
+    sh:path fin-orders:hasTimeInForce;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("GTC" "IOC" "FOK" "DAY" "GTD" "AtTheOpen" "AtTheClose").
+fin-orders:OrderIntentShape sh:property fin-orders:OrderIntentShape_hasOrderQuantity.
+fin-orders:OrderIntentShape_hasOrderQuantity a sh:PropertyShape;
+    sh:path fin-orders:hasOrderQuantity;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/QuantityValue>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-orders:OrderIntentShape sh:property fin-orders:OrderIntentShape_hasLimitPrice.
+fin-orders:OrderIntentShape_hasLimitPrice a sh:PropertyShape;
+    sh:path fin-orders:hasLimitPrice;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-orders:OrderIntentShape sh:property fin-orders:OrderIntentShape_hasStopPrice.
+fin-orders:OrderIntentShape_hasStopPrice a sh:PropertyShape;
+    sh:path fin-orders:hasStopPrice;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-orders:OrderIntentShape sh:property fin-orders:OrderIntentShape_intentsInstrument.
+fin-orders:OrderIntentShape_intentsInstrument a sh:PropertyShape;
+    sh:path fin-orders:intentsInstrument;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>.
+fin-orders:OrderIntentShape sh:property fin-orders:OrderIntentShape_intentsListing.
+fin-orders:OrderIntentShape_intentsListing a sh:PropertyShape;
+    sh:path fin-orders:intentsListing;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/InstrumentListing>.
+fin-orders:OrderIntentShape sh:property fin-orders:OrderIntentShape_pat_source.
+fin-orders:OrderIntentShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+fin-orders:OrderLifecycleEventShape a sh:NodeShape;
+    sh:targetClass fin-orders:OrderLifecycleEvent;
+    sh:name "Order Lifecycle Event";
+    sh:description "immutable state transition fact recording a change in order status, with previous state, resulting state, timestamp, reason, and external identifiers, forming an event-sourced audit trail";
+    sh:property fin-orders:OrderLifecycleEventShape_hasLifecycleState.
+fin-orders:OrderLifecycleEventShape_hasLifecycleState a sh:PropertyShape;
+    sh:path fin-orders:hasLifecycleState;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Initialized" "Denied" "Emulated" "Released" "Submitted" "Accepted" "Rejected" "PendingUpdate" "PendingCancel" "PartiallyFilled" "Filled" "Canceled" "Expired" "Triggered").
+fin-orders:OrderLifecycleEventShape sh:property fin-orders:OrderLifecycleEventShape_hasEventKind.
+fin-orders:OrderLifecycleEventShape_hasEventKind a sh:PropertyShape;
+    sh:path fin-orders:hasEventKind;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Initialized" "Denied" "Submitted" "Accepted" "Rejected" "PendingUpdate" "PendingCancel" "Updated" "ModifyRejected" "CancelRejected" "PartiallyFilled" "Filled" "Canceled" "Expired" "Triggered").
+fin-orders:OrderLifecycleEventShape sh:property fin-orders:OrderLifecycleEventShape_hasPreviousState.
+fin-orders:OrderLifecycleEventShape_hasPreviousState a sh:PropertyShape;
+    sh:path fin-orders:hasPreviousState;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Initialized" "Denied" "Emulated" "Released" "Submitted" "Accepted" "Rejected" "PendingUpdate" "PendingCancel" "PartiallyFilled" "Filled" "Canceled" "Expired" "Triggered").
+fin-orders:OrderLifecycleEventShape sh:property fin-orders:OrderLifecycleEventShape_hasExternalOrderId.
+fin-orders:OrderLifecycleEventShape_hasExternalOrderId a sh:PropertyShape;
+    sh:path fin-orders:hasExternalOrderId;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:string.
+fin-orders:OrderLifecycleEventShape sh:property fin-orders:OrderLifecycleEventShape_transitionsOrder.
+fin-orders:OrderLifecycleEventShape_transitionsOrder a sh:PropertyShape;
+    sh:path fin-orders:transitionsOrder;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-orders:OrderIntent.
+fin-orders:OrderLifecycleEventShape sh:property fin-orders:OrderLifecycleEventShape_occurredAtVenue.
+fin-orders:OrderLifecycleEventShape_occurredAtVenue a sh:PropertyShape;
+    sh:path fin-orders:occurredAtVenue;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>.
+fin-orders:OrderLifecycleEventShape sh:property fin-orders:OrderLifecycleEventShape_pat_validFrom.
+fin-orders:OrderLifecycleEventShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:OrderLifecycleEventShape sh:property fin-orders:OrderLifecycleEventShape_pat_knowledgeFrom.
+fin-orders:OrderLifecycleEventShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:OrderLifecycleEventShape sh:property fin-orders:OrderLifecycleEventShape_pat_availableFrom.
+fin-orders:OrderLifecycleEventShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:OrderLifecycleEventShape sh:property fin-orders:OrderLifecycleEventShape_pat_validTo.
+fin-orders:OrderLifecycleEventShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-orders:OrderLifecycleEventShape sh:property fin-orders:OrderLifecycleEventShape_pat_knowledgeTo.
+fin-orders:OrderLifecycleEventShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-orders:OrderLifecycleEventShape sh:property fin-orders:OrderLifecycleEventShape_pat_availableTo.
+fin-orders:OrderLifecycleEventShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-orders:OrderLifecycleEventShape sh:sparql _:sparql_valid_OrderLifecycleEvent.
+_:sparql_valid_OrderLifecycleEvent sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-orders:OrderLifecycleEventShape sh:sparql _:sparql_knowledge_OrderLifecycleEvent.
+_:sparql_knowledge_OrderLifecycleEvent sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-orders:OrderLifecycleEventShape sh:sparql _:sparql_available_OrderLifecycleEvent.
+_:sparql_available_OrderLifecycleEvent sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-orders:OrderLifecycleEventShape sh:property fin-orders:OrderLifecycleEventShape_pat_source.
+fin-orders:OrderLifecycleEventShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+fin-orders:ExecutionShape a sh:NodeShape;
+    sh:targetClass fin-orders:Execution;
+    sh:name "Execution";
+    sh:description "trade execution fact recording actual fill of an order or part thereof, with executed price, quantity, venue, commission, liquidity side, and trade identifier, enabling position derivation";
+    sh:property fin-orders:ExecutionShape_hasOrderSide.
+fin-orders:ExecutionShape_hasOrderSide a sh:PropertyShape;
+    sh:path fin-orders:hasOrderSide;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Buy" "Sell").
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_hasExecutionPrice.
+fin-orders:ExecutionShape_hasExecutionPrice a sh:PropertyShape;
+    sh:path fin-orders:hasExecutionPrice;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_hasExecutionQuantity.
+fin-orders:ExecutionShape_hasExecutionQuantity a sh:PropertyShape;
+    sh:path fin-orders:hasExecutionQuantity;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/QuantityValue>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_hasCommission.
+fin-orders:ExecutionShape_hasCommission a sh:PropertyShape;
+    sh:path fin-orders:hasCommission;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_hasLiquiditySide.
+fin-orders:ExecutionShape_hasLiquiditySide a sh:PropertyShape;
+    sh:path fin-orders:hasLiquiditySide;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Maker" "Taker" "NoLiquiditySide").
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_executesOrder.
+fin-orders:ExecutionShape_executesOrder a sh:PropertyShape;
+    sh:path fin-orders:executesOrder;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-orders:OrderIntent.
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_executedInstrument.
+fin-orders:ExecutionShape_executedInstrument a sh:PropertyShape;
+    sh:path fin-orders:executedInstrument;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>.
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_executedAtVenue.
+fin-orders:ExecutionShape_executedAtVenue a sh:PropertyShape;
+    sh:path fin-orders:executedAtVenue;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>.
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_pat_validFrom.
+fin-orders:ExecutionShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_pat_knowledgeFrom.
+fin-orders:ExecutionShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_pat_availableFrom.
+fin-orders:ExecutionShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_pat_validTo.
+fin-orders:ExecutionShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_pat_knowledgeTo.
+fin-orders:ExecutionShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_pat_availableTo.
+fin-orders:ExecutionShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-orders:ExecutionShape sh:sparql _:sparql_valid_Execution.
+_:sparql_valid_Execution sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-orders:ExecutionShape sh:sparql _:sparql_knowledge_Execution.
+_:sparql_knowledge_Execution sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-orders:ExecutionShape sh:sparql _:sparql_available_Execution.
+_:sparql_available_Execution sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-orders:ExecutionShape sh:property fin-orders:ExecutionShape_pat_source.
+fin-orders:ExecutionShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+fin-orders:ExternalOrderStatusMappingShape a sh:NodeShape;
+    sh:targetClass fin-orders:ExternalOrderStatusMapping;
+    sh:name "External Order Status Mapping";
+    sh:description "versioned mapping from venue-specific or broker-specific raw order status codes to canonical Axiolune lifecycle states, enabling status translation without polluting canonical vocabulary";
+    sh:property fin-orders:ExternalOrderStatusMappingShape_hasExternalStatus.
+fin-orders:ExternalOrderStatusMappingShape_hasExternalStatus a sh:PropertyShape;
+    sh:path fin-orders:hasExternalStatus;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string.
+fin-orders:ExternalOrderStatusMappingShape sh:property fin-orders:ExternalOrderStatusMappingShape_hasCanonicalState.
+fin-orders:ExternalOrderStatusMappingShape_hasCanonicalState a sh:PropertyShape;
+    sh:path fin-orders:hasCanonicalState;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Initialized" "Denied" "Emulated" "Released" "Submitted" "Accepted" "Rejected" "PendingUpdate" "PendingCancel" "PartiallyFilled" "Filled" "Canceled" "Expired" "Triggered").
+fin-orders:ExternalOrderStatusMappingShape sh:property fin-orders:ExternalOrderStatusMappingShape_appliesToVenue.
+fin-orders:ExternalOrderStatusMappingShape_appliesToVenue a sh:PropertyShape;
+    sh:path fin-orders:appliesToVenue;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/market-structure/TradingVenue>.
+fin-orders:ExternalOrderStatusMappingShape sh:property fin-orders:ExternalOrderStatusMappingShape_mapsToCanonicalLifecycleState.
+fin-orders:ExternalOrderStatusMappingShape_mapsToCanonicalLifecycleState a sh:PropertyShape;
+    sh:path fin-orders:mapsToCanonicalLifecycleState;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class fin-orders:OrderLifecycleState.
+fin-orders:ExternalOrderStatusMappingShape sh:property fin-orders:ExternalOrderStatusMappingShape_pat_validFrom.
+fin-orders:ExternalOrderStatusMappingShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:ExternalOrderStatusMappingShape sh:property fin-orders:ExternalOrderStatusMappingShape_pat_knowledgeFrom.
+fin-orders:ExternalOrderStatusMappingShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:ExternalOrderStatusMappingShape sh:property fin-orders:ExternalOrderStatusMappingShape_pat_availableFrom.
+fin-orders:ExternalOrderStatusMappingShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-orders:ExternalOrderStatusMappingShape sh:property fin-orders:ExternalOrderStatusMappingShape_pat_validTo.
+fin-orders:ExternalOrderStatusMappingShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-orders:ExternalOrderStatusMappingShape sh:property fin-orders:ExternalOrderStatusMappingShape_pat_knowledgeTo.
+fin-orders:ExternalOrderStatusMappingShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-orders:ExternalOrderStatusMappingShape sh:property fin-orders:ExternalOrderStatusMappingShape_pat_availableTo.
+fin-orders:ExternalOrderStatusMappingShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-orders:ExternalOrderStatusMappingShape sh:sparql _:sparql_valid_ExternalOrderStatusMapping.
+_:sparql_valid_ExternalOrderStatusMapping sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-orders:ExternalOrderStatusMappingShape sh:sparql _:sparql_knowledge_ExternalOrderStatusMapping.
+_:sparql_knowledge_ExternalOrderStatusMapping sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-orders:ExternalOrderStatusMappingShape sh:sparql _:sparql_available_ExternalOrderStatusMapping.
+_:sparql_available_ExternalOrderStatusMapping sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-orders:ExternalOrderStatusMappingShape sh:property fin-orders:ExternalOrderStatusMappingShape_pat_source.
+fin-orders:ExternalOrderStatusMappingShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-portfolio: <https://axiolune.ai/ontology/finance/portfolio-positions/>.
+
+fin-portfolio:PositionSideShape a sh:NodeShape;
+    sh:targetClass fin-portfolio:PositionSide;
+    sh:in ("Long" "Short" "Flat");
+    sh:name "Position Side".
+fin-portfolio:ValuationMethodShape a sh:NodeShape;
+    sh:targetClass fin-portfolio:ValuationMethod;
+    sh:in ("MarkToMarket" "MarkToModel" "CostBasis" "LowerOfCostOrMarket");
+    sh:name "Valuation Method".
+fin-portfolio:AccountTypeShape a sh:NodeShape;
+    sh:targetClass fin-portfolio:AccountType;
+    sh:in ("Cash" "Margin" "Simulated" "Managed" "Custodial");
+    sh:name "Account Type".
+fin-portfolio:AccountShape a sh:NodeShape;
+    sh:targetClass fin-portfolio:Account;
+    sh:name "Account";
+    sh:description "financial account that serves as the unit of ownership, authorization, and accounting for trading activities and asset holdings";
+    sh:property fin-portfolio:AccountShape_hasAccountIdentifier.
+fin-portfolio:AccountShape_hasAccountIdentifier a sh:PropertyShape;
+    sh:path fin-portfolio:hasAccountIdentifier;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string.
+fin-portfolio:AccountShape sh:property fin-portfolio:AccountShape_hasAccountType.
+fin-portfolio:AccountShape_hasAccountType a sh:PropertyShape;
+    sh:path fin-portfolio:hasAccountType;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Cash" "Margin" "Simulated" "Managed" "Custodial").
+fin-portfolio:PortfolioShape a sh:NodeShape;
+    sh:targetClass fin-portfolio:Portfolio;
+    sh:name "Portfolio";
+    sh:description "collection of financial instruments and cash positions managed as a unit for investment objectives, performance tracking, or risk management";
+    sh:property fin-portfolio:PortfolioShape_hasPortfolioIdentifier.
+fin-portfolio:PortfolioShape_hasPortfolioIdentifier a sh:PropertyShape;
+    sh:path fin-portfolio:hasPortfolioIdentifier;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string.
+fin-portfolio:PortfolioShape sh:property fin-portfolio:PortfolioShape_hasPortfolioName.
+fin-portfolio:PortfolioShape_hasPortfolioName a sh:PropertyShape;
+    sh:path fin-portfolio:hasPortfolioName;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:string.
+fin-portfolio:HoldingSnapshotShape a sh:NodeShape;
+    sh:targetClass fin-portfolio:HoldingSnapshot;
+    sh:name "Holding Snapshot";
+    sh:description "time-stamped observation of an account or portfolio's holding of a specific financial instrument at a point in time, with three-axis temporal semantics distinguishing the business effective time, knowledge time, and data availability time";
+    sh:property fin-portfolio:HoldingSnapshotShape_hasQuantity.
+fin-portfolio:HoldingSnapshotShape_hasQuantity a sh:PropertyShape;
+    sh:path fin-portfolio:hasQuantity;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/QuantityValue>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-portfolio:HoldingSnapshotShape sh:property fin-portfolio:HoldingSnapshotShape_hasPositionSide.
+fin-portfolio:HoldingSnapshotShape_hasPositionSide a sh:PropertyShape;
+    sh:path fin-portfolio:hasPositionSide;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Long" "Short" "Flat").
+fin-portfolio:HoldingSnapshotShape sh:property fin-portfolio:HoldingSnapshotShape_hasCurrencyCode.
+fin-portfolio:HoldingSnapshotShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode>;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:pattern "^[A-Z]{3}$".
+fin-portfolio:HoldingSnapshotShape sh:property fin-portfolio:HoldingSnapshotShape_heldInAccount.
+fin-portfolio:HoldingSnapshotShape_heldInAccount a sh:PropertyShape;
+    sh:path fin-portfolio:heldInAccount;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class fin-portfolio:Account.
+fin-portfolio:HoldingSnapshotShape sh:property fin-portfolio:HoldingSnapshotShape_heldInPortfolio.
+fin-portfolio:HoldingSnapshotShape_heldInPortfolio a sh:PropertyShape;
+    sh:path fin-portfolio:heldInPortfolio;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class fin-portfolio:Portfolio.
+fin-portfolio:HoldingSnapshotShape sh:property fin-portfolio:HoldingSnapshotShape_heldInstrument.
+fin-portfolio:HoldingSnapshotShape_heldInstrument a sh:PropertyShape;
+    sh:path fin-portfolio:heldInstrument;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>.
+fin-portfolio:HoldingSnapshotShape sh:property fin-portfolio:HoldingSnapshotShape_pat_validFrom.
+fin-portfolio:HoldingSnapshotShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-portfolio:HoldingSnapshotShape sh:property fin-portfolio:HoldingSnapshotShape_pat_knowledgeFrom.
+fin-portfolio:HoldingSnapshotShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-portfolio:HoldingSnapshotShape sh:property fin-portfolio:HoldingSnapshotShape_pat_availableFrom.
+fin-portfolio:HoldingSnapshotShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-portfolio:HoldingSnapshotShape sh:property fin-portfolio:HoldingSnapshotShape_pat_validTo.
+fin-portfolio:HoldingSnapshotShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-portfolio:HoldingSnapshotShape sh:property fin-portfolio:HoldingSnapshotShape_pat_knowledgeTo.
+fin-portfolio:HoldingSnapshotShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-portfolio:HoldingSnapshotShape sh:property fin-portfolio:HoldingSnapshotShape_pat_availableTo.
+fin-portfolio:HoldingSnapshotShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-portfolio:HoldingSnapshotShape sh:sparql _:sparql_valid_HoldingSnapshot.
+_:sparql_valid_HoldingSnapshot sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-portfolio:HoldingSnapshotShape sh:sparql _:sparql_knowledge_HoldingSnapshot.
+_:sparql_knowledge_HoldingSnapshot sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-portfolio:HoldingSnapshotShape sh:sparql _:sparql_available_HoldingSnapshot.
+_:sparql_available_HoldingSnapshot sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-portfolio:HoldingSnapshotShape sh:property fin-portfolio:HoldingSnapshotShape_pat_source.
+fin-portfolio:HoldingSnapshotShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+fin-portfolio:PositionValuationShape a sh:NodeShape;
+    sh:targetClass fin-portfolio:PositionValuation;
+    sh:name "Position Valuation";
+    sh:description "time-stamped valuation of a holding that explicitly references the price observation used, the valuation method applied, and the resulting market value, enabling full traceability from price to valuation result";
+    sh:property fin-portfolio:PositionValuationShape_hasMarketValue.
+fin-portfolio:PositionValuationShape_hasMarketValue a sh:PropertyShape;
+    sh:path fin-portfolio:hasMarketValue;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-portfolio:PositionValuationShape sh:property fin-portfolio:PositionValuationShape_hasCostBasis.
+fin-portfolio:PositionValuationShape_hasCostBasis a sh:PropertyShape;
+    sh:path fin-portfolio:hasCostBasis;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-portfolio:PositionValuationShape sh:property fin-portfolio:PositionValuationShape_hasUnrealizedPnL.
+fin-portfolio:PositionValuationShape_hasUnrealizedPnL a sh:PropertyShape;
+    sh:path fin-portfolio:hasUnrealizedPnL;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-portfolio:PositionValuationShape sh:property fin-portfolio:PositionValuationShape_hasValuationMethod.
+fin-portfolio:PositionValuationShape_hasValuationMethod a sh:PropertyShape;
+    sh:path fin-portfolio:hasValuationMethod;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("MarkToMarket" "MarkToModel" "CostBasis" "LowerOfCostOrMarket").
+fin-portfolio:PositionValuationShape sh:property fin-portfolio:PositionValuationShape_hasCurrencyCode.
+fin-portfolio:PositionValuationShape_hasCurrencyCode a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode>;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:pattern "^[A-Z]{3}$".
+fin-portfolio:PositionValuationShape sh:property fin-portfolio:PositionValuationShape_valuedHolding.
+fin-portfolio:PositionValuationShape_valuedHolding a sh:PropertyShape;
+    sh:path fin-portfolio:valuedHolding;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-portfolio:HoldingSnapshot.
+fin-portfolio:PositionValuationShape sh:property fin-portfolio:PositionValuationShape_usedPriceObservation.
+fin-portfolio:PositionValuationShape_usedPriceObservation a sh:PropertyShape;
+    sh:path fin-portfolio:usedPriceObservation;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/market-data/PriceObservation>.
+fin-portfolio:PositionValuationShape sh:property fin-portfolio:PositionValuationShape_pat_validFrom.
+fin-portfolio:PositionValuationShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-portfolio:PositionValuationShape sh:property fin-portfolio:PositionValuationShape_pat_knowledgeFrom.
+fin-portfolio:PositionValuationShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-portfolio:PositionValuationShape sh:property fin-portfolio:PositionValuationShape_pat_availableFrom.
+fin-portfolio:PositionValuationShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-portfolio:PositionValuationShape sh:property fin-portfolio:PositionValuationShape_pat_validTo.
+fin-portfolio:PositionValuationShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-portfolio:PositionValuationShape sh:property fin-portfolio:PositionValuationShape_pat_knowledgeTo.
+fin-portfolio:PositionValuationShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-portfolio:PositionValuationShape sh:property fin-portfolio:PositionValuationShape_pat_availableTo.
+fin-portfolio:PositionValuationShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-portfolio:PositionValuationShape sh:sparql _:sparql_valid_PositionValuation.
+_:sparql_valid_PositionValuation sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-portfolio:PositionValuationShape sh:sparql _:sparql_knowledge_PositionValuation.
+_:sparql_knowledge_PositionValuation sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-portfolio:PositionValuationShape sh:sparql _:sparql_available_PositionValuation.
+_:sparql_available_PositionValuation sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-portfolio:PositionValuationShape sh:property fin-portfolio:PositionValuationShape_pat_source.
+fin-portfolio:PositionValuationShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+fin-portfolio:PositionLotShape a sh:NodeShape;
+    sh:targetClass fin-portfolio:PositionLot;
+    sh:name "Position Lot";
+    sh:description "distinct acquisition or disposition of a specific quantity of an instrument, tracked separately for tax basis, holding period, or accounting purposes";
+    sh:property fin-portfolio:PositionLotShape_hasQuantity.
+fin-portfolio:PositionLotShape_hasQuantity a sh:PropertyShape;
+    sh:path fin-portfolio:hasQuantity;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/QuantityValue>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-portfolio:PositionLotShape sh:property fin-portfolio:PositionLotShape_hasCostBasis.
+fin-portfolio:PositionLotShape_hasCostBasis a sh:PropertyShape;
+    sh:path fin-portfolio:hasCostBasis;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-portfolio:PositionLotShape sh:property fin-portfolio:PositionLotShape_hasPositionSide.
+fin-portfolio:PositionLotShape_hasPositionSide a sh:PropertyShape;
+    sh:path fin-portfolio:hasPositionSide;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Long" "Short" "Flat").
+fin-portfolio:PositionLotShape sh:property fin-portfolio:PositionLotShape_lotForInstrument.
+fin-portfolio:PositionLotShape_lotForInstrument a sh:PropertyShape;
+    sh:path fin-portfolio:lotForInstrument;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>.
+fin-portfolio:PositionLotShape sh:property fin-portfolio:PositionLotShape_lotInAccount.
+fin-portfolio:PositionLotShape_lotInAccount a sh:PropertyShape;
+    sh:path fin-portfolio:lotInAccount;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-portfolio:Account.
+fin-portfolio:PositionLotShape sh:property fin-portfolio:PositionLotShape_pat_validFrom.
+fin-portfolio:PositionLotShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-portfolio:PositionLotShape sh:property fin-portfolio:PositionLotShape_pat_knowledgeFrom.
+fin-portfolio:PositionLotShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-portfolio:PositionLotShape sh:property fin-portfolio:PositionLotShape_pat_availableFrom.
+fin-portfolio:PositionLotShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-portfolio:PositionLotShape sh:property fin-portfolio:PositionLotShape_pat_validTo.
+fin-portfolio:PositionLotShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-portfolio:PositionLotShape sh:property fin-portfolio:PositionLotShape_pat_knowledgeTo.
+fin-portfolio:PositionLotShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-portfolio:PositionLotShape sh:property fin-portfolio:PositionLotShape_pat_availableTo.
+fin-portfolio:PositionLotShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-portfolio:PositionLotShape sh:sparql _:sparql_valid_PositionLot.
+_:sparql_valid_PositionLot sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-portfolio:PositionLotShape sh:sparql _:sparql_knowledge_PositionLot.
+_:sparql_knowledge_PositionLot sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-portfolio:PositionLotShape sh:sparql _:sparql_available_PositionLot.
+_:sparql_available_PositionLot sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-portfolio:PositionLotShape sh:property fin-portfolio:PositionLotShape_pat_source.
+fin-portfolio:PositionLotShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-post-trade: <https://axiolune.ai/ontology/finance/post-trade-operations/>.
+
+fin-post-trade:CorporateActionTypeShape a sh:NodeShape;
+    sh:targetClass fin-post-trade:CorporateActionType;
+    sh:in ("Dividend" "Split" "Merger" "Spinoff" "RightsIssue" "Delisting");
+    sh:name "Corporate Action Type".
+fin-post-trade:SettlementStatusShape a sh:NodeShape;
+    sh:targetClass fin-post-trade:SettlementStatus;
+    sh:in ("Pending" "Settled" "Failed" "Canceled");
+    sh:name "Settlement Status".
+fin-post-trade:ReconciliationStatusShape a sh:NodeShape;
+    sh:targetClass fin-post-trade:ReconciliationStatus;
+    sh:in ("Matched" "Break" "Investigating" "Resolved");
+    sh:name "Reconciliation Status".
+fin-post-trade:CorporateActionEventShape a sh:NodeShape;
+    sh:targetClass fin-post-trade:CorporateActionEvent;
+    sh:name "Corporate Action Event";
+    sh:description "scheduled or announced corporate action affecting instrument holders with ex-date, record date, payment date, and impact details";
+    sh:property fin-post-trade:CorporateActionEventShape_hasActionType.
+fin-post-trade:CorporateActionEventShape_hasActionType a sh:PropertyShape;
+    sh:path fin-post-trade:hasActionType;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Dividend" "Split" "Merger" "Spinoff" "RightsIssue" "Delisting").
+fin-post-trade:CorporateActionEventShape sh:property fin-post-trade:CorporateActionEventShape_hasExDate.
+fin-post-trade:CorporateActionEventShape_hasExDate a sh:PropertyShape;
+    sh:path fin-post-trade:hasExDate;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:dateTime.
+fin-post-trade:CorporateActionEventShape sh:property fin-post-trade:CorporateActionEventShape_hasPaymentDate.
+fin-post-trade:CorporateActionEventShape_hasPaymentDate a sh:PropertyShape;
+    sh:path fin-post-trade:hasPaymentDate;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:dateTime.
+fin-post-trade:CorporateActionEventShape sh:property fin-post-trade:CorporateActionEventShape_affectsInstrument.
+fin-post-trade:CorporateActionEventShape_affectsInstrument a sh:PropertyShape;
+    sh:path fin-post-trade:affectsInstrument;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>.
+fin-post-trade:CorporateActionEventShape sh:property fin-post-trade:CorporateActionEventShape_announcedBy.
+fin-post-trade:CorporateActionEventShape_announcedBy a sh:PropertyShape;
+    sh:path fin-post-trade:announcedBy;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/Issuer>.
+fin-post-trade:CorporateActionEventShape sh:property fin-post-trade:CorporateActionEventShape_pat_validFrom.
+fin-post-trade:CorporateActionEventShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-post-trade:CorporateActionEventShape sh:property fin-post-trade:CorporateActionEventShape_pat_knowledgeFrom.
+fin-post-trade:CorporateActionEventShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-post-trade:CorporateActionEventShape sh:property fin-post-trade:CorporateActionEventShape_pat_availableFrom.
+fin-post-trade:CorporateActionEventShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-post-trade:CorporateActionEventShape sh:property fin-post-trade:CorporateActionEventShape_pat_validTo.
+fin-post-trade:CorporateActionEventShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-post-trade:CorporateActionEventShape sh:property fin-post-trade:CorporateActionEventShape_pat_knowledgeTo.
+fin-post-trade:CorporateActionEventShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-post-trade:CorporateActionEventShape sh:property fin-post-trade:CorporateActionEventShape_pat_availableTo.
+fin-post-trade:CorporateActionEventShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-post-trade:CorporateActionEventShape sh:sparql _:sparql_valid_CorporateActionEvent.
+_:sparql_valid_CorporateActionEvent sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-post-trade:CorporateActionEventShape sh:sparql _:sparql_knowledge_CorporateActionEvent.
+_:sparql_knowledge_CorporateActionEvent sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-post-trade:CorporateActionEventShape sh:sparql _:sparql_available_CorporateActionEvent.
+_:sparql_available_CorporateActionEvent sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-post-trade:CorporateActionEventShape sh:property fin-post-trade:CorporateActionEventShape_pat_source.
+fin-post-trade:CorporateActionEventShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+fin-post-trade:SettlementInstructionShape a sh:NodeShape;
+    sh:targetClass fin-post-trade:SettlementInstruction;
+    sh:name "Settlement Instruction";
+    sh:description "instruction to settle a trade execution with settlement date, status, counterparty, and clearing details";
+    sh:property fin-post-trade:SettlementInstructionShape_hasSettlementDate.
+fin-post-trade:SettlementInstructionShape_hasSettlementDate a sh:PropertyShape;
+    sh:path fin-post-trade:hasSettlementDate;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:dateTime.
+fin-post-trade:SettlementInstructionShape sh:property fin-post-trade:SettlementInstructionShape_hasSettlementStatus.
+fin-post-trade:SettlementInstructionShape_hasSettlementStatus a sh:PropertyShape;
+    sh:path fin-post-trade:hasSettlementStatus;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Pending" "Settled" "Failed" "Canceled").
+fin-post-trade:SettlementInstructionShape sh:property fin-post-trade:SettlementInstructionShape_settlesExecution.
+fin-post-trade:SettlementInstructionShape_settlesExecution a sh:PropertyShape;
+    sh:path fin-post-trade:settlesExecution;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/orders-execution/Execution>.
+fin-post-trade:SettlementInstructionShape sh:property fin-post-trade:SettlementInstructionShape_instructsCounterparty.
+fin-post-trade:SettlementInstructionShape_instructsCounterparty a sh:PropertyShape;
+    sh:path fin-post-trade:instructsCounterparty;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/Party>.
+fin-post-trade:SettlementInstructionShape sh:property fin-post-trade:SettlementInstructionShape_pat_validFrom.
+fin-post-trade:SettlementInstructionShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-post-trade:SettlementInstructionShape sh:property fin-post-trade:SettlementInstructionShape_pat_knowledgeFrom.
+fin-post-trade:SettlementInstructionShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-post-trade:SettlementInstructionShape sh:property fin-post-trade:SettlementInstructionShape_pat_availableFrom.
+fin-post-trade:SettlementInstructionShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-post-trade:SettlementInstructionShape sh:property fin-post-trade:SettlementInstructionShape_pat_validTo.
+fin-post-trade:SettlementInstructionShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-post-trade:SettlementInstructionShape sh:property fin-post-trade:SettlementInstructionShape_pat_knowledgeTo.
+fin-post-trade:SettlementInstructionShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-post-trade:SettlementInstructionShape sh:property fin-post-trade:SettlementInstructionShape_pat_availableTo.
+fin-post-trade:SettlementInstructionShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-post-trade:SettlementInstructionShape sh:sparql _:sparql_valid_SettlementInstruction.
+_:sparql_valid_SettlementInstruction sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-post-trade:SettlementInstructionShape sh:sparql _:sparql_knowledge_SettlementInstruction.
+_:sparql_knowledge_SettlementInstruction sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-post-trade:SettlementInstructionShape sh:sparql _:sparql_available_SettlementInstruction.
+_:sparql_available_SettlementInstruction sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-post-trade:SettlementInstructionShape sh:property fin-post-trade:SettlementInstructionShape_pat_source.
+fin-post-trade:SettlementInstructionShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+fin-post-trade:ReconciliationBreakShape a sh:NodeShape;
+    sh:targetClass fin-post-trade:ReconciliationBreak;
+    sh:name "Reconciliation Break";
+    sh:description "detected discrepancy between internal records and external source (broker, custodian, counterparty) with break details and resolution status";
+    sh:property fin-post-trade:ReconciliationBreakShape_hasReconciliationStatus.
+fin-post-trade:ReconciliationBreakShape_hasReconciliationStatus a sh:PropertyShape;
+    sh:path fin-post-trade:hasReconciliationStatus;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Matched" "Break" "Investigating" "Resolved").
+fin-post-trade:ReconciliationBreakShape sh:property fin-post-trade:ReconciliationBreakShape_hasBreakAmount.
+fin-post-trade:ReconciliationBreakShape_hasBreakAmount a sh:PropertyShape;
+    sh:path fin-post-trade:hasBreakAmount;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-post-trade:ReconciliationBreakShape sh:property fin-post-trade:ReconciliationBreakShape_breaksForPortfolio.
+fin-post-trade:ReconciliationBreakShape_breaksForPortfolio a sh:PropertyShape;
+    sh:path fin-post-trade:breaksForPortfolio;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio>.
+fin-post-trade:ReconciliationBreakShape sh:property fin-post-trade:ReconciliationBreakShape_breaksForAccount.
+fin-post-trade:ReconciliationBreakShape_breaksForAccount a sh:PropertyShape;
+    sh:path fin-post-trade:breaksForAccount;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/portfolio-positions/Account>.
+fin-post-trade:ReconciliationBreakShape sh:property fin-post-trade:ReconciliationBreakShape_pat_validFrom.
+fin-post-trade:ReconciliationBreakShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-post-trade:ReconciliationBreakShape sh:property fin-post-trade:ReconciliationBreakShape_pat_knowledgeFrom.
+fin-post-trade:ReconciliationBreakShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-post-trade:ReconciliationBreakShape sh:property fin-post-trade:ReconciliationBreakShape_pat_availableFrom.
+fin-post-trade:ReconciliationBreakShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-post-trade:ReconciliationBreakShape sh:property fin-post-trade:ReconciliationBreakShape_pat_validTo.
+fin-post-trade:ReconciliationBreakShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-post-trade:ReconciliationBreakShape sh:property fin-post-trade:ReconciliationBreakShape_pat_knowledgeTo.
+fin-post-trade:ReconciliationBreakShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-post-trade:ReconciliationBreakShape sh:property fin-post-trade:ReconciliationBreakShape_pat_availableTo.
+fin-post-trade:ReconciliationBreakShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-post-trade:ReconciliationBreakShape sh:sparql _:sparql_valid_ReconciliationBreak.
+_:sparql_valid_ReconciliationBreak sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-post-trade:ReconciliationBreakShape sh:sparql _:sparql_knowledge_ReconciliationBreak.
+_:sparql_knowledge_ReconciliationBreak sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-post-trade:ReconciliationBreakShape sh:sparql _:sparql_available_ReconciliationBreak.
+_:sparql_available_ReconciliationBreak sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-post-trade:ReconciliationBreakShape sh:property fin-post-trade:ReconciliationBreakShape_pat_source.
+fin-post-trade:ReconciliationBreakShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-risk: <https://axiolune.ai/ontology/finance/risk/>.
+
+fin-risk:RiskMeasureTypeShape a sh:NodeShape;
+    sh:targetClass fin-risk:RiskMeasureType;
+    sh:in ("VaR" "CVaR" "Volatility" "Exposure" "Concentration" "Beta" "Greeks");
+    sh:name "Risk Measure Type".
+fin-risk:LimitBreachSeverityShape a sh:NodeShape;
+    sh:targetClass fin-risk:LimitBreachSeverity;
+    sh:in ("Warning" "Breach" "Critical");
+    sh:name "Limit Breach Severity".
+fin-risk:RiskMeasureDefinitionShape a sh:NodeShape;
+    sh:targetClass fin-risk:RiskMeasureDefinition;
+    sh:name "Risk Measure Definition";
+    sh:description "specification of a risk metric including calculation method, parameters, time horizon, and confidence level";
+    sh:property fin-risk:RiskMeasureDefinitionShape_hasMeasureName.
+fin-risk:RiskMeasureDefinitionShape_hasMeasureName a sh:PropertyShape;
+    sh:path fin-risk:hasMeasureName;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string.
+fin-risk:RiskMeasureDefinitionShape sh:property fin-risk:RiskMeasureDefinitionShape_hasMeasureType.
+fin-risk:RiskMeasureDefinitionShape_hasMeasureType a sh:PropertyShape;
+    sh:path fin-risk:hasMeasureType;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("VaR" "CVaR" "Volatility" "Exposure" "Concentration" "Beta" "Greeks").
+fin-risk:RiskMeasureDefinitionShape sh:property fin-risk:RiskMeasureDefinitionShape_hasTimeHorizon.
+fin-risk:RiskMeasureDefinitionShape_hasTimeHorizon a sh:PropertyShape;
+    sh:path fin-risk:hasTimeHorizon;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/QuantityValue>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-risk:RiskMeasureDefinitionShape sh:property fin-risk:RiskMeasureDefinitionShape_hasConfidenceLevel.
+fin-risk:RiskMeasureDefinitionShape_hasConfidenceLevel a sh:PropertyShape;
+    sh:path fin-risk:hasConfidenceLevel;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/QuantityValue>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-risk:RiskLimitShape a sh:NodeShape;
+    sh:targetClass fin-risk:RiskLimit;
+    sh:name "Risk Limit";
+    sh:description "authorized maximum or threshold for a risk measure applicable to a portfolio, account, or instrument with defined scope and validity";
+    sh:property fin-risk:RiskLimitShape_hasLimitValue.
+fin-risk:RiskLimitShape_hasLimitValue a sh:PropertyShape;
+    sh:path fin-risk:hasLimitValue;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-risk:RiskLimitShape sh:property fin-risk:RiskLimitShape_hasWarningThreshold.
+fin-risk:RiskLimitShape_hasWarningThreshold a sh:PropertyShape;
+    sh:path fin-risk:hasWarningThreshold;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-risk:ExposureObservationShape a sh:NodeShape;
+    sh:targetClass fin-risk:ExposureObservation;
+    sh:name "Exposure Observation";
+    sh:description "point-in-time observation of a risk measure value for a portfolio, account, or instrument with calculation timestamp and contributing factors";
+    sh:property fin-risk:ExposureObservationShape_hasExposureValue.
+fin-risk:ExposureObservationShape_hasExposureValue a sh:PropertyShape;
+    sh:path fin-risk:hasExposureValue;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_observedForPortfolio.
+fin-risk:ExposureObservationShape_observedForPortfolio a sh:PropertyShape;
+    sh:path fin-risk:observedForPortfolio;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio>.
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_observedForAccount.
+fin-risk:ExposureObservationShape_observedForAccount a sh:PropertyShape;
+    sh:path fin-risk:observedForAccount;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/portfolio-positions/Account>.
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_measuredByDefinition.
+fin-risk:ExposureObservationShape_measuredByDefinition a sh:PropertyShape;
+    sh:path fin-risk:measuredByDefinition;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-risk:RiskMeasureDefinition.
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_pat_validFrom.
+fin-risk:ExposureObservationShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_pat_knowledgeFrom.
+fin-risk:ExposureObservationShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_pat_availableFrom.
+fin-risk:ExposureObservationShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_pat_validTo.
+fin-risk:ExposureObservationShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_pat_knowledgeTo.
+fin-risk:ExposureObservationShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_pat_availableTo.
+fin-risk:ExposureObservationShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-risk:ExposureObservationShape sh:sparql _:sparql_valid_ExposureObservation.
+_:sparql_valid_ExposureObservation sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-risk:ExposureObservationShape sh:sparql _:sparql_knowledge_ExposureObservation.
+_:sparql_knowledge_ExposureObservation sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-risk:ExposureObservationShape sh:sparql _:sparql_available_ExposureObservation.
+_:sparql_available_ExposureObservation sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-risk:ExposureObservationShape sh:property fin-risk:ExposureObservationShape_pat_source.
+fin-risk:ExposureObservationShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+fin-risk:LimitBreachShape a sh:NodeShape;
+    sh:targetClass fin-risk:LimitBreach;
+    sh:name "Limit Breach";
+    sh:description "detected violation of a risk limit with breach severity, exposure observation, and applicable limit";
+    sh:property fin-risk:LimitBreachShape_hasBreachSeverity.
+fin-risk:LimitBreachShape_hasBreachSeverity a sh:PropertyShape;
+    sh:path fin-risk:hasBreachSeverity;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Warning" "Breach" "Critical").
+fin-risk:LimitBreachShape sh:property fin-risk:LimitBreachShape_breachedLimit.
+fin-risk:LimitBreachShape_breachedLimit a sh:PropertyShape;
+    sh:path fin-risk:breachedLimit;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-risk:RiskLimit.
+fin-risk:LimitBreachShape sh:property fin-risk:LimitBreachShape_causedByExposure.
+fin-risk:LimitBreachShape_causedByExposure a sh:PropertyShape;
+    sh:path fin-risk:causedByExposure;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-risk:ExposureObservation.
+fin-risk:LimitBreachShape sh:property fin-risk:LimitBreachShape_pat_validFrom.
+fin-risk:LimitBreachShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-risk:LimitBreachShape sh:property fin-risk:LimitBreachShape_pat_knowledgeFrom.
+fin-risk:LimitBreachShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-risk:LimitBreachShape sh:property fin-risk:LimitBreachShape_pat_availableFrom.
+fin-risk:LimitBreachShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-risk:LimitBreachShape sh:property fin-risk:LimitBreachShape_pat_validTo.
+fin-risk:LimitBreachShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-risk:LimitBreachShape sh:property fin-risk:LimitBreachShape_pat_knowledgeTo.
+fin-risk:LimitBreachShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-risk:LimitBreachShape sh:property fin-risk:LimitBreachShape_pat_availableTo.
+fin-risk:LimitBreachShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-risk:LimitBreachShape sh:sparql _:sparql_valid_LimitBreach.
+_:sparql_valid_LimitBreach sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-risk:LimitBreachShape sh:sparql _:sparql_knowledge_LimitBreach.
+_:sparql_knowledge_LimitBreach sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-risk:LimitBreachShape sh:sparql _:sparql_available_LimitBreach.
+_:sparql_available_LimitBreach sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-risk:LimitBreachShape sh:property fin-risk:LimitBreachShape_pat_source.
+fin-risk:LimitBreachShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+@prefix fin-strategy: <https://axiolune.ai/ontology/finance/strategy-research/>.
+
+fin-strategy:SignalDirectionShape a sh:NodeShape;
+    sh:targetClass fin-strategy:SignalDirection;
+    sh:in ("Long" "Short" "Neutral" "Exit");
+    sh:name "Signal Direction".
+fin-strategy:FactorCategoryShape a sh:NodeShape;
+    sh:targetClass fin-strategy:FactorCategory;
+    sh:in ("Fundamental" "Technical" "Alternative" "Macro" "Statistical" "Sentiment");
+    sh:name "Factor Category".
+fin-strategy:BacktestStatusShape a sh:NodeShape;
+    sh:targetClass fin-strategy:BacktestStatus;
+    sh:in ("Pending" "Running" "Completed" "Failed" "Canceled");
+    sh:name "Backtest Status".
+fin-strategy:FactorDefinitionShape a sh:NodeShape;
+    sh:targetClass fin-strategy:FactorDefinition;
+    sh:name "Factor Definition";
+    sh:description "specification of a quantitative factor including its calculation logic, input requirements, universe scope, and validity conditions";
+    sh:property fin-strategy:FactorDefinitionShape_hasFactorName.
+fin-strategy:FactorDefinitionShape_hasFactorName a sh:PropertyShape;
+    sh:path fin-strategy:hasFactorName;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string.
+fin-strategy:FactorDefinitionShape sh:property fin-strategy:FactorDefinitionShape_hasFactorCategory.
+fin-strategy:FactorDefinitionShape_hasFactorCategory a sh:PropertyShape;
+    sh:path fin-strategy:hasFactorCategory;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Fundamental" "Technical" "Alternative" "Macro" "Statistical" "Sentiment").
+fin-strategy:FactorDefinitionShape sh:property fin-strategy:FactorDefinitionShape_hasFactorFormula.
+fin-strategy:FactorDefinitionShape_hasFactorFormula a sh:PropertyShape;
+    sh:path fin-strategy:hasFactorFormula;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:string.
+fin-strategy:StrategyDefinitionShape a sh:NodeShape;
+    sh:targetClass fin-strategy:StrategyDefinition;
+    sh:name "Strategy Definition";
+    sh:description "specification of a trading strategy including its logic, parameters, universe, risk controls, and execution rules";
+    sh:property fin-strategy:StrategyDefinitionShape_hasStrategyName.
+fin-strategy:StrategyDefinitionShape_hasStrategyName a sh:PropertyShape;
+    sh:path fin-strategy:hasStrategyName;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string.
+fin-strategy:StrategyDefinitionShape sh:property fin-strategy:StrategyDefinitionShape_hasStrategyDescription.
+fin-strategy:StrategyDefinitionShape_hasStrategyDescription a sh:PropertyShape;
+    sh:path fin-strategy:hasStrategyDescription;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:datatype xsd:string.
+fin-strategy:SignalShape a sh:NodeShape;
+    sh:targetClass fin-strategy:Signal;
+    sh:name "Signal";
+    sh:description "point-in-time trading signal generated by a factor or strategy for a specific instrument with directional bias, strength, and validity period";
+    sh:property fin-strategy:SignalShape_hasSignalDirection.
+fin-strategy:SignalShape_hasSignalDirection a sh:PropertyShape;
+    sh:path fin-strategy:hasSignalDirection;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Long" "Short" "Neutral" "Exit").
+fin-strategy:SignalShape sh:property fin-strategy:SignalShape_hasSignalStrength.
+fin-strategy:SignalShape_hasSignalStrength a sh:PropertyShape;
+    sh:path fin-strategy:hasSignalStrength;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/QuantityValue>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-strategy:SignalShape sh:property fin-strategy:SignalShape_generatedByFactor.
+fin-strategy:SignalShape_generatedByFactor a sh:PropertyShape;
+    sh:path fin-strategy:generatedByFactor;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class fin-strategy:FactorDefinition.
+fin-strategy:SignalShape sh:property fin-strategy:SignalShape_generatedByStrategy.
+fin-strategy:SignalShape_generatedByStrategy a sh:PropertyShape;
+    sh:path fin-strategy:generatedByStrategy;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class fin-strategy:StrategyDefinition.
+fin-strategy:SignalShape sh:property fin-strategy:SignalShape_signalForInstrument.
+fin-strategy:SignalShape_signalForInstrument a sh:PropertyShape;
+    sh:path fin-strategy:signalForInstrument;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>.
+fin-strategy:SignalShape sh:property fin-strategy:SignalShape_pat_validFrom.
+fin-strategy:SignalShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-strategy:SignalShape sh:property fin-strategy:SignalShape_pat_knowledgeFrom.
+fin-strategy:SignalShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-strategy:SignalShape sh:property fin-strategy:SignalShape_pat_availableFrom.
+fin-strategy:SignalShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-strategy:SignalShape sh:property fin-strategy:SignalShape_pat_validTo.
+fin-strategy:SignalShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-strategy:SignalShape sh:property fin-strategy:SignalShape_pat_knowledgeTo.
+fin-strategy:SignalShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-strategy:SignalShape sh:property fin-strategy:SignalShape_pat_availableTo.
+fin-strategy:SignalShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-strategy:SignalShape sh:sparql _:sparql_valid_Signal.
+_:sparql_valid_Signal sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-strategy:SignalShape sh:sparql _:sparql_knowledge_Signal.
+_:sparql_knowledge_Signal sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-strategy:SignalShape sh:sparql _:sparql_available_Signal.
+_:sparql_available_Signal sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-strategy:SignalShape sh:property fin-strategy:SignalShape_pat_source.
+fin-strategy:SignalShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+fin-strategy:BacktestRunShape a sh:NodeShape;
+    sh:targetClass fin-strategy:BacktestRun;
+    sh:name "Backtest Run";
+    sh:description "execution of a strategy definition over historical data with specified parameters, date range, initial capital, and resulting performance metrics";
+    sh:property fin-strategy:BacktestRunShape_hasBacktestStatus.
+fin-strategy:BacktestRunShape_hasBacktestStatus a sh:PropertyShape;
+    sh:path fin-strategy:hasBacktestStatus;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string;
+    sh:in ("Pending" "Running" "Completed" "Failed" "Canceled").
+fin-strategy:BacktestRunShape sh:property fin-strategy:BacktestRunShape_hasStartDate.
+fin-strategy:BacktestRunShape_hasStartDate a sh:PropertyShape;
+    sh:path fin-strategy:hasStartDate;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:dateTime.
+fin-strategy:BacktestRunShape sh:property fin-strategy:BacktestRunShape_hasEndDate.
+fin-strategy:BacktestRunShape_hasEndDate a sh:PropertyShape;
+    sh:path fin-strategy:hasEndDate;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:dateTime.
+fin-strategy:BacktestRunShape sh:property fin-strategy:BacktestRunShape_hasInitialCapital.
+fin-strategy:BacktestRunShape_hasInitialCapital a sh:PropertyShape;
+    sh:path fin-strategy:hasInitialCapital;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/MonetaryAmount>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-strategy:BacktestRunShape sh:property fin-strategy:BacktestRunShape_backtestsStrategy.
+fin-strategy:BacktestRunShape_backtestsStrategy a sh:PropertyShape;
+    sh:path fin-strategy:backtestsStrategy;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-strategy:StrategyDefinition.
+fin-strategy:BacktestRunShape sh:property fin-strategy:BacktestRunShape_usedPortfolio.
+fin-strategy:BacktestRunShape_usedPortfolio a sh:PropertyShape;
+    sh:path fin-strategy:usedPortfolio;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio>.
+fin-strategy:BacktestRunShape sh:property fin-strategy:BacktestRunShape_pat_source.
+fin-strategy:BacktestRunShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+fin-strategy:PerformanceObservationShape a sh:NodeShape;
+    sh:targetClass fin-strategy:PerformanceObservation;
+    sh:name "Performance Observation";
+    sh:description "point-in-time or period-aggregate performance metrics for a backtest run or live strategy including returns, drawdown, Sharpe ratio, and other statistics";
+    sh:property fin-strategy:PerformanceObservationShape_hasCumulativeReturn.
+fin-strategy:PerformanceObservationShape_hasCumulativeReturn a sh:PropertyShape;
+    sh:path fin-strategy:hasCumulativeReturn;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/QuantityValue>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-strategy:PerformanceObservationShape sh:property fin-strategy:PerformanceObservationShape_hasMaxDrawdown.
+fin-strategy:PerformanceObservationShape_hasMaxDrawdown a sh:PropertyShape;
+    sh:path fin-strategy:hasMaxDrawdown;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/QuantityValue>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-strategy:PerformanceObservationShape sh:property fin-strategy:PerformanceObservationShape_hasSharpeRatio.
+fin-strategy:PerformanceObservationShape_hasSharpeRatio a sh:PropertyShape;
+    sh:path fin-strategy:hasSharpeRatio;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/QuantityValue>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-strategy:PerformanceObservationShape sh:property fin-strategy:PerformanceObservationShape_observedInBacktest.
+fin-strategy:PerformanceObservationShape_observedInBacktest a sh:PropertyShape;
+    sh:path fin-strategy:observedInBacktest;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-strategy:BacktestRun.
+fin-strategy:PerformanceObservationShape sh:property fin-strategy:PerformanceObservationShape_observedForStrategy.
+fin-strategy:PerformanceObservationShape_observedForStrategy a sh:PropertyShape;
+    sh:path fin-strategy:observedForStrategy;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class fin-strategy:StrategyDefinition.
+fin-strategy:PerformanceObservationShape sh:property fin-strategy:PerformanceObservationShape_pat_validFrom.
+fin-strategy:PerformanceObservationShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-strategy:PerformanceObservationShape sh:property fin-strategy:PerformanceObservationShape_pat_knowledgeFrom.
+fin-strategy:PerformanceObservationShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-strategy:PerformanceObservationShape sh:property fin-strategy:PerformanceObservationShape_pat_availableFrom.
+fin-strategy:PerformanceObservationShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-strategy:PerformanceObservationShape sh:property fin-strategy:PerformanceObservationShape_pat_validTo.
+fin-strategy:PerformanceObservationShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-strategy:PerformanceObservationShape sh:property fin-strategy:PerformanceObservationShape_pat_knowledgeTo.
+fin-strategy:PerformanceObservationShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-strategy:PerformanceObservationShape sh:property fin-strategy:PerformanceObservationShape_pat_availableTo.
+fin-strategy:PerformanceObservationShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-strategy:PerformanceObservationShape sh:sparql _:sparql_valid_PerformanceObservation.
+_:sparql_valid_PerformanceObservation sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-strategy:PerformanceObservationShape sh:sparql _:sparql_knowledge_PerformanceObservation.
+_:sparql_knowledge_PerformanceObservation sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-strategy:PerformanceObservationShape sh:sparql _:sparql_available_PerformanceObservation.
+_:sparql_available_PerformanceObservation sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-strategy:PerformanceObservationShape sh:property fin-strategy:PerformanceObservationShape_pat_source.
+fin-strategy:PerformanceObservationShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.
+fin-strategy:FactorObservationShape a sh:NodeShape;
+    sh:targetClass fin-strategy:FactorObservation;
+    sh:name "Factor Observation";
+    sh:description "revision-aware observation of a factor value for an instrument and reporting period, with publication (knowledge) time distinct from period and availability time (Qlib PIT model)";
+    sh:property fin-strategy:FactorObservationShape_hasFactorPeriod.
+fin-strategy:FactorObservationShape_hasFactorPeriod a sh:PropertyShape;
+    sh:path fin-strategy:hasFactorPeriod;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string.
+fin-strategy:FactorObservationShape sh:property fin-strategy:FactorObservationShape_hasFactorValue.
+fin-strategy:FactorObservationShape_hasFactorValue a sh:PropertyShape;
+    sh:path fin-strategy:hasFactorValue;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/foundation/QuantityValue>;
+    sh:nodeKind sh:BlankNodeOrIRI.
+fin-strategy:FactorObservationShape sh:property fin-strategy:FactorObservationShape_observesFactor.
+fin-strategy:FactorObservationShape_observesFactor a sh:PropertyShape;
+    sh:path fin-strategy:observesFactor;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class fin-strategy:FactorDefinition.
+fin-strategy:FactorObservationShape sh:property fin-strategy:FactorObservationShape_observedInstrument.
+fin-strategy:FactorObservationShape_observedInstrument a sh:PropertyShape;
+    sh:path fin-strategy:observedInstrument;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:class <https://axiolune.ai/ontology/finance/instruments/FinancialInstrument>.
+fin-strategy:FactorObservationShape sh:property fin-strategy:FactorObservationShape_nextRevision.
+fin-strategy:FactorObservationShape_nextRevision a sh:PropertyShape;
+    sh:path fin-strategy:nextRevision;
+    sh:minCount 0;
+    sh:maxCount 1;
+    sh:class fin-strategy:FactorObservation.
+fin-strategy:FactorObservationShape sh:property fin-strategy:FactorObservationShape_pat_validFrom.
+fin-strategy:FactorObservationShape_pat_validFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-strategy:FactorObservationShape sh:property fin-strategy:FactorObservationShape_pat_knowledgeFrom.
+fin-strategy:FactorObservationShape_pat_knowledgeFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-strategy:FactorObservationShape sh:property fin-strategy:FactorObservationShape_pat_availableFrom.
+fin-strategy:FactorObservationShape_pat_availableFrom a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom>;
+    sh:datatype xsd:dateTime;
+    sh:minCount 1;
+    sh:maxCount 1.
+fin-strategy:FactorObservationShape sh:property fin-strategy:FactorObservationShape_pat_validTo.
+fin-strategy:FactorObservationShape_pat_validTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/validTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-strategy:FactorObservationShape sh:property fin-strategy:FactorObservationShape_pat_knowledgeTo.
+fin-strategy:FactorObservationShape_pat_knowledgeTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-strategy:FactorObservationShape sh:property fin-strategy:FactorObservationShape_pat_availableTo.
+fin-strategy:FactorObservationShape_pat_availableTo a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo>;
+    sh:datatype xsd:dateTime;
+    sh:maxCount 1.
+fin-strategy:FactorObservationShape sh:sparql _:sparql_valid_FactorObservation.
+_:sparql_valid_FactorObservation sh:message "valid interval inversion: validTo must be greater than validFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/validTo> ?to . FILTER (?to <= ?from) }".
+fin-strategy:FactorObservationShape sh:sparql _:sparql_knowledge_FactorObservation.
+_:sparql_knowledge_FactorObservation sh:message "knowledge interval inversion: knowledgeTo must be greater than knowledgeFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo> ?to . FILTER (?to <= ?from) }".
+fin-strategy:FactorObservationShape sh:sparql _:sparql_available_FactorObservation.
+_:sparql_available_FactorObservation sh:message "available interval inversion: availableTo must be greater than availableFrom";
+    sh:select "SELECT $this WHERE { $this <https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom> ?from ; <https://axiolune.ai/ontology/meta/patterns/attributes/availableTo> ?to . FILTER (?to <= ?from) }".
+fin-strategy:FactorObservationShape sh:property fin-strategy:FactorObservationShape_pat_source.
+fin-strategy:FactorObservationShape_pat_source a sh:PropertyShape;
+    sh:path <https://axiolune.ai/ontology/meta/patterns/attributes/source>;
+    sh:maxCount 1.

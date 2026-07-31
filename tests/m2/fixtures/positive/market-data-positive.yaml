@@ -1,108 +1,138 @@
 # M2 Market Data — Positive Test Fixtures
 # Valid PriceObservation instances with complete three-axis temporal semantics
-
 fixtures:
-  - id: "price-obs-001-valid"
-    description: "Valid price observation with complete three-axis time"
-    type: "https://axiolune.ai/ontology/finance/market-data/PriceObservation"
+  - id: price-obs-001-valid
+    description: Valid price observation with complete three-axis time
+    type: https://axiolune.ai/ontology/finance/market-data/PriceObservation
     instance:
-      iri: "https://axiolune.ai/data/market-data/price-obs-001"
-      observedInstrument: "https://axiolune.ai/data/instruments/equity-AAPL-US"
-      observedAtVenue: "https://axiolune.ai/data/venues/XNAS"
-      hasPriceValue: 150.25
-      hasPriceKind: "Last"
-      hasCurrencyCode: "USD"
-      # TemporalFact pattern binding (ADR-012)
-      validFrom: "2026-07-29T14:30:00Z"
-      validTo: "2026-07-29T14:30:01Z"
-      knowledgeFrom: "2026-07-29T14:30:00.123Z"
-      knowledgeTo: null  # still current
-      availableFrom: "2026-07-29T14:30:00.500Z"  # 500ms delay
+      iri: https://axiolune.ai/data/market-data/price-obs-001
+      observedInstrument: https://axiolune.ai/data/instruments/equity-AAPL-US
+      observedAtVenue: https://axiolune.ai/data/venues/XNAS
+      hasPriceValue:
+        type: MonetaryAmount
+        hasNumericAmount: '150.25'
+        hasCurrencyCode: USD
+      hasPriceKind: Last
+      hasCurrencyCode: USD
+      validFrom: '2026-07-29T14:30:00Z'
+      validTo: '2026-07-29T14:30:01Z'
+      knowledgeFrom: '2026-07-29T14:30:00.123Z'
+      knowledgeTo: null
+      availableFrom: '2026-07-29T14:30:00.500Z'
       availableTo: null
-      # ProvenancedFact pattern binding
-      source: "nasdaq-data-feed"
-      sourceRevision: "1"
-      assertionTime: "2026-07-29T14:30:00.123Z"
-    expectedResult: "accepted"
-    note: "Base case: all temporal axes present, no inversions, availableFrom after validFrom"
-
-  - id: "price-obs-002-revision"
-    description: "Revised price observation with knowledge-time closure"
-    type: "https://axiolune.ai/ontology/finance/market-data/PriceObservation"
+      source: nasdaq-data-feed
+      sourceRevision: '1'
+      assertionTime: '2026-07-29T14:30:00.123Z'
+    expectedResult: accepted
+    note: 'Base case: all temporal axes present, no inversions, availableFrom after validFrom'
+  - id: price-obs-002-revision
+    description: Revised price observation with knowledge-time closure
+    type: https://axiolune.ai/ontology/finance/market-data/PriceObservation
     instances:
-      - iri: "https://axiolune.ai/data/market-data/price-obs-002-v1"
-        observedInstrument: "https://axiolune.ai/data/instruments/equity-AAPL-US"
-        hasPriceValue: 150.20  # original value
-        hasPriceKind: "Last"
-        hasCurrencyCode: "USD"
-        validFrom: "2026-07-29T15:00:00Z"
-        validTo: "2026-07-29T15:00:01Z"
-        knowledgeFrom: "2026-07-29T15:00:00.100Z"
-        knowledgeTo: "2026-07-29T15:05:00.000Z"  # superseded at 15:05
-        availableFrom: "2026-07-29T15:00:00.300Z"
-        availableTo: "2026-07-29T15:05:00.000Z"
-        source: "nasdaq-data-feed"
-        sourceRevision: "1"
-      - iri: "https://axiolune.ai/data/market-data/price-obs-002-v2"
-        observedInstrument: "https://axiolune.ai/data/instruments/equity-AAPL-US"
-        hasPriceValue: 150.25  # corrected value
-        hasPriceKind: "Last"
-        hasCurrencyCode: "USD"
-        validFrom: "2026-07-29T15:00:00Z"  # same valid time
-        validTo: "2026-07-29T15:00:01Z"
-        knowledgeFrom: "2026-07-29T15:05:00.000Z"  # revision time
+      - iri: https://axiolune.ai/data/market-data/price-obs-002-v1
+        observedInstrument: https://axiolune.ai/data/instruments/equity-AAPL-US
+        hasPriceValue:
+          type: MonetaryAmount
+          hasNumericAmount: '150.20'
+          hasCurrencyCode: USD
+        hasPriceKind: Last
+        hasCurrencyCode: USD
+        validFrom: '2026-07-29T15:00:00Z'
+        validTo: '2026-07-29T15:00:01Z'
+        knowledgeFrom: '2026-07-29T15:00:00.100Z'
+        knowledgeTo: '2026-07-29T15:05:00.000Z'
+        availableFrom: '2026-07-29T15:00:00.300Z'
+        availableTo: '2026-07-29T15:05:00.000Z'
+        source: nasdaq-data-feed
+        sourceRevision: '1'
+      - iri: https://axiolune.ai/data/market-data/price-obs-002-v2
+        observedInstrument: https://axiolune.ai/data/instruments/equity-AAPL-US
+        hasPriceValue:
+          type: MonetaryAmount
+          hasNumericAmount: '150.25'
+          hasCurrencyCode: USD
+        hasPriceKind: Last
+        hasCurrencyCode: USD
+        validFrom: '2026-07-29T15:00:00Z'
+        validTo: '2026-07-29T15:00:01Z'
+        knowledgeFrom: '2026-07-29T15:05:00.000Z'
         knowledgeTo: null
-        availableFrom: "2026-07-29T15:05:00.200Z"
+        availableFrom: '2026-07-29T15:05:00.200Z'
         availableTo: null
-        source: "nasdaq-data-feed"
-        sourceRevision: "2"
-    expectedResult: "accepted"
-    note: "CQ-MD3: Query with asOfKnowledge=15:04 returns v1 (150.20); query with asOfKnowledge=15:06 returns v2 (150.25)"
-
-  - id: "quote-obs-001-valid"
-    description: "Valid quote observation with bid and ask"
-    type: "https://axiolune.ai/ontology/finance/market-data/QuoteObservation"
+        source: nasdaq-data-feed
+        sourceRevision: '2'
+    expectedResult: accepted
+    note: 'CQ-MD3: Query with asOfKnowledge=15:04 returns v1 (150.20); query with asOfKnowledge=15:06 returns v2 (150.25)'
+  - id: quote-obs-001-valid
+    description: Valid quote observation with bid and ask
+    type: https://axiolune.ai/ontology/finance/market-data/QuoteObservation
     instance:
-      iri: "https://axiolune.ai/data/market-data/quote-obs-001"
-      observedInstrument: "https://axiolune.ai/data/instruments/equity-AAPL-US"
-      observedAtVenue: "https://axiolune.ai/data/venues/XNAS"
-      hasBidPrice: 150.24
-      hasAskPrice: 150.26
-      hasBidSize: 100
-      hasAskSize: 200
-      hasCurrencyCode: "USD"
-      validFrom: "2026-07-29T14:30:05Z"
-      validTo: "2026-07-29T14:30:06Z"
-      knowledgeFrom: "2026-07-29T14:30:05.050Z"
+      iri: https://axiolune.ai/data/market-data/quote-obs-001
+      observedInstrument: https://axiolune.ai/data/instruments/equity-AAPL-US
+      observedAtVenue: https://axiolune.ai/data/venues/XNAS
+      hasBidPrice:
+        type: MonetaryAmount
+        hasNumericAmount: '150.24'
+        hasCurrencyCode: USD
+      hasAskPrice:
+        type: MonetaryAmount
+        hasNumericAmount: '150.26'
+        hasCurrencyCode: USD
+      hasBidSize:
+        type: QuantityValue
+        hasNumericAmount: '100'
+        hasUnitCode: share
+      hasAskSize:
+        type: QuantityValue
+        hasNumericAmount: '200'
+        hasUnitCode: share
+      hasCurrencyCode: USD
+      validFrom: '2026-07-29T14:30:05Z'
+      validTo: '2026-07-29T14:30:06Z'
+      knowledgeFrom: '2026-07-29T14:30:05.050Z'
       knowledgeTo: null
-      availableFrom: "2026-07-29T14:30:05.300Z"
+      availableFrom: '2026-07-29T14:30:05.300Z'
       availableTo: null
-      source: "nasdaq-L2-feed"
-      sourceRevision: "1"
-    expectedResult: "accepted"
-
-  - id: "bar-001-valid"
-    description: "Valid 5-minute OHLCV bar"
-    type: "https://axiolune.ai/ontology/finance/market-data/Bar"
+      source: nasdaq-L2-feed
+      sourceRevision: '1'
+    expectedResult: accepted
+  - id: bar-001-valid
+    description: Valid 5-minute OHLCV bar
+    type: https://axiolune.ai/ontology/finance/market-data/Bar
     instance:
-      iri: "https://axiolune.ai/data/market-data/bar-001"
-      observedInstrument: "https://axiolune.ai/data/instruments/equity-AAPL-US"
-      observedAtVenue: "https://axiolune.ai/data/venues/XNAS"
-      hasOpenPrice: 150.10
-      hasHighPrice: 150.50
-      hasLowPrice: 150.00
-      hasClosePrice: 150.25
-      hasVolume: 125000
-      hasBarAggregation: "Time"
-      hasBarDuration: "PT5M"  # ISO 8601 duration: 5 minutes
-      hasCurrencyCode: "USD"
-      validFrom: "2026-07-29T14:25:00Z"  # bar period start
-      validTo: "2026-07-29T14:30:00Z"    # bar period end
-      knowledgeFrom: "2026-07-29T14:30:00.500Z"
+      iri: https://axiolune.ai/data/market-data/bar-001
+      observedInstrument: https://axiolune.ai/data/instruments/equity-AAPL-US
+      observedAtVenue: https://axiolune.ai/data/venues/XNAS
+      hasOpenPrice:
+        type: MonetaryAmount
+        hasNumericAmount: '150.1'
+        hasCurrencyCode: USD
+      hasHighPrice:
+        type: MonetaryAmount
+        hasNumericAmount: '150.5'
+        hasCurrencyCode: USD
+      hasLowPrice:
+        type: MonetaryAmount
+        hasNumericAmount: '150'
+        hasCurrencyCode: USD
+      hasClosePrice:
+        type: MonetaryAmount
+        hasNumericAmount: '150.25'
+        hasCurrencyCode: USD
+      hasVolume:
+        type: QuantityValue
+        hasNumericAmount: '125000'
+        hasUnitCode: share
+      hasBarAggregation: Time
+      hasBarDuration: PT5M
+      hasCurrencyCode: USD
+      validFrom: '2026-07-29T14:25:00Z'
+      validTo: '2026-07-29T14:30:00Z'
+      knowledgeFrom: '2026-07-29T14:30:00.500Z'
       knowledgeTo: null
-      availableFrom: "2026-07-29T14:30:01.000Z"
+      availableFrom: '2026-07-29T14:30:01.000Z'
       availableTo: null
-      source: "bar-aggregator"
-      sourceRevision: "1"
-    expectedResult: "accepted"
-    note: "CQ-MD5: OHLC ordering satisfied (Low <= Open/Close <= High)"
+      source: bar-aggregator
+      sourceRevision: '1'
+    expectedResult: accepted
+    note: 'CQ-MD5: OHLC ordering satisfied (Low <= Open/Close <= High)'

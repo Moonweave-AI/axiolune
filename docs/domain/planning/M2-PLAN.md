@@ -239,7 +239,7 @@ G0 只建立写作/编译能力，不预先推测复杂领域规则。它替代�
 目录是发布和验证组织，而非第二套语义语言；M2 语义源始终由 G0 冻结的 authoring profile 解释。
 
 ```text
-ontology/m2/finance/
+ontology/domain/finance/
   registry/
     prefixes.yaml
     module-registry.yaml

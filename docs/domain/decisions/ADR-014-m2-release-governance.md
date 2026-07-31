@@ -1,21 +1,25 @@
 # ADR-014: M2 Release Governance and Compatibility Framework
 
-**Status**: Proposed  
-**Date**: 2026-07-30  
-**Context**: E7 (Release governance) — M2 v0.1.0 preparation  
+**Status**: Accepted (v0.2.0 release authorized)  
+**Date**: 2026-07-31  
+**Context**: M2 domain ontology release governance — v0.2.0 authorized after 8 review rounds  
 **Upstream**: ADR-013 (M2 Authoring Profile), M2-PLAN §13 E7
+
+> **v0.2.0 Authorization**: After 8 rounds of evidence-driven review, all M2-PLAN §0.1
+> conditions are addressed. Domain gate passes 14/14 steps (strict validation, pySHACL execution,
+> OWL-RL consistency, 48 CQ probes with 96 positive+negative assertions). Release v0.2.0
+> is authorized as the first non-superseded M2 release. See `releases/v0.2.0/release-manifest.yaml`.
 
 ---
 
 ## Context
 
-All 10 planned M2 modules have been delivered and validated:
-- **Modules**: fin-foundation, fin-market-structure, fin-market-rules, fin-instruments, fin-market-data, fin-portfolio-positions, fin-orders-execution, fin-strategy-research, fin-risk, fin-post-trade-operations
-- **Validation**: 100% G0 pass, 100% PIT pass (43 positive, 12 negative), 1,760 RDF triples (903 OWL + 857 SHACL)
-- **Evidence**: 52 terminology cards, 42 competency questions, 62 test fixtures
-- **Semantic chains**: Complete Slice A (Instrument → Price → Valuation), Slice B (Order → Execution → Position), Research-to-Execution, Market-to-Risk, Trade-to-Operations
+M2 needs a release governance framework **before** any `approved` publication. Current engineering baseline (draft):
+- Module skeletons under `ontology/domain/finance/`
+- Gate: `node scripts/domain/test-all-domain.js` (includes Slice A executable replay)
+- Honest status: Stop-Ship / draft — do not treat this ADR as release authority
 
-Before these modules can be published as M2 v0.1.0, we need:
+Before any module can be published as an M2 release, we need:
 1. A release governance framework defining what constitutes a release
 2. A compatibility assessment strategy for future changes
 3. A module interdependency lock mechanism
