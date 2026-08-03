@@ -1,9 +1,13 @@
-# Slice A competency probes CQ-S1..S5 (M2-PLAN §6.2)
-# Status: draft executable contract.
-# Runner: scripts/domain/run-slice-a.cjs — minimal-slot-interpreter-v0
-#   interprets mappings/finance/synthetic/slice-a-semantic-mapping.yaml
-# Honesty: CQ-S5 digest = deterministic JSON canon of interpreter facts (NOT RDF URDNA2015).
-# SPARQL/SHACL engine against RDF staging graph: pending Adopt of SHACL-ENGINE-PIN.
+# Legacy Slice A staging probes.
+#
+# This file drives scripts/domain/run-slice-a.cjs only. It is not the v0.3
+# release CQ registry and cannot satisfy the MaterializationBatchRun,
+# batch-scoped PITValidationRequest, ReplayReport, or evidence-ledger contract.
+schemaVersion: '1.0'
+status: draft-legacy-staging
+runner:
+  implementation: scripts/domain/run-slice-a.cjs
+  capability: minimal-slot-interpreter-v0
 
 moduleScope:
   - fin-foundation
@@ -12,92 +16,77 @@ moduleScope:
   - fin-market-data
   - fin-portfolio-positions
 
-materializationRun: "https://axiolune.ai/run/finance/synthetic/slice-a/2026-07-30-r1"
-mapping: "https://axiolune.ai/mapping/finance/synthetic/slice-a-v0.1"
+materializationRun: https://axiolune.ai/run/finance/synthetic/slice-a/2026-07-30-r1
+mapping: https://axiolune.ai/mapping/finance/synthetic/slice-a-v0.1
 
 probes:
   - id: CQ-S1
-    question: "某个 ISIN 与内部标识是否指向同一 Instrument，并由谁发行？"
-    dependsOn:
-      - "https://axiolune.ai/ontology/finance/instruments/FinancialInstrument"
-      - "https://axiolune.ai/ontology/finance/instruments/isIssuedBy"
-      - "https://axiolune.ai/ontology/finance/foundation/ISIN"
+    question: Does the synthetic ISIN and internal identifier resolve to one instrument and issuer?
     asOf:
-      asOfValid: "2026-07-29T14:30:00Z"
-      asOfKnowledge: "2026-07-29T21:05:00Z"
-      asOfAvailable: "2026-07-29T21:05:00Z"
+      asOfValid: '2026-07-29T14:30:00Z'
+      asOfKnowledge: '2026-07-29T21:05:00Z'
+      asOfAvailable: '2026-07-29T21:05:00Z'
     expected:
-      instrumentIri: "https://axiolune.ai/data/instruments/AX-EQ-AAPL"
-      isin: "US0378331005"
-      issuerName: "Apple Inc."
+      instrumentIri: https://axiolune.ai/data/instruments/AX-EQ-AAPL
+      isin: US0378331005
+      issuerName: Apple Inc.
     negative:
-      description: "duplicate/conflicting identifier assignment must not silently merge"
+      description: duplicate identifier assignment is rejected by the legacy uniqueness check
       expectedResult: rejected-or-isolated
 
   - id: CQ-S2
-    question: "给定 listing、场所和三轴 as-of，可使用的指定类型价格是什么？"
-    dependsOn:
-      - "https://axiolune.ai/ontology/finance/market-data/PriceObservation"
+    disposition: legacy-local-probe; canonical v0.3 CQ-S2 is an alias of CQ-MD1
+    question: Which synthetic last price is PIT-eligible under all three pivots?
     asOf:
-      asOfValid: "2026-07-29T14:30:00Z"
-      asOfKnowledge: "2026-07-29T14:30:00.123Z"
-      asOfAvailable: "2026-07-29T14:30:00.500Z"
+      asOfValid: '2026-07-29T14:30:00Z'
+      asOfKnowledge: '2026-07-29T14:30:00.123Z'
+      asOfAvailable: '2026-07-29T14:30:00.500Z'
     expected:
-      priceObsIri: "https://axiolune.ai/data/market-data/px-aapl-001"
-      priceValue: "150.25"
-      priceKind: "Last"
+      priceObsIri: https://axiolune.ai/data/market-data/px-aapl-001
+      priceValue: '150.25'
+      priceKind: Last
     negative:
-      description: "asOfAvailable before availableFrom must not return the observation"
-      asOfAvailable: "2026-07-29T14:30:00.100Z"
+      description: an observation arriving after asOfAvailable is not returned
+      asOfAvailable: '2026-07-29T14:30:00.100Z'
       expectedResult: empty-or-rejected
 
   - id: CQ-S3
-    question: "在指定三轴 as-of 下，组合持有哪些工具、数量是多少？"
-    dependsOn:
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot"
+    question: Which synthetic holding is PIT-eligible under all three pivots?
     asOf:
-      asOfValid: "2026-07-29T12:00:00Z"
-      asOfKnowledge: "2026-07-29T21:00:00Z"
-      asOfAvailable: "2026-07-29T21:05:00Z"
+      asOfValid: '2026-07-29T12:00:00Z'
+      asOfKnowledge: '2026-07-29T21:00:00Z'
+      asOfAvailable: '2026-07-29T21:05:00Z'
     expected:
-      holdingIri: "https://axiolune.ai/data/holdings/hold-001"
-      instrumentInternalId: "AX-EQ-AAPL"
-      quantity: "100"
+      holdingIri: https://axiolune.ai/data/holdings/hold-001
+      instrumentInternalId: AX-EQ-AAPL
+      quantity: '100'
     negative:
-      description: "interval inversion or expired availability rejects snapshot"
-      fixture: "tests/m2/fixtures/negative/portfolio-positions-negative.yaml"
+      description: an inverted interval is rejected by the legacy PIT check
 
   - id: CQ-S4
-    question: "组合估值使用了哪一个价格事实、哪个币种和哪个估值规则？"
-    dependsOn:
-      - "https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation"
+    question: Which synthetic price and currency were used by the valuation?
     asOf:
-      asOfValid: "2026-07-29T21:05:00Z"
-      asOfKnowledge: "2026-07-29T21:05:00Z"
-      asOfAvailable: "2026-07-29T21:05:00Z"
+      asOfValid: '2026-07-29T21:05:00Z'
+      asOfKnowledge: '2026-07-29T21:05:00Z'
+      asOfAvailable: '2026-07-29T21:05:00Z'
     expected:
-      valuationIri: "https://axiolune.ai/data/valuations/val-001"
-      priceObsIri: "https://axiolune.ai/data/market-data/px-aapl-001"
-      marketValue: "15025.00"
-      currency: "USD"
+      valuationIri: https://axiolune.ai/data/valuations/val-001
+      priceObsIri: https://axiolune.ai/data/market-data/px-aapl-001
+      marketValue: '15025.00'
+      currency: USD
     negative:
-      description: "valuation that references a future-revised price must fail"
+      description: a valuation input with a future availability revision is rejected
       expectedResult: rejected
 
   - id: CQ-S5
-    question: "同一来源修订后，固定历史请求是否仍可重放？"
-    dependsOn:
-      - "https://axiolune.ai/run/finance/synthetic/slice-a/2026-07-30-r1"
-    fixedInputs:
-      mappingDigest: "sha256:pending"
-      snapshotId: "slice-a-2026-07-30-r1"
-      asOfValid: "2026-07-29T14:30:00Z"
-      asOfKnowledge: "2026-07-29T21:05:00Z"
-      asOfAvailable: "2026-07-29T21:05:00Z"
+    question: Does the fixed staging graph replay to identical facts?
     expected:
-      replay: "RDF-isomorphic staging graph for identical digests"
+      replay: identical staging facts
     negative:
-      description: "appending future rows must not change historical answer under fixed digests"
-      expectedResult: fail-determinism-check
+      description: a semantic append changes the graph while remaining invisible to an earlier PIT pivot
+      expectedResult: stable-historical-answer
 
-statusNote: "Probes are the CQ contract; full SPARQL engine execution is P1. Presence of this file is required for Slice A evidence pack."
+statusNote: >-
+  Passing these legacy probes proves only the staging interpreter behaviors
+  above. The v0.3 release gate uses the discovered CQ cards and strict batch
+  evidence; no module approval may be inferred from this file.

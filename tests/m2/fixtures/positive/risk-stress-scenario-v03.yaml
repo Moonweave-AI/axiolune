@@ -1,0 +1,40 @@
+schemaVersion: '1.0'
+description: >-
+  CQ-R5 stress scenario slice — ScenarioDefinition applied via StressTestRun to a portfolio,
+  producing a shocked RiskMeasurement (equity crash scenario).
+fixtures:
+  - id: cq-r5-stress-scenario-run
+    expectedResult: accepted
+    type: RiskStressScenario
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/ScenarioDefinition
+          versionIri: https://example.test/risk/scenario/equity-crash/version/1
+          scenarioDefinitionId: equity-crash-20pct
+          shockParameterDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          validFrom: '2026-07-30T00:00:00Z'
+          knowledgeFrom: '2026-07-30T00:00:01Z'
+          availableFrom: '2026-07-30T00:00:02Z'
+          source: urn:source:risk-scenario-catalog
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RiskMeasurement
+          versionIri: https://example.test/risk/measurement/stress-equity-crash/version/1
+          measurementPortfolio: https://example.test/portfolio/alpha
+          measuredMoney:
+            amount: '1200000.00'
+            currency: USD
+            scale: 2
+          validFrom: '2026-07-31T09:00:00Z'
+          knowledgeFrom: '2026-07-31T09:00:01Z'
+          availableFrom: '2026-07-31T09:00:02Z'
+          source: urn:source:stress-engine
+        - typeIri: https://axiolune.ai/ontology/finance/risk/StressTestRun
+          versionIri: https://example.test/risk/stress-run/equity-crash/version/1
+          stressRunId: stress-equity-crash-20260731
+          stressRunScenario: https://example.test/risk/scenario/equity-crash/version/1
+          stressRunPortfolio: https://example.test/portfolio/alpha
+          stressRunOutput: https://example.test/risk/measurement/stress-equity-crash/version/1
+          generatingContextRef: urn:materialization:stress-equity-crash
+          validFrom: '2026-07-31T09:00:03Z'
+          knowledgeFrom: '2026-07-31T09:00:04Z'
+          availableFrom: '2026-07-31T09:00:05Z'
+          source: urn:source:stress-engine

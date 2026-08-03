@@ -1,0 +1,44 @@
+schemaVersion: '1.0'
+description: >-
+  CQ-R4 cross-module slice — trace LimitBreach to contributing Execution via
+  HoldingSnapshot and scoped RiskMeasurement (account + instrument alignment).
+fixtures:
+  - id: cq-r4-breach-to-execution-trace
+    expectedResult: accepted
+    type: RiskOrderTrace
+    instance:
+      records:
+        - type: Execution
+          versionIri: https://example.test/execution/vol-fill/v1
+          account: https://example.test/account/trading
+          instrumentIri: https://example.test/security/s1
+          quantity: '100'
+          validFrom: '2026-07-31T09:00:00Z'
+          knowledgeFrom: '2026-07-31T09:00:01Z'
+          availableFrom: '2026-07-31T09:00:02Z'
+        - type: HoldingSnapshot
+          versionIri: https://example.test/holding/vol/v1
+          account: https://example.test/account/trading
+          instrumentIri: https://example.test/security/s1
+          sourcingExecutionVersionIri: https://example.test/execution/vol-fill/v1
+          quantity: '100'
+          validFrom: '2026-07-31T09:00:03Z'
+          knowledgeFrom: '2026-07-31T09:00:04Z'
+          availableFrom: '2026-07-31T09:00:05Z'
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RiskMeasurement
+          versionIri: https://example.test/risk/measurement/volatility/version/7
+          measurementAccount: https://example.test/account/trading
+          measuredQuantity:
+            value: '0.31'
+            unit: https://example.test/unit/ratio
+          validFrom: '2026-07-31T09:00:00Z'
+          knowledgeFrom: '2026-07-31T09:00:01Z'
+          availableFrom: '2026-07-31T09:00:02Z'
+        - typeIri: https://axiolune.ai/ontology/finance/risk/LimitBreach
+          versionIri: https://example.test/risk/breach/volatility/version/1
+          breachMeasurement: https://example.test/risk/measurement/volatility/version/7
+          breachLimit: https://example.test/risk/limit/volatility/version/5
+          breachEvaluation: https://example.test/risk/evaluation/volatility/version/1
+          validFrom: '2026-07-31T09:00:03Z'
+          knowledgeFrom: '2026-07-31T09:00:04Z'
+          availableFrom: '2026-07-31T09:00:05Z'

@@ -1,0 +1,82 @@
+schemaVersion: '1.0'
+fixture:
+  id: corporate-action-processing-finding-three-stage-closure
+  contract: CorporateActionProcessingFinding
+  instance:
+    records:
+      - type: CorporateActionEvent
+        logicalIri: https://example.test/fact/corporate-action/event/pf-1
+        versionIri: https://example.test/fact/corporate-action/event/pf-1/v1
+      - type: CorporateActionScheduleEvaluationInput
+        versionIri: https://example.test/fact/corporate-action/schedule-input/pf-1/v1
+        eventVersionIri: https://example.test/fact/corporate-action/event/pf-1/v1
+      - type: RuleConflict
+        versionIri: https://example.test/fact/corporate-action/rule-conflict/pf-1/v1
+        subjectVersionIri: https://example.test/fact/corporate-action/schedule-input/pf-1/v1
+      - type: CorporateActionEntitlement
+        versionIri: https://example.test/fact/corporate-action/entitlement/pf-1/v1
+        eventVersionIri: https://example.test/fact/corporate-action/event/pf-1/v1
+        scheduleResolutionVersionIri: https://example.test/fact/corporate-action/schedule-resolution/pf-1/v1
+      - type: CorporateActionElection
+        versionIri: https://example.test/fact/corporate-action/election/pf-1/provider-a/v1
+        subjectVersionIri: https://example.test/fact/corporate-action/entitlement/pf-1/v1
+      - type: CorporateActionElection
+        versionIri: https://example.test/fact/corporate-action/election/pf-1/provider-b/v1
+        subjectVersionIri: https://example.test/fact/corporate-action/entitlement/pf-1/v1
+      - type: CorporateActionScheduleResolution
+        versionIri: https://example.test/fact/corporate-action/schedule-resolution/pf-1/v1
+        eventVersionIri: https://example.test/fact/corporate-action/event/pf-1/v1
+      - type: CorporateActionDueBillTransfer
+        versionIri: https://example.test/fact/corporate-action/due-bill-transfer/pf-1/a/v1
+        subjectVersionIri: https://example.test/fact/corporate-action/schedule-resolution/pf-1/v1
+      - type: CorporateActionDueBillTransfer
+        versionIri: https://example.test/fact/corporate-action/due-bill-transfer/pf-1/b/v1
+        subjectVersionIri: https://example.test/fact/corporate-action/schedule-resolution/pf-1/v1
+    findings:
+      - logicalIri: https://example.test/fact/corporate-action/processing-finding/pf-1/schedule-rule-conflict
+        versionIri: https://example.test/fact/corporate-action/processing-finding/pf-1/schedule-rule-conflict/v1
+        eventLogicalIri: https://example.test/fact/corporate-action/event/pf-1
+        eventVersionIri: https://example.test/fact/corporate-action/event/pf-1/v1
+        findingStage: schedule
+        processingFindingKind: ruleConflict
+        scheduleSubjectVersionIri: https://example.test/fact/corporate-action/schedule-input/pf-1/v1
+        findingRuleConflictVersionIri: https://example.test/fact/corporate-action/rule-conflict/pf-1/v1
+        evidenceSetDigest: sha256:71e9cc2995519a9dd0c83ae58e4c57936274d9567933ae686b2f1e287f9813ad
+        generatingContextRef: https://example.test/run/post-trade-processing-finding/1
+        validFrom: '2026-07-15T09:00:00Z'
+        knowledgeFrom: '2026-07-15T09:00:01Z'
+        availableFrom: '2026-07-15T09:00:02Z'
+        revision: 0
+      - logicalIri: https://example.test/fact/corporate-action/processing-finding/pf-1/entitlement-election-conflict
+        versionIri: https://example.test/fact/corporate-action/processing-finding/pf-1/entitlement-election-conflict/v1
+        eventLogicalIri: https://example.test/fact/corporate-action/event/pf-1
+        eventVersionIri: https://example.test/fact/corporate-action/event/pf-1/v1
+        findingStage: entitlement
+        processingFindingKind: electionConflict
+        entitlementSubjectVersionIri: https://example.test/fact/corporate-action/entitlement/pf-1/v1
+        relatedElectionVersionIris:
+          - https://example.test/fact/corporate-action/election/pf-1/provider-a/v1
+          - https://example.test/fact/corporate-action/election/pf-1/provider-b/v1
+        evidenceSetDigest: sha256:e415970178809f9c57e29a4131684f10d204606aa4d7d1c7e01a9785daa14ce8
+        generatingContextRef: https://example.test/run/post-trade-processing-finding/1
+        validFrom: '2026-07-15T09:01:00Z'
+        knowledgeFrom: '2026-07-15T09:01:01Z'
+        availableFrom: '2026-07-15T09:01:02Z'
+        revision: 0
+      - logicalIri: https://example.test/fact/corporate-action/processing-finding/pf-1/due-bill-duplicate-transfer
+        versionIri: https://example.test/fact/corporate-action/processing-finding/pf-1/due-bill-duplicate-transfer/v1
+        eventLogicalIri: https://example.test/fact/corporate-action/event/pf-1
+        eventVersionIri: https://example.test/fact/corporate-action/event/pf-1/v1
+        findingStage: dueBill
+        processingFindingKind: duplicateTransfer
+        dueBillSubjectVersionIri: https://example.test/fact/corporate-action/schedule-resolution/pf-1/v1
+        relatedEntitlementVersionIri: https://example.test/fact/corporate-action/entitlement/pf-1/v1
+        relatedDueBillTransferVersionIris:
+          - https://example.test/fact/corporate-action/due-bill-transfer/pf-1/a/v1
+          - https://example.test/fact/corporate-action/due-bill-transfer/pf-1/b/v1
+        evidenceSetDigest: sha256:55199a7ed4b02f111a196dd2737343329efddaa5df7deab5df718417680f2ad9
+        generatingContextRef: https://example.test/run/post-trade-processing-finding/1
+        validFrom: '2026-07-15T09:02:00Z'
+        knowledgeFrom: '2026-07-15T09:02:01Z'
+        availableFrom: '2026-07-15T09:02:02Z'
+        revision: 0

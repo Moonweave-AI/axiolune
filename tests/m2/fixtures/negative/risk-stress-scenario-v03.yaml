@@ -1,0 +1,27 @@
+schemaVersion: '1.0'
+description: CQ-R5 negative — StressTestRun missing output RiskMeasurement link.
+fixtures:
+  - id: cq-r5-stress-run-missing-output
+    expectedResult: rejected
+    type: RiskStressScenario
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/ScenarioDefinition
+          versionIri: https://example.test/risk/scenario/equity-crash/version/1
+          scenarioDefinitionId: equity-crash-20pct
+          shockParameterDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          validFrom: '2026-07-30T00:00:00Z'
+          knowledgeFrom: '2026-07-30T00:00:01Z'
+          availableFrom: '2026-07-30T00:00:02Z'
+          source: urn:source:risk-scenario-catalog
+        - typeIri: https://axiolune.ai/ontology/finance/risk/StressTestRun
+          versionIri: https://example.test/risk/stress-run/orphan/version/1
+          stressRunId: stress-orphan-output
+          stressRunScenario: https://example.test/risk/scenario/equity-crash/version/1
+          stressRunPortfolio: https://example.test/portfolio/alpha
+          generatingContextRef: urn:materialization:stress-orphan
+          validFrom: '2026-07-31T09:00:03Z'
+          knowledgeFrom: '2026-07-31T09:00:04Z'
+          availableFrom: '2026-07-31T09:00:05Z'
+          source: urn:source:stress-engine
+    note: orphan stress run without stressRunOutput measurement

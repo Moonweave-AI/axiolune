@@ -1,0 +1,58 @@
+schemaVersion: '1.0'
+functionVersion: axiolune-m2-cq-cross-module/v1
+fixedInputs:
+  batchDefinition:
+    artifactRef: tests/m2/fixtures/slice-a/cq-v03/s5/batch-definition.json
+    artifactDigest: sha256:001708f8b2f5e9caaae61e1717cb1c4252870e4dc57de179c7e822a182385ed7
+  sourceSnapshot:
+    dataset: urn:axiolune:source-dataset:slice-a:v1
+    snapshotRef: tests/m2/fixtures/slice-a/cq-v03/s5/source-snapshot.json
+    artifactDigest: sha256:deff8bc12b59f72cd79ceab97a8c9da05a54fbd18bda671d18d4d962222fad82
+    schemaRef: tests/m2/fixtures/slice-a/cq-v03/s5/source-schema.json
+    schemaDigest: sha256:5bd1c293d21cea41d0eda164a1e540e339a029a3381c1cbf477df63db7a854bf
+    snapshotTime: '2024-07-10T00:00:00Z'
+  mappings:
+    - planRef: urn:axiolune:materialization-plan:identity:v1
+      mappingRef: urn:axiolune:mapping:slice-a:identity:v1
+      mappingArtifactRef: tests/m2/fixtures/slice-a/cq-v03/s5/identity-mapping.json
+      mappingSourceDigest: sha256:14b1501db308e5116029ec2efe294adc762c8641fb37c1e3fd57e997248bf54f
+      transformationClosureRef: tests/m2/fixtures/slice-a/cq-v03/s5/identity-transformation-closure.json
+      transformationClosureDigest: sha256:0f8784936978d810961f057da239b61d2d9e8b15c8a89bb58c731e72d59fdd8c
+      targetGraph: urn:axiolune:graph:slice-a:identity:v1
+    - planRef: urn:axiolune:materialization-plan:market-data:v1
+      mappingRef: urn:axiolune:mapping:slice-a:market-data:v1
+      mappingArtifactRef: tests/m2/fixtures/slice-a/cq-v03/s5/market-data-mapping.json
+      mappingSourceDigest: sha256:56eba718f7513d24fe915f164ab258663d91a7081a71fd4e4be34fbeafc92f5d
+      transformationClosureRef: tests/m2/fixtures/slice-a/cq-v03/s5/market-data-transformation-closure.json
+      transformationClosureDigest: sha256:d39d5fcea6a84d7e535fc303ba9dfa1ae5958af25c16573db7adc423894aa794
+      targetGraph: urn:axiolune:graph:slice-a:market-data:v1
+  toolLock:
+    artifactRef: tests/m2/fixtures/slice-a/cq-v03/s5/toolchain.lock.json
+    artifactDigest: sha256:ad4203b2df8f841403cb5363587442437cb39868402b8cb8cfdc2e80cf394130
+  pivots:
+    asOfValid: '2024-07-10T00:00:00Z'
+    asOfKnowledge: '2024-07-10T00:00:00Z'
+    asOfAvailable: '2024-07-10T00:00:00Z'
+  referenceTime: '2024-07-10T00:00:00Z'
+  assertionTime: '2024-07-10T00:00:00Z'
+  batchRunIri: urn:axiolune:materialization-batch-run:slice-a:v1
+  sourceSnapshotIri: urn:axiolune:source-snapshot:slice-a:2024-07-10
+  originalDataset:
+    artifactRef: tests/m2/fixtures/slice-a/cq-v03/s5/dataset-original.nq
+    artifactDigest: sha256:7341a166adfa5e27dca56c77c55efa8118b689af952c2374500a42caa8e62a52
+  replayDataset:
+    artifactRef: tests/m2/fixtures/slice-a/cq-v03/s5/dataset-replay.nq
+    artifactDigest: sha256:7112d932cf941f28c3014df736c44839b0b7cfa31e9902f31c743077f4b526c7
+expected:
+  canonicalization: RDFC-1.0
+  targetDataset: urn:axiolune:dataset:slice-a:v1
+  sourceSnapshotRootDigest: sha256:6c4f61c804e12a5249bcdea0df0718c42bece652d211e7526d30313cd4d11f7d
+  mappingClosureDigest: sha256:b3425560ead39cb1bc8e254e0606f8295ef11f455c97dfb6a005dffcd1fb02f6
+  memberGraphs:
+    - planRef: urn:axiolune:materialization-plan:identity:v1
+      graphIri: urn:axiolune:graph:slice-a:identity:v1
+      outputGraphDigest: sha256:02a38f9875367e1232d6351481aaf6bc65a34b99c00ab642475921c29bf51826
+    - planRef: urn:axiolune:materialization-plan:market-data:v1
+      graphIri: urn:axiolune:graph:slice-a:market-data:v1
+      outputGraphDigest: sha256:1808699a30a358de24d4318c6e5cb542fc4658d4d743bc88bbd60b7121ee137b
+  outputDatasetDigest: sha256:e63bff56a4bf5689ac4241a726b7fbc9ecf8f35143a8da6872103cc6fceabd29

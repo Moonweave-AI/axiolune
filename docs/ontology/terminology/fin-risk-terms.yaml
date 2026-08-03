@@ -1,5 +1,5 @@
-# Axiolune M2 Risk Module — Terminology Cards (stub)
-# Status: draft — required sidecar evidence (review M6). Definitions subject to G1 review.
+# Axiolune M2 Risk Module — Terminology Cards
+# Status: accepted — v1.0.0 sidecar evidence
 
 terms:
   - term: "Risk Measure Definition"
@@ -10,37 +10,67 @@ terms:
       - "defines how risk is measured"
       - "separates definition from a single observation"
     excludes:
-      - "a one-off exposure observation"
+      - "a one-off risk measurement result"
       - "a limit breach event"
     sources:
       - reference: "internal-axiolune"
         locator: "M2-PLAN §5.2 fin-risk"
-    status: draft
+    status: accepted
 
-  - term: "Exposure Observation"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/ExposureObservation"
-    definition: "time-stamped observation of portfolio or position exposure under a stated risk measure and three-axis temporal semantics"
-    genus: "observation"
+  - term: "Risk Measurement"
+    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskMeasurement"
+    definition: "time-stamped completed result of portfolio or position exposure under a stated risk measure and three-axis temporal semantics"
+    genus: "measurement"
     differentia:
-      - "binds a risk measure"
+      - "binds an exact risk measure definition version"
       - "records exposure at valid/knowledge/availability times"
     excludes:
       - "the risk measure definition itself"
+      - "a limit breach event without evaluation"
     sources:
       - reference: "internal-axiolune"
-        locator: "M2-PLAN §5.2 fin-risk"
-    status: draft
+        locator: "M2-PLAN §5.2 fin-risk; CQ-R1"
+    status: accepted
+
+  - term: "Scenario Definition"
+    canonicalIri: "https://axiolune.ai/ontology/finance/risk/ScenarioDefinition"
+    definition: "versioned stress or what-if scenario whose shock parameters are fixed independently of any stress-test run"
+    genus: "scenario specification"
+    differentia:
+      - "shock parameters immutable per version"
+      - "referenced by StressTestRun"
+    excludes:
+      - "a completed stress test run"
+      - "a risk measurement result"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "CQ-R5"
+    status: accepted
+
+  - term: "Stress Test Run"
+    canonicalIri: "https://axiolune.ai/ontology/finance/risk/StressTestRun"
+    definition: "completed stress test applying one exact ScenarioDefinition to a portfolio and recording output RiskMeasurement"
+    genus: "stress execution"
+    differentia:
+      - "references exact scenario and portfolio"
+      - "produces output measurement version"
+    excludes:
+      - "the scenario definition alone"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "CQ-R5"
+    status: accepted
 
   - term: "Limit Breach"
     canonicalIri: "https://axiolune.ai/ontology/finance/risk/LimitBreach"
-    definition: "fact that an exposure observation violates a risk limit under stated applicability and evidence"
+    definition: "fact that a risk measurement violates a risk limit under stated applicability and evidence"
     genus: "compliance fact"
     differentia:
-      - "references a limit and an exposure"
+      - "references a limit and a measurement"
       - "is provenance-bound"
     excludes:
       - "the limit definition alone"
     sources:
       - reference: "internal-axiolune"
         locator: "M2-PLAN §5.2 fin-risk"
-    status: draft
+    status: accepted

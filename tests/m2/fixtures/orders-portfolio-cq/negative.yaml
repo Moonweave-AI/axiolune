@@ -1,0 +1,546 @@
+schemaVersion: '1.0'
+contract: axiolune-m2-cq-orders-portfolio/v1
+
+pivots:
+  noon: &noon
+    asOfValid: '2026-07-31T12:00:00Z'
+    asOfKnowledge: '2026-07-31T12:00:00Z'
+    asOfAvailable: '2026-07-31T12:00:00Z'
+
+cases:
+  - id: cq-oe2-missing-external-id-rejected
+    cqId: CQ-OE2
+    query: {orderIntentVersionIri: 'urn:order-intent:accepted:v0', pivot: *noon}
+    mutations:
+      - {op: delete, path: 'externalOrders[0].externalOrderId'}
+    expectedErrorCode: CQ_OE2_EXTERNAL_ID
+
+  - id: cq-oe3-cross-currency-vwap-rejected
+    cqId: CQ-OE3
+    query: {orderIntentVersionIri: 'urn:order-intent:accepted:v0', pivot: *noon}
+    mutations:
+      - {op: set, path: 'executions[1].price.currency', value: EUR}
+      - {op: set, path: 'executions[1].quotationContractVersionIri', value: 'urn:quotation:aapl-direct-eur:v0'}
+    expectedErrorCode: CQ_OE3_PRICE_CURRENCY
+
+  - id: cq-oe3-cross-unit-quantity-rejected
+    cqId: CQ-OE3
+    query: {orderIntentVersionIri: 'urn:order-intent:accepted:v0', pivot: *noon}
+    mutations:
+      - {op: set, path: 'executions[1].quantity.unit', value: 'urn:unit:bond'}
+      - {op: set, path: 'executions[1].quotationContractVersionIri', value: 'urn:quotation:aapl-direct-bond-unit:v0'}
+    expectedErrorCode: CQ_OE3_QUANTITY_UNIT
+
+  - id: cq-oe4-cross-order-trace-rejected
+    cqId: CQ-OE4
+    query: {executionVersionIri: 'urn:execution:fill-1:v0', pivot: *noon}
+    mutations:
+      - {op: set, path: 'executions[0].externalOrderVersionIri', value: 'urn:external-order:rejected:v0'}
+    expectedErrorCode: CQ_OE4_TRACE_CHAIN
+
+  - id: cq-oe4-executing-broker-does-not-substitute-contra-party
+    cqId: CQ-OE4
+    query: {executionVersionIri: 'urn:execution:fill-1:v0', pivot: *noon}
+    mutations:
+      - {op: delete, path: 'executions[0].contraPartyLogicalIri'}
+    expectedErrorCode: CQ_OE4_TRACE_CHAIN
+
+  - id: cq-oe4-executing-broker-does-not-substitute-contra-account
+    cqId: CQ-OE4
+    query: {executionVersionIri: 'urn:execution:fill-1:v0', pivot: *noon}
+    mutations:
+      - {op: delete, path: 'executions[0].contraAccountVersionIri'}
+    expectedErrorCode: CQ_OE4_TRACE_CHAIN
+
+  - id: cq-oe6-transition-without-finding-rejected
+    cqId: CQ-OE6
+    query:
+      orderIntentVersionIri: urn:order-intent:violation:v0
+      transitionProfileVersionIri: urn:transition-profile:broker-one:v0
+      pivot: *noon
+    mutations:
+      - {op: set, path: 'integrityFindings[0].kind', value: sequenceGap}
+    expectedErrorCode: CQ_OE6_MISSING_FINDING
+
+  - id: cq-oe7-contra-perspective-rejected
+    cqId: CQ-OE7
+    query: {executionVersionIri: 'urn:execution:fill-1:v0', pivot: *noon}
+    mutations:
+      - {op: set, path: 'liquidityDeterminations[0].perspective', value: counterpartyOrder}
+    expectedErrorCode: CQ_OE7_LIQUIDITY_PERSPECTIVE
+
+  - id: cq-oe7-incomplete-allocation-set-rejected
+    cqId: CQ-OE7
+    query: {executionVersionIri: 'urn:execution:fill-1:v0', pivot: *noon}
+    mutations:
+      - op: set
+        path: allocationClosures[0].allocationVersionSetDigest
+        value: sha256:0000000000000000000000000000000000000000000000000000000000000000
+    expectedErrorCode: CQ_OE7_ALLOCATION_CLOSURE
+
+  - id: cq-oe7-position-lot-copy-mismatch-rejected
+    cqId: CQ-OE7
+    query: {executionVersionIri: 'urn:execution:fill-1:v0', pivot: *noon}
+    mutations:
+      - {op: set, path: 'positionLots[0].openingCostBasis.amount', value: '201'}
+    expectedErrorCode: CQ_OE7_POSITION_LOT_JOIN
+
+  - id: cq-oe8-missing-knowledge-closure-rejected
+    cqId: CQ-OE8
+    query:
+      orderIntentLogicalIri: urn:order-intent:corrected
+      pivot:
+        asOfValid: '2026-07-31T09:10:00Z'
+        asOfKnowledge: '2026-07-31T11:00:00Z'
+        asOfAvailable: '2026-07-31T11:00:01Z'
+    mutations:
+      - {op: set, path: 'closures[0].axis', value: availability}
+      - {op: set, path: 'closures[0].closedAt', value: '2026-07-31T11:00:01Z'}
+    expectedErrorCode: CQ_CLOSURE_DUPLICATE
+
+  - id: cq-oe8-nonmonotonic-knowledge-successor-rejected
+    cqId: CQ-OE8
+    query:
+      orderIntentLogicalIri: urn:order-intent:corrected
+      pivot:
+        asOfValid: '2026-07-31T09:10:00Z'
+        asOfKnowledge: '2026-07-31T11:00:00Z'
+        asOfAvailable: '2026-07-31T11:00:01Z'
+    mutations:
+      - {op: set, path: 'events[9].axes.knowledgeFrom', value: '2026-07-31T09:59:59Z'}
+      - {op: set, path: 'closures[0].closedAt', value: '2026-07-31T09:59:59Z'}
+    expectedErrorCode: CQ_CLOSURE_MONOTONIC
+
+  - id: cq-oe9-dangling-listing-rejected
+    cqId: CQ-OE9
+    query:
+      from: '2026-07-31T09:03:00Z'
+      to: '2026-07-31T09:04:00Z'
+      facilityLogicalIri: urn:facility:XNAS
+      pivot: *noon
+    mutations:
+      - {op: set, path: 'executions[0].listingVersionIri', value: 'urn:listing:missing:v0'}
+    expectedErrorCode: CQ_OE9_LISTING_JOIN
+
+  - id: cq-oe11-source-count-closure-drift-rejected
+    cqId: CQ-OE11
+    query: {orderIntentVersionIri: 'urn:order-intent:lineage-root:v0', pivot: *noon}
+    mutations:
+      - {op: set, path: 'orderLineages[0].sourceIntentCount', value: 2}
+    expectedErrorCode: CQ_OE11_SOURCE_SET
+
+  - id: cq-oe11-result-digest-closure-drift-rejected
+    cqId: CQ-OE11
+    query: {orderIntentVersionIri: 'urn:order-intent:lineage-root:v0', pivot: *noon}
+    mutations:
+      - op: set
+        path: orderLineages[0].resultIntentVersionSetDigest
+        value: sha256:0000000000000000000000000000000000000000000000000000000000000000
+    expectedErrorCode: CQ_OE11_RESULT_SET
+
+  - id: cq-oe11-unbound-domain-separated-key-rejected
+    cqId: CQ-OE11
+    query: {orderIntentVersionIri: 'urn:order-intent:lineage-root:v0', pivot: *noon}
+    mutations:
+      - op: set
+        path: orderLineages[0].orderLineageKeyDigest
+        value: sha256:0000000000000000000000000000000000000000000000000000000000000000
+    expectedErrorCode: CQ_OE11_KEY
+
+  - id: cq-oe11-wrong-branch-cardinality-rejected
+    cqId: CQ-OE11
+    query: {orderIntentVersionIri: 'urn:order-intent:lineage-root:v0', pivot: *noon}
+    mutations:
+      - {op: set, path: 'orderLineages[0].kind', value: aggregation}
+    expectedErrorCode: CQ_OE11_BRANCH
+
+  - id: cq-oe11-orphan-endpoint-rejected
+    cqId: CQ-OE11
+    query: {orderIntentVersionIri: 'urn:order-intent:lineage-root:v0', pivot: *noon}
+    mutations:
+      - op: set
+        path: orderLineages[0].resultIntentVersionIris
+        value: [urn:order-intent:lineage-missing:v0, urn:order-intent:lineage-split-b:v0]
+      - op: set
+        path: orderLineages[0].resultIntentVersionSetDigest
+        value: sha256:c6abbe6a3868d5cfe917f9ad5811ed44b90e8550c9c95a1f60e5a5580fd7e4d5
+      - op: set
+        path: orderLineages[0].orderLineageKeyDigest
+        value: sha256:1c16ecc0695c9425e2c1c4b64689774b256e7722602e8c3cec720de0e1750b11
+    expectedErrorCode: CQ_OE11_ENDPOINT_ORPHAN
+
+  - id: cq-oe11-wrong-endpoint-type-rejected
+    cqId: CQ-OE11
+    query: {orderIntentVersionIri: 'urn:order-intent:lineage-root:v0', pivot: *noon}
+    mutations:
+      - op: set
+        path: orderLineages[0].resultIntentVersionIris
+        value: [urn:external-order:accepted:v0, urn:order-intent:lineage-split-b:v0]
+      - op: set
+        path: orderLineages[0].resultIntentVersionSetDigest
+        value: sha256:f945e1e529550cdee6af1a3cb9819c5f19f9ccb0e04a2314590eb0546dbd917f
+      - op: set
+        path: orderLineages[0].orderLineageKeyDigest
+        value: sha256:eff4788d5d603b25c089ab923181a9a00828635ff4953285958395293c6661f6
+    expectedErrorCode: CQ_OE11_ENDPOINT_TYPE
+
+  - id: cq-oe11-self-edge-rejected
+    cqId: CQ-OE11
+    query: {orderIntentVersionIri: 'urn:order-intent:lineage-root:v0', pivot: *noon}
+    mutations:
+      - op: set
+        path: orderLineages[0].resultIntentVersionIris
+        value: [urn:order-intent:lineage-root:v0, urn:order-intent:lineage-split-a:v0]
+      - op: set
+        path: orderLineages[0].resultIntentVersionSetDigest
+        value: sha256:4b3033c5f89d3bbec7021a9ae01746081a0fc63cb357fd8944eabaf170efa598
+      - op: set
+        path: orderLineages[0].orderLineageKeyDigest
+        value: sha256:565e03e5b22c373bfc8e2d682cf9e56e42216ee1351d27b9f3a91122a6b51e84
+    expectedErrorCode: CQ_OE11_SELF_EDGE
+
+  - id: cq-oe11-cycle-rejected
+    cqId: CQ-OE11
+    query: {orderIntentVersionIri: 'urn:order-intent:lineage-root:v0', pivot: *noon}
+    mutations:
+      - op: set
+        path: orderLineages[1].sourceIntentVersionIris
+        value: [urn:order-intent:lineage-split-a:v0, urn:order-intent:lineage-split-b:v0]
+      - op: set
+        path: orderLineages[1].sourceIntentVersionSetDigest
+        value: sha256:4ca93700b0abefb4cf212f6781bbbf456f1761cbe51c5eae8be76efc0833d120
+      - op: set
+        path: orderLineages[1].resultIntentVersionIris
+        value: [urn:order-intent:lineage-root:v0]
+      - op: set
+        path: orderLineages[1].resultIntentVersionSetDigest
+        value: sha256:7ff9efe4cf5d6544100c9162c2b97ceca6d8d16ef0b6d9c22df54ef7014cbae9
+      - op: set
+        path: orderLineages[1].orderLineageKeyDigest
+        value: sha256:1f89847d9bb8c259f84334b91e9a78c207b2e1f7f6bcffae01c5b4db8e8c10c6
+    expectedErrorCode: CQ_OE11_CYCLE
+
+  - id: cq-oe11-duplicate-transformation-key-rejected
+    cqId: CQ-OE11
+    query: {orderIntentVersionIri: 'urn:order-intent:lineage-root:v0', pivot: *noon}
+    mutations:
+      - {op: set, path: 'orderLineages[1].kind', value: split}
+      - op: set
+        path: orderLineages[1].sourceIntentVersionIris
+        value: [urn:order-intent:lineage-root:v0]
+      - {op: set, path: 'orderLineages[1].sourceIntentCount', value: 1}
+      - op: set
+        path: orderLineages[1].sourceIntentVersionSetDigest
+        value: sha256:7ff9efe4cf5d6544100c9162c2b97ceca6d8d16ef0b6d9c22df54ef7014cbae9
+      - op: set
+        path: orderLineages[1].resultIntentVersionIris
+        value: [urn:order-intent:lineage-split-a:v0, urn:order-intent:lineage-split-b:v0]
+      - {op: set, path: 'orderLineages[1].resultIntentCount', value: 2}
+      - op: set
+        path: orderLineages[1].resultIntentVersionSetDigest
+        value: sha256:4ca93700b0abefb4cf212f6781bbbf456f1761cbe51c5eae8be76efc0833d120
+      - op: set
+        path: orderLineages[1].orderLineageKeyDigest
+        value: sha256:4d9544db53947930693432028b50703aa5133ee624ec3c2a4ac72d210d93e1eb
+    expectedErrorCode: CQ_OE11_DUPLICATE_KEY
+
+  - id: cq-oe11-duplicate-directed-edge-rejected
+    cqId: CQ-OE11
+    query: {orderIntentVersionIri: 'urn:order-intent:lineage-root:v0', pivot: *noon}
+    mutations:
+      - {op: set, path: 'orderLineages[1].kind', value: split}
+      - op: set
+        path: orderLineages[1].sourceIntentVersionIris
+        value: [urn:order-intent:lineage-root:v0]
+      - {op: set, path: 'orderLineages[1].sourceIntentCount', value: 1}
+      - op: set
+        path: orderLineages[1].sourceIntentVersionSetDigest
+        value: sha256:7ff9efe4cf5d6544100c9162c2b97ceca6d8d16ef0b6d9c22df54ef7014cbae9
+      - op: set
+        path: orderLineages[1].resultIntentVersionIris
+        value: [urn:order-intent:lineage-aggregate-result:v0, urn:order-intent:lineage-split-a:v0]
+      - {op: set, path: 'orderLineages[1].resultIntentCount', value: 2}
+      - op: set
+        path: orderLineages[1].resultIntentVersionSetDigest
+        value: sha256:36c07d49ce2eefd03764764dfaea89c19a7672e838a379b9add806c350599bdd
+      - op: set
+        path: orderLineages[1].orderLineageKeyDigest
+        value: sha256:4652968f1dd395979314fbabaf86ca850db4e096e802b50c23ce69857b905cd3
+    expectedErrorCode: CQ_OE11_DUPLICATE_EDGE
+
+  - id: cq-oe11-quantity-nonconservation-rejected
+    cqId: CQ-OE11
+    query: {orderIntentVersionIri: 'urn:order-intent:lineage-root:v0', pivot: *noon}
+    mutations:
+      - {op: set, path: 'intents[6].quantity.value', value: '59'}
+    expectedErrorCode: CQ_OE11_QUANTITY_CONSERVATION
+
+  - id: cq-oe11-instrument-mismatch-rejected
+    cqId: CQ-OE11
+    query: {orderIntentVersionIri: 'urn:order-intent:lineage-root:v0', pivot: *noon}
+    mutations:
+      - {op: set, path: 'intents[6].instrumentVersionIri', value: 'urn:instrument:bond-1:v0'}
+    expectedErrorCode: CQ_OE11_ENDPOINT_SEMANTICS
+
+  - id: cq-oe11-side-mismatch-rejected
+    cqId: CQ-OE11
+    query: {orderIntentVersionIri: 'urn:order-intent:lineage-root:v0', pivot: *noon}
+    mutations:
+      - {op: set, path: 'intents[6].side', value: Sell}
+    expectedErrorCode: CQ_OE11_ENDPOINT_SEMANTICS
+
+  - id: cq-oe11-quantity-unit-mismatch-rejected
+    cqId: CQ-OE11
+    query: {orderIntentVersionIri: 'urn:order-intent:lineage-root:v0', pivot: *noon}
+    mutations:
+      - {op: set, path: 'intents[6].quantity.unit', value: 'urn:unit:bond'}
+    expectedErrorCode: CQ_OE11_ENDPOINT_SEMANTICS
+
+  - id: cq-oe11-endpoint-not-pit-eligible-at-lineage-rejected
+    cqId: CQ-OE11
+    query: {orderIntentVersionIri: 'urn:order-intent:lineage-root:v0', pivot: *noon}
+    mutations:
+      - {op: set, path: 'intents[4].axes.knowledgeFrom', value: '2026-02-01T00:00:00Z'}
+      - {op: set, path: 'intents[4].axes.availableFrom', value: '2026-02-01T00:00:01Z'}
+    expectedErrorCode: CQ_OE11_ENDPOINT_PIT
+
+  - id: cq-oe11-runtime-reservation-state-rejected
+    cqId: CQ-OE11
+    query: {orderIntentVersionIri: 'urn:order-intent:lineage-root:v0', pivot: *noon}
+    mutations:
+      - {op: set, path: 'orderLineages[0].reservationId', value: runtime-reservation-1}
+    expectedErrorCode: CQ_OE11_FORBIDDEN_RUNTIME
+
+  - id: cq-pp1-unknown-account-type-rejected
+    cqId: CQ-PP1
+    query: {pivot: *noon}
+    mutations:
+      - {op: set, path: 'accounts[0].accountTypeMemberIri', value: 'urn:account-type:unreviewed'}
+    expectedErrorCode: CQ_PP1_ACCOUNT_TYPE
+
+  - id: cq-pp2-mandate-without-approval-rejected
+    cqId: CQ-PP2
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', pivot: *noon}
+    mutations:
+      - {op: delete, path: 'mandates[0].approvalDigest'}
+    expectedErrorCode: CQ_PP2_MANDATE_EVIDENCE
+
+  - id: cq-s3-negative-holding-rejected
+    cqId: CQ-S3
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', pivot: *noon}
+    mutations:
+      - {op: set, path: 'holdings[0].quantity.value', value: '-1'}
+    expectedErrorCode: CQ_QUANTITY_SIGN
+
+  - id: cq-pp5-mixed-currency-without-fx-rejected
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', targetCurrency: USD, pivot: *noon}
+    mutations:
+      - {op: delete, path: 'positionValuations[2].fxConversionVersionIri'}
+    expectedErrorCode: CQ_PP5_MISSING_FX
+
+  - id: cq-pp5-fx-arithmetic-mismatch-rejected
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', targetCurrency: USD, pivot: *noon}
+    mutations:
+      - {op: set, path: 'fxConversions[0].outputMoney.amount', value: '221'}
+    expectedErrorCode: CQ_PP5_FX_ARITHMETIC
+
+  - id: cq-pp5-line-outside-member-closure-rejected
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', targetCurrency: USD, pivot: *noon}
+    mutations:
+      - {op: set, path: 'positionValuations[0].accountVersionIri', value: 'urn:account:cash:v0'}
+    expectedErrorCode: CQ_PP5_MEMBER_CLOSURE
+
+  - id: cq-pp5-membership-closure-digest-mismatch-rejected
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', targetCurrency: USD, pivot: *noon}
+    mutations:
+      - op: set
+        path: membershipClosures[0].membershipVersionSetDigest
+        value: sha256:0000000000000000000000000000000000000000000000000000000000000000
+    expectedErrorCode: CQ_PP5_MEMBER_CLOSURE
+
+  - id: cq-pp5-conversion-rate-version-mismatch-rejected
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', targetCurrency: USD, pivot: *noon}
+    mutations:
+      - {op: set, path: 'fxConversions[0].rateVersionIri', value: 'urn:fx-rate:missing:v0'}
+    expectedErrorCode: CQ_PP5_FX_RATE
+
+  - id: cq-pp5-stored-market-value-is-not-a-calculation-input
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', pivot: *noon}
+    mutations:
+      - {op: set, path: 'positionValuations[0].marketValue.amount', value: '999'}
+    expectedErrorCode: CQ_PP5_VALUATION_ARITHMETIC
+
+  - id: cq-pp5-large-integer-does-not-collapse-through-double
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', pivot: *noon}
+    mutations:
+      - {op: set, path: 'holdings[0].quantity.value', value: '9007199254740993'}
+      - {op: set, path: 'priceObservations[0].priceValue.amount', value: '1'}
+      - {op: set, path: 'positionValuations[0].marketValue.amount', value: '9007199254740992'}
+    expectedErrorCode: CQ_PP5_VALUATION_ARITHMETIC
+
+  - id: cq-pp5-missing-exact-price-version-rejected
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', pivot: *noon}
+    mutations:
+      - {op: set, path: 'positionValuations[0].priceVersionIri', value: 'urn:price:missing:v0'}
+    expectedErrorCode: CQ_PP5_PRICE
+
+  - id: cq-pp5-price-not-pit-eligible-rejected
+    cqId: CQ-PP5
+    query:
+      portfolioLogicalIri: urn:portfolio:alpha
+      pivot:
+        asOfValid: '2026-07-31T11:58:00Z'
+        asOfKnowledge: '2026-07-31T11:58:00Z'
+        asOfAvailable: '2026-07-31T11:58:00Z'
+    mutations:
+      - {op: set, path: 'priceObservations[0].axes.availableFrom', value: '2026-07-31T11:59:00Z'}
+    expectedErrorCode: CQ_PP5_PRICE
+
+  - id: cq-pp5-missing-exact-quotation-version-rejected
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', pivot: *noon}
+    mutations:
+      - {op: set, path: 'priceObservations[0].quotationContractVersionIri', value: 'urn:quotation:missing:v0'}
+    expectedErrorCode: CQ_PP5_QUOTATION
+
+  - id: cq-pp5-missing-definition-policy-rejected
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', pivot: *noon}
+    mutations:
+      - {op: delete, path: 'valuationDefinitions[0].roundingPolicyRef'}
+    expectedErrorCode: CQ_PP5_POLICY
+
+  - id: cq-pp5-definition-quotation-set-digest-mismatch-rejected
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', pivot: *noon}
+    mutations:
+      - op: set
+        path: valuationDefinitions[0].quotationContractVersionSetDigest
+        value: sha256:0000000000000000000000000000000000000000000000000000000000000000
+    expectedErrorCode: CQ_PP5_VALUATION_DEFINITION
+
+  - id: cq-pp5-price-quotation-outside-definition-closure-rejected
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', pivot: *noon}
+    mutations:
+      - op: set
+        path: valuationDefinitions[0].quotationContractVersionIris
+        value: [urn:quotation:aapl-direct:v0]
+      - {op: set, path: 'valuationDefinitions[0].quotationContractCount', value: 1}
+      - op: set
+        path: valuationDefinitions[0].quotationContractVersionSetDigest
+        value: sha256:ba0f791608e4dbb7464521b879d5b02746995c1675458baa6e878261f0bc0f2d
+    expectedErrorCode: CQ_PP5_DEFINITION_QUOTATION
+
+  - id: cq-pp5-fx-missing-input-context-rejected
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', targetCurrency: USD, pivot: *noon}
+    mutations:
+      - {op: delete, path: 'fxConversions[0].inputContextRef'}
+    expectedErrorCode: CQ_PP5_FX_CONTEXT
+
+  - id: cq-pp5-fx-input-context-digest-mismatch-rejected
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', targetCurrency: USD, pivot: *noon}
+    mutations:
+      - op: set
+        path: fxConversions[0].inputContextRecordDigest
+        value: sha256:0000000000000000000000000000000000000000000000000000000000000000
+    expectedErrorCode: CQ_PP5_FX_CONTEXT
+
+  - id: cq-pp5-fx-inline-unversioned-rate-rejected
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', targetCurrency: USD, pivot: *noon}
+    mutations:
+      - {op: set, path: 'fxConversions[0].rate', value: '1.1'}
+    expectedErrorCode: CQ_PP5_FX_RATE
+
+  - id: cq-pp5-fx-reverse-consumer-mismatch-rejected
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', targetCurrency: USD, pivot: *noon}
+    mutations:
+      - {op: set, path: 'fxConversions[0].valuationLineVersionIri', value: 'urn:position-valuation:aapl-10:v0'}
+    expectedErrorCode: CQ_PP5_FX_CONSUMER
+
+  - id: cq-pp5-fx-not-pit-at-conversion-rejected
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', targetCurrency: USD, pivot: *noon}
+    mutations:
+      - {op: set, path: 'fxRates[0].axes.availableFrom', value: '2026-01-01T00:00:03Z'}
+    expectedErrorCode: CQ_PP5_FX_PIT
+
+  - id: cq-pp5-fx-policy-differs-from-definition-rejected
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', targetCurrency: USD, pivot: *noon}
+    mutations:
+      - op: set
+        path: fxConversions[0].roundingPolicyDigest
+        value: sha256:0000000000000000000000000000000000000000000000000000000000000000
+    expectedErrorCode: CQ_PP5_FX_POLICY
+
+  - id: cq-pp5-fx-rate-unit-orientation-rejected
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', targetCurrency: USD, pivot: *noon}
+    mutations:
+      - {op: set, path: 'fxRates[0].rate.unit', value: 'urn:unit:EUR-per-USD'}
+    expectedErrorCode: CQ_PP5_FX_RATE
+
+  - id: cq-pp5-non-terminating-division-must-follow-half-even-policy
+    cqId: CQ-PP5
+    query: {portfolioLogicalIri: 'urn:portfolio:alpha', targetCurrency: USD, pivot: *noon}
+    mutations:
+      - {op: set, path: 'fxRates[0].baseCurrency', value: USD}
+      - {op: set, path: 'fxRates[0].quoteCurrency', value: EUR}
+      - {op: set, path: 'fxRates[0].rate.value', value: '3'}
+      - {op: set, path: 'fxRates[0].rate.unit', value: 'urn:unit:EUR-per-USD'}
+      - {op: set, path: 'fxConversions[0].baseCurrency', value: USD}
+      - {op: set, path: 'fxConversions[0].quoteCurrency', value: EUR}
+      - {op: set, path: 'fxConversions[0].direction', value: quoteToBase}
+      - {op: set, path: 'fxConversions[0].outputMoney.amount', value: '66.666668'}
+      - {op: set, path: 'positionValuations[2].marketValue.amount', value: '66.666668'}
+    expectedErrorCode: CQ_PP5_FX_ARITHMETIC
+
+  - id: cq-temporal-more-than-nanosecond-precision-rejected
+    cqId: CQ-PP1
+    query: {pivot: *noon}
+    mutations:
+      - {op: set, path: 'accounts[0].axes.validFrom', value: '2026-01-01T00:00:00.0000000001Z'}
+    expectedErrorCode: CQ_TEMPORAL_LEXICAL
+
+  - id: cq-temporal-inline-knowledge-end-rejected
+    cqId: CQ-PP1
+    query: {pivot: *noon}
+    mutations:
+      - {op: set, path: 'accounts[0].axes.knowledgeTo', value: '2026-02-01T00:00:00Z'}
+    expectedErrorCode: CQ_TEMPORAL_INLINE_END
+
+  - id: cq-temporal-availability-before-knowledge-rejected
+    cqId: CQ-PP1
+    query: {pivot: *noon}
+    mutations:
+      - {op: set, path: 'accounts[0].axes.availableFrom', value: '2026-01-01T00:00:00Z'}
+    expectedErrorCode: CQ_TEMPORAL_AXIS_ORDER
+
+  - id: cq-provenance-scalar-locator-rejected
+    cqId: CQ-PP1
+    query: {pivot: *noon}
+    mutations:
+      - {op: set, path: 'accounts[0].provenance.sourceLocator', value: '/accounts/0'}
+    expectedErrorCode: CQ_PROVENANCE
+
+  - id: cq-provenance-artifact-binding-mismatch-rejected
+    cqId: CQ-PP1
+    query: {pivot: *noon}
+    mutations:
+      - op: set
+        path: artifactBindings[0].artifactDigest
+        value: sha256:0000000000000000000000000000000000000000000000000000000000000000
+    expectedErrorCode: CQ_PROVENANCE_BINDING

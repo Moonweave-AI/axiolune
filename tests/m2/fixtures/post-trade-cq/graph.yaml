@@ -1,0 +1,122 @@
+schemaVersion: '1.0'
+contract: axiolune-m2-cq-post-trade-manifest/v2
+referenceTime: '2026-07-31T00:00:00Z'
+module:
+  path: ontology/domain/finance/post-trade-operations/module.yaml
+  digest: sha256:21af48efd2ff1bf29a3618e4db08b8a3a5ab7ca5d2ce098df54238c4500b1b9e
+registry:
+  path: ontology/domain/finance/registry/module-registry.yaml
+  digest: sha256:55cd22ff39381102a84ebe077558489dfac67be993d63bbc1b9a4b4ea16b2bd0
+owl:
+  path: ontology/domain/finance/post-trade-operations/module.owl.ttl
+  digest: sha256:51226b417921a05d1204c4109d7f75dea7c5303e1c31732f763b8b7bbb88cbd8
+shacl:
+  path: ontology/domain/finance/post-trade-operations/module.shacl.ttl
+  digest: sha256:51e82638d6dad276691c6a7262e1bad9c9f4073cfeb1d2e092f30b15085e09d4
+semanticValidator:
+  path: scripts/domain/lib/post-trade-v03-contract.cjs
+  digest: sha256:8c716561cf49e408f176370bd4ac47561466017bf7984e511ac70cd366797c14
+coreValidator:
+  path: scripts/domain/validate-m2-core.js
+  digest: sha256:a5053ce413d73ed97c30ed86495365f10c0792a787069f386ebfada1e5668ac8
+pitValidator:
+  path: scripts/domain/validate-pit.cjs
+  digest: sha256:6541d598128912acf7450f6069e8a0b4561e108490894a81492ee5be49bf7085
+canonicalSource:
+  path: tests/m2/fixtures/positive/post-trade-closure-reconciliation.yaml
+  digest: sha256:8b018d0debf971b0510f5f39a31d453586f24f169b66f04e0221b9af555bd231
+implementation:
+  path: scripts/domain/lib/post-trade-cq.cjs
+  digest: sha256:a263df72b44407564673a1b9c29df98ad2bf8d50483fe3fb40b285e3cd903d7c
+oracleGenerator:
+  path: tests/m2/fixtures/post-trade-cq/generate-expected-ledger.cjs
+  digest: sha256:1c40a803c61e49f0390431bbe57b9c949f92445f00192f3dd795853a1ad0113e
+materializationRun:
+  path: tests/m2/fixtures/post-trade-cq/materialization-run.json
+  digest: sha256:978d3629769d480df311efc063fe1e453b2acb87c2939009b9ed06da39e04748
+pitLedger:
+  path: tests/m2/fixtures/post-trade-cq/pit-ledger.json
+  digest: sha256:6ab73cf254f3e64d91850eadfa0c2a8591a9048df10ae6f2e0e6421c605be9b2
+probeLedger:
+  path: tests/m2/fixtures/post-trade-cq/probe-ledger.json
+  digest: sha256:a050a10105256726d72a9bce9256747d6079bb44770520702c490c175a060b8f
+expectedLedger:
+  path: tests/m2/fixtures/post-trade-cq/expected-ledger.json
+  digest: sha256:8ee78b9364e50f15cfdb5975f61b706169fafb1fe69fafa98d76fd206d5680a4
+targets:
+  - id: pto1-cash-assessment
+    cqId: CQ-PTO1
+    role: assessment
+    eventVersionIri: https://example.test/fact/assessment/event/v1
+    scenarioIds:
+      - distribution-assessment-price-kind-and-input-identity
+    visibility:
+      valid:
+        from: '2026-05-08T11:59:00Z'
+        to: '2026-05-08T12:30:00Z'
+      knowledge:
+        from: '2026-05-08T12:00:30Z'
+        to: '2026-05-08T12:30:00Z'
+      available:
+        from: '2026-05-08T12:01:00Z'
+        to: '2026-05-08T12:30:00Z'
+  - id: pto1-due-bill-closure
+    cqId: CQ-PTO1
+    role: dueBill
+    eventVersionIri: https://example.test/fact/corporate-action/event/version/1
+    scenarioIds:
+      - due-bill-bilateral-empty-correction-partial-full
+    visibility:
+      valid:
+        from: '2026-05-11T00:00:00Z'
+      knowledge:
+        from: '2026-05-11T00:00:00Z'
+      available:
+        from: '2026-05-11T00:00:00Z'
+  - id: pto1-rights-closure
+    cqId: CQ-PTO1
+    role: rights
+    eventVersionIri: https://example.test/fact/corporate-action/rights-event/1/v1
+    scenarioIds:
+      - rights-election-subscription-adjustment-chain
+    visibility:
+      valid:
+        from: '2026-07-12T23:59:59Z'
+      knowledge:
+        from: '2026-07-13T00:00:00Z'
+      available:
+        from: '2026-07-13T00:00:00Z'
+  - id: pto2-dvp-economic-reconciliation
+    cqId: CQ-PTO2
+    role: settlementReconciliation
+    instructionVersionIri: https://example.test/fact/instruction/dvp/v1
+    reconciliationCaseVersionIri: https://example.test/fact/reconciliation/case/1/v1
+    executionVersionIris:
+      - https://example.test/fact/execution/dvp/v1
+    scenarioIds:
+      - settlement-dvp-fop-direct-omnibus-allocation
+      - economic-allocation-projection-and-closed-finding-matrix
+    visibility:
+      valid:
+        from: '2026-07-15T23:59:59Z'
+      knowledge:
+        from: '2026-07-16T00:00:00Z'
+      available:
+        from: '2026-07-16T00:01:00Z'
+  - id: pto2-fop-settlement-account-reconciliation
+    cqId: CQ-PTO2
+    role: settlementReconciliation
+    instructionVersionIri: https://example.test/fact/instruction/fop/v1
+    reconciliationCaseVersionIri: https://example.test/fact/reconciliation/case/settlement-account/v1
+    executionVersionIris:
+      - https://example.test/fact/execution/fop/v1
+    scenarioIds:
+      - settlement-dvp-fop-direct-omnibus-allocation
+      - settlement-account-security-cash-projection-and-status-history
+    visibility:
+      valid:
+        from: '2026-07-17T23:59:59Z'
+      knowledge:
+        from: '2026-07-18T00:00:00Z'
+      available:
+        from: '2026-07-18T00:01:00Z'

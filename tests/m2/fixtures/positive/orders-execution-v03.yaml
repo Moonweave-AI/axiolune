@@ -1,0 +1,482 @@
+fixtures:
+  - id: OE-POS-000-market-intent
+    contract: OrderIntentContract
+    expectedResult: accepted
+    instance:
+      account: https://axiolune.ai/accounts/ACC-1
+      instrument: https://axiolune.ai/instruments/AAPL
+      listingVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+      side: Buy
+      quantity: {value: "10", unit: urn:unit:share}
+      orderType: Market
+      timeInForce: IOC
+
+  - id: OE-POS-013-otc-limit-intent
+    contract: OrderIntentContract
+    expectedResult: accepted
+    instance:
+      account: https://axiolune.ai/accounts/ACC-OTC
+      instrument: https://axiolune.ai/instruments/BOND-1
+      otcContextVersionIri: https://axiolune.ai/otc/desk-1/version/v1
+      side: Sell
+      quantity: {value: "25", unit: urn:unit:bond}
+      orderType: Limit
+      timeInForce: GTC
+      limitPrice: {amount: "99.5", currency: USD}
+
+  - id: OE-POS-014-stop-intent-with-reviewed-trigger-basis
+    contract: OrderIntentContract
+    expectedResult: accepted
+    instance:
+      account: https://axiolune.ai/accounts/ACC-1
+      instrument: https://axiolune.ai/instruments/AAPL
+      listingVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+      side: Sell
+      quantity: {value: "5", unit: urn:unit:share}
+      orderType: Stop
+      timeInForce: GTC
+      triggerPrice: {amount: "95", currency: USD}
+      triggerPriceBasis: lastPrice
+
+  - id: OE-POS-001-required-classified
+    contract: LiquidityRoleDetermination
+    expectedResult: accepted
+    instance:
+      stream:
+        capability: required
+        sourceContractRef: https://evidence.axiolune.ai/contracts/order-events-v1
+        sourceContractDigest: sha256:9999999999999999999999999999999999999999999999999999999999999999
+      determination:
+        perspective: executionAccountOrder
+        result: classified
+        role: maker
+        sourceRecordRef: https://evidence.axiolune.ai/orders/record/100
+        sourceRecordDigest: sha256:8d86ce0bee38e325f4fed58b2e09f5df51a8707fd2ec94213a07fb56944e3f7a
+        rawFieldLocator: /liquidity
+        rawLexicalValue: M
+      mapping:
+        versionIri: https://axiolune.ai/mappings/liquidity/version/v1
+        sourceContractRef: https://evidence.axiolune.ai/contracts/order-events-v1
+        sourceContractDigest: sha256:9999999999999999999999999999999999999999999999999999999999999999
+        rawFieldLocator: /liquidity
+        rawPerspective: executionAccountOrder
+        perspectiveInversion: false
+        values:
+          M: maker
+          T: taker
+      sourceRecord:
+        liquidity: M
+
+  - id: OE-POS-002-optional-provider-not-specified
+    contract: LiquidityRoleDetermination
+    expectedResult: accepted
+    instance:
+      stream:
+        capability: optional
+        sourceContractRef: https://evidence.axiolune.ai/contracts/order-events-v1
+        sourceContractDigest: sha256:9999999999999999999999999999999999999999999999999999999999999999
+        rawFieldLocator: /liquidity
+      determination:
+        perspective: executionAccountOrder
+        result: unavailable
+        unavailableReason: providerNotSpecified
+        sourceRecordRef: https://evidence.axiolune.ai/orders/record/101
+        sourceRecordDigest: sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+        absenceProbe:
+          status: completed
+          result: true
+          rawFieldLocator: /liquidity
+          sourceRecordDigest: sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+      sourceRecord: {}
+
+  - id: OE-POS-003-contract-unsupported
+    contract: LiquidityRoleDetermination
+    expectedResult: accepted
+    instance:
+      stream:
+        capability: unsupported
+        sourceContractRef: https://evidence.axiolune.ai/contracts/order-events-v1
+        sourceContractDigest: sha256:9999999999999999999999999999999999999999999999999999999999999999
+      determination:
+        perspective: executionAccountOrder
+        result: unavailable
+        unavailableReason: contractUnsupported
+        sourceRecordRef: https://evidence.axiolune.ai/orders/record/102
+        sourceRecordDigest: sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+      sourceRecord: {}
+
+  - id: OE-POS-004-clean-event-stream
+    contract: OrderStreamIntegrity
+    expectedResult: accepted
+    instance:
+      streamVersionIri: https://axiolune.ai/orders/streams/clean/version/v1
+      events:
+        - versionIri: https://axiolune.ai/orders/events/accepted/version/v1
+          providerEventId: event-1
+          sourceOrderKey: 1
+          kind: Accepted
+          state: Accepted
+        - versionIri: https://axiolune.ai/orders/events/partial/version/v1
+          providerEventId: event-2
+          sourceOrderKey: 2
+          kind: PartiallyFilled
+          state: PartiallyFilled
+        - versionIri: https://axiolune.ai/orders/events/filled/version/v1
+          providerEventId: event-3
+          sourceOrderKey: 3
+          kind: Filled
+          state: Filled
+      findings: []
+
+  - id: OE-POS-005-explicit-sequence-gap
+    contract: OrderStreamIntegrity
+    expectedResult: accepted
+    instance:
+      streamVersionIri: https://axiolune.ai/orders/streams/gap/version/v1
+      events:
+        - versionIri: https://axiolune.ai/orders/events/submitted/version/v1
+          providerEventId: event-1
+          sourceOrderKey: 1
+          kind: Submitted
+          state: Submitted
+        - versionIri: https://axiolune.ai/orders/events/accepted/version/v1
+          providerEventId: event-3
+          sourceOrderKey: 3
+          kind: Accepted
+          state: Accepted
+      findings:
+        - kind: sequenceGap
+          findingVersionIri: https://axiolune.ai/orders/findings/gap-2-3/version/v1
+          findingStreamVersionIri: https://axiolune.ai/orders/streams/gap/version/v1
+          findingSubject: {missingFrom: 2, missingTo: 3}
+          affectedKeyDigest: sha256:c5babca391d8a795a6f7281e3c8f8aefcab1e8d45b259c30b32715d771e53cc9
+          relatedVersionIris:
+            - https://axiolune.ai/orders/events/submitted/version/v1
+            - https://axiolune.ai/orders/events/accepted/version/v1
+          relatedVersionSetDigest: sha256:05ef0091139532748a045c553231ec650835986b224db3145fc841ff54d451a9
+          validFrom: "2026-01-01T00:00:00Z"
+          knowledgeFrom: "2026-01-01T00:00:01Z"
+          availableFrom: "2026-01-01T00:00:02Z"
+          revision: 0
+          generatingContextRef: https://axiolune.ai/tests/m2/runs/orders-portfolio-v03
+
+  - id: OE-POS-015-byte-identical-provider-retry
+    contract: OrderStreamIntegrity
+    expectedResult: accepted
+    instance:
+      streamVersionIri: https://axiolune.ai/orders/streams/retry/version/v1
+      events:
+        - versionIri: https://axiolune.ai/orders/events/retry/version/v1
+          providerEventId: retry-1
+          sourceOrderKey: 7
+          observedAt: "2026-01-01T00:00:00Z"
+          kind: Accepted
+          state: Accepted
+        - versionIri: https://axiolune.ai/orders/events/retry/version/v1
+          providerEventId: retry-1
+          sourceOrderKey: 7
+          observedAt: "2026-01-01T00:00:00Z"
+          kind: Accepted
+          state: Accepted
+      findings: []
+
+  - id: OE-POS-010-duplicate-out-of-order-late-fill-findings
+    contract: OrderStreamIntegrity
+    expectedResult: accepted
+    instance:
+      streamVersionIri: https://axiolune.ai/orders/streams/multi-finding/version/v1
+      events:
+        - versionIri: https://axiolune.ai/orders/events/terminal/version/v1
+          providerEventId: terminal-1
+          sourceOrderKey: 2
+          kind: Canceled
+          state: Canceled
+        - versionIri: https://axiolune.ai/orders/executions/late-fill/version/v1
+          providerEventId: fill-1
+          sourceOrderKey: 1
+          kind: Filled
+          state: Filled
+        - versionIri: https://axiolune.ai/orders/events/duplicate-a/version/v1
+          providerEventId: duplicate-1
+          sourceOrderKey: 3
+          kind: Accepted
+          state: Accepted
+        - versionIri: https://axiolune.ai/orders/events/duplicate-b/version/v1
+          providerEventId: duplicate-1
+          sourceOrderKey: 3
+          kind: Rejected
+          state: Rejected
+      findings:
+        - kind: outOfOrder
+          findingVersionIri: https://axiolune.ai/orders/findings/out-of-order-1-2/version/v1
+          findingStreamVersionIri: https://axiolune.ai/orders/streams/multi-finding/version/v1
+          findingSubject: {observedKey: 1, requiredPredecessorKey: 2}
+          affectedKeyDigest: sha256:9f30c3c27a8e313cd6310fc43501f085d53188438e1e56a8e68917af349907cf
+          relatedVersionIris:
+            - https://axiolune.ai/orders/executions/late-fill/version/v1
+            - https://axiolune.ai/orders/events/terminal/version/v1
+          relatedVersionSetDigest: sha256:822c211baed42669e0d430aa6e5162f0e2405c0336ae47a156ab2924de7219d7
+          validFrom: "2026-01-01T00:00:00Z"
+          knowledgeFrom: "2026-01-01T00:00:01Z"
+          availableFrom: "2026-01-01T00:00:02Z"
+          revision: 0
+          generatingContextRef: https://axiolune.ai/tests/m2/runs/orders-portfolio-v03
+        - kind: lateFill
+          findingVersionIri: https://axiolune.ai/orders/findings/late-fill/version/v1
+          findingStreamVersionIri: https://axiolune.ai/orders/streams/multi-finding/version/v1
+          findingSubject:
+            fillVersionIri: https://axiolune.ai/orders/executions/late-fill/version/v1
+            terminalEventVersionIri: https://axiolune.ai/orders/events/terminal/version/v1
+          affectedKeyDigest: sha256:e8a23c563d840934fbb3c54835351900f9ddb013e3fe0256d96de76443dd2fa3
+          relatedVersionIris:
+            - https://axiolune.ai/orders/executions/late-fill/version/v1
+            - https://axiolune.ai/orders/events/terminal/version/v1
+          relatedVersionSetDigest: sha256:822c211baed42669e0d430aa6e5162f0e2405c0336ae47a156ab2924de7219d7
+          validFrom: "2026-01-01T00:00:00Z"
+          knowledgeFrom: "2026-01-01T00:00:01Z"
+          availableFrom: "2026-01-01T00:00:02Z"
+          revision: 0
+          generatingContextRef: https://axiolune.ai/tests/m2/runs/orders-portfolio-v03
+        - kind: duplicateConflict
+          findingVersionIri: https://axiolune.ai/orders/findings/duplicate-1/version/v1
+          findingStreamVersionIri: https://axiolune.ai/orders/streams/multi-finding/version/v1
+          findingSubject: {providerEventId: duplicate-1}
+          affectedKeyDigest: sha256:105868c090bbd05094edba025fba38d9cb3b11cf34f60638e39ec53a3aea1aa5
+          relatedVersionIris:
+            - https://axiolune.ai/orders/events/duplicate-a/version/v1
+            - https://axiolune.ai/orders/events/duplicate-b/version/v1
+          relatedVersionSetDigest: sha256:d746aa44c61eb6c0b7369ccddce95384b5750aa190395eb7e899a058d145bf00
+          validFrom: "2026-01-01T00:00:00Z"
+          knowledgeFrom: "2026-01-01T00:00:01Z"
+          availableFrom: "2026-01-01T00:00:02Z"
+          revision: 0
+          generatingContextRef: https://axiolune.ai/tests/m2/runs/orders-portfolio-v03
+
+  - id: OE-POS-011-missing-acknowledgement-finding
+    contract: OrderStreamIntegrity
+    expectedResult: accepted
+    instance:
+      streamVersionIri: https://axiolune.ai/orders/streams/missing-ack/version/v1
+      events:
+        - versionIri: https://axiolune.ai/orders/events/submitted-only/version/v1
+          providerEventId: submitted-only
+          sourceOrderKey: 1
+          kind: Submitted
+          state: Submitted
+      acknowledgementExpectation:
+        externalOrderVersionIri: https://axiolune.ai/orders/external/no-ack/version/v1
+        expectedAfterSourceOrderKey: 1
+        requiredEventKind: Accepted
+      findings:
+        - kind: missingAcknowledgement
+          findingVersionIri: https://axiolune.ai/orders/findings/missing-ack/version/v1
+          findingStreamVersionIri: https://axiolune.ai/orders/streams/missing-ack/version/v1
+          findingSubject:
+            externalOrderVersionIri: https://axiolune.ai/orders/external/no-ack/version/v1
+            expectedAfterKey: 1
+          affectedKeyDigest: sha256:e51bd08510cbdf363dc85873f3fe9d179775822245b4cddf34db3470479e6273
+          relatedVersionIris:
+            - https://axiolune.ai/orders/external/no-ack/version/v1
+            - https://axiolune.ai/orders/events/submitted-only/version/v1
+          relatedVersionSetDigest: sha256:753650726f307c03dc0fb647a6c0b297b405323dedd672b276ac66ff79b0eb71
+          validFrom: "2026-01-01T00:00:00Z"
+          knowledgeFrom: "2026-01-01T00:00:01Z"
+          availableFrom: "2026-01-01T00:00:02Z"
+          revision: 0
+          generatingContextRef: https://axiolune.ai/tests/m2/runs/orders-portfolio-v03
+
+  - id: OE-POS-012-transition-violation-finding
+    contract: OrderStreamIntegrity
+    expectedResult: accepted
+    instance:
+      streamVersionIri: https://axiolune.ai/orders/streams/transition/version/v1
+      events:
+        - versionIri: https://axiolune.ai/orders/events/accepted-transition/version/v1
+          providerEventId: transition-1
+          sourceOrderKey: 1
+          kind: Accepted
+          state: Accepted
+        - versionIri: https://axiolune.ai/orders/events/filled-transition/version/v1
+          providerEventId: transition-2
+          sourceOrderKey: 2
+          kind: Filled
+          state: Filled
+      transitionProfile:
+        versionIri: https://axiolune.ai/orders/transition-profiles/broker-1/version/v1
+        allowedTransitions:
+          Accepted: [PartiallyFilled, Canceled]
+      findings:
+        - kind: transitionViolation
+          findingVersionIri: https://axiolune.ai/orders/findings/transition-violation/version/v1
+          findingStreamVersionIri: https://axiolune.ai/orders/streams/transition/version/v1
+          findingSubject:
+            fromEventVersionIri: https://axiolune.ai/orders/events/accepted-transition/version/v1
+            toEventVersionIri: https://axiolune.ai/orders/events/filled-transition/version/v1
+            transitionProfileVersionIri: https://axiolune.ai/orders/transition-profiles/broker-1/version/v1
+          affectedKeyDigest: sha256:30a04e5d77a3f98ca5ffc2284a6082fe31f4778cea66a1d1de47e8b15165d960
+          relatedVersionIris:
+            - https://axiolune.ai/orders/events/accepted-transition/version/v1
+            - https://axiolune.ai/orders/events/filled-transition/version/v1
+            - https://axiolune.ai/orders/transition-profiles/broker-1/version/v1
+          relatedVersionSetDigest: sha256:02652769602d99ca673c2c26b4b24c4b8fed349b4053607fbdb248d9bb088c34
+          validFrom: "2026-01-01T00:00:00Z"
+          knowledgeFrom: "2026-01-01T00:00:01Z"
+          availableFrom: "2026-01-01T00:00:02Z"
+          revision: 0
+          generatingContextRef: https://axiolune.ai/tests/m2/runs/orders-portfolio-v03
+
+  - id: OE-POS-006-listed-execution
+    contract: ExecutionContract
+    expectedResult: accepted
+    instance:
+      streamVersionIri: https://axiolune.ai/orders/streams/1/version/v1
+      externalOrderVersionIri: https://axiolune.ai/orders/external/1/version/v1
+      orderIntentVersionIri: https://axiolune.ai/orders/intents/1/version/v1
+      account: https://axiolune.ai/accounts/ACC-1
+      executionParty: https://axiolune.ai/parties/investor-1
+      contraAccount: https://axiolune.ai/accounts/CONTRA-1
+      contraParty: https://axiolune.ai/parties/contra-1
+      instrument: https://axiolune.ai/instruments/AAPL
+      listingVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+      side: Buy
+      quantity: {value: "10", unit: urn:unit:share}
+      price: {amount: "100", currency: USD}
+      quotation:
+        versionIri: https://axiolune.ai/quotations/XNAS-AAPL/version/v1
+        contextVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+        instrument: https://axiolune.ai/instruments/AAPL
+        quoteCurrency: USD
+        denominatorUnit: urn:unit:share
+
+  - id: OE-POS-007-otc-execution
+    contract: ExecutionContract
+    expectedResult: accepted
+    instance:
+      streamVersionIri: https://axiolune.ai/orders/streams/2/version/v1
+      externalOrderVersionIri: https://axiolune.ai/orders/external/2/version/v1
+      orderIntentVersionIri: https://axiolune.ai/orders/intents/2/version/v1
+      account: https://axiolune.ai/accounts/ACC-2
+      executionParty: https://axiolune.ai/parties/investor-2
+      contraAccount: https://axiolune.ai/accounts/CONTRA-2
+      contraParty: https://axiolune.ai/parties/contra-2
+      instrument: https://axiolune.ai/instruments/BOND-1
+      otcContextVersionIri: https://axiolune.ai/otc/desk-1/version/v1
+      side: Sell
+      quantity: {value: "5", unit: urn:unit:bond}
+      price: {amount: "99.5", currency: USD}
+      quotation:
+        versionIri: https://axiolune.ai/quotations/BOND-1/version/v1
+        contextVersionIri: https://axiolune.ai/otc/desk-1/version/v1
+        instrument: https://axiolune.ai/instruments/BOND-1
+        quoteCurrency: USD
+        denominatorUnit: urn:unit:bond
+
+  - id: OE-POS-008-positive-rebate-fee
+    contract: FeeContract
+    expectedResult: accepted
+    instance:
+      executionVersionIri: https://axiolune.ai/orders/executions/1/version/v1
+      kind: exchange
+      effect: rebate
+      amount: {amount: "0.25", currency: USD}
+
+  - id: OE-POS-009-reviewed-status-mapping
+    contract: ExternalOrderStatusMapping
+    expectedResult: accepted
+    instance:
+      publicName: ExternalOrderStatusMapping
+      provider: https://axiolune.ai/parties/broker-1
+      apiIdentifier: broker-orders-v2
+      schemaVersion: "2.3"
+      mappingVersion: "1.0.0"
+      rawCode: PARTIALLY_FILLED
+      canonicalTargets: [PartiallyFilled]
+      validFrom: "2026-01-01T00:00:00Z"
+      sourceRef: https://evidence.axiolune.ai/broker-1/status-schema
+      sourceDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+      reviewRef: https://evidence.axiolune.ai/reviews/broker-1-status-v1
+      reviewDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+
+  - id: OE-POS-020-immutable-split-and-aggregation-lineage
+    contract: OrderIntentLineageContract
+    expectedResult: accepted
+    instance:
+      focusVersionIri: https://axiolune.ai/orders/lineages/split-a-bc/version/v1
+      intents:
+        - type: OrderIntent
+          versionIri: https://axiolune.ai/orders/intents/lineage-a/version/v1
+          instrument: https://axiolune.ai/instruments/AAPL
+          side: Buy
+          quantity: {value: "100", unit: urn:unit:share}
+          validFrom: "2026-01-01T00:00:00Z"
+          knowledgeFrom: "2026-01-01T00:00:01Z"
+          availableFrom: "2026-01-01T00:00:02Z"
+        - type: OrderIntent
+          versionIri: https://axiolune.ai/orders/intents/lineage-b/version/v1
+          instrument: https://axiolune.ai/instruments/AAPL
+          side: Buy
+          quantity: {value: "40", unit: urn:unit:share}
+          validFrom: "2026-01-01T00:00:03Z"
+          knowledgeFrom: "2026-01-01T00:00:04Z"
+          availableFrom: "2026-01-01T00:00:05Z"
+        - type: OrderIntent
+          versionIri: https://axiolune.ai/orders/intents/lineage-c/version/v1
+          instrument: https://axiolune.ai/instruments/AAPL
+          side: Buy
+          quantity: {value: "60", unit: urn:unit:share}
+          validFrom: "2026-01-01T00:00:03Z"
+          knowledgeFrom: "2026-01-01T00:00:04Z"
+          availableFrom: "2026-01-01T00:00:05Z"
+        - type: OrderIntent
+          versionIri: https://axiolune.ai/orders/intents/lineage-d/version/v1
+          instrument: https://axiolune.ai/instruments/AAPL
+          side: Buy
+          quantity: {value: "20", unit: urn:unit:share}
+          validFrom: "2026-01-01T00:00:03Z"
+          knowledgeFrom: "2026-01-01T00:00:04Z"
+          availableFrom: "2026-01-01T00:00:05Z"
+        - type: OrderIntent
+          versionIri: https://axiolune.ai/orders/intents/lineage-e/version/v1
+          instrument: https://axiolune.ai/instruments/AAPL
+          side: Buy
+          quantity: {value: "60", unit: urn:unit:share}
+          validFrom: "2026-01-01T00:00:06Z"
+          knowledgeFrom: "2026-01-01T00:00:07Z"
+          availableFrom: "2026-01-01T00:00:08Z"
+      lineages:
+        - versionIri: https://axiolune.ai/orders/lineages/split-a-bc/version/v1
+          kind: split
+          sourceIntentVersionIris:
+            - https://axiolune.ai/orders/intents/lineage-a/version/v1
+          sourceIntentCount: 1
+          sourceIntentVersionSetDigest: sha256:938d7707de78dc377f56e33ac73adc3d6ad1feff25a694bcdcf9dbfbf87e0152
+          resultIntentVersionIris:
+            - https://axiolune.ai/orders/intents/lineage-b/version/v1
+            - https://axiolune.ai/orders/intents/lineage-c/version/v1
+          resultIntentCount: 2
+          resultIntentVersionSetDigest: sha256:948a17873ba073ca3f73edf4e8ae7d363917f91c9afa97b5d2ba855f6dcaf439
+          orderLineageKeyDigest: sha256:cb29e2ea680f6e6831c09e72571d41bf1880f361881bd11befce17db6b2d1ba1
+          validFrom: "2026-01-01T00:00:03Z"
+          knowledgeFrom: "2026-01-01T00:00:06Z"
+          availableFrom: "2026-01-01T00:00:06Z"
+          sourceArtifactRef: https://evidence.axiolune.ai/orders/router/run-1
+          sourceArtifactDigest: sha256:7777777777777777777777777777777777777777777777777777777777777777
+          sourceLocator: $.routingTransformations[0]
+        - versionIri: https://axiolune.ai/orders/lineages/aggregate-bd-e/version/v1
+          kind: aggregation
+          sourceIntentVersionIris:
+            - https://axiolune.ai/orders/intents/lineage-b/version/v1
+            - https://axiolune.ai/orders/intents/lineage-d/version/v1
+          sourceIntentCount: 2
+          sourceIntentVersionSetDigest: sha256:7aa6aa47f66818fdbcd73e8992494d6249069bd8356e98ca2eea08603dc97f7d
+          resultIntentVersionIris:
+            - https://axiolune.ai/orders/intents/lineage-e/version/v1
+          resultIntentCount: 1
+          resultIntentVersionSetDigest: sha256:1f10d240d04c8c4d7694d7931862339da0f99126fb7e3bf646ed18c8d8e1962c
+          orderLineageKeyDigest: sha256:ddb3d260cd431674a78a23063a63f332b6f7b5aa3f080b68f282f1cdd465a507
+          validFrom: "2026-01-01T00:00:06Z"
+          knowledgeFrom: "2026-01-01T00:00:09Z"
+          availableFrom: "2026-01-01T00:00:09Z"
+          sourceArtifactRef: https://evidence.axiolune.ai/orders/router/run-2
+          sourceArtifactDigest: sha256:8888888888888888888888888888888888888888888888888888888888888888
+          sourceLocator: $.routingTransformations[1]

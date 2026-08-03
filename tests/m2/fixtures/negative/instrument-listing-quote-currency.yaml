@@ -1,0 +1,186 @@
+schemaVersion: "1.0"
+contract: https://axiolune.ai/tests/m2/contracts/instrument-listing-quote-currency
+cases:
+  - id: listing-currency-missing
+    expectedResult: rejected
+    expectedViolation: listingQuoteCurrency-cardinality
+    registryEntries: []
+    listingVersions:
+      - logicalIri: https://axiolune.ai/data/listing/MISSING
+        versionIri: https://axiolune.ai/data/listing/MISSING/version/sha256-1
+        listingQuoteCurrency: []
+        validFrom: "2026-01-01T00:00:00Z"
+        knowledgeFrom: "2026-01-01T00:00:00Z"
+        availableFrom: "2026-01-01T00:00:00Z"
+        revision: 0
+        source:
+          artifactRef: https://axiolune.ai/evidence/listing/missing
+          artifactDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          locator:
+            kind: textLineRange
+            path: listings.csv
+            mediaType: text/csv
+            extractorProfileRef: https://axiolune.ai/tool/source-extractor/csv-lines-v1
+            extractorProfileDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+            selectionDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+            startLine: 1
+            endLine: 1
+
+  - id: listing-currency-multiple
+    expectedResult: rejected
+    expectedViolation: listingQuoteCurrency-cardinality
+    registryEntries: []
+    listingVersions:
+      - logicalIri: https://axiolune.ai/data/listing/MULTIPLE
+        versionIri: https://axiolune.ai/data/listing/MULTIPLE/version/sha256-1
+        listingQuoteCurrency:
+          - https://axiolune.ai/data/currency/USD
+          - https://axiolune.ai/data/currency/CAD
+        validFrom: "2026-01-01T00:00:00Z"
+        knowledgeFrom: "2026-01-01T00:00:00Z"
+        availableFrom: "2026-01-01T00:00:00Z"
+        revision: 0
+        source:
+          artifactRef: https://axiolune.ai/evidence/listing/multiple
+          artifactDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          locator:
+            kind: textLineRange
+            path: listings.csv
+            mediaType: text/csv
+            extractorProfileRef: https://axiolune.ai/tool/source-extractor/csv-lines-v1
+            extractorProfileDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+            selectionDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+            startLine: 2
+            endLine: 2
+
+  - id: listing-currency-literal-substitute
+    expectedResult: rejected
+    expectedViolation: listingQuoteCurrency-not-iri
+    registryEntries: []
+    listingVersions:
+      - logicalIri: https://axiolune.ai/data/listing/LITERAL
+        versionIri: https://axiolune.ai/data/listing/LITERAL/version/sha256-1
+        listingQuoteCurrency:
+          - USD
+        validFrom: "2026-01-01T00:00:00Z"
+        knowledgeFrom: "2026-01-01T00:00:00Z"
+        availableFrom: "2026-01-01T00:00:00Z"
+        revision: 0
+        source:
+          artifactRef: https://axiolune.ai/evidence/listing/literal
+          artifactDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          locator:
+            kind: textLineRange
+            path: listings.csv
+            mediaType: text/csv
+            extractorProfileRef: https://axiolune.ai/tool/source-extractor/csv-lines-v1
+            extractorProfileDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+            selectionDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+            startLine: 3
+            endLine: 3
+
+  - id: listing-currency-no-pit-registry-entry
+    expectedResult: rejected
+    expectedViolation: listingQuoteCurrency-registry-closure
+    registryEntries:
+      - currency: https://axiolune.ai/data/currency/USD
+        alphaCode: USD
+        pitEligible: false
+    listingVersions:
+      - logicalIri: https://axiolune.ai/data/listing/NO-REGISTRY
+        versionIri: https://axiolune.ai/data/listing/NO-REGISTRY/version/sha256-1
+        listingQuoteCurrency:
+          - https://axiolune.ai/data/currency/USD
+        validFrom: "2026-01-01T00:00:00Z"
+        knowledgeFrom: "2026-01-01T00:00:00Z"
+        availableFrom: "2026-01-01T00:00:00Z"
+        revision: 0
+        source:
+          artifactRef: https://axiolune.ai/evidence/listing/no-registry
+          artifactDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          locator:
+            kind: textLineRange
+            path: listings.csv
+            mediaType: text/csv
+            extractorProfileRef: https://axiolune.ai/tool/source-extractor/csv-lines-v1
+            extractorProfileDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+            selectionDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+            startLine: 4
+            endLine: 4
+
+  - id: listing-currency-concurrent-conflict
+    expectedResult: rejected
+    expectedViolation: listingQuoteCurrency-current-version-conflict
+    pivot:
+      asOfValid: "2026-07-01T12:00:00Z"
+      asOfKnowledge: "2026-07-01T12:00:00Z"
+      asOfAvailable: "2026-07-01T12:00:00Z"
+    registryEntries:
+      - currency: https://axiolune.ai/data/currency/USD
+        alphaCode: USD
+        pitEligible: true
+      - currency: https://axiolune.ai/data/currency/CAD
+        alphaCode: CAD
+        pitEligible: true
+    listingVersions:
+      - logicalIri: https://axiolune.ai/data/listing/CONFLICT
+        versionIri: https://axiolune.ai/data/listing/CONFLICT/version/sha256-1
+        listingQuoteCurrency:
+          - https://axiolune.ai/data/currency/USD
+        validFrom: "2026-01-01T00:00:00Z"
+        knowledgeFrom: "2026-01-01T00:00:00Z"
+        availableFrom: "2026-01-01T00:00:00Z"
+        revision: 0
+        source:
+          artifactRef: https://axiolune.ai/evidence/listing/conflict-a
+          artifactDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          locator:
+            kind: textLineRange
+            path: listings.csv
+            mediaType: text/csv
+            extractorProfileRef: https://axiolune.ai/tool/source-extractor/csv-lines-v1
+            extractorProfileDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+            selectionDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+            startLine: 5
+            endLine: 5
+      - logicalIri: https://axiolune.ai/data/listing/CONFLICT
+        versionIri: https://axiolune.ai/data/listing/CONFLICT/version/sha256-2
+        listingQuoteCurrency:
+          - https://axiolune.ai/data/currency/CAD
+        validFrom: "2026-01-01T00:00:00Z"
+        knowledgeFrom: "2026-02-01T00:00:00Z"
+        availableFrom: "2026-02-01T00:00:00Z"
+        revision: 1
+        source:
+          artifactRef: https://axiolune.ai/evidence/listing/conflict-b
+          artifactDigest: sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+          locator:
+            kind: textLineRange
+            path: listings.csv
+            mediaType: text/csv
+            extractorProfileRef: https://axiolune.ai/tool/source-extractor/csv-lines-v1
+            extractorProfileDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+            selectionDigest: sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+            startLine: 6
+            endLine: 6
+
+  - id: listing-currency-plain-source-selector
+    expectedResult: rejected
+    expectedViolation: listingQuoteCurrency-source-closure
+    registryEntries:
+      - currency: https://axiolune.ai/data/currency/USD
+        alphaCode: USD
+        pitEligible: true
+    listingVersions:
+      - logicalIri: https://axiolune.ai/data/listing/PLAIN-LOCATOR
+        versionIri: https://axiolune.ai/data/listing/PLAIN-LOCATOR/version/sha256-1
+        listingQuoteCurrency:
+          - https://axiolune.ai/data/currency/USD
+        validFrom: "2026-01-01T00:00:00Z"
+        knowledgeFrom: "2026-01-01T00:00:00Z"
+        availableFrom: "2026-01-01T00:00:00Z"
+        revision: 0
+        source:
+          artifactRef: https://axiolune.ai/evidence/listing/plain-locator
+          artifactDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          locator: listings.csv#row=7

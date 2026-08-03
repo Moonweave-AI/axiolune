@@ -1,218 +1,57 @@
-# fin-orders-execution — Positive Test Fixtures
-# Validates correct order lifecycle, execution, and external status mapping
+schemaVersion: "1.0"
 fixtures:
-  - id: orders-positive-001
-    description: 'Complete order lifecycle: Initialized → Submitted → Accepted → Filled'
-    type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-    instances:
-      - iri: https://axiolune.ai/data/test/order-intent-001
-        type: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
-        hasOrderSide: Buy
-        hasOrderType: Limit
-        hasTimeInForce: GTC
-        hasOrderQuantity:
-          type: QuantityValue
-          hasNumericAmount: '100'
-          hasUnitCode: share
-        hasLimitPrice:
-          type: MonetaryAmount
-          hasNumericAmount: '150'
-          hasCurrencyCode: USD
-        validFrom: '2026-07-25T09:30:00Z'
-        knowledgeFrom: '2026-07-25T09:30:00Z'
-        availableFrom: '2026-07-25T09:30:01Z'
-        intentsInstrument: https://axiolune.ai/data/test/instrument-AAPL
-      - iri: https://axiolune.ai/data/test/order-event-001-init
-        type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-        transitionsOrder: https://axiolune.ai/data/test/order-intent-001
-        hasLifecycleState: Initialized
-        validFrom: '2026-07-25T09:30:00Z'
-        knowledgeFrom: '2026-07-25T09:30:00Z'
-        availableFrom: '2026-07-25T09:30:01Z'
-      - iri: https://axiolune.ai/data/test/order-event-001-submitted
-        type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-        transitionsOrder: https://axiolune.ai/data/test/order-intent-001
-        hasLifecycleState: Submitted
-        hasPreviousState: Initialized
-        validFrom: '2026-07-25T09:30:05Z'
-        knowledgeFrom: '2026-07-25T09:30:05Z'
-        availableFrom: '2026-07-25T09:30:06Z'
-      - iri: https://axiolune.ai/data/test/order-event-001-accepted
-        type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-        transitionsOrder: https://axiolune.ai/data/test/order-intent-001
-        hasLifecycleState: Accepted
-        hasPreviousState: Submitted
-        hasExternalOrderId: VENUE-ORD-12345
-        validFrom: '2026-07-25T09:30:10Z'
-        knowledgeFrom: '2026-07-25T09:30:10Z'
-        availableFrom: '2026-07-25T09:30:11Z'
-      - iri: https://axiolune.ai/data/test/order-event-001-filled
-        type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-        transitionsOrder: https://axiolune.ai/data/test/order-intent-001
-        hasLifecycleState: Filled
-        hasPreviousState: Accepted
-        hasExternalOrderId: VENUE-ORD-12345
-        validFrom: '2026-07-25T09:35:22Z'
-        knowledgeFrom: '2026-07-25T09:35:23Z'
-        availableFrom: '2026-07-25T09:35:24Z'
+  - id: orders-v03-positive-intent-listed
+    description: Canonical listed OrderIntent with typed code members and M3 QuantityValue.
+    profile: orders-execution-v03-shacl
+    target: OrderIntent
+    context: listed
     expectedResult: accepted
-  - id: orders-positive-002
-    description: 'Execution with complete traceability: order → execution → instrument → venue'
-    type: https://axiolune.ai/ontology/finance/orders-execution/Execution
-    instance:
-      iri: https://axiolune.ai/data/test/execution-001
-      type: https://axiolune.ai/ontology/finance/orders-execution/Execution
-      executesOrder: https://axiolune.ai/data/test/order-intent-001
-      executedInstrument: https://axiolune.ai/data/test/instrument-AAPL
-      executedAtVenue: https://axiolune.ai/data/test/venue-XNAS
-      hasOrderSide: Buy
-      hasExecutionPrice:
-        type: MonetaryAmount
-        hasNumericAmount: '149.95'
-        hasCurrencyCode: USD
-      hasExecutionQuantity:
-        type: QuantityValue
-        hasNumericAmount: '100'
-        hasUnitCode: share
-      hasCommission:
-        type: MonetaryAmount
-        hasNumericAmount: '1.5'
-        hasCurrencyCode: USD
-      hasLiquiditySide: Taker
-      validFrom: '2026-07-25T09:35:22Z'
-      knowledgeFrom: '2026-07-25T09:35:23Z'
-      availableFrom: '2026-07-25T09:35:24Z'
-      source: venue-trade-report
-      sourceRevision: '1'
+
+  - id: orders-v03-positive-intent-otc
+    description: Canonical OTC OrderIntent selects the OTC branch and no listing branch.
+    profile: orders-execution-v03-shacl
+    target: OrderIntent
+    context: otc
     expectedResult: accepted
-    note: 'CQ-OE4 traceability: execution → order → instrument → venue. Cost basis = (149.95 × 100) + 1.50 = 15,996.50'
-  - id: orders-positive-003
-    description: 'Order rejection: Initialized → Submitted → Rejected'
-    type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-    instances:
-      - iri: https://axiolune.ai/data/test/order-intent-003
-        type: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
-        hasOrderSide: Buy
-        hasOrderType: Market
-        hasTimeInForce: IOC
-        hasOrderQuantity:
-          type: QuantityValue
-          hasNumericAmount: '10000'
-          hasUnitCode: share
-        validFrom: '2026-07-25T11:00:00Z'
-        knowledgeFrom: '2026-07-25T11:00:00Z'
-        availableFrom: '2026-07-25T11:00:01Z'
-        intentsInstrument: https://axiolune.ai/data/test/instrument-AAPL
-      - iri: https://axiolune.ai/data/test/order-event-003-init
-        type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-        transitionsOrder: https://axiolune.ai/data/test/order-intent-003
-        hasLifecycleState: Initialized
-        validFrom: '2026-07-25T11:00:00Z'
-        knowledgeFrom: '2026-07-25T11:00:00Z'
-        availableFrom: '2026-07-25T11:00:01Z'
-      - iri: https://axiolune.ai/data/test/order-event-003-submitted
-        type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-        transitionsOrder: https://axiolune.ai/data/test/order-intent-003
-        hasLifecycleState: Submitted
-        hasPreviousState: Initialized
-        validFrom: '2026-07-25T11:00:02Z'
-        knowledgeFrom: '2026-07-25T11:00:02Z'
-        availableFrom: '2026-07-25T11:00:03Z'
-      - iri: https://axiolune.ai/data/test/order-event-003-rejected
-        type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-        transitionsOrder: https://axiolune.ai/data/test/order-intent-003
-        hasLifecycleState: Rejected
-        hasPreviousState: Submitted
-        validFrom: '2026-07-25T11:00:05Z'
-        knowledgeFrom: '2026-07-25T11:00:05Z'
-        availableFrom: '2026-07-25T11:00:06Z'
+
+  - id: orders-v03-positive-lifecycle-event
+    description: Immutable lifecycle event links exact stream, external order, and intent versions.
+    profile: orders-execution-v03-shacl
+    target: OrderLifecycleEvent
+    context: listed
     expectedResult: accepted
-    note: 'Valid terminal state: Rejected (order never accepted). No external order ID (rejected before acceptance).'
-  - id: orders-positive-004
-    description: 'Order cancellation: Accepted → Canceled'
-    type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-    instances:
-      - iri: https://axiolune.ai/data/test/order-intent-004
-        type: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
-        hasOrderSide: Sell
-        hasOrderType: Limit
-        hasTimeInForce: GTC
-        hasOrderQuantity:
-          type: QuantityValue
-          hasNumericAmount: '200'
-          hasUnitCode: share
-        hasLimitPrice:
-          type: MonetaryAmount
-          hasNumericAmount: '100'
-          hasCurrencyCode: USD
-        validFrom: '2026-07-25T12:00:00Z'
-        knowledgeFrom: '2026-07-25T12:00:00Z'
-        availableFrom: '2026-07-25T12:00:01Z'
-        intentsInstrument: https://axiolune.ai/data/test/instrument-AAPL
-      - iri: https://axiolune.ai/data/test/order-event-004-init
-        type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-        transitionsOrder: https://axiolune.ai/data/test/order-intent-004
-        hasLifecycleState: Initialized
-        validFrom: '2026-07-25T12:00:00Z'
-        knowledgeFrom: '2026-07-25T12:00:00Z'
-        availableFrom: '2026-07-25T12:00:01Z'
-      - iri: https://axiolune.ai/data/test/order-event-004-submitted
-        type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-        transitionsOrder: https://axiolune.ai/data/test/order-intent-004
-        hasLifecycleState: Submitted
-        hasPreviousState: Initialized
-        validFrom: '2026-07-25T12:00:02Z'
-        knowledgeFrom: '2026-07-25T12:00:02Z'
-        availableFrom: '2026-07-25T12:00:03Z'
-      - iri: https://axiolune.ai/data/test/order-event-004-accepted
-        type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-        transitionsOrder: https://axiolune.ai/data/test/order-intent-004
-        hasLifecycleState: Accepted
-        hasPreviousState: Submitted
-        hasExternalOrderId: VENUE-ORD-99999
-        validFrom: '2026-07-25T12:00:05Z'
-        knowledgeFrom: '2026-07-25T12:00:05Z'
-        availableFrom: '2026-07-25T12:00:06Z'
-      - iri: https://axiolune.ai/data/test/order-event-004-canceled
-        type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-        transitionsOrder: https://axiolune.ai/data/test/order-intent-004
-        hasLifecycleState: Canceled
-        hasPreviousState: Accepted
-        hasExternalOrderId: VENUE-ORD-99999
-        validFrom: '2026-07-25T12:05:00Z'
-        knowledgeFrom: '2026-07-25T12:05:01Z'
-        availableFrom: '2026-07-25T12:05:02Z'
+
+  - id: orders-v03-positive-order-intent-lineage-split
+    description: Immutable split lineage connects one exact source intent to a closed set of two exact result intents.
+    profile: orders-execution-v03-shacl
+    target: OrderIntentLineage
+    context: listed
     expectedResult: accepted
-    note: 'Valid terminal state: Canceled. No executions (order canceled before any fills).'
-  - id: orders-positive-005
-    description: 'External status mapping: venue-specific codes to canonical states'
-    type: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMapping
-    instances:
-      - iri: https://axiolune.ai/data/test/status-mapping-binance-NEW
-        type: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMapping
-        appliesToVenue: https://axiolune.ai/data/test/venue-binance
-        hasExternalStatus: NEW
-        hasCanonicalState: Accepted
-        validFrom: '2024-01-01T00:00:00Z'
-        knowledgeFrom: '2024-01-01T00:00:00Z'
-        availableFrom: '2024-01-01T00:00:00Z'
-      - iri: https://axiolune.ai/data/test/status-mapping-binance-FILLED
-        type: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMapping
-        appliesToVenue: https://axiolune.ai/data/test/venue-binance
-        hasExternalStatus: FILLED
-        hasCanonicalState: Filled
-        validFrom: '2024-01-01T00:00:00Z'
-        knowledgeFrom: '2024-01-01T00:00:00Z'
-        availableFrom: '2024-01-01T00:00:00Z'
-      - iri: https://axiolune.ai/data/test/status-mapping-binance-CANCELED
-        type: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMapping
-        appliesToVenue: https://axiolune.ai/data/test/venue-binance
-        hasExternalStatus: CANCELED
-        hasCanonicalState: Canceled
-        validFrom: '2024-01-01T00:00:00Z'
-        knowledgeFrom: '2024-01-01T00:00:00Z'
-        availableFrom: '2024-01-01T00:00:00Z'
+
+  - id: orders-v03-positive-execution-listed
+    description: Listed Execution uses positive absolute Quantity, Money, exact context, and explicit principal/contra Party-account roles.
+    profile: orders-execution-v03-shacl
+    target: Execution
+    context: listed
     expectedResult: accepted
-    note: >-
-      CQ-OE5: External status mapping for Binance. Each venue has its own mapping set. M2-PLAN §5.2: prevents canonical
-      vocabulary pollution.
+
+  - id: orders-v03-positive-execution-otc
+    description: OTC Execution selects exactly one OTC context and carries explicit principal/contra Party-account roles.
+    profile: orders-execution-v03-shacl
+    target: Execution
+    context: otc
+    expectedResult: accepted
+
+  - id: orders-v03-positive-fee
+    description: Fee is a separate fact with positive Money magnitude and a typed charge effect.
+    profile: orders-execution-v03-shacl
+    target: Fee
+    context: listed
+    expectedResult: accepted
+
+  - id: orders-v03-positive-status-mapping
+    description: Reviewed ExternalOrderStatusMapping selects exactly one canonical state IRI.
+    profile: orders-execution-v03-shacl
+    target: ExternalOrderStatusMapping
+    context: none
+    expectedResult: accepted

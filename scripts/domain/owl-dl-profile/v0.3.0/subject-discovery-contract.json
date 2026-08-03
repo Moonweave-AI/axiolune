@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "profileRef": "https://axiolune.ai/conformance/m2/0.3.0",
+  "entrypoint": "scripts/domain/run-owl-dl-gate.cjs",
+  "moduleDiscovery": {
+    "root": "ontology/domain/finance",
+    "manifestFileName": "module.yaml",
+    "owlFileName": "module.owl.ttl",
+    "exactCount": 10
+  },
+  "metaProjection": "ontology/meta/projection/axiolune-meta.owl.ttl",
+  "closureConstruction": {
+    "parserPackage": "n3",
+    "parserVersion": "2.1.1",
+    "dependencyLock": "package-lock.json",
+    "packageIntegrity": "sha512-kqg8ers6Lc+uAmHeS+ycd3b8mC4x8wr8V8Fi6+w7l4hX6b0KZ5bT05Tf49qM2mujwaqZT3+08zcgtXgfxivbVQ==",
+    "aggregateOntologyIri": "https://axiolune.ai/ontology/finance/0.3.0/reasoner-aggregate",
+    "outputFileName": "flattened-closure.ttl",
+    "requiredMetaImport": "https://axiolune.ai/ontology/meta",
+    "mode": "parse-verify-strip-headers-deduplicate-flatten",
+    "invocationTimeoutMs": 300000
+  },
+  "gateIds": [
+    "owl-dl-profile",
+    "owl-reasoner-primary",
+    "owl-reasoner-secondary"
+  ],
+  "positiveFixture": "tests/m2/fixtures/owl-dl/consistent.ttl",
+  "negativeFixtures": [
+    "tests/m2/fixtures/owl-dl/inconsistent.ttl",
+    "tests/m2/fixtures/owl-dl/profile-violation.ttl",
+    "tests/m2/fixtures/owl-dl/unsatisfiable.ttl"
+  ]
+}

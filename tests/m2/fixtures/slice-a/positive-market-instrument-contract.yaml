@@ -1,0 +1,398 @@
+caseId: positive-market-instrument-contract
+expected:
+  valid: true
+fixtureTemplates:
+  temporal: &temporal
+    validFrom: '2024-01-01T00:00:00Z'
+    knowledgeFrom: '2024-01-02T00:00:00Z'
+    availableFrom: '2024-01-02T00:00:01Z'
+    revision: 0
+  source: &source
+    artifactRef:
+      kind: path
+      root: sourceTree
+      path: tests/m2/fixtures/slice-a/source.txt
+    artifactDigest: sha256:8dcd6e3ea8d58ad86183a2b77cb5d34ebdb5264b4acfc014312fe3b111441470
+    locator:
+      kind: wholeFile
+      path: tests/m2/fixtures/slice-a/source.txt
+      mediaType: text/plain
+      extractorProfileRef:
+        kind: path
+        root: sourceTree
+        path: scripts/domain/reference-extractors/whole-file-v1.json
+      extractorProfileDigest: sha256:49c5d4e1c0de9f60a95ac9a1b144dc5f7fb14dd302e7da2cf26fa2cb5360d775
+      selectionDigest: sha256:799ca8f2b597c4f9d45bd09ad0dfaf0f7f9bd7b343b8139d2b5c17140e725027
+  iso4217Source: &iso4217Source
+    artifactRef:
+      kind: path
+      root: sourceTree
+      path: reference/authority-reference/six/2026-07-31/iso-4217-list-one/iso-4217-list-one.xml
+    artifactDigest: sha256:838dfb991648cf36df939edd5fe3811737962b75a32252847d239cedd1e291c9
+    locator:
+      kind: wholeFile
+      path: reference/authority-reference/six/2026-07-31/iso-4217-list-one/iso-4217-list-one.xml
+      mediaType: application/xml
+      extractorProfileRef:
+        kind: path
+        root: sourceTree
+        path: scripts/domain/reference-extractors/whole-file-v1.json
+      extractorProfileDigest: sha256:49c5d4e1c0de9f60a95ac9a1b144dc5f7fb14dd302e7da2cf26fa2cb5360d775
+      selectionDigest: sha256:5b132ebd57c34376295544d8e555d566d684da2366a8684f064f16c1d8eacf12
+facilities:
+  - id: urn:facility:xnas:v1
+    logicalId: urn:facility:xnas
+    type: TradingVenue
+    source: *source
+    <<: *temporal
+  - id: urn:facility:xnms:v1
+    logicalId: urn:facility:xnms
+    type: MarketSegment
+    venue: urn:facility:xnas:v1
+    source: *source
+    <<: *temporal
+parties:
+  - id: urn:party:provider:v1
+    logicalId: urn:party:provider
+    type: LegalEntity
+    source: *source
+    <<: *temporal
+  - id: urn:party:issuer:v1
+    logicalId: urn:party:issuer
+    type: LegalEntity
+    source: *source
+    <<: *temporal
+  - id: urn:party:alpha:v1
+    logicalId: urn:party:alpha
+    type: LegalEntity
+    source: *source
+    <<: *temporal
+  - id: urn:party:beta:v1
+    logicalId: urn:party:beta
+    type: LegalEntity
+    source: *source
+    <<: *temporal
+instruments:
+  - id: urn:instrument:acme:v1
+    logicalId: urn:instrument:acme
+    type: EquitySecurity
+    source: *source
+    <<: *temporal
+micEntries:
+  - id: urn:mic-entry:xnas:v1
+    logicalId: urn:mic-entry:xnas
+    mic: XNAS
+    entryType: OPRT
+    facility: urn:facility:xnas:v1
+    authorityLogical: urn:authority:iso10383
+    source: *source
+    <<: *temporal
+  - id: urn:mic-entry:xnms:v1
+    logicalId: urn:mic-entry:xnms
+    mic: XNMS
+    entryType: SGMT
+    facility: urn:facility:xnms:v1
+    authorityLogical: urn:authority:iso10383
+    operatingEntry: urn:mic-entry:xnas:v1
+    source: *source
+    <<: *temporal
+calendars:
+  - id: urn:calendar:xnas:v1
+    logicalId: urn:calendar:xnas
+    facilityLogical: urn:facility:xnas
+    authorityLogical: urn:authority:xnas
+    authorityCalendarId: XNAS-PRIMARY
+    timeZone: America/New_York
+    jurisdictionLogical: urn:jurisdiction:us
+    source: *source
+    <<: *temporal
+sessionTemplates:
+  - id: urn:session-template:xnas-regular:v1
+    logicalId: urn:session-template:xnas-regular
+    calendar: urn:calendar:xnas:v1
+    recurrence: MON-FRI
+    localStart: '09:30:00'
+    localEnd: '16:00:00'
+    source: *source
+    <<: *temporal
+sessionOccurrences:
+  - id: urn:session-occurrence:xnas:2024-07-03:v1
+    logicalId: urn:session-occurrence:xnas:2024-07-03
+    template: urn:session-template:xnas-regular:v1
+    calendar: urn:calendar:xnas:v1
+    facility: urn:facility:xnas:v1
+    businessDate: '2024-07-03'
+    startUtc: '2024-07-03T13:30:00Z'
+    endUtc: '2024-07-03T20:00:00Z'
+    source: *source
+    <<: *temporal
+  - id: urn:session-occurrence:xnas:2024-07-04:v1
+    logicalId: urn:session-occurrence:xnas:2024-07-04
+    template: urn:session-template:xnas-regular:v1
+    calendar: urn:calendar:xnas:v1
+    facility: urn:facility:xnas:v1
+    businessDate: '2024-07-04'
+    startUtc: '2024-07-04T13:30:00Z'
+    endUtc: '2024-07-04T20:00:00Z'
+    source: *source
+    <<: *temporal
+  - id: urn:session-occurrence:xnas:2024-07-05:v1
+    logicalId: urn:session-occurrence:xnas:2024-07-05
+    template: urn:session-template:xnas-regular:v1
+    calendar: urn:calendar:xnas:v1
+    facility: urn:facility:xnas:v1
+    businessDate: '2024-07-05'
+    startUtc: '2024-07-05T13:30:00Z'
+    endUtc: '2024-07-05T20:00:00Z'
+    source: *source
+    <<: *temporal
+  - id: urn:session-occurrence:xnas:2024-07-08:v1
+    logicalId: urn:session-occurrence:xnas:2024-07-08
+    template: urn:session-template:xnas-regular:v1
+    calendar: urn:calendar:xnas:v1
+    facility: urn:facility:xnas:v1
+    businessDate: '2024-07-08'
+    startUtc: '2024-07-08T13:30:00Z'
+    endUtc: '2024-07-08T20:00:00Z'
+    source: *source
+    <<: *temporal
+calendarExceptions:
+  - id: urn:calendar-exception:xnas:2024-07-03:v1
+    logicalId: urn:calendar-exception:xnas:2024-07-03
+    occurrence: urn:session-occurrence:xnas:2024-07-03:v1
+    businessDate: '2024-07-03'
+    kind: earlySession
+    replacementEndUtc: '2024-07-03T17:00:00Z'
+    source: *source
+    <<: *temporal
+  - id: urn:calendar-exception:xnas:2024-07-04:v1
+    logicalId: urn:calendar-exception:xnas:2024-07-04
+    occurrence: urn:session-occurrence:xnas:2024-07-04:v1
+    businessDate: '2024-07-04'
+    kind: holiday
+    source: *source
+    <<: *temporal
+  - id: urn:calendar-exception:xnas:2024-07-05:v1
+    logicalId: urn:calendar-exception:xnas:2024-07-05
+    occurrence: urn:session-occurrence:xnas:2024-07-05:v1
+    businessDate: '2024-07-05'
+    kind: closure
+    source: *source
+    <<: *temporal
+  - id: urn:calendar-exception:xnas:2024-07-08:v1
+    logicalId: urn:calendar-exception:xnas:2024-07-08
+    occurrence: urn:session-occurrence:xnas:2024-07-08:v1
+    businessDate: '2024-07-08'
+    kind: lateSession
+    replacementStartUtc: '2024-07-08T14:30:00Z'
+    source: *source
+    <<: *temporal
+otcContexts:
+  - id: urn:otc-context:provider:cash-1:v1
+    logicalId: urn:otc-context:provider:cash-1
+    sourceProvider: urn:party:provider:v1
+    providerContextId: CASH-1
+    sourceContractRef: urn:source-contract:provider:cash
+    sourceContractDigest: sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+    quoteCurrency: urn:currency:usd
+    settlementCurrency: urn:currency:usd
+    marketConvention: directQuotePerUnit
+    counterpartyA: urn:party:alpha:v1
+    counterpartyB: urn:party:beta:v1
+    source: *source
+    <<: *temporal
+  - id: urn:otc-context:provider:cash-2:v1
+    logicalId: urn:otc-context:provider:cash-2
+    sourceProvider: urn:party:provider:v1
+    providerContextId: CASH-2
+    sourceContractRef: urn:source-contract:provider:cash
+    sourceContractDigest: sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+    quoteCurrency: urn:currency:usd
+    marketConvention: directQuotePerUnit
+    source: *source
+    <<: *temporal
+  - id: urn:otc-context:provider:cash-1:v2
+    logicalId: urn:otc-context:provider:cash-1
+    sourceProvider: urn:party:provider:v1
+    providerContextId: CASH-1
+    sourceContractRef: urn:source-contract:provider:cash
+    sourceContractDigest: sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+    quoteCurrency: urn:currency:usd
+    settlementCurrency: urn:currency:usd
+    marketConvention: directQuotePerUnit
+    counterpartyA: urn:party:alpha:v1
+    counterpartyB: urn:party:beta:v1
+    supersedes: urn:otc-context:provider:cash-1:v1
+    source: *source
+    validFrom: '2024-01-01T00:00:00Z'
+    knowledgeFrom: '2024-02-01T00:00:00Z'
+    availableFrom: '2024-02-01T00:00:01Z'
+    revision: 1
+identifierSchemes:
+  - id: urn:identifier-scheme:xnas-symbol:v1
+    logicalId: urn:identifier-scheme:xnas-symbol
+    kind: venueListing
+    source: *source
+    <<: *temporal
+identifierValues:
+  - id: urn:identifier-value:xnas-acme:v1
+    logicalId: urn:identifier-value:xnas-acme
+    schemeLogical: urn:identifier-scheme:xnas-symbol
+    lexicalValue: ACME
+    source: *source
+    <<: *temporal
+identifierAuthorizations:
+  - id: urn:listing-scheme-authorization:xnas-symbol-xnas:v1
+    logicalId: urn:listing-scheme-authorization:xnas-symbol-xnas
+    schemeVersion: urn:identifier-scheme:xnas-symbol:v1
+    schemeLogical: urn:identifier-scheme:xnas-symbol
+    facilityLogical: urn:facility:xnas
+    active: true
+    validFrom: '2020-01-01T00:00:00Z'
+    knowledgeFrom: '2024-01-02T00:00:00Z'
+    availableFrom: '2024-01-02T00:00:01Z'
+    revision: 0
+    source: *source
+currencyRegistry:
+  - id: urn:currency-registry-entry:usd:v1
+    logicalId: urn:currency-registry-entry:usd
+    iso4217RegistryAuthority: urn:authority:iso4217
+    iso4217AlphaCode: USD
+    iso4217NumericCode: '840'
+    iso4217MinorUnit: 2
+    iso4217EntryStatus: active
+    iso4217EntryCurrency: urn:currency:usd
+    iso4217RegistrySourceRef: https://axiolune.ai/references/six-iso-4217-list-one-2026-01-01
+    source: *iso4217Source
+    <<: *temporal
+  - id: urn:currency-registry-entry:eur:v1
+    logicalId: urn:currency-registry-entry:eur
+    iso4217RegistryAuthority: urn:authority:iso4217
+    iso4217AlphaCode: EUR
+    iso4217NumericCode: '978'
+    iso4217MinorUnit: 2
+    iso4217EntryStatus: active
+    iso4217EntryCurrency: urn:currency:eur
+    iso4217RegistrySourceRef: https://axiolune.ai/references/six-iso-4217-list-one-2026-01-01
+    source: *iso4217Source
+    <<: *temporal
+quantityUnitRegistry:
+  - unitIri: https://axiolune.ai/units/share
+    controlled: true
+    allowedApplication: directUnitPriceQuotationDenominator
+    registryRef: https://axiolune.ai/references/axiolune-m2-controlled-quantity-units
+    registryVersion: 0.3.0
+    registryCandidateDigest: sha256:a0e313f0eee878e539d5424998e6d46f8abcb9a392c2dba05ca98530768fb2d4
+    registryArtifactDigest: sha256:413900f27f78c29c73deace7664f526707603c20cd4dabb29813345f46b0e768
+    decisionStatus: reviewed
+offerings:
+  - id: urn:offering:acme:v1
+    logicalId: urn:offering:acme
+    offeringId: ACME-PRIMARY-2024
+    offeredSecurity: urn:instrument:acme:v1
+    source: *source
+    <<: *temporal
+issuances:
+  - id: urn:issuance:acme:v1
+    logicalId: urn:issuance:acme
+    issuanceId: ACME-ISSUANCE-2024
+    issuedSecurity: urn:instrument:acme:v1
+    issuer: urn:party:issuer:v1
+    originatingOffering: urn:offering:acme:v1
+    source: *source
+    <<: *temporal
+listings:
+  - id: urn:listing:xnas-acme:v1
+    logicalId: urn:listing:xnas-acme
+    facility: urn:facility:xnas:v1
+    identifierScheme: urn:identifier-scheme:xnas-symbol
+    identifierValue: urn:identifier-value:xnas-acme
+    instrument: urn:instrument:acme:v1
+    originatingOffering: urn:offering:acme:v1
+    quoteCurrency: urn:currency:usd
+    businessFrom: '2024-01-02'
+    source: *source
+    <<: *temporal
+  - id: urn:listing:xnas-acme:v2
+    logicalId: urn:listing:xnas-acme
+    facility: urn:facility:xnas:v1
+    identifierScheme: urn:identifier-scheme:xnas-symbol
+    identifierValue: urn:identifier-value:xnas-acme
+    instrument: urn:instrument:acme:v1
+    originatingOffering: urn:offering:acme:v1
+    quoteCurrency: urn:currency:eur
+    businessFrom: '2024-01-02'
+    supersedes: urn:listing:xnas-acme:v1
+    source: *source
+    validFrom: '2024-01-01T00:00:00Z'
+    knowledgeFrom: '2024-03-01T00:00:00Z'
+    availableFrom: '2024-03-01T00:00:01Z'
+    revision: 1
+quotationContracts:
+  - id: urn:quotation-contract:xnas-acme:v1
+    logicalId: urn:quotation-contract:xnas-acme
+    instrumentLogical: urn:instrument:acme
+    listingContext: urn:listing:xnas-acme:v2
+    quoteCurrency: urn:currency:eur
+    denominatorUnit: https://axiolune.ai/units/share
+    consumedQuantityUnits:
+      - https://axiolune.ai/units/share
+    quotationKind: directUnitPrice
+    contractMultiplier: '1.0'
+    normalizationContractRef: urn:normalization-contract:direct-equity
+    normalizationContractDigest: sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+    source: *source
+    validFrom: '2024-01-01T00:00:00Z'
+    knowledgeFrom: '2024-03-02T00:00:00Z'
+    availableFrom: '2024-03-02T00:00:01Z'
+    revision: 0
+  - id: urn:quotation-contract:otc-acme:v1
+    logicalId: urn:quotation-contract:otc-acme
+    instrumentLogical: urn:instrument:acme
+    otcContext: urn:otc-context:provider:cash-1:v2
+    quoteCurrency: urn:currency:usd
+    denominatorUnit: https://axiolune.ai/units/share
+    consumedQuantityUnits:
+      - https://axiolune.ai/units/share
+    quotationKind: directUnitPrice
+    contractMultiplier: '1'
+    normalizationContractRef: urn:normalization-contract:direct-equity
+    normalizationContractDigest: sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+    source: *source
+    validFrom: '2024-01-01T00:00:00Z'
+    knowledgeFrom: '2024-02-02T00:00:00Z'
+    availableFrom: '2024-02-02T00:00:01Z'
+    revision: 0
+factClosureAssertions:
+  - id: https://axiolune.ai/data/fact-closure-assertion/sha256-82bab8c156d0b53abd49876c361eb703ca0647210eea507e38e21c2f749a7640
+    targetVersion: urn:otc-context:provider:cash-1:v1
+    axis: knowledge
+    closedAt: '2024-02-01T00:00:00Z'
+    causeKind: successor
+    causeVersion: urn:otc-context:provider:cash-1:v2
+    evidenceRef: urn:otc-context:provider:cash-1:v2
+    generatingContextRef: urn:run:cq-v03
+  - id: https://axiolune.ai/data/fact-closure-assertion/sha256-dac449752d5506288e85e7e7b7bcaf26fff7a1f5e911dd980a333586ce3bea37
+    targetVersion: urn:otc-context:provider:cash-1:v1
+    axis: availability
+    closedAt: '2024-02-01T00:00:01Z'
+    causeKind: successor
+    causeVersion: urn:otc-context:provider:cash-1:v2
+    evidenceRef: urn:otc-context:provider:cash-1:v2
+    generatingContextRef: urn:run:cq-v03
+  - id: https://axiolune.ai/data/fact-closure-assertion/sha256-9c8ca4dedc06f66b68da33390f5c297ac5cb6311d8cf11bbcc3b4293cd578c43
+    targetVersion: urn:listing:xnas-acme:v1
+    axis: knowledge
+    closedAt: '2024-03-01T00:00:00Z'
+    causeKind: successor
+    causeVersion: urn:listing:xnas-acme:v2
+    evidenceRef: urn:listing:xnas-acme:v2
+    generatingContextRef: urn:run:cq-v03
+  - id: https://axiolune.ai/data/fact-closure-assertion/sha256-6f2e90c3c0b30c9c35e2ccfb783671fbef485d4eb3db66f39e4827cd451e67cf
+    targetVersion: urn:listing:xnas-acme:v1
+    axis: availability
+    closedAt: '2024-03-01T00:00:01Z'
+    causeKind: successor
+    causeVersion: urn:listing:xnas-acme:v2
+    evidenceRef: urn:listing:xnas-acme:v2
+    generatingContextRef: urn:run:cq-v03

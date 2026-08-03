@@ -1,44 +1,43 @@
-# FactorObservation revision-selection competency probes (R4-M1)
-# Evidence model: Qlib PIT (date/publication, period, value, _next)
-# Runner: scripts/domain/run-factor-revision-cq.cjs
-# Fixture: tests/m2/fixtures/positive/factor-observation-revision.yaml
-
+schemaVersion: '1.0'
+contract: factor-observation-v0.3-immutable-closure
 moduleScope:
   - fin-strategy-research
-
-reference:
-  - "reference/project-reference/qlib/docs/advanced/PIT.rst"
-  - "reference/project-reference/qlib/scripts/dump_pit.py"
-
+referenceEvidence:
+  - reference/project-reference/qlib/docs/advanced/PIT.rst
+  - reference/project-reference/qlib/scripts/dump_pit.py
+note: >-
+  Qlib's linked-record storage layout is conflict evidence, not domain
+  vocabulary. These probes execute Axiolune's three-axis FactVersion contract:
+  successors point to the exact prior version and interval ends are derived
+  from separate closure assertions.
 probes:
   - id: CQ-FR1
-    question: "在 v2 发布之前的 asOfKnowledge，同一 (instrument, period) 应选中 v1 修订值"
+    question: Which revision is usable before the corrected version becomes known and available?
     asOf:
-      asOfValid: "2024-02-15T00:00:00Z"
-      asOfKnowledge: "2024-04-20T12:00:00Z"
-      asOfAvailable: "2024-04-20T12:00:00Z"
+      asOfValid: '2024-02-15T00:00:00Z'
+      asOfKnowledge: '2024-04-20T12:00:00Z'
+      asOfAvailable: '2024-04-20T12:00:00Z'
     expected:
-      observationIri: "https://axiolune.ai/data/factors/obs-roe-aapl-2024q1-v1"
-      factorValue: "0.185"
-      sourceRevision: "v1"
-    assertNotNaiveTerminal: true
-    note: "Must walk nextRevision and stop at knowledge window covering asOfKnowledge — not return terminal v2"
+      observationIri: https://axiolune.ai/data/factor-observation/roe/AAPL/2024Q1/provider-roe/version/0
+      factorValue: '0.185'
+      sourceRevision: v1
+    assertNotTerminal: true
 
   - id: CQ-FR2
-    question: "在 v2 发布之后的 asOfKnowledge，应选中 v2（沿 nextRevision 前进）"
+    question: Which revision is usable after the corrected version becomes known and available?
     asOf:
-      asOfValid: "2024-02-15T00:00:00Z"
-      asOfKnowledge: "2024-05-15T12:00:00Z"
-      asOfAvailable: "2024-05-15T12:00:00Z"
+      asOfValid: '2024-02-15T00:00:00Z'
+      asOfKnowledge: '2024-05-15T12:00:00Z'
+      asOfAvailable: '2024-05-15T12:00:00Z'
     expected:
-      observationIri: "https://axiolune.ai/data/factors/obs-roe-aapl-2024q1-v2"
-      factorValue: "0.191"
-      sourceRevision: "v2"
+      observationIri: https://axiolune.ai/data/factor-observation/roe/AAPL/2024Q1/provider-roe/version/1
+      factorValue: '0.191'
+      sourceRevision: v2
 
   - id: CQ-FR3
-    question: "asOfAvailable 早于 v1.availableFrom 时不得选中任何修订（fail-closed）"
+    question: Does the query fail closed when availability is earlier than the first usable version?
     asOf:
-      asOfValid: "2024-02-15T00:00:00Z"
-      asOfKnowledge: "2024-04-20T12:00:00Z"
-      asOfAvailable: "2024-04-15T08:00:00Z"
+      asOfValid: '2024-02-15T00:00:00Z'
+      asOfKnowledge: '2024-04-20T12:00:00Z'
+      asOfAvailable: '2024-04-15T08:00:00Z'
     expectedResult: empty

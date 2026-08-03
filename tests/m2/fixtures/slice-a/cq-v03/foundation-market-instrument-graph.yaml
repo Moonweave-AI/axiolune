@@ -1,0 +1,379 @@
+fixtureId: foundation-market-instrument-cq-graph-v1
+functionVersion: axiolune-m2-cq-foundation-market-instrument/v1
+baseFixture: ../positive-market-instrument-contract.yaml
+templates:
+  temporal: &temporal
+    validFrom: '2024-01-01T00:00:00Z'
+    knowledgeFrom: '2024-01-02T00:00:00Z'
+    availableFrom: '2024-01-02T00:00:01Z'
+    revision: 0
+  source: &source
+    artifactRef:
+      kind: path
+      root: sourceTree
+      path: tests/m2/fixtures/slice-a/source.txt
+    artifactDigest: sha256:8dcd6e3ea8d58ad86183a2b77cb5d34ebdb5264b4acfc014312fe3b111441470
+    locator:
+      kind: wholeFile
+      path: tests/m2/fixtures/slice-a/source.txt
+      mediaType: text/plain
+      extractorProfileRef:
+        kind: path
+        root: sourceTree
+        path: scripts/domain/reference-extractors/whole-file-v1.json
+      extractorProfileDigest: sha256:49c5d4e1c0de9f60a95ac9a1b144dc5f7fb14dd302e7da2cf26fa2cb5360d775
+      selectionDigest: sha256:799ca8f2b597c4f9d45bd09ad0dfaf0f7f9bd7b343b8139d2b5c17140e725027
+  iso4217Source: &iso4217Source
+    artifactRef:
+      kind: path
+      root: sourceTree
+      path: reference/authority-reference/six/2026-07-31/iso-4217-list-one/iso-4217-list-one.xml
+    artifactDigest: sha256:838dfb991648cf36df939edd5fe3811737962b75a32252847d239cedd1e291c9
+    locator:
+      kind: wholeFile
+      path: reference/authority-reference/six/2026-07-31/iso-4217-list-one/iso-4217-list-one.xml
+      mediaType: application/xml
+      extractorProfileRef:
+        kind: path
+        root: sourceTree
+        path: scripts/domain/reference-extractors/whole-file-v1.json
+      extractorProfileDigest: sha256:49c5d4e1c0de9f60a95ac9a1b144dc5f7fb14dd302e7da2cf26fa2cb5360d775
+      selectionDigest: sha256:5b132ebd57c34376295544d8e555d566d684da2366a8684f064f16c1d8eacf12
+baseMutations:
+  - op: set
+    path: micEntries[0].registryMICValue
+    value: urn:identifier-value:mic:xnas
+  - op: set
+    path: micEntries[0].registryAuthority
+    value: urn:authority:iso10383
+  - op: set
+    path: micEntries[0].registryFacility
+    value: urn:facility:xnas:v1
+  - op: set
+    path: micEntries[0].micEntryType
+    value: OPRT
+  - op: set
+    path: micEntries[1].registryMICValue
+    value: urn:identifier-value:mic:xnms
+  - op: set
+    path: micEntries[1].registryAuthority
+    value: urn:authority:iso10383
+  - op: set
+    path: micEntries[1].registryFacility
+    value: urn:facility:xnms:v1
+  - op: set
+    path: micEntries[1].micEntryType
+    value: SGMT
+  - op: set
+    path: micEntries[1].operatingMICEntry
+    value: urn:mic-entry:xnas:v1
+additions:
+  instruments:
+    - id: urn:instrument:beta:v1
+      logicalId: urn:instrument:beta
+      type: Security
+      source: *source
+      <<: *temporal
+  identifierAuthorizations:
+    - id: urn:listing-scheme-authorization:xnas-symbol-xnms:v1
+      logicalId: urn:listing-scheme-authorization:xnas-symbol-xnms
+      schemeVersion: urn:identifier-scheme:xnas-symbol:v1
+      schemeLogical: urn:identifier-scheme:xnas-symbol
+      facilityLogical: urn:facility:xnms
+      active: true
+      validFrom: '2020-01-01T00:00:00Z'
+      knowledgeFrom: '2024-01-02T00:00:00Z'
+      availableFrom: '2024-01-02T00:00:01Z'
+      revision: 0
+      source: *source
+  listings:
+    - id: urn:listing:xnms-acme:v1
+      logicalId: urn:listing:xnms-acme
+      facility: urn:facility:xnms:v1
+      identifierScheme: urn:identifier-scheme:xnas-symbol
+      identifierValue: urn:identifier-value:xnas-acme
+      instrument: urn:instrument:acme:v1
+      originatingOffering: urn:offering:acme:v1
+      quoteCurrency: urn:currency:usd
+      businessFrom: '2024-01-02'
+      source: *source
+      <<: *temporal
+  identifierAuthorityVersions:
+    - id: urn:authority:iso6166:v1
+      logicalId: urn:authority:iso6166
+      type: IdentifierAuthority
+      source: *source
+      <<: *temporal
+    - id: urn:authority:acme-internal:v1
+      logicalId: urn:authority:acme-internal
+      type: IdentifierAuthority
+      source: *source
+      <<: *temporal
+    - id: urn:authority:iso10383:v1
+      logicalId: urn:authority:iso10383
+      type: IdentifierAuthority
+      source: *source
+      <<: *temporal
+  identifierSchemeVersions:
+    - id: urn:identifier-scheme:isin:v1
+      logicalId: urn:identifier-scheme:isin
+      identifierSchemeKind: iso6166Isin
+      identifierSchemeVersion: '1.0'
+      identifierSchemeMaintainer: urn:authority:iso6166
+      identifierSchemeValidatorRef: urn:validator:isin-luhn:v1
+      identifierUniquenessScope: global
+      identifierSchemeSourceEvidenceRef: urn:evidence:iso6166:test-vector
+      source: *source
+      <<: *temporal
+    - id: urn:identifier-scheme:acme-internal:v1
+      logicalId: urn:identifier-scheme:acme-internal
+      identifierSchemeKind: internalInstrument
+      identifierSchemeVersion: '1.0'
+      identifierSchemeMaintainer: urn:authority:acme-internal
+      identifierSchemeValidatorRef: urn:validator:nfc-nonblank:v1
+      identifierUniquenessScope: authority
+      identifierSchemeSourceEvidenceRef: urn:evidence:acme-internal:test-contract
+      source: *source
+      <<: *temporal
+    - id: urn:identifier-scheme:mic:v1
+      logicalId: urn:identifier-scheme:mic
+      identifierSchemeKind: iso10383Mic
+      identifierSchemeVersion: '1.0'
+      identifierSchemeMaintainer: urn:authority:iso10383
+      identifierSchemeValidatorRef: urn:validator:mic-four-character:v1
+      identifierUniquenessScope: global
+      identifierSchemeSourceEvidenceRef: urn:evidence:iso10383:test-vector
+      source: *source
+      <<: *temporal
+  identifierValueVersions:
+    - id: urn:identifier-value:isin:acme:v1
+      logicalId: urn:identifier-value:isin:acme
+      type: ISINValue
+      identifierValueScheme: urn:identifier-scheme:isin
+      isinLexicalValue: US0000000002
+      source: *source
+      <<: *temporal
+    - id: urn:identifier-value:internal:acme:v1
+      logicalId: urn:identifier-value:internal:acme
+      type: LocalIdentifierValue
+      identifierValueScheme: urn:identifier-scheme:acme-internal
+      localIdentifierLexicalValue: ACME-INTERNAL-1
+      source: *source
+      <<: *temporal
+    - id: urn:identifier-value:internal:beta:v1
+      logicalId: urn:identifier-value:internal:beta
+      type: LocalIdentifierValue
+      identifierValueScheme: urn:identifier-scheme:acme-internal
+      localIdentifierLexicalValue: BETA-INTERNAL-1
+      source: *source
+      <<: *temporal
+    - id: urn:identifier-value:isin:conflict:v1
+      logicalId: urn:identifier-value:isin:conflict
+      type: ISINValue
+      identifierValueScheme: urn:identifier-scheme:isin
+      isinLexicalValue: US0000000010
+      source: *source
+      <<: *temporal
+    - id: urn:identifier-value:mic:xnas:v1
+      logicalId: urn:identifier-value:mic:xnas
+      type: MICValue
+      identifierValueScheme: urn:identifier-scheme:mic
+      micLexicalValue: XNAS
+      source: *source
+      <<: *temporal
+    - id: urn:identifier-value:mic:xnms:v1
+      logicalId: urn:identifier-value:mic:xnms
+      type: MICValue
+      identifierValueScheme: urn:identifier-scheme:mic
+      micLexicalValue: XNMS
+      source: *source
+      <<: *temporal
+  identifierSchemeAuthorizationVersions:
+    - id: urn:identifier-authorization:isin-iso6166:v1
+      authorizedSchemeVersion: urn:identifier-scheme:isin:v1
+      authorizedAuthorityVersion: urn:authority:iso6166:v1
+      identifierAuthorityRole: assigningAuthority
+      source: *source
+      <<: *temporal
+    - id: urn:identifier-authorization:internal-acme:v1
+      authorizedSchemeVersion: urn:identifier-scheme:acme-internal:v1
+      authorizedAuthorityVersion: urn:authority:acme-internal:v1
+      identifierAuthorityRole: assigningAuthority
+      source: *source
+      <<: *temporal
+    - id: urn:identifier-authorization:mic-iso10383:v1
+      authorizedSchemeVersion: urn:identifier-scheme:mic:v1
+      authorizedAuthorityVersion: urn:authority:iso10383:v1
+      identifierAuthorityRole: assigningAuthority
+      source: *source
+      <<: *temporal
+  financialIdentifierAssignmentVersions:
+    - id: urn:identifier-assignment:acme-isin:v1
+      assignmentId: ACME-ISIN-1
+      identifiedSubjectVersion: urn:instrument:acme:v1
+      identifierValueVersion: urn:identifier-value:isin:acme:v1
+      identifierSchemeVersion: urn:identifier-scheme:isin:v1
+      assigningAuthorityVersion: urn:authority:iso6166:v1
+      source: *source
+      <<: *temporal
+    - id: urn:identifier-assignment:acme-internal:v1
+      assignmentId: ACME-INTERNAL-1
+      identifiedSubjectVersion: urn:instrument:acme:v1
+      identifierValueVersion: urn:identifier-value:internal:acme:v1
+      identifierSchemeVersion: urn:identifier-scheme:acme-internal:v1
+      assigningAuthorityVersion: urn:authority:acme-internal:v1
+      source: *source
+      <<: *temporal
+    - id: urn:identifier-assignment:beta-internal:v1
+      assignmentId: BETA-INTERNAL-1
+      identifiedSubjectVersion: urn:instrument:beta:v1
+      identifierValueVersion: urn:identifier-value:internal:beta:v1
+      identifierSchemeVersion: urn:identifier-scheme:acme-internal:v1
+      assigningAuthorityVersion: urn:authority:acme-internal:v1
+      source: *source
+      <<: *temporal
+    - id: urn:identifier-assignment:conflict-acme:v1
+      assignmentId: CONFLICT-ACME
+      identifiedSubjectVersion: urn:instrument:acme:v1
+      identifierValueVersion: urn:identifier-value:isin:conflict:v1
+      identifierSchemeVersion: urn:identifier-scheme:isin:v1
+      assigningAuthorityVersion: urn:authority:iso6166:v1
+      source: *source
+      <<: *temporal
+    - id: urn:identifier-assignment:conflict-beta:v1
+      assignmentId: CONFLICT-BETA
+      identifiedSubjectVersion: urn:instrument:beta:v1
+      identifierValueVersion: urn:identifier-value:isin:conflict:v1
+      identifierSchemeVersion: urn:identifier-scheme:isin:v1
+      assigningAuthorityVersion: urn:authority:iso6166:v1
+      source: *source
+      <<: *temporal
+  identifierAssignmentConflictVersions:
+    - id: urn:identifier-conflict:isin-us0000000010:v1
+      conflictSchemeVersion: urn:identifier-scheme:isin:v1
+      conflictValueVersion: urn:identifier-value:isin:conflict:v1
+      conflictingAssignmentVersion:
+        - urn:identifier-assignment:conflict-acme:v1
+        - urn:identifier-assignment:conflict-beta:v1
+      assignmentVersionSetDigest: sha256:12e9e861712d96bac283f753b0ce731f65a6ea190235d10c5f3fbb53e73225b0
+      generatingContextRef: urn:run:cq-v03
+      source: *source
+      <<: *temporal
+  currencyRegistryEntryVersions:
+    - id: urn:iso4217-entry:usd:v1
+      logicalId: urn:iso4217-entry:usd
+      iso4217RegistryAuthority: urn:authority:iso4217
+      iso4217AlphaCode: USD
+      iso4217NumericCode: '840'
+      iso4217MinorUnit: 2
+      iso4217EntryStatus: active
+      iso4217EntryCurrency: urn:currency:usd
+      iso4217RegistrySourceRef: https://axiolune.ai/references/six-iso-4217-list-one-2026-01-01
+      source: *iso4217Source
+      <<: *temporal
+    - id: urn:iso4217-entry:eur:v1
+      logicalId: urn:iso4217-entry:eur
+      iso4217RegistryAuthority: urn:authority:iso4217
+      iso4217AlphaCode: EUR
+      iso4217NumericCode: '978'
+      iso4217MinorUnit: 2
+      iso4217EntryStatus: active
+      iso4217EntryCurrency: urn:currency:eur
+      iso4217RegistrySourceRef: https://axiolune.ai/references/six-iso-4217-list-one-2026-01-01
+      source: *iso4217Source
+      <<: *temporal
+  currencyUsageVersions:
+    - id: urn:currency-usage:usd-us:v0
+      logicalId: urn:currency-usage:usd-us
+      usedCurrency: urn:currency:usd
+      usageJurisdiction: urn:jurisdiction:us
+      source: *source
+      validFrom: '2024-01-01T00:00:00Z'
+      knowledgeFrom: '2024-02-01T00:00:00Z'
+      availableFrom: '2024-02-01T00:00:01Z'
+      revision: 0
+    - id: urn:currency-usage:usd-us:v1
+      logicalId: urn:currency-usage:usd-us
+      usedCurrency: urn:currency:usd
+      usageJurisdiction: urn:jurisdiction:us
+      source: *source
+      supersedes: urn:currency-usage:usd-us:v0
+      validFrom: '2024-01-01T00:00:00Z'
+      knowledgeFrom: '2024-04-01T00:00:00Z'
+      availableFrom: '2024-04-01T00:00:01Z'
+      revision: 1
+    - id: urn:currency-usage:eur-eu:v1
+      usedCurrency: urn:currency:eur
+      usageJurisdiction: urn:jurisdiction:eu
+      source: *source
+      <<: *temporal
+  marketRuleVersions:
+    - id: urn:market-rule:xnms-acme-tick:v1
+      logicalId: urn:market-rule:xnms-acme-tick
+      type: TickScheduleRule
+      marketRuleId: XNMS-ACME-TICK
+      ruleType: tickSchedule
+      ruleClauseVersions:
+        - urn:rule-clause:xnms-acme-tick:v1
+      source: *source
+      <<: *temporal
+    - id: urn:market-rule:xnms-acme-lot:v1
+      logicalId: urn:market-rule:xnms-acme-lot
+      type: LotScheduleRule
+      marketRuleId: XNMS-ACME-LOT
+      ruleType: lotSchedule
+      ruleClauseVersions:
+        - urn:rule-clause:xnms-acme-lot:v1
+      source: *source
+      <<: *temporal
+  ruleClauseVersions:
+    - id: urn:rule-clause:xnms-acme-tick:v1
+      logicalId: urn:rule-clause:xnms-acme-tick
+      type: TickSizeClause
+      ruleClauseId: XNMS-ACME-TICK-0
+      clauseSequence: 0
+      tickSize:
+        value: '0.01'
+        unit: https://axiolune.ai/units/USD-per-share
+      source: *source
+      <<: *temporal
+    - id: urn:rule-clause:xnms-acme-lot:v1
+      logicalId: urn:rule-clause:xnms-acme-lot
+      type: LotSizeClause
+      ruleClauseId: XNMS-ACME-LOT-0
+      clauseSequence: 0
+      lotSize:
+        value: '100'
+        unit: https://axiolune.ai/units/share
+      source: *source
+      <<: *temporal
+  marketRuleApplicabilityVersions:
+    - id: urn:rule-applicability:xnms-acme-tick:v1
+      applicableRuleVersion: urn:market-rule:xnms-acme-tick:v1
+      scopeListingVersion: urn:listing:xnms-acme:v1
+      applicabilityPriority: 100
+      source: *source
+      <<: *temporal
+    - id: urn:rule-applicability:xnms-acme-lot:v1
+      applicableRuleVersion: urn:market-rule:xnms-acme-lot:v1
+      scopeListingVersion: urn:listing:xnms-acme:v1
+      applicabilityPriority: 100
+      source: *source
+      <<: *temporal
+  factClosureAssertions:
+    - id: https://axiolune.ai/data/fact-closure-assertion/sha256-648ac133974e6251512d47150d43e14b02cc1c10805fddbf300067ed2cc778ec
+      targetVersion: urn:currency-usage:usd-us:v0
+      axis: knowledge
+      closedAt: '2024-04-01T00:00:00Z'
+      causeKind: successor
+      causeVersion: urn:currency-usage:usd-us:v1
+      evidenceRef: urn:currency-usage:usd-us:v1
+      generatingContextRef: urn:run:cq-v03
+    - id: https://axiolune.ai/data/fact-closure-assertion/sha256-0c56a089372192e1206e5fdeb622346c13b3132662f20a009f7da3fcd18a831e
+      targetVersion: urn:currency-usage:usd-us:v0
+      axis: availability
+      closedAt: '2024-04-01T00:00:01Z'
+      causeKind: successor
+      causeVersion: urn:currency-usage:usd-us:v1
+      evidenceRef: urn:currency-usage:usd-us:v1
+      generatingContextRef: urn:run:cq-v03

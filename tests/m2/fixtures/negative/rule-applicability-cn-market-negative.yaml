@@ -1,54 +1,150 @@
-# CN market RuleApplicability negatives — gate regression (R4 minor)
+# Market Rules v0.3 negatives.
+#
+# The two SHACL negatives are complete conforming graph baselines with exactly
+# the stated temporal mutation.  The PIT-only case is routed explicitly to the
+# PIT engine and therefore cannot be treated as a structural SHACL skip.
 
+schemaVersion: "1.0"
 fixtures:
   - id: rule-app-neg-missing-availableFrom
-    description: "RuleApplicability without availableFrom must reject (ADR-012 fail-closed)"
-    type: "https://axiolune.ai/ontology/finance/market-rules/RuleApplicability"
-    instance:
-      iri: "https://axiolune.ai/data/rules/app-neg-no-avail"
-      appliesRule: "https://axiolune.ai/data/rules/rule-tplus1-equity"
-      scopedToVenue: "https://axiolune.ai/data/venues/XSHG"
-      appliesToInstrumentClass: "Equity"
-      hasLifecycleStatus: "active"
-      validFrom: "2023-01-01T00:00:00Z"
-      knowledgeFrom: "2023-01-01T00:00:00Z"
-      source: "synthetic-negative"
+    description: A complete RuleApplicability graph without availableFrom is rejected.
     expectedResult: rejected
-    expectedViolation: missing-availability-time
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/rules/app-neg-no-availability/v1
+      path: https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom
+      severity: http://www.w3.org/ns/shacl#Violation
+    instance:
+      iri: https://axiolune.ai/data/rules/app-neg-no-availability/v1
+      type: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability
+      https://axiolune.ai/ontology/finance/market-rules/RuleApplicability/role/applicableRuleVersion: https://axiolune.ai/data/rules/rule-negative-temporal/v1
+      https://axiolune.ai/ontology/finance/market-rules/RuleApplicability/role/scopeVenueVersion: https://axiolune.ai/data/venues/XSHG/v1
+      https://axiolune.ai/ontology/finance/market-rules/applicabilityPriority: 1
+      https://axiolune.ai/ontology/meta/patterns/attributes/validFrom: "2023-01-01T00:00:00Z"
+      https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom: "2023-01-01T00:00:00Z"
+      https://axiolune.ai/ontology/meta/patterns/attributes/revision: 0
+      https://axiolune.ai/ontology/meta/patterns/attributes/source: https://axiolune.ai/references/rqalpha
+    supportNodes:
+      - iri: https://axiolune.ai/data/rules/rule-negative-temporal/v1
+        type: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+        https://axiolune.ai/ontology/finance/market-rules/ruleId: rule-negative-temporal
+        https://axiolune.ai/ontology/finance/market-rules/hasRuleType: https://axiolune.ai/ontology/finance/market-rules/RuleType/value/resaleRestriction
+        https://axiolune.ai/ontology/finance/market-rules/ruleGapPolicy: https://axiolune.ai/ontology/finance/market-rules/ClauseGapPolicy/value/reject
+        https://axiolune.ai/ontology/finance/market-rules/marketRuleSet: https://axiolune.ai/data/rulesets/negative-temporal/v1
+        https://axiolune.ai/ontology/finance/market-rules/ruleHasClause: https://axiolune.ai/data/rules/clauses/negative-temporal/v1
+        https://axiolune.ai/ontology/meta/patterns/attributes/validFrom: "2023-01-01T00:00:00Z"
+        https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom: "2023-01-01T00:00:00Z"
+        https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom: "2023-01-01T00:00:00Z"
+        https://axiolune.ai/ontology/meta/patterns/attributes/revision: 0
+        https://axiolune.ai/ontology/meta/patterns/attributes/source: https://axiolune.ai/references/rqalpha
+      - iri: https://axiolune.ai/data/rulesets/negative-temporal/v1
+        type: https://axiolune.ai/ontology/finance/market-rules/MarketRuleSet
+        https://axiolune.ai/ontology/finance/market-rules/ruleSetId: negative-temporal
+        https://axiolune.ai/ontology/finance/market-rules/ruleSetAuthority: https://axiolune.ai/data/parties/test-rule-authority
+        https://axiolune.ai/ontology/meta/patterns/attributes/validFrom: "2023-01-01T00:00:00Z"
+        https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom: "2023-01-01T00:00:00Z"
+        https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom: "2023-01-01T00:00:00Z"
+        https://axiolune.ai/ontology/meta/patterns/attributes/revision: 0
+        https://axiolune.ai/ontology/meta/patterns/attributes/source: https://axiolune.ai/references/rqalpha
+      - iri: https://axiolune.ai/data/rules/clauses/negative-temporal/v1
+        type: https://axiolune.ai/ontology/finance/market-rules/RuleClause
+        https://axiolune.ai/ontology/finance/market-rules/ruleClauseId: negative-temporal
+        https://axiolune.ai/ontology/finance/market-rules/clauseSequence: 0
+        https://axiolune.ai/ontology/finance/market-rules/clauseLowerInclusive: true
+        https://axiolune.ai/ontology/finance/market-rules/clauseUpperInclusive: true
+        https://axiolune.ai/ontology/meta/patterns/attributes/validFrom: "2023-01-01T00:00:00Z"
+        https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom: "2023-01-01T00:00:00Z"
+        https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom: "2023-01-01T00:00:00Z"
+        https://axiolune.ai/ontology/meta/patterns/attributes/revision: 0
+        https://axiolune.ai/ontology/meta/patterns/attributes/source: https://axiolune.ai/references/rqalpha
+      - iri: https://axiolune.ai/data/parties/test-rule-authority
+        type: https://axiolune.ai/ontology/finance/foundation/Party
+      - iri: https://axiolune.ai/data/venues/XSHG/v1
+        type: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
+      - iri: https://axiolune.ai/ontology/finance/market-rules/RuleType/value/resaleRestriction
+        type: https://axiolune.ai/ontology/finance/market-rules/RuleType
+      - iri: https://axiolune.ai/ontology/finance/market-rules/ClauseGapPolicy/value/reject
+        type: https://axiolune.ai/ontology/finance/market-rules/ClauseGapPolicy
 
   - id: rule-app-neg-interval-inversion
-    description: "validTo <= validFrom rejects applicability fact"
-    type: "https://axiolune.ai/ontology/finance/market-rules/RuleApplicability"
-    instance:
-      iri: "https://axiolune.ai/data/rules/app-neg-invert"
-      appliesRule: "https://axiolune.ai/data/rules/rule-price-limit-10pct"
-      scopedToVenue: "https://axiolune.ai/data/venues/XSHG"
-      appliesToInstrumentClass: "Equity"
-      hasLifecycleStatus: "active"
-      validFrom: "2020-06-01T00:00:00Z"
-      validTo: "2020-01-01T00:00:00Z"
-      knowledgeFrom: "2020-06-01T00:00:00Z"
-      availableFrom: "2020-06-01T00:00:00Z"
-      source: "synthetic-negative"
+    description: A complete RuleApplicability graph with validFrom after validTo is rejected.
     expectedResult: rejected
-    expectedViolation: interval-inversion
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#SPARQLConstraintComponent
+      focus: https://axiolune.ai/data/rules/app-neg-valid-inversion/v1
+      path: https://axiolune.ai/ontology/meta/patterns/attributes/validTo
+      severity: http://www.w3.org/ns/shacl#Violation
+    instance:
+      iri: https://axiolune.ai/data/rules/app-neg-valid-inversion/v1
+      type: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability
+      https://axiolune.ai/ontology/finance/market-rules/RuleApplicability/role/applicableRuleVersion: https://axiolune.ai/data/rules/rule-negative-temporal/v1
+      https://axiolune.ai/ontology/finance/market-rules/RuleApplicability/role/scopeVenueVersion: https://axiolune.ai/data/venues/XSHG/v1
+      https://axiolune.ai/ontology/finance/market-rules/applicabilityPriority: 1
+      https://axiolune.ai/ontology/meta/patterns/attributes/validFrom: "2020-06-01T00:00:00Z"
+      https://axiolune.ai/ontology/meta/patterns/attributes/validTo: "2020-01-01T00:00:00Z"
+      https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom: "2020-06-01T00:00:00Z"
+      https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom: "2020-06-01T00:00:00Z"
+      https://axiolune.ai/ontology/meta/patterns/attributes/revision: 0
+      https://axiolune.ai/ontology/meta/patterns/attributes/source: https://axiolune.ai/references/rqalpha
+    supportNodes:
+      - iri: https://axiolune.ai/data/rules/rule-negative-temporal/v1
+        type: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+        https://axiolune.ai/ontology/finance/market-rules/ruleId: rule-negative-temporal
+        https://axiolune.ai/ontology/finance/market-rules/hasRuleType: https://axiolune.ai/ontology/finance/market-rules/RuleType/value/resaleRestriction
+        https://axiolune.ai/ontology/finance/market-rules/ruleGapPolicy: https://axiolune.ai/ontology/finance/market-rules/ClauseGapPolicy/value/reject
+        https://axiolune.ai/ontology/finance/market-rules/marketRuleSet: https://axiolune.ai/data/rulesets/negative-temporal/v1
+        https://axiolune.ai/ontology/finance/market-rules/ruleHasClause: https://axiolune.ai/data/rules/clauses/negative-temporal/v1
+        https://axiolune.ai/ontology/meta/patterns/attributes/validFrom: "2020-01-01T00:00:00Z"
+        https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom: "2020-01-01T00:00:00Z"
+        https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom: "2020-01-01T00:00:00Z"
+        https://axiolune.ai/ontology/meta/patterns/attributes/revision: 0
+        https://axiolune.ai/ontology/meta/patterns/attributes/source: https://axiolune.ai/references/rqalpha
+      - iri: https://axiolune.ai/data/rulesets/negative-temporal/v1
+        type: https://axiolune.ai/ontology/finance/market-rules/MarketRuleSet
+        https://axiolune.ai/ontology/finance/market-rules/ruleSetId: negative-temporal
+        https://axiolune.ai/ontology/finance/market-rules/ruleSetAuthority: https://axiolune.ai/data/parties/test-rule-authority
+        https://axiolune.ai/ontology/meta/patterns/attributes/validFrom: "2020-01-01T00:00:00Z"
+        https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom: "2020-01-01T00:00:00Z"
+        https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom: "2020-01-01T00:00:00Z"
+        https://axiolune.ai/ontology/meta/patterns/attributes/revision: 0
+        https://axiolune.ai/ontology/meta/patterns/attributes/source: https://axiolune.ai/references/rqalpha
+      - iri: https://axiolune.ai/data/rules/clauses/negative-temporal/v1
+        type: https://axiolune.ai/ontology/finance/market-rules/RuleClause
+        https://axiolune.ai/ontology/finance/market-rules/ruleClauseId: negative-temporal
+        https://axiolune.ai/ontology/finance/market-rules/clauseSequence: 0
+        https://axiolune.ai/ontology/finance/market-rules/clauseLowerInclusive: true
+        https://axiolune.ai/ontology/finance/market-rules/clauseUpperInclusive: true
+        https://axiolune.ai/ontology/meta/patterns/attributes/validFrom: "2020-01-01T00:00:00Z"
+        https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom: "2020-01-01T00:00:00Z"
+        https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom: "2020-01-01T00:00:00Z"
+        https://axiolune.ai/ontology/meta/patterns/attributes/revision: 0
+        https://axiolune.ai/ontology/meta/patterns/attributes/source: https://axiolune.ai/references/rqalpha
+      - iri: https://axiolune.ai/data/parties/test-rule-authority
+        type: https://axiolune.ai/ontology/finance/foundation/Party
+      - iri: https://axiolune.ai/data/venues/XSHG/v1
+        type: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
+      - iri: https://axiolune.ai/ontology/finance/market-rules/RuleType/value/resaleRestriction
+        type: https://axiolune.ai/ontology/finance/market-rules/RuleType
+      - iri: https://axiolune.ai/ontology/finance/market-rules/ClauseGapPolicy/value/reject
+        type: https://axiolune.ai/ontology/finance/market-rules/ClauseGapPolicy
 
   - id: rule-app-neg-future-availability
-    description: "asOfAvailable before availableFrom must reject"
-    type: "https://axiolune.ai/ontology/finance/market-rules/RuleApplicability"
+    description: asOfAvailable before availableFrom is rejected by the PIT engine.
+    type: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability
     instance:
-      iri: "https://axiolune.ai/data/rules/app-neg-future"
-      appliesRule: "https://axiolune.ai/data/rules/rule-close-today-offset"
-      scopedToVenue: "https://axiolune.ai/data/venues/SHFE"
-      appliesToInstrumentClass: "Future"
-      hasLifecycleStatus: "active"
+      iri: https://axiolune.ai/data/rules/app-neg-future
+      appliesRule: https://axiolune.ai/data/rules/rule-close-today-offset
+      scopedToVenue: https://axiolune.ai/data/venues/SHFE
+      appliesToInstrumentClass: Future
+      hasLifecycleStatus: active
       validFrom: "2015-01-01T00:00:00Z"
       knowledgeFrom: "2015-01-01T00:00:00Z"
       availableFrom: "2015-06-01T00:00:00Z"
-      source: "synthetic-negative"
+      source: synthetic-negative
     pitQuery:
       asOfValid: "2015-03-01T00:00:00Z"
       asOfKnowledge: "2015-03-01T00:00:00Z"
       asOfAvailable: "2015-03-01T00:00:00Z"
+    validationEngine: pit
     expectedResult: rejected
     expectedViolation: future-availability

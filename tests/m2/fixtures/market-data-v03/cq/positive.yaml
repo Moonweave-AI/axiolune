@@ -1,0 +1,149 @@
+functionVersion: market-data-cq/v0.3.0
+graphFixture: ../positive-complete.yaml
+templates:
+  noonPivot: &noonPivot
+    asOfValid: '2026-07-31T12:00:00Z'
+    asOfKnowledge: '2026-07-31T12:00:00Z'
+    asOfAvailable: '2026-07-31T12:00:00Z'
+  listedQuery: &listedQuery
+    listingVersionIri: urn:listing:aapl:xnas:v1
+    instrumentVersionIri: urn:instrument:aapl:v1
+    facilityLogicalIri: urn:facility:xnas
+  jsonPointerExtractorProfileRef: &jsonPointerExtractorProfileRef
+    kind: path
+    root: sourceTree
+    path: scripts/domain/reference-extractors/json-pointer-jcs-v1.json
+  wholeFileExtractorProfileRef: &wholeFileExtractorProfileRef
+    kind: path
+    root: sourceTree
+    path: tests/m2/fixtures/market-data-v03/evidence/whole-file-raw-v1.json
+cases:
+  - caseId: MD-POS-001-three-axis-listed-price
+    cqId: CQ-MD1
+    query:
+      <<: *listedQuery
+      priceKind: last
+      pivot: *noonPivot
+    expected:
+      status: ok
+      rows:
+        - versionIri: urn:observation:price-001:v0
+          amount: '100.25'
+          currency: USD
+          observedAt: '2026-07-31T10:00:00Z'
+          validFrom: '2026-07-31T10:00:00Z'
+
+  - caseId: MD-POS-002-half-open-trade-range
+    cqId: CQ-MD2
+    query:
+      from: '2026-07-31T10:00:03Z'
+      to: '2026-07-31T10:00:05Z'
+      pivot: *noonPivot
+    expected:
+      status: ok
+      rows:
+        - versionIri: urn:observation:trade-001:v0
+          observedAt: '2026-07-31T10:00:03Z'
+          streamLogicalIri: urn:stream:trade:immutable
+          sourceOrderKey: 1
+          sourceTradeId: TRADE-001
+        - versionIri: urn:observation:trade-002:v0
+          observedAt: '2026-07-31T10:00:04Z'
+          streamLogicalIri: urn:stream:trade:immutable
+          sourceOrderKey: 2
+          sourceTradeId: TRADE-002
+
+  - caseId: MD-POS-003-fixed-pivot-revision-replay
+    cqId: CQ-MD3
+    query:
+      logicalIri: urn:observation:corrected-close
+      pivots:
+        - id: before-correction
+          pivot: {asOfValid: '2026-07-31T10:00:00Z', asOfKnowledge: '2026-07-31T10:00:00Z', asOfAvailable: '2026-07-31T10:00:00Z'}
+        - id: after-correction
+          pivot: {asOfValid: '2026-07-31T11:00:00Z', asOfKnowledge: '2026-07-31T11:00:00Z', asOfAvailable: '2026-07-31T11:00:00Z'}
+    expected:
+      status: ok
+      rows:
+        - {pivotId: before-correction, versionIri: urn:observation:corrected-close:v0, amount: '99.80'}
+        - {pivotId: after-correction, versionIri: urn:observation:corrected-close:v1, amount: '99.85'}
+
+  - caseId: MD-POS-004-complete-two-sided-quote
+    cqId: CQ-MD4
+    query: {pivot: *noonPivot}
+    expected:
+      status: ok
+      rows:
+        - versionIri: urn:observation:quote-001:v0
+          bidPrice: '100.20'
+          bidSize: '100'
+          askPrice: '100.30'
+          askSize: '200'
+
+  - caseId: MD-POS-005-exact-decimal-ohlc
+    cqId: CQ-MD5
+    query: {pivot: *noonPivot}
+    expected:
+      status: ok
+      rows:
+        - {versionIri: urn:observation:trade-bar-001:v0, type: TradeBar}
+        - {versionIri: urn:observation:quote-bar-001:v0, type: QuoteBar}
+
+  - caseId: MD-POS-006-byte-locked-provenance
+    cqId: CQ-MD6
+    query: {versionIri: urn:observation:corrected-close:v1}
+    expected:
+      status: ok
+      rows:
+        - observationVersionIri: urn:observation:corrected-close:v1
+          streamVersionIri: urn:stream:price:revisioned:v1
+          streamLogicalIri: urn:stream:price:revisioned
+          revisionMode: revisionedRecord
+          observationIdFieldLocator:
+            kind: jsonPointer
+            path: tests/m2/fixtures/market-data-v03/evidence/record-envelope-schema-v1.json
+            mediaType: application/json
+            extractorProfileRef: *jsonPointerExtractorProfileRef
+            extractorProfileDigest: sha256:83b1c7bfe40503516274b2593bc92888b5677e1a017f9841222c0b25fcb848ef
+            selectionDigest: sha256:fa31eb09ea27b3e1577080dba5d0f6c3a9fdb964bacea7c100385d1b63bfe198
+            pointer: /properties/id
+          sourceRevisionFieldLocator:
+            kind: jsonPointer
+            path: tests/m2/fixtures/market-data-v03/evidence/record-envelope-schema-v1.json
+            mediaType: application/json
+            extractorProfileRef: *jsonPointerExtractorProfileRef
+            extractorProfileDigest: sha256:83b1c7bfe40503516274b2593bc92888b5677e1a017f9841222c0b25fcb848ef
+            selectionDigest: sha256:3d5e2c5dfd9d780d37aa20ce7f019c8c15d5f23f5713bdf01db0f70ba58e2709
+            pointer: /properties/revisionToken
+          providerObservationId: CORRECTED-CLOSE
+          sourceRevisionToken: r1
+          sourceRevisionOrder: 1
+          predecessorVersionIri: urn:observation:corrected-close:v0
+          predecessorClosedAt: '2026-07-31T10:30:00Z'
+          sourceArtifactRef:
+            kind: path
+            root: sourceTree
+            path: tests/m2/fixtures/market-data-v03/evidence/market-data-source-snapshot-v1.json
+          sourceArtifactDigest: sha256:6ebf05e270a7eea658c0fe65ef454c5c9c91d88b242a0a988d7b0d94d31abb5d
+          sourceLocator:
+            kind: wholeFile
+            path: tests/m2/fixtures/market-data-v03/evidence/market-data-source-snapshot-v1.json
+            mediaType: application/json
+            extractorProfileRef: *wholeFileExtractorProfileRef
+            extractorProfileDigest: sha256:dd1f703e804ab47cf6f5c4e102a08f6bcabec865c3fb8fd8ba8447ae045e85d8
+            selectionDigest: sha256:23036264c421aceeddc5529178767c26a3b19bf80749403d14e258190e4a62e8
+
+  - caseId: MD-POS-007-latest-close-before-cutoff
+    cqId: CQ-MD7
+    query:
+      <<: *listedQuery
+      before: '2026-07-31T10:00:00Z'
+      pivot: *noonPivot
+    expected:
+      status: ok
+      rows:
+        - versionIri: urn:observation:close-002:v0
+          amount: '100.00'
+          currency: USD
+          observedAt: '2026-07-31T09:59:00Z'
+          validFrom: '2026-07-31T09:59:00Z'

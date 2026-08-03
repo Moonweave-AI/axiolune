@@ -1,0 +1,30 @@
+caseId: market-data-v03-positive-duplicate-finding
+extends: positive-complete.yaml
+mutations:
+  - {op: set, path: "observations[1].providerObservationId", value: PRICE-001}
+  - {op: set, path: "observations[1].logicalIri", value: urn:observation:price-001}
+  - op: set
+    path: "findings"
+    value:
+      - id: finding-duplicate-price
+        versionIri: urn:finding:duplicate-price-001:v0
+        logicalIri: urn:finding:duplicate-price-001
+        stream: price-immutable
+        streamVersionIri: urn:stream:price:immutable:v1
+        kind: duplicateConflict
+        affectedVersionIris: [urn:observation:price-001:v0, urn:observation:price-002:v0]
+        affectedSubjectDigest: sha256:59abdd7af73f1097d8c4df537b745952a11b427f3de01a6aede88baa5323427f
+        generatingContextRef: urn:validation-run:market-data-v03
+        axes: {validFrom: '2026-07-31T10:00:05Z', knowledgeFrom: '2026-07-31T10:00:08Z', availableFrom: '2026-07-31T10:00:09Z', revision: 0}
+        provenance:
+          sourceArtifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/market-data-source-snapshot-v1.json}
+          sourceArtifactDigest: sha256:6ebf05e270a7eea658c0fe65ef454c5c9c91d88b242a0a988d7b0d94d31abb5d
+          sourceLocator:
+            kind: wholeFile
+            path: tests/m2/fixtures/market-data-v03/evidence/market-data-source-snapshot-v1.json
+            mediaType: application/json
+            extractorProfileRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/whole-file-raw-v1.json}
+            extractorProfileDigest: sha256:dd1f703e804ab47cf6f5c4e102a08f6bcabec865c3fb8fd8ba8447ae045e85d8
+            selectionDigest: sha256:23036264c421aceeddc5529178767c26a3b19bf80749403d14e258190e4a62e8
+expected:
+  valid: true

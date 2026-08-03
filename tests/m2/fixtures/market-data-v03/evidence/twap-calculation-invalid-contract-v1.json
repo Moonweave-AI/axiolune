@@ -1,0 +1,24 @@
+{
+  "artifactTypeIri": "https://axiolune.ai/ontology/finance/market-data/artifact-types/CalculationDefinition",
+  "capabilityIris": [
+    "https://axiolune.ai/ontology/finance/market-data/capabilities/twap-calculation"
+  ],
+  "calculationDefinitionIri": "urn:calculation:twap:v1",
+  "version": "1.0.0",
+  "expression": "sum(price * durationSeconds) / sum(durationSeconds)",
+  "arithmetic": "exact-base-10-decimal",
+  "inputContract": {
+    "price": "MonetaryAmount",
+    "durationSeconds": "positive-decimal",
+    "window": "half-open-interval"
+  },
+  "requirements": [
+    "all price.currency = quotation-currency",
+    "all durationSeconds > 0",
+    "sum(durationSeconds) > 0"
+  ],
+  "outputContract": {
+    "value": "MonetaryAmount",
+    "currency": "quotation-currency"
+  }
+}

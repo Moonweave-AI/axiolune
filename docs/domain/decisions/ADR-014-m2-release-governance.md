@@ -1,14 +1,11 @@
 # ADR-014: M2 Release Governance and Compatibility Framework
 
-**Status**: Accepted (v0.2.0 release authorized)  
-**Date**: 2026-07-31  
-**Context**: M2 domain ontology release governance — v0.2.0 authorized after 8 review rounds  
-**Upstream**: ADR-013 (M2 Authoring Profile), M2-PLAN §13 E7
+**Status**: Accepted (revised for v1.0.0 semantic release — digest manifest deprecated)  
+**Date**: 2026-08-03 (revised)  
+**Context**: M2 domain release governance — semantic acceptance per RFC-001 and ADR-017  
+**Upstream**: ADR-013, ADR-015, ADR-017, RFC-001, M2-PLAN
 
-> **v0.2.0 Authorization**: After 8 rounds of evidence-driven review, all M2-PLAN §0.1
-> conditions are addressed. Domain gate passes 14/14 steps (strict validation, pySHACL execution,
-> OWL-RL consistency, 48 CQ probes with 96 positive+negative assertions). Release v0.2.0
-> is authorized as the first non-superseded M2 release. See `releases/v0.2.0/release-manifest.yaml`.
+> **v0.2.0 authorization revoked** (ADR-015). **Digest-based release manifests are deprecated.** Module `approved` status requires Round-12 semantic sign-off (v1.0.0), not byte-lock PASS.
 
 ---
 
@@ -32,7 +29,37 @@ This ADR establishes the release governance framework for M2 and all future Axio
 
 ## Decision
 
-### 1. Release Manifest Structure
+### 1. Release Manifest Structure (semantic — v1.0.0+)
+
+Every M2 release from **v1.0.0** onward SHALL use a **semantic release manifest** (no `sourceDigest` / `owlDigest` / byte locks):
+
+```yaml
+releaseId: "m2-v1.0.0"
+releaseVersion: "1.0.0"
+releaseDate: "2026-08-03"
+status: "approved"
+reviewRecord: "docs/domain/decisions/M2-REVIEW-ROUND-12.md"
+
+modules:
+  - moduleIri: "https://axiolune.ai/ontology/finance/foundation"
+    version: "1.0.0"
+    status: "approved"
+
+validationReferences:
+  testAllDomain: "PASS"
+  cqProbes: "docs/domain/decisions/PROGRESS-REPORT.md"
+  pyshaclSmoke: "docs/domain/infrastructure/shacl-smoke-evidence.json"
+
+compatibility:
+  priorRelease: "0.3.0"
+  breakingChanges:
+    - "Risk CQ-R1 aligned to RiskMeasurement; ScenarioDefinition/StressTestRun exported"
+    - "Post-trade CQ matrix expanded per ADR-018"
+```
+
+Legacy digest manifest template below is **historical reference only** — do not use for new releases.
+
+### 1.1 Legacy digest manifest (deprecated — pre-v1.0.0)
 
 Every M2 release SHALL be defined by a single, immutable `release-manifest.yaml` containing:
 

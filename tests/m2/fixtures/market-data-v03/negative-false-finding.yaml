@@ -1,0 +1,27 @@
+caseId: market-data-v03-negative-false-finding
+extends: positive-complete.yaml
+mutations:
+  - op: set
+    path: "findings"
+    value:
+      - id: false-crossed-finding
+        versionIri: urn:finding:false-crossed:v0
+        logicalIri: urn:finding:false-crossed
+        stream: quote-immutable
+        streamVersionIri: urn:stream:quote:immutable:v1
+        kind: crossedQuote
+        affectedVersionIris: [urn:observation:quote-001:v0]
+        affectedSubjectDigest: sha256:af3e7575aabacb1b0fcd53cedf222b8c36e33385d92cbb2f6f80d823c6a079ca
+        generatingContextRef: urn:validation-run:market-data-v03
+        axes: {validFrom: '2026-07-31T10:00:02Z', knowledgeFrom: '2026-07-31T10:00:04Z', availableFrom: '2026-07-31T10:00:05Z', revision: 0}
+        provenance:
+          sourceArtifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/market-data-source-snapshot-v1.json}
+          sourceArtifactDigest: sha256:6ebf05e270a7eea658c0fe65ef454c5c9c91d88b242a0a988d7b0d94d31abb5d
+          sourceLocator:
+            kind: wholeFile
+            path: tests/m2/fixtures/market-data-v03/evidence/market-data-source-snapshot-v1.json
+            mediaType: application/json
+            extractorProfileRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/whole-file-raw-v1.json}
+            extractorProfileDigest: sha256:dd1f703e804ab47cf6f5c4e102a08f6bcabec865c3fb8fd8ba8447ae045e85d8
+            selectionDigest: sha256:23036264c421aceeddc5529178767c26a3b19bf80749403d14e258190e4a62e8
+expected: {valid: false, codes: [QUALITY_FINDING_FALSE_PREDICATE]}

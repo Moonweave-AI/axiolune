@@ -1,0 +1,785 @@
+schemaVersion: '1.0'
+contract: axiolune-m2-cq-orders-portfolio/v1
+referenceTime: '2026-07-31T12:00:00Z'
+
+artifactBindings:
+  - artifactRef: urn:artifact:orders-portfolio-cq-synthetic-v1
+    repositoryPath: tests/m2/fixtures/orders-portfolio-cq/source-records.yaml
+    artifactDigest: sha256:50e2b3f4fba19bf51dd6f2491765ade6dce2e00aee14ed3d9ceff6da713f0040
+
+evidenceArtifacts:
+  - ref: https://axiolune.ai/policies/valuation-precision/1
+    digest: sha256:946d8b89e1467d356cd8edd0ce624338f7f7f5727fae1ace3abcdd4c6d4a9b84
+    payload:
+      amountScale: 6
+      arithmetic: exact-rational
+      intermediate: unbounded-integer
+      policyId: axiolune-direct-unit-valuation-precision-v1
+      quantityScale: 6
+      rateScale: 6
+      schemaVersion: '1.0'
+  - ref: https://axiolune.ai/policies/valuation-rounding/1
+    digest: sha256:94ef9cfff4d16d0930762fc7cd942675a15d4f779bfd64d02ca6087c1cfd9738
+    payload:
+      mode: half-even
+      outputScale: 6
+      policyId: axiolune-direct-unit-valuation-rounding-v1
+      schemaVersion: '1.0'
+      stages: [direct-unit-product, fx-conversion]
+  - ref: https://axiolune.ai/contexts/fx-input/1
+    digest: sha256:c50002388b540883bd55ff81b432e256a6662e9d548355c65cb3fc11cf55b473
+    payload:
+      completedAt: '2025-01-01T00:00:00Z'
+      contextId: fx-input-1
+      schemaVersion: '1.0'
+      status: completed
+
+templates:
+  provenance: &provenance
+    sourceArtifactRef: urn:artifact:orders-portfolio-cq-synthetic-v1
+    sourceArtifactDigest: sha256:50e2b3f4fba19bf51dd6f2491765ade6dce2e00aee14ed3d9ceff6da713f0040
+    sourceLocator:
+      mediaType: text/yaml
+      selectorLanguage: json-pointer
+      expression: /records
+  baseAxes: &baseAxes
+    validFrom: '2026-01-01T00:00:00Z'
+    knowledgeFrom: '2026-01-01T00:00:01Z'
+    availableFrom: '2026-01-01T00:00:02Z'
+  baseFact: &baseFact
+    revision: 0
+    axes: *baseAxes
+    provenance: *provenance
+
+accountTypeMembers:
+  - id: https://axiolune.ai/ontology/finance/foundation/AccountType/cash
+    codeListIri: https://axiolune.ai/ontology/finance/foundation/AccountType
+    notation: cash
+  - id: https://axiolune.ai/ontology/finance/foundation/AccountType/securitiesCustody
+    codeListIri: https://axiolune.ai/ontology/finance/foundation/AccountType
+    notation: securitiesCustody
+  - id: https://axiolune.ai/ontology/finance/foundation/AccountType/multiAsset
+    codeListIri: https://axiolune.ai/ontology/finance/foundation/AccountType
+    notation: multiAsset
+
+parties:
+  - id: urn:party:manager-alpha
+    name: Alpha Asset Management
+  - id: urn:party:broker-one
+    name: Broker One
+  - id: urn:party:investor-alpha
+    name: Alpha Investor
+  - id: urn:party:contra-one
+    name: Contra Party One
+
+portfolios:
+  - id: urn:portfolio:alpha
+    portfolioIdentifier: PORT-ALPHA
+    name: Alpha Portfolio
+
+accounts:
+  - <<: *baseFact
+    id: urn:account:alpha:v0
+    logicalId: urn:account:alpha
+    accountTypeMemberIri: https://axiolune.ai/ontology/finance/foundation/AccountType/securitiesCustody
+  - <<: *baseFact
+    id: urn:account:cash:v0
+    logicalId: urn:account:cash
+    accountTypeMemberIri: https://axiolune.ai/ontology/finance/foundation/AccountType/cash
+  - <<: *baseFact
+    id: urn:account:contra:v0
+    logicalId: urn:account:contra
+    accountTypeMemberIri: https://axiolune.ai/ontology/finance/foundation/AccountType/securitiesCustody
+
+instruments:
+  - <<: *baseFact
+    id: urn:instrument:aapl:v0
+    logicalId: urn:instrument:aapl
+    name: Apple Common Stock
+  - <<: *baseFact
+    id: urn:instrument:bond-1:v0
+    logicalId: urn:instrument:bond-1
+    name: Synthetic Bond One
+
+listings:
+  - <<: *baseFact
+    id: urn:listing:aapl-xnas:v0
+    logicalId: urn:listing:aapl-xnas
+    instrumentVersionIri: urn:instrument:aapl:v0
+    facilityLogicalIri: urn:facility:XNAS
+
+  - <<: *baseFact
+    id: urn:listing:bond-xnas:v0
+    logicalId: urn:listing:bond-xnas
+    instrumentVersionIri: urn:instrument:bond-1:v0
+    facilityLogicalIri: urn:facility:XNAS
+
+otcContexts: []
+
+mandates:
+  - <<: *baseFact
+    id: urn:mandate:alpha-manager:v0
+    logicalId: urn:mandate:alpha-manager
+    portfolioLogicalIri: urn:portfolio:alpha
+    managingPartyLogicalIri: urn:party:manager-alpha
+    authorityLogicalIri: urn:authority:investment-committee
+    authorityScope: full-discretionary-management
+    approvalRef: urn:decision:mandate-alpha-approved
+    approvalDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+
+memberships:
+  - <<: *baseFact
+    id: urn:membership:alpha-account:v0
+    logicalId: urn:membership:alpha-account
+    portfolioLogicalIri: urn:portfolio:alpha
+    accountVersionIri: urn:account:alpha:v0
+
+membershipClosures:
+  - <<: *baseFact
+    id: urn:membership-closure:alpha:v0
+    logicalId: urn:membership-closure:alpha
+    portfolioLogicalIri: urn:portfolio:alpha
+    membershipVersionIris: [urn:membership:alpha-account:v0]
+    membershipCount: 1
+    membershipVersionSetDigest: sha256:27637d2901e143652a85c6bb891db6245e1953330cfec1d255d8a7a785fa2481
+
+holdings:
+  - <<: *baseFact
+    id: urn:holding:alpha-aapl-10:v0
+    logicalId: urn:holding:alpha-aapl-10
+    accountVersionIri: urn:account:alpha:v0
+    instrumentVersionIri: urn:instrument:aapl:v0
+    listingVersionIri: urn:listing:aapl-xnas:v0
+    quantity: {value: '10', unit: 'urn:unit:share', precision: 6}
+  - <<: *baseFact
+    id: urn:holding:alpha-aapl-5:v0
+    logicalId: urn:holding:alpha-aapl-5
+    accountVersionIri: urn:account:alpha:v0
+    instrumentVersionIri: urn:instrument:aapl:v0
+    listingVersionIri: urn:listing:aapl-xnas:v0
+    quantity: {value: '5', unit: 'urn:unit:share', precision: 6}
+  - <<: *baseFact
+    id: urn:holding:alpha-bond:v0
+    logicalId: urn:holding:alpha-bond
+    accountVersionIri: urn:account:alpha:v0
+    instrumentVersionIri: urn:instrument:bond-1:v0
+    listingVersionIri: urn:listing:bond-xnas:v0
+    quantity: {value: '2', unit: 'urn:unit:bond', precision: 6}
+
+positions: []
+
+streams:
+  - <<: *baseFact
+    id: urn:order-stream:accepted:v0
+    logicalId: urn:order-stream:accepted
+    providerLogicalIri: urn:party:broker-one
+    externalOrderVersionIri: urn:external-order:accepted:v0
+    providerStreamId: stream-accepted
+  - <<: *baseFact
+    id: urn:order-stream:rejected:v0
+    logicalId: urn:order-stream:rejected
+    providerLogicalIri: urn:party:broker-one
+    externalOrderVersionIri: urn:external-order:rejected:v0
+    providerStreamId: stream-rejected
+  - <<: *baseFact
+    id: urn:order-stream:violation:v0
+    logicalId: urn:order-stream:violation
+    providerLogicalIri: urn:party:broker-one
+    externalOrderVersionIri: urn:external-order:violation:v0
+    providerStreamId: stream-violation
+  - <<: *baseFact
+    id: urn:order-stream:corrected:v0
+    logicalId: urn:order-stream:corrected
+    providerLogicalIri: urn:party:broker-one
+    externalOrderVersionIri: urn:external-order:corrected:v0
+    providerStreamId: stream-corrected
+
+intents:
+  - <<: *baseFact
+    id: urn:order-intent:accepted:v0
+    logicalId: urn:order-intent:accepted
+    clientIntentId: INTENT-ACCEPTED
+    accountVersionIri: urn:account:alpha:v0
+    instrumentVersionIri: urn:instrument:aapl:v0
+    listingVersionIri: urn:listing:aapl-xnas:v0
+  - <<: *baseFact
+    id: urn:order-intent:rejected:v0
+    logicalId: urn:order-intent:rejected
+    clientIntentId: INTENT-REJECTED
+    accountVersionIri: urn:account:alpha:v0
+    instrumentVersionIri: urn:instrument:aapl:v0
+    listingVersionIri: urn:listing:aapl-xnas:v0
+  - <<: *baseFact
+    id: urn:order-intent:violation:v0
+    logicalId: urn:order-intent:violation
+    clientIntentId: INTENT-VIOLATION
+    accountVersionIri: urn:account:alpha:v0
+    instrumentVersionIri: urn:instrument:aapl:v0
+    listingVersionIri: urn:listing:aapl-xnas:v0
+  - <<: *baseFact
+    id: urn:order-intent:corrected:v0
+    logicalId: urn:order-intent:corrected
+    clientIntentId: INTENT-CORRECTED
+    accountVersionIri: urn:account:alpha:v0
+    instrumentVersionIri: urn:instrument:aapl:v0
+    listingVersionIri: urn:listing:aapl-xnas:v0
+  - <<: *baseFact
+    id: urn:order-intent:lineage-root:v0
+    logicalId: urn:order-intent:lineage-root
+    clientIntentId: INTENT-LINEAGE-ROOT
+    accountVersionIri: urn:account:alpha:v0
+    instrumentVersionIri: urn:instrument:aapl:v0
+    listingVersionIri: urn:listing:aapl-xnas:v0
+    side: Buy
+    quantity: {value: '100', unit: 'urn:unit:share'}
+  - <<: *baseFact
+    id: urn:order-intent:lineage-split-a:v0
+    logicalId: urn:order-intent:lineage-split-a
+    clientIntentId: INTENT-LINEAGE-SPLIT-A
+    accountVersionIri: urn:account:alpha:v0
+    instrumentVersionIri: urn:instrument:aapl:v0
+    listingVersionIri: urn:listing:aapl-xnas:v0
+    side: Buy
+    quantity: {value: '40', unit: 'urn:unit:share'}
+  - <<: *baseFact
+    id: urn:order-intent:lineage-split-b:v0
+    logicalId: urn:order-intent:lineage-split-b
+    clientIntentId: INTENT-LINEAGE-SPLIT-B
+    accountVersionIri: urn:account:alpha:v0
+    instrumentVersionIri: urn:instrument:aapl:v0
+    listingVersionIri: urn:listing:aapl-xnas:v0
+    side: Buy
+    quantity: {value: '60', unit: 'urn:unit:share'}
+  - <<: *baseFact
+    id: urn:order-intent:lineage-aggregate-other:v0
+    logicalId: urn:order-intent:lineage-aggregate-other
+    clientIntentId: INTENT-LINEAGE-AGGREGATE-OTHER
+    accountVersionIri: urn:account:alpha:v0
+    instrumentVersionIri: urn:instrument:aapl:v0
+    listingVersionIri: urn:listing:aapl-xnas:v0
+    side: Buy
+    quantity: {value: '20', unit: 'urn:unit:share'}
+  - <<: *baseFact
+    id: urn:order-intent:lineage-aggregate-result:v0
+    logicalId: urn:order-intent:lineage-aggregate-result
+    clientIntentId: INTENT-LINEAGE-AGGREGATE-RESULT
+    accountVersionIri: urn:account:alpha:v0
+    instrumentVersionIri: urn:instrument:aapl:v0
+    listingVersionIri: urn:listing:aapl-xnas:v0
+    side: Buy
+    quantity: {value: '60', unit: 'urn:unit:share'}
+
+orderLineages:
+  - <<: *baseFact
+    id: urn:order-intent-lineage:split-root:v0
+    logicalId: urn:order-intent-lineage:split-root
+    kind: split
+    sourceIntentVersionIris:
+      - urn:order-intent:lineage-root:v0
+    sourceIntentCount: 1
+    sourceIntentVersionSetDigest: sha256:7ff9efe4cf5d6544100c9162c2b97ceca6d8d16ef0b6d9c22df54ef7014cbae9
+    resultIntentVersionIris:
+      - urn:order-intent:lineage-split-a:v0
+      - urn:order-intent:lineage-split-b:v0
+    resultIntentCount: 2
+    resultIntentVersionSetDigest: sha256:4ca93700b0abefb4cf212f6781bbbf456f1761cbe51c5eae8be76efc0833d120
+    orderLineageKeyDigest: sha256:4d9544db53947930693432028b50703aa5133ee624ec3c2a4ac72d210d93e1eb
+  - <<: *baseFact
+    id: urn:order-intent-lineage:aggregate-routed:v0
+    logicalId: urn:order-intent-lineage:aggregate-routed
+    kind: aggregation
+    sourceIntentVersionIris:
+      - urn:order-intent:lineage-aggregate-other:v0
+      - urn:order-intent:lineage-split-a:v0
+    sourceIntentCount: 2
+    sourceIntentVersionSetDigest: sha256:353d19029cbe417d5ad20254e098cee727fcd9ab9e6b4f56857356b4100c42cd
+    resultIntentVersionIris:
+      - urn:order-intent:lineage-aggregate-result:v0
+    resultIntentCount: 1
+    resultIntentVersionSetDigest: sha256:474fb72f580461bc104c1567acdf13ccace0aabcc4c1c6900409524206d9e13a
+    orderLineageKeyDigest: sha256:ea57d77d8a3e05095b7a717aaf6d632cdfa65711cf5e0a2f569df8aac2c7f6d0
+
+externalOrders:
+  - <<: *baseFact
+    id: urn:external-order:accepted:v0
+    logicalId: urn:external-order:accepted
+    externalOrderId: VENUE-1001
+    originatingIntentVersionIri: urn:order-intent:accepted:v0
+  - <<: *baseFact
+    id: urn:external-order:rejected:v0
+    logicalId: urn:external-order:rejected
+    externalOrderId: VENUE-1002
+    originatingIntentVersionIri: urn:order-intent:rejected:v0
+  - <<: *baseFact
+    id: urn:external-order:violation:v0
+    logicalId: urn:external-order:violation
+    externalOrderId: VENUE-1003
+    originatingIntentVersionIri: urn:order-intent:violation:v0
+  - <<: *baseFact
+    id: urn:external-order:corrected:v0
+    logicalId: urn:external-order:corrected
+    externalOrderId: VENUE-1004
+    originatingIntentVersionIri: urn:order-intent:corrected:v0
+
+events:
+  - <<: *baseFact
+    id: urn:order-event:accepted-initialized:v0
+    logicalId: urn:order-event:accepted-initialized
+    axes:
+      validFrom: '2026-07-31T09:00:00Z'
+      knowledgeFrom: '2026-07-31T09:00:01Z'
+      availableFrom: '2026-07-31T09:00:02Z'
+    streamVersionIri: urn:order-stream:accepted:v0
+    externalOrderVersionIri: urn:external-order:accepted:v0
+    orderIntentVersionIri: urn:order-intent:accepted:v0
+    providerEventId: event-accepted-1
+    sourceOrderKey: 1
+    kind: Initialized
+    state: Initialized
+    observedAt: '2026-07-31T09:00:00Z'
+  - <<: *baseFact
+    id: urn:order-event:accepted-submitted:v0
+    logicalId: urn:order-event:accepted-submitted
+    axes:
+      validFrom: '2026-07-31T09:01:00Z'
+      knowledgeFrom: '2026-07-31T09:01:01Z'
+      availableFrom: '2026-07-31T09:01:02Z'
+    streamVersionIri: urn:order-stream:accepted:v0
+    externalOrderVersionIri: urn:external-order:accepted:v0
+    orderIntentVersionIri: urn:order-intent:accepted:v0
+    providerEventId: event-accepted-2
+    sourceOrderKey: 2
+    kind: Submitted
+    state: Submitted
+    observedAt: '2026-07-31T09:01:00Z'
+  - <<: *baseFact
+    id: urn:order-event:accepted-accepted:v0
+    logicalId: urn:order-event:accepted-accepted
+    axes:
+      validFrom: '2026-07-31T09:02:00Z'
+      knowledgeFrom: '2026-07-31T09:02:01Z'
+      availableFrom: '2026-07-31T09:02:02Z'
+    streamVersionIri: urn:order-stream:accepted:v0
+    externalOrderVersionIri: urn:external-order:accepted:v0
+    orderIntentVersionIri: urn:order-intent:accepted:v0
+    providerEventId: event-accepted-3
+    sourceOrderKey: 3
+    kind: Accepted
+    state: Accepted
+    observedAt: '2026-07-31T09:02:00Z'
+  - <<: *baseFact
+    id: urn:order-event:accepted-filled:v0
+    logicalId: urn:order-event:accepted-filled
+    axes:
+      validFrom: '2026-07-31T09:05:00Z'
+      knowledgeFrom: '2026-07-31T09:05:01Z'
+      availableFrom: '2026-07-31T09:05:02Z'
+    streamVersionIri: urn:order-stream:accepted:v0
+    externalOrderVersionIri: urn:external-order:accepted:v0
+    orderIntentVersionIri: urn:order-intent:accepted:v0
+    providerEventId: event-accepted-4
+    sourceOrderKey: 4
+    kind: Filled
+    state: Filled
+    observedAt: '2026-07-31T09:05:00Z'
+  - <<: *baseFact
+    id: urn:order-event:rejected-submitted:v0
+    logicalId: urn:order-event:rejected-submitted
+    axes:
+      validFrom: '2026-07-31T09:00:00Z'
+      knowledgeFrom: '2026-07-31T09:00:01Z'
+      availableFrom: '2026-07-31T09:00:02Z'
+    streamVersionIri: urn:order-stream:rejected:v0
+    externalOrderVersionIri: urn:external-order:rejected:v0
+    orderIntentVersionIri: urn:order-intent:rejected:v0
+    providerEventId: event-rejected-1
+    sourceOrderKey: 1
+    kind: Submitted
+    state: Submitted
+    observedAt: '2026-07-31T09:00:00Z'
+  - <<: *baseFact
+    id: urn:order-event:rejected-rejected:v0
+    logicalId: urn:order-event:rejected-rejected
+    axes:
+      validFrom: '2026-07-31T09:01:00Z'
+      knowledgeFrom: '2026-07-31T09:01:01Z'
+      availableFrom: '2026-07-31T09:01:02Z'
+    streamVersionIri: urn:order-stream:rejected:v0
+    externalOrderVersionIri: urn:external-order:rejected:v0
+    orderIntentVersionIri: urn:order-intent:rejected:v0
+    providerEventId: event-rejected-2
+    sourceOrderKey: 2
+    kind: Rejected
+    state: Rejected
+    observedAt: '2026-07-31T09:01:00Z'
+  - <<: *baseFact
+    id: urn:order-event:violation-submitted:v0
+    logicalId: urn:order-event:violation-submitted
+    axes:
+      validFrom: '2026-07-31T09:00:00Z'
+      knowledgeFrom: '2026-07-31T09:00:01Z'
+      availableFrom: '2026-07-31T09:00:02Z'
+    streamVersionIri: urn:order-stream:violation:v0
+    externalOrderVersionIri: urn:external-order:violation:v0
+    orderIntentVersionIri: urn:order-intent:violation:v0
+    providerEventId: event-violation-1
+    sourceOrderKey: 1
+    kind: Submitted
+    state: Submitted
+    observedAt: '2026-07-31T09:00:00Z'
+  - <<: *baseFact
+    id: urn:order-event:violation-filled:v0
+    logicalId: urn:order-event:violation-filled
+    axes:
+      validFrom: '2026-07-31T09:01:00Z'
+      knowledgeFrom: '2026-07-31T09:01:01Z'
+      availableFrom: '2026-07-31T09:01:02Z'
+    streamVersionIri: urn:order-stream:violation:v0
+    externalOrderVersionIri: urn:external-order:violation:v0
+    orderIntentVersionIri: urn:order-intent:violation:v0
+    providerEventId: event-violation-2
+    sourceOrderKey: 2
+    kind: Filled
+    state: Filled
+    observedAt: '2026-07-31T09:01:00Z'
+  - <<: *baseFact
+    id: urn:order-event:corrected:v0
+    logicalId: urn:order-event:corrected
+    revision: 0
+    axes:
+      validFrom: '2026-07-31T09:10:00Z'
+      knowledgeFrom: '2026-07-31T10:00:00Z'
+      availableFrom: '2026-07-31T10:00:01Z'
+    streamVersionIri: urn:order-stream:corrected:v0
+    externalOrderVersionIri: urn:external-order:corrected:v0
+    orderIntentVersionIri: urn:order-intent:corrected:v0
+    providerEventId: event-corrected-1
+    sourceOrderKey: 1
+    kind: Accepted
+    state: Accepted
+    observedAt: '2026-07-31T09:10:00Z'
+  - <<: *baseFact
+    id: urn:order-event:corrected:v1
+    logicalId: urn:order-event:corrected
+    revision: 1
+    axes:
+      validFrom: '2026-07-31T09:10:00Z'
+      knowledgeFrom: '2026-07-31T11:00:00Z'
+      availableFrom: '2026-07-31T11:00:01Z'
+    streamVersionIri: urn:order-stream:corrected:v0
+    externalOrderVersionIri: urn:external-order:corrected:v0
+    orderIntentVersionIri: urn:order-intent:corrected:v0
+    providerEventId: event-corrected-1
+    sourceOrderKey: 1
+    kind: Rejected
+    state: Rejected
+    observedAt: '2026-07-31T09:10:00Z'
+
+executions:
+  - <<: *baseFact
+    id: urn:execution:fill-1:v0
+    logicalId: urn:execution:fill-1
+    axes:
+      validFrom: '2026-07-31T09:03:00Z'
+      knowledgeFrom: '2026-07-31T09:03:01Z'
+      availableFrom: '2026-07-31T09:03:02Z'
+    observedAt: '2026-07-31T09:03:00Z'
+    providerExecutionId: fill-1
+    streamVersionIri: urn:order-stream:accepted:v0
+    externalOrderVersionIri: urn:external-order:accepted:v0
+    orderIntentVersionIri: urn:order-intent:accepted:v0
+    accountVersionIri: urn:account:alpha:v0
+    executionPartyLogicalIri: urn:party:investor-alpha
+    contraAccountVersionIri: urn:account:contra:v0
+    contraPartyLogicalIri: urn:party:contra-one
+    executingBrokerLogicalIri: urn:party:broker-one
+    instrumentVersionIri: urn:instrument:aapl:v0
+    instrumentLogicalIri: urn:instrument:aapl
+    listingVersionIri: urn:listing:aapl-xnas:v0
+    side: Buy
+    quantity: {value: '2', unit: 'urn:unit:share'}
+    price: {amount: '100', currency: USD}
+    quotationContractVersionIri: urn:quotation:aapl-direct:v0
+  - <<: *baseFact
+    id: urn:execution:fill-2:v0
+    logicalId: urn:execution:fill-2
+    axes:
+      validFrom: '2026-07-31T09:04:00Z'
+      knowledgeFrom: '2026-07-31T09:04:01Z'
+      availableFrom: '2026-07-31T09:04:02Z'
+    observedAt: '2026-07-31T09:04:00Z'
+    providerExecutionId: fill-2
+    streamVersionIri: urn:order-stream:accepted:v0
+    externalOrderVersionIri: urn:external-order:accepted:v0
+    orderIntentVersionIri: urn:order-intent:accepted:v0
+    accountVersionIri: urn:account:alpha:v0
+    executionPartyLogicalIri: urn:party:investor-alpha
+    contraAccountVersionIri: urn:account:contra:v0
+    contraPartyLogicalIri: urn:party:contra-one
+    executingBrokerLogicalIri: urn:party:broker-one
+    instrumentVersionIri: urn:instrument:aapl:v0
+    instrumentLogicalIri: urn:instrument:aapl
+    listingVersionIri: urn:listing:aapl-xnas:v0
+    side: Buy
+    quantity: {value: '3', unit: 'urn:unit:share'}
+    price: {amount: '109', currency: USD}
+    quotationContractVersionIri: urn:quotation:aapl-direct:v0
+
+fees:
+  - <<: *baseFact
+    id: urn:fee:fill-1:v0
+    logicalId: urn:fee:fill-1
+    executionVersionIri: urn:execution:fill-1:v0
+    kind: commission
+    effect: charge
+    amount: {amount: '2', currency: USD}
+
+quotationContracts:
+  - <<: *baseFact
+    id: urn:quotation:aapl-direct:v0
+    logicalId: urn:quotation:aapl-direct
+    contextVersionIri: urn:listing:aapl-xnas:v0
+    instrumentLogicalIri: urn:instrument:aapl
+    quoteCurrency: USD
+    denominatorUnit: urn:unit:share
+  - <<: *baseFact
+    id: urn:quotation:aapl-direct-eur:v0
+    logicalId: urn:quotation:aapl-direct-eur
+    contextVersionIri: urn:listing:aapl-xnas:v0
+    instrumentLogicalIri: urn:instrument:aapl
+    quoteCurrency: EUR
+    denominatorUnit: urn:unit:share
+  - <<: *baseFact
+    id: urn:quotation:aapl-direct-bond-unit:v0
+    logicalId: urn:quotation:aapl-direct-bond-unit
+    contextVersionIri: urn:listing:aapl-xnas:v0
+    instrumentLogicalIri: urn:instrument:aapl
+    quoteCurrency: USD
+    denominatorUnit: urn:unit:bond
+  - <<: *baseFact
+    id: urn:quotation:bond-direct-eur:v0
+    logicalId: urn:quotation:bond-direct-eur
+    contextVersionIri: urn:listing:bond-xnas:v0
+    instrumentLogicalIri: urn:instrument:bond-1
+    quoteCurrency: EUR
+    denominatorUnit: urn:unit:bond
+
+liquidityDeterminations:
+  - <<: *baseFact
+    id: urn:liquidity-determination:fill-1:v0
+    logicalId: urn:liquidity-determination:fill-1
+    executionVersionIri: urn:execution:fill-1:v0
+    streamVersionIri: urn:order-stream:accepted:v0
+    perspective: executionAccountOrder
+    result: classified
+    role: maker
+    sourceRecordRef: urn:source-record:fill-1
+    sourceRecordDigest: sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+    rawFieldLocator: /liquidity
+    rawLexicalValue: M
+    mappingVersionIri: urn:mapping:liquidity:v0
+  - <<: *baseFact
+    id: urn:liquidity-determination:fill-2:v0
+    logicalId: urn:liquidity-determination:fill-2
+    executionVersionIri: urn:execution:fill-2:v0
+    streamVersionIri: urn:order-stream:accepted:v0
+    perspective: executionAccountOrder
+    result: unavailable
+    unavailableReason: providerNotSpecified
+
+transitionProfiles:
+  - <<: *baseFact
+    id: urn:transition-profile:broker-one:v0
+    logicalId: urn:transition-profile:broker-one
+    providerLogicalIri: urn:party:broker-one
+    transitions:
+      Initialized: [Submitted, Rejected]
+      Submitted: [Accepted, Rejected]
+      Accepted: [PartiallyFilled, Filled, Canceled, Expired]
+      PartiallyFilled: [Filled, Canceled]
+    terminalStates: [Filled, Canceled, Rejected, Expired]
+
+integrityFindings:
+  - <<: *baseFact
+    id: urn:order-finding:violation:v0
+    logicalId: urn:order-finding:violation
+    kind: transitionViolation
+    streamVersionIri: urn:order-stream:violation:v0
+    fromEventVersionIri: urn:order-event:violation-submitted:v0
+    toEventVersionIri: urn:order-event:violation-filled:v0
+    transitionProfileVersionIri: urn:transition-profile:broker-one:v0
+
+positionLots:
+  - <<: *baseFact
+    id: urn:position-lot:fill-1:v0
+    logicalId: urn:position-lot:fill-1
+    openingExecutionVersionIri: urn:execution:fill-1:v0
+    openingAllocationVersionIri: urn:lot-allocation:fill-1:v0
+    accountVersionIri: urn:account:alpha:v0
+    instrumentVersionIri: urn:instrument:aapl:v0
+    originalQuantity: {value: '2', unit: 'urn:unit:share'}
+    openingGross: {amount: '200', currency: USD}
+    openingCostBasis: {amount: '202', currency: USD}
+
+lotAllocations:
+  - <<: *baseFact
+    id: urn:lot-allocation:fill-1:v0
+    logicalId: urn:lot-allocation:fill-1
+    executionVersionIri: urn:execution:fill-1:v0
+    lotVersionIri: urn:position-lot:fill-1:v0
+    kind: opening
+    quantity: {value: '2', unit: 'urn:unit:share'}
+    gross: {amount: '200', currency: USD}
+    costBasis: {amount: '202', currency: USD}
+
+feeAllocations:
+  - <<: *baseFact
+    id: urn:fee-allocation:fill-1:v0
+    logicalId: urn:fee-allocation:fill-1
+    feeVersionIri: urn:fee:fill-1:v0
+    lotAllocationVersionIri: urn:lot-allocation:fill-1:v0
+    amount: {amount: '2', currency: USD}
+
+allocationClosures:
+  - <<: *baseFact
+    id: urn:allocation-closure:fill-1:v0
+    logicalId: urn:allocation-closure:fill-1
+    executionVersionIri: urn:execution:fill-1:v0
+    allocationVersionIris: [urn:lot-allocation:fill-1:v0]
+    allocationVersionSetDigest: sha256:9b5d295f1ffe41aab123ead36103da5b3c61732bb6f5f6fc2364d7c88695d879
+    feeVersionIris: [urn:fee:fill-1:v0]
+    feeVersionSetDigest: sha256:7606d61ed617d5dae4157759d2c8a1afde3528be0866b4f9a8f08d2dee85689b
+    feeAllocationVersionIris: [urn:fee-allocation:fill-1:v0]
+    feeAllocationVersionSetDigest: sha256:8d24b0955b5bc7fc5e82251f5107472b9bd771b6ef825cafe4e8c7e9c188ff67
+
+valuationDefinitions:
+  - <<: *baseFact
+    id: urn:valuation-definition:direct-unit:v0
+    logicalId: urn:valuation-definition:direct-unit
+    authorityLogicalIri: urn:party:manager-alpha
+    valuationDefinitionId: direct-unit-v1
+    valuationMethod: directUnitPriceTimesQuantity
+    quotationContractVersionIris:
+      - urn:quotation:aapl-direct:v0
+      - urn:quotation:bond-direct-eur:v0
+    quotationContractCount: 2
+    quotationContractVersionSetDigest: sha256:28d54863d0953e149b28431c359f85caaf4160a4b1af5eeeb8467154ecfb8b8c
+    formulaDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+    inputContractDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+    outputContractDigest: sha256:3333333333333333333333333333333333333333333333333333333333333333
+    precisionPolicyRef: https://axiolune.ai/policies/valuation-precision/1
+    precisionPolicyDigest: sha256:946d8b89e1467d356cd8edd0ce624338f7f7f5727fae1ace3abcdd4c6d4a9b84
+    roundingPolicyRef: https://axiolune.ai/policies/valuation-rounding/1
+    roundingPolicyDigest: sha256:94ef9cfff4d16d0930762fc7cd942675a15d4f779bfd64d02ca6087c1cfd9738
+    toolLockRef: urn:tool-lock:orders-portfolio-cq:v0
+    toolLockDigest: sha256:4444444444444444444444444444444444444444444444444444444444444444
+    runtimeDigest: sha256:5555555555555555555555555555555555555555555555555555555555555555
+
+valuationHeaders:
+  - <<: *baseFact
+    id: urn:portfolio-valuation:alpha:v0
+    logicalId: urn:portfolio-valuation:alpha
+    portfolioLogicalIri: urn:portfolio:alpha
+    membershipClosureVersionIri: urn:membership-closure:alpha:v0
+    definitionVersionIri: urn:valuation-definition:direct-unit:v0
+    reportingCurrency: USD
+
+priceObservations:
+  - <<: *baseFact
+    id: urn:price:aapl-usd:v0
+    logicalId: urn:price:aapl-usd
+    instrumentVersionIri: urn:instrument:aapl:v0
+    listingVersionIri: urn:listing:aapl-xnas:v0
+    quotationContractVersionIri: urn:quotation:aapl-direct:v0
+    priceValue: {amount: '100', currency: USD, scale: 6}
+    priceKind: mark
+    observedAt: '2026-07-31T11:59:00Z'
+    providerObservationId: price-aapl-usd-1
+    sourceOrderKey: 1
+  - <<: *baseFact
+    id: urn:price:bond-eur:v0
+    logicalId: urn:price:bond-eur
+    instrumentVersionIri: urn:instrument:bond-1:v0
+    listingVersionIri: urn:listing:bond-xnas:v0
+    quotationContractVersionIri: urn:quotation:bond-direct-eur:v0
+    priceValue: {amount: '100', currency: EUR, scale: 6}
+    priceKind: mark
+    observedAt: '2026-07-31T11:59:00Z'
+    providerObservationId: price-bond-eur-1
+    sourceOrderKey: 2
+
+positionValuations:
+  - <<: *baseFact
+    id: urn:position-valuation:aapl-10:v0
+    logicalId: urn:position-valuation:aapl-10
+    headerVersionIri: urn:portfolio-valuation:alpha:v0
+    inputSnapshotVersionIri: urn:holding:alpha-aapl-10:v0
+    accountVersionIri: urn:account:alpha:v0
+    priceVersionIri: urn:price:aapl-usd:v0
+    marketValue: {amount: '1000', currency: USD, scale: 6}
+  - <<: *baseFact
+    id: urn:position-valuation:aapl-5:v0
+    logicalId: urn:position-valuation:aapl-5
+    headerVersionIri: urn:portfolio-valuation:alpha:v0
+    inputSnapshotVersionIri: urn:holding:alpha-aapl-5:v0
+    accountVersionIri: urn:account:alpha:v0
+    priceVersionIri: urn:price:aapl-usd:v0
+    marketValue: {amount: '500', currency: USD, scale: 6}
+  - <<: *baseFact
+    id: urn:position-valuation:bond:v0
+    logicalId: urn:position-valuation:bond
+    headerVersionIri: urn:portfolio-valuation:alpha:v0
+    inputSnapshotVersionIri: urn:holding:alpha-bond:v0
+    accountVersionIri: urn:account:alpha:v0
+    priceVersionIri: urn:price:bond-eur:v0
+    marketValue: {amount: '220', currency: USD, scale: 6}
+    fxConversionVersionIri: urn:fx-conversion:bond-eur-usd:v0
+
+fxRates:
+  - <<: *baseFact
+    id: urn:fx-rate:eur-usd:v0
+    logicalId: urn:fx-rate:eur-usd
+    baseCurrency: EUR
+    quoteCurrency: USD
+    rate: {value: '1.1', unit: 'urn:unit:USD-per-EUR', precision: 6}
+
+fxConversions:
+  - <<: *baseFact
+    id: urn:fx-conversion:bond-eur-usd:v0
+    logicalId: urn:fx-conversion:bond-eur-usd
+    valuationLineVersionIri: urn:position-valuation:bond:v0
+    rateVersionIri: urn:fx-rate:eur-usd:v0
+    baseCurrency: EUR
+    quoteCurrency: USD
+    direction: baseToQuote
+    roundingPolicyRef: https://axiolune.ai/policies/valuation-rounding/1
+    roundingPolicyDigest: sha256:94ef9cfff4d16d0930762fc7cd942675a15d4f779bfd64d02ca6087c1cfd9738
+    inputContextRef: https://axiolune.ai/contexts/fx-input/1
+    inputContextRecordDigest: sha256:c50002388b540883bd55ff81b432e256a6662e9d548355c65cb3fc11cf55b473
+    generatingContextRef: urn:run:portfolio-valuation:alpha:v0
+    inputMoney: {amount: '200', currency: EUR, scale: 6}
+    outputMoney: {amount: '220', currency: USD, scale: 6}
+
+closures:
+  - <<: *baseFact
+    id: urn:fact-closure:corrected-knowledge:v0
+    logicalId: urn:fact-closure:corrected-knowledge
+    axes:
+      validFrom: '2026-07-31T11:00:00Z'
+      knowledgeFrom: '2026-07-31T11:00:00Z'
+      availableFrom: '2026-07-31T11:00:01Z'
+    targetVersionIri: urn:order-event:corrected:v0
+    successorVersionIri: urn:order-event:corrected:v1
+    axis: knowledge
+    closedAt: '2026-07-31T11:00:00Z'
+  - <<: *baseFact
+    id: urn:fact-closure:corrected-availability:v0
+    logicalId: urn:fact-closure:corrected-availability
+    axes:
+      validFrom: '2026-07-31T11:00:01Z'
+      knowledgeFrom: '2026-07-31T11:00:01Z'
+      availableFrom: '2026-07-31T11:00:01Z'
+    targetVersionIri: urn:order-event:corrected:v0
+    successorVersionIri: urn:order-event:corrected:v1
+    axis: availability
+    closedAt: '2026-07-31T11:00:01Z'

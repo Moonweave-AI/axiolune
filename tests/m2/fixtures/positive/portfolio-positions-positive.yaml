@@ -1,182 +1,51 @@
-# Axiolune M2 Finance — Portfolio & Positions Positive Test Fixtures
-# Module: fin-portfolio-positions
-# Version: 0.1.0
-# Purpose: Demonstrate valid portfolio holdings, valuations, and price-to-valuation traceability per CQ-S3 and CQ-S4
+schemaVersion: "1.0"
 fixtures:
-  - id: portfolio-positive-001
-    description: valid holding snapshot with complete three-axis temporal semantics
-    type: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
-    instance:
-      iri: https://axiolune.ai/data/holdings/hold-001-v1
-      heldInAccount: https://axiolune.ai/data/accounts/acc-001
-      heldInPortfolio: https://axiolune.ai/data/portfolios/port-001
-      heldInstrument: https://axiolune.ai/data/instruments/inst-001
-      hasQuantity:
-        type: QuantityValue
-        hasNumericAmount: '100.00'
-        hasUnitCode: share
-      hasPositionSide: Long
-      hasCurrencyCode: USD
-      validFrom: '2026-01-15T00:00:00Z'
-      validTo: null
-      knowledgeFrom: '2026-01-15T16:00:00Z'
-      knowledgeTo: null
-      availableFrom: '2026-01-15T20:00:00Z'
-      availableTo: null
-      source: portfolio-service-eod
-      sourceVersion: 1.0.0
+  - id: portfolio-v03-positive-portfolio
+    description: Stable Portfolio object with authority-scoped identifier and complete fact evidence.
+    profile: portfolio-positions-v03-shacl
+    target: Portfolio
     expectedResult: accepted
-    note: 'Base case: holding snapshot with complete three-axis temporal semantics for CQ-S3'
-  - id: portfolio-positive-002
-    description: complete price-to-valuation traceability chain (CQ-S4)
-    type: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation
-    instance:
-      iri: https://axiolune.ai/data/valuations/val-001-v1
-      valuedHolding: https://axiolune.ai/data/holdings/hold-001-v1
-      usedPriceObservation: https://axiolune.ai/data/prices/price-001-v1
-      hasMarketValue:
-        type: MonetaryAmount
-        hasNumericAmount: '15025.00'
-        hasCurrencyCode: USD
-      hasCostBasis:
-        type: MonetaryAmount
-        hasNumericAmount: '14000.00'
-        hasCurrencyCode: USD
-      hasUnrealizedPnL:
-        type: MonetaryAmount
-        hasNumericAmount: '1025.00'
-        hasCurrencyCode: USD
-      hasValuationMethod: MarkToMarket
-      hasCurrencyCode: USD
-      validFrom: '2026-01-15T21:00:00Z'
-      validTo: null
-      knowledgeFrom: '2026-01-15T22:00:00Z'
-      knowledgeTo: null
-      availableFrom: '2026-01-15T22:30:00Z'
-      availableTo: null
-      source: valuation-engine
-      sourceVersion: 1.2.0
+
+  - id: portfolio-v03-positive-account-membership
+    description: Portfolio membership is an effective-dated Association to a Foundation account.
+    profile: portfolio-positions-v03-shacl
+    target: PortfolioAccountMembership
     expectedResult: accepted
-    note: >-
-      Demonstrates explicit price-to-valuation traceability for CQ-S4; price.availableFrom (21:30) <=
-      valuation.availableFrom (22:30)
-  - id: portfolio-positive-003
-    description: holding snapshot revision scenario (knowledge time closure)
-    type: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
-    instances:
-      - iri: https://axiolune.ai/data/holdings/hold-002-v1
-        heldInPortfolio: https://axiolune.ai/data/portfolios/port-001
-        heldInstrument: https://axiolune.ai/data/instruments/inst-002
-        hasQuantity:
-          type: QuantityValue
-          hasNumericAmount: '50.00'
-          hasUnitCode: share
-        hasPositionSide: Long
-        hasCurrencyCode: USD
-        validFrom: '2026-01-10T00:00:00Z'
-        validTo: null
-        knowledgeFrom: '2026-01-10T16:00:00Z'
-        knowledgeTo: '2026-01-11T10:00:00Z'
-        availableFrom: '2026-01-10T20:00:00Z'
-        availableTo: null
-        source: portfolio-service-eod
-      - iri: https://axiolune.ai/data/holdings/hold-002-v2
-        heldInPortfolio: https://axiolune.ai/data/portfolios/port-001
-        heldInstrument: https://axiolune.ai/data/instruments/inst-002
-        hasQuantity:
-          type: QuantityValue
-          hasNumericAmount: '55.00'
-          hasUnitCode: share
-        hasPositionSide: Long
-        hasCurrencyCode: USD
-        validFrom: '2026-01-10T00:00:00Z'
-        validTo: null
-        knowledgeFrom: '2026-01-11T10:00:00Z'
-        knowledgeTo: null
-        availableFrom: '2026-01-11T10:15:00Z'
-        availableTo: null
-        source: portfolio-service-correction
+
+  - id: portfolio-v03-positive-management-mandate
+    description: Portfolio management authority is represented by the canonical mandate Association.
+    profile: portfolio-positions-v03-shacl
+    target: PortfolioManagementMandate
     expectedResult: accepted
-    note: >-
-      Demonstrates knowledge time versioning: v1 superseded by v2 at knowledgeTo, supporting historical reproducibility
-      (CQ-S5)
-  - id: portfolio-positive-004
-    description: multiple holdings in portfolio at same as-of time
-    type: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
-    instances:
-      - iri: https://axiolune.ai/data/holdings/hold-003-v1
-        heldInPortfolio: https://axiolune.ai/data/portfolios/port-001
-        heldInstrument: https://axiolune.ai/data/instruments/inst-003
-        hasQuantity:
-          type: QuantityValue
-          hasNumericAmount: '200.00'
-          hasUnitCode: share
-        hasPositionSide: Long
-        validFrom: '2026-01-20T00:00:00Z'
-        knowledgeFrom: '2026-01-20T16:00:00Z'
-        availableFrom: '2026-01-20T20:00:00Z'
-        source: portfolio-service-eod
-      - iri: https://axiolune.ai/data/holdings/hold-004-v1
-        heldInPortfolio: https://axiolune.ai/data/portfolios/port-001
-        heldInstrument: https://axiolune.ai/data/instruments/inst-004
-        hasQuantity:
-          type: QuantityValue
-          hasNumericAmount: '150.00'
-          hasUnitCode: share
-        hasPositionSide: Long
-        validFrom: '2026-01-20T00:00:00Z'
-        knowledgeFrom: '2026-01-20T16:00:00Z'
-        availableFrom: '2026-01-20T20:00:00Z'
-        source: portfolio-service-eod
-      - iri: https://axiolune.ai/data/holdings/hold-005-v1
-        heldInPortfolio: https://axiolune.ai/data/portfolios/port-001
-        heldInstrument: https://axiolune.ai/data/instruments/inst-005
-        hasQuantity:
-          type: QuantityValue
-          hasNumericAmount: '300.00'
-          hasUnitCode: share
-        hasPositionSide: Long
-        validFrom: '2026-01-20T00:00:00Z'
-        knowledgeFrom: '2026-01-20T16:00:00Z'
-        availableFrom: '2026-01-20T20:00:00Z'
-        source: portfolio-service-eod
+
+  - id: portfolio-v03-positive-holding
+    description: HoldingSnapshot contains non-negative M3 QuantityValue and exact account/instrument roles.
+    profile: portfolio-positions-v03-shacl
+    target: HoldingSnapshot
     expectedResult: accepted
-    note: CQ-S3 should return all 3 holdings when queried with asOf times after 2026-01-20T20:00:00Z
-  - id: portfolio-positive-005
-    description: position lot tracking with cost basis
-    type: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot
-    instances:
-      - iri: https://axiolune.ai/data/lots/lot-001
-        lotForInstrument: https://axiolune.ai/data/instruments/inst-001
-        lotInAccount: https://axiolune.ai/data/accounts/acc-001
-        hasQuantity:
-          type: QuantityValue
-          hasNumericAmount: '50.00'
-          hasUnitCode: share
-        hasCostBasis:
-          type: MonetaryAmount
-          hasNumericAmount: '7000.00'
-          hasCurrencyCode: USD
-        hasPositionSide: Long
-        validFrom: '2026-01-05T00:00:00Z'
-        knowledgeFrom: '2026-01-05T16:00:00Z'
-        availableFrom: '2026-01-05T20:00:00Z'
-        source: execution-tracker
-      - iri: https://axiolune.ai/data/lots/lot-002
-        lotForInstrument: https://axiolune.ai/data/instruments/inst-001
-        lotInAccount: https://axiolune.ai/data/accounts/acc-001
-        hasQuantity:
-          type: QuantityValue
-          hasNumericAmount: '50.00'
-          hasUnitCode: share
-        hasCostBasis:
-          type: MonetaryAmount
-          hasNumericAmount: '7500.00'
-          hasCurrencyCode: USD
-        hasPositionSide: Long
-        validFrom: '2026-01-10T00:00:00Z'
-        knowledgeFrom: '2026-01-10T16:00:00Z'
-        availableFrom: '2026-01-10T20:00:00Z'
-        source: execution-tracker
+
+  - id: portfolio-v03-positive-signed-position
+    description: PositionSnapshot stores signed Quantity as its only direction truth.
+    profile: portfolio-positions-v03-shacl
+    target: PositionSnapshot
     expectedResult: accepted
-    note: Lot-level tracking for tax accounting; aggregate quantity=100, total cost basis=14500
+
+  - id: portfolio-v03-positive-external-cost-basis
+    description: External cost basis is scoped by one typed provider observation stream and one exact calculation-definition version.
+    profile: portfolio-positions-v03-shacl
+    target: ExternalCostBasisObservation
+    expectedResult: accepted
+
+  - id: portfolio-v03-positive-valuation-holding
+    description: PositionValuation selects exactly one HoldingSnapshot input and an exact price fact.
+    profile: portfolio-positions-v03-shacl
+    target: PositionValuation
+    input: holding
+    expectedResult: accepted
+
+  - id: portfolio-v03-positive-valuation-position
+    description: PositionValuation also permits exactly one PositionSnapshot input branch.
+    profile: portfolio-positions-v03-shacl
+    target: PositionValuation
+    input: position
+    expectedResult: accepted

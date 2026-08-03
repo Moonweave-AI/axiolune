@@ -1,0 +1,89 @@
+fixtureId: cross-module-cq-negative-v1
+functionVersion: axiolune-m2-cq-cross-module/v1
+graphFixture: foundation-market-instrument-graph.yaml
+templates:
+  pivot: &pivot
+    asOfValid: '2024-07-10T00:00:00Z'
+    asOfKnowledge: '2024-07-10T00:00:00Z'
+    asOfAvailable: '2024-07-10T00:00:00Z'
+    referenceTime: '2024-07-10T00:00:00Z'
+  isinAcme: &isinAcme
+    assignmentVersionIri: urn:identifier-assignment:acme-isin:v1
+    schemeVersionIri: urn:identifier-scheme:isin:v1
+    valueVersionIri: urn:identifier-value:isin:acme:v1
+    authorizationVersionIri: urn:identifier-authorization:isin-iso6166:v1
+cases:
+  - caseId: cq-s1-different-subjects-empty
+    cqId: CQ-S1
+    query:
+      pivot: *pivot
+      isinBindings:
+        - *isinAcme
+      internalBinding:
+        assignmentVersionIri: urn:identifier-assignment:beta-internal:v1
+        schemeVersionIri: urn:identifier-scheme:acme-internal:v1
+        valueVersionIri: urn:identifier-value:internal:beta:v1
+        authorizationVersionIri: urn:identifier-authorization:internal-acme:v1
+    expected:
+      status: ok
+      rows: []
+
+  - caseId: cq-s1-missing-issuance-empty
+    cqId: CQ-S1
+    mutations:
+      - op: set
+        path: issuances
+        value: []
+    query:
+      pivot: *pivot
+      isinBindings:
+        - *isinAcme
+      internalBinding:
+        assignmentVersionIri: urn:identifier-assignment:acme-internal:v1
+        schemeVersionIri: urn:identifier-scheme:acme-internal:v1
+        valueVersionIri: urn:identifier-value:internal:acme:v1
+        authorizationVersionIri: urn:identifier-authorization:internal-acme:v1
+    expected:
+      status: ok
+      rows: []
+
+  - caseId: cq-s1-non-authority-scoped-internal-rejected
+    cqId: CQ-S1
+    query:
+      pivot: *pivot
+      isinBindings:
+        - *isinAcme
+      internalBinding:
+        assignmentVersionIri: urn:identifier-assignment:acme-isin:v1
+        schemeVersionIri: urn:identifier-scheme:isin:v1
+        valueVersionIri: urn:identifier-value:isin:acme:v1
+        authorizationVersionIri: urn:identifier-authorization:isin-iso6166:v1
+    expected:
+      status: rejected
+      code: CQ_S1_INTERNAL_SCHEME
+
+  - caseId: cq-s1-global-conflict-without-fact-rejected
+    cqId: CQ-S1
+    mutations:
+      - op: set
+        path: identifierAssignmentConflictVersions
+        value: []
+    query:
+      pivot: *pivot
+      isinBindings:
+        - assignmentVersionIri: urn:identifier-assignment:conflict-acme:v1
+          schemeVersionIri: urn:identifier-scheme:isin:v1
+          valueVersionIri: urn:identifier-value:isin:conflict:v1
+          authorizationVersionIri: urn:identifier-authorization:isin-iso6166:v1
+        - assignmentVersionIri: urn:identifier-assignment:conflict-beta:v1
+          schemeVersionIri: urn:identifier-scheme:isin:v1
+          valueVersionIri: urn:identifier-value:isin:conflict:v1
+          authorizationVersionIri: urn:identifier-authorization:isin-iso6166:v1
+      internalBinding:
+        assignmentVersionIri: urn:identifier-assignment:acme-internal:v1
+        schemeVersionIri: urn:identifier-scheme:acme-internal:v1
+        valueVersionIri: urn:identifier-value:internal:acme:v1
+        authorizationVersionIri: urn:identifier-authorization:internal-acme:v1
+    expected:
+      status: rejected
+      code: CQ_F1_CONFLICT_REQUIRED

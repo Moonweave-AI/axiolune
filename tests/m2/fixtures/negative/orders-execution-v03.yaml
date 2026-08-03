@@ -1,0 +1,572 @@
+fixtures:
+  - id: OE-NEG-000-limit-intent-without-limit
+    contract: OrderIntentContract
+    expectedResult: rejected
+    instance:
+      account: https://axiolune.ai/accounts/ACC-1
+      instrument: https://axiolune.ai/instruments/AAPL
+      listingVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+      side: Buy
+      quantity: {value: "10", unit: urn:unit:share}
+      orderType: Limit
+      timeInForce: DAY
+
+  - id: OE-NEG-001-required-unavailable
+    contract: LiquidityRoleDetermination
+    expectedResult: rejected
+    expectedReason: required capability cannot be unavailable
+    instance:
+      stream:
+        capability: required
+        sourceContractRef: https://evidence.axiolune.ai/contracts/order-events-v1
+        sourceContractDigest: sha256:9999999999999999999999999999999999999999999999999999999999999999
+      determination:
+        perspective: executionAccountOrder
+        result: unavailable
+        unavailableReason: providerNotSpecified
+        sourceRecordRef: https://evidence.axiolune.ai/orders/record/201
+        sourceRecordDigest: sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+        absenceProbe: {status: completed, result: true}
+      sourceRecord: {}
+
+  - id: OE-NEG-002-unmapped-provider-value
+    contract: LiquidityRoleDetermination
+    expectedResult: rejected
+    expectedReason: mapping does not produce stored role
+    instance:
+      stream:
+        capability: optional
+        sourceContractRef: https://evidence.axiolune.ai/contracts/order-events-v1
+        sourceContractDigest: sha256:9999999999999999999999999999999999999999999999999999999999999999
+      determination:
+        perspective: executionAccountOrder
+        result: classified
+        role: maker
+        sourceRecordRef: https://evidence.axiolune.ai/orders/record/202
+        sourceRecordDigest: sha256:68cc3b458912779292b1bfc854951cd850c7c78d10461ece5482541e4540225e
+        rawFieldLocator: /liquidity
+        rawLexicalValue: UNKNOWN
+      mapping:
+        versionIri: https://axiolune.ai/mappings/liquidity/version/v1
+        sourceContractRef: https://evidence.axiolune.ai/contracts/order-events-v1
+        sourceContractDigest: sha256:9999999999999999999999999999999999999999999999999999999999999999
+        rawFieldLocator: /liquidity
+        rawPerspective: executionAccountOrder
+        perspectiveInversion: false
+        values: {M: maker, T: taker}
+      sourceRecord:
+        liquidity: UNKNOWN
+
+  - id: OE-NEG-003-stored-previous-state
+    contract: OrderStreamIntegrity
+    expectedResult: rejected
+    instance:
+      streamVersionIri: https://axiolune.ai/orders/streams/previous-state/version/v1
+      events:
+        - versionIri: https://axiolune.ai/orders/events/accepted/version/v1
+          providerEventId: event-1
+          sourceOrderKey: 1
+          kind: Accepted
+          state: Accepted
+          previousState: Submitted
+      findings: []
+
+  - id: OE-NEG-004-missing-sequence-gap-finding
+    contract: OrderStreamIntegrity
+    expectedResult: rejected
+    instance:
+      streamVersionIri: https://axiolune.ai/orders/streams/missing-gap/version/v1
+      events:
+        - versionIri: https://axiolune.ai/orders/events/submitted/version/v1
+          providerEventId: event-1
+          sourceOrderKey: 1
+          kind: Submitted
+          state: Submitted
+        - versionIri: https://axiolune.ai/orders/events/accepted/version/v1
+          providerEventId: event-3
+          sourceOrderKey: 3
+          kind: Accepted
+          state: Accepted
+      findings: []
+
+  - id: OE-NEG-005-listing-and-otc
+    contract: ExecutionContract
+    expectedResult: rejected
+    instance:
+      streamVersionIri: https://axiolune.ai/orders/streams/3/version/v1
+      externalOrderVersionIri: https://axiolune.ai/orders/external/3/version/v1
+      orderIntentVersionIri: https://axiolune.ai/orders/intents/3/version/v1
+      account: https://axiolune.ai/accounts/ACC-3
+      executionParty: https://axiolune.ai/parties/investor-3
+      contraAccount: https://axiolune.ai/accounts/CONTRA-3
+      contraParty: https://axiolune.ai/parties/contra-3
+      instrument: https://axiolune.ai/instruments/AAPL
+      listingVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+      otcContextVersionIri: https://axiolune.ai/otc/desk-1/version/v1
+      side: Buy
+      quantity: {value: "10", unit: urn:unit:share}
+      price: {amount: "100", currency: USD}
+      quotation:
+        versionIri: https://axiolune.ai/quotations/XNAS-AAPL/version/v1
+        contextVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+        instrument: https://axiolune.ai/instruments/AAPL
+        quoteCurrency: USD
+        denominatorUnit: urn:unit:share
+
+  - id: OE-NEG-006-signed-execution-quantity
+    contract: ExecutionContract
+    expectedResult: rejected
+    instance:
+      streamVersionIri: https://axiolune.ai/orders/streams/4/version/v1
+      externalOrderVersionIri: https://axiolune.ai/orders/external/4/version/v1
+      orderIntentVersionIri: https://axiolune.ai/orders/intents/4/version/v1
+      account: https://axiolune.ai/accounts/ACC-4
+      executionParty: https://axiolune.ai/parties/investor-4
+      contraAccount: https://axiolune.ai/accounts/CONTRA-4
+      contraParty: https://axiolune.ai/parties/contra-4
+      instrument: https://axiolune.ai/instruments/AAPL
+      listingVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+      side: Sell
+      quantity: {value: "-10", unit: urn:unit:share}
+      price: {amount: "100", currency: USD}
+      quotation:
+        versionIri: https://axiolune.ai/quotations/XNAS-AAPL/version/v1
+        contextVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+        instrument: https://axiolune.ai/instruments/AAPL
+        quoteCurrency: USD
+        denominatorUnit: urn:unit:share
+
+  - id: OE-NEG-007-negative-fee
+    contract: FeeContract
+    expectedResult: rejected
+    instance:
+      executionVersionIri: https://axiolune.ai/orders/executions/2/version/v1
+      kind: commission
+      effect: charge
+      amount: {amount: "-1.00", currency: USD}
+
+  - id: OE-NEG-008-status-mapping-two-targets
+    contract: ExternalOrderStatusMapping
+    expectedResult: rejected
+    instance:
+      publicName: ExternalOrderStatusMapping
+      provider: https://axiolune.ai/parties/broker-1
+      apiIdentifier: broker-orders-v2
+      schemaVersion: "2.3"
+      mappingVersion: "1.0.0"
+      rawCode: DONE
+      canonicalTargets: [Filled, Canceled]
+      validFrom: "2026-01-01T00:00:00Z"
+      sourceRef: https://evidence.axiolune.ai/broker-1/status-schema
+      sourceDigest: sha256:3333333333333333333333333333333333333333333333333333333333333333
+      reviewRef: https://evidence.axiolune.ai/reviews/broker-1-status-v1
+      reviewDigest: sha256:4444444444444444444444444444444444444444444444444444444444444444
+
+  - id: OE-NEG-009-intent-listing-and-otc
+    contract: OrderIntentContract
+    expectedResult: rejected
+    instance:
+      account: https://axiolune.ai/accounts/ACC-5
+      instrument: https://axiolune.ai/instruments/AAPL
+      listingVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+      otcContextVersionIri: https://axiolune.ai/otc/desk-1/version/v1
+      side: Buy
+      quantity: {value: "1", unit: urn:unit:share}
+      orderType: Market
+      timeInForce: IOC
+
+  - id: OE-NEG-010-stop-without-trigger-basis
+    contract: OrderIntentContract
+    expectedResult: rejected
+    expectedReason: trigger order requires exactly one reviewed triggerPriceBasis
+    instance:
+      account: https://axiolune.ai/accounts/ACC-1
+      instrument: https://axiolune.ai/instruments/AAPL
+      listingVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+      side: Sell
+      quantity: {value: "5", unit: urn:unit:share}
+      orderType: Stop
+      timeInForce: GTC
+      triggerPrice: {amount: "95", currency: USD}
+
+  - id: OE-NEG-011-liquidity-wrong-raw-field-locator
+    contract: LiquidityRoleDetermination
+    expectedResult: rejected
+    expectedReason: stored raw field locator differs from the exact mapping locator
+    instance:
+      stream:
+        capability: required
+        sourceContractRef: https://evidence.axiolune.ai/contracts/order-events-v1
+        sourceContractDigest: sha256:9999999999999999999999999999999999999999999999999999999999999999
+      determination:
+        perspective: executionAccountOrder
+        result: classified
+        role: maker
+        sourceRecordRef: https://evidence.axiolune.ai/orders/record/211
+        sourceRecordDigest: sha256:8d86ce0bee38e325f4fed58b2e09f5df51a8707fd2ec94213a07fb56944e3f7a
+        rawFieldLocator: /makerTaker
+        rawLexicalValue: M
+      mapping:
+        versionIri: https://axiolune.ai/mappings/liquidity/version/v1
+        sourceContractRef: https://evidence.axiolune.ai/contracts/order-events-v1
+        sourceContractDigest: sha256:9999999999999999999999999999999999999999999999999999999999999999
+        rawFieldLocator: /liquidity
+        rawPerspective: executionAccountOrder
+        perspectiveInversion: false
+        values: {M: maker, T: taker}
+      sourceRecord: {liquidity: M}
+
+  - id: OE-NEG-012-liquidity-source-record-digest-mismatch
+    contract: LiquidityRoleDetermination
+    expectedResult: rejected
+    expectedReason: source record digest does not match canonical source record bytes
+    instance:
+      stream:
+        capability: required
+        sourceContractRef: https://evidence.axiolune.ai/contracts/order-events-v1
+        sourceContractDigest: sha256:9999999999999999999999999999999999999999999999999999999999999999
+      determination:
+        perspective: executionAccountOrder
+        result: classified
+        role: maker
+        sourceRecordRef: https://evidence.axiolune.ai/orders/record/212
+        sourceRecordDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        rawFieldLocator: /liquidity
+        rawLexicalValue: M
+      mapping:
+        versionIri: https://axiolune.ai/mappings/liquidity/version/v1
+        sourceContractRef: https://evidence.axiolune.ai/contracts/order-events-v1
+        sourceContractDigest: sha256:9999999999999999999999999999999999999999999999999999999999999999
+        rawFieldLocator: /liquidity
+        rawPerspective: executionAccountOrder
+        perspectiveInversion: false
+        values: {M: maker, T: taker}
+      sourceRecord: {liquidity: M}
+
+  - id: OE-NEG-013-conflicting-duplicate-canonical-content-unreported
+    contract: OrderStreamIntegrity
+    expectedResult: rejected
+    expectedReason: "integrity finding set mismatch: expected duplicateConflict:conflict-1 got sequenceGap:not-a-gap"
+    instance:
+      streamVersionIri: https://axiolune.ai/orders/streams/conflict/version/v1
+      events:
+        - versionIri: https://axiolune.ai/orders/events/conflict/version/v1
+          providerEventId: conflict-1
+          sourceOrderKey: 9
+          observedAt: "2026-01-01T00:00:00Z"
+          kind: Accepted
+          state: Accepted
+        - versionIri: https://axiolune.ai/orders/events/conflict/version/v1
+          providerEventId: conflict-1
+          sourceOrderKey: 9
+          observedAt: "2026-01-01T00:00:01Z"
+          kind: Accepted
+          state: Accepted
+      findings:
+        - kind: sequenceGap
+          subject: not-a-gap
+
+  - id: OE-NEG-014-boolean-quantity-is-not-decimal
+    contract: ExecutionContract
+    expectedResult: rejected
+    expectedReason: quantity.value must be an explicitly typed decimal lexical value
+    instance:
+      streamVersionIri: https://axiolune.ai/orders/streams/boolean/version/v1
+      externalOrderVersionIri: https://axiolune.ai/orders/external/boolean/version/v1
+      orderIntentVersionIri: https://axiolune.ai/orders/intents/boolean/version/v1
+      account: https://axiolune.ai/accounts/ACC-1
+      executionParty: https://axiolune.ai/parties/investor-1
+      contraAccount: https://axiolune.ai/accounts/CONTRA-1
+      contraParty: https://axiolune.ai/parties/contra-1
+      instrument: https://axiolune.ai/instruments/AAPL
+      listingVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+      side: Buy
+      quantity: {value: true, unit: urn:unit:share}
+      price: {amount: "100", currency: USD}
+      quotation:
+        versionIri: https://axiolune.ai/quotations/XNAS-AAPL/version/v1
+        contextVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+        instrument: https://axiolune.ai/instruments/AAPL
+        quoteCurrency: USD
+        denominatorUnit: urn:unit:share
+
+  - id: OE-NEG-015-unknown-canonical-status-target
+    contract: ExternalOrderStatusMapping
+    expectedResult: rejected
+    expectedReason: external status mapping target is not a reviewed OrderLifecycleState
+    instance:
+      publicName: ExternalOrderStatusMapping
+      provider: https://axiolune.ai/parties/broker-1
+      apiIdentifier: broker-orders
+      schemaVersion: "1"
+      mappingVersion: "1"
+      rawCode: UNKNOWN
+      canonicalTargets: [TotallyUnknown]
+      validFrom: "2026-01-01T00:00:00Z"
+      sourceRef: https://evidence.axiolune.ai/status/source
+      sourceDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      reviewRef: https://evidence.axiolune.ai/status/review
+      reviewDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+
+  - id: OE-NEG-016-source-order-key-collision-between-event-ids
+    contract: OrderStreamIntegrity
+    expectedResult: rejected
+    expectedReason: sourceOrderKey collision between distinct provider event IDs
+    instance:
+      streamVersionIri: https://axiolune.ai/orders/streams/key-collision/version/v1
+      events:
+        - versionIri: https://axiolune.ai/orders/events/key-a/version/v1
+          providerEventId: key-a
+          sourceOrderKey: 1
+          kind: Submitted
+          state: Submitted
+        - versionIri: https://axiolune.ai/orders/events/key-b/version/v1
+          providerEventId: key-b
+          sourceOrderKey: 1
+          kind: Accepted
+          state: Accepted
+      findings: []
+
+  - id: OE-NEG-017-invalid-json-pointer-escape
+    contract: LiquidityRoleDetermination
+    expectedResult: rejected
+    expectedReason: raw field locator contains an invalid JSON Pointer escape
+    instance:
+      stream:
+        capability: required
+        sourceContractRef: https://evidence.axiolune.ai/contracts/order-events-v1
+        sourceContractDigest: sha256:9999999999999999999999999999999999999999999999999999999999999999
+      determination:
+        perspective: executionAccountOrder
+        result: classified
+        role: maker
+        sourceRecordRef: https://evidence.axiolune.ai/orders/record/invalid-pointer
+        sourceRecordDigest: sha256:7bcf9f4a3f28b310156082f3cceb3fe740c61a59524a59f35ad82a3c356b707f
+        rawFieldLocator: /liquidity~2role
+        rawLexicalValue: M
+      mapping:
+        versionIri: https://axiolune.ai/mappings/liquidity/version/v1
+        sourceContractRef: https://evidence.axiolune.ai/contracts/order-events-v1
+        sourceContractDigest: sha256:9999999999999999999999999999999999999999999999999999999999999999
+        rawFieldLocator: /liquidity~2role
+        rawPerspective: executionAccountOrder
+        perspectiveInversion: false
+        values: {M: maker, T: taker}
+      sourceRecord: {liquidity~2role: M}
+
+  - id: OE-NEG-018-executing-broker-cannot-substitute-contra-party
+    contract: ExecutionContract
+    expectedResult: rejected
+    expectedReason: missing logical account/instrument or principal/contra party-account role
+    instance:
+      streamVersionIri: https://axiolune.ai/orders/streams/missing-contra-party/version/v1
+      externalOrderVersionIri: https://axiolune.ai/orders/external/missing-contra-party/version/v1
+      orderIntentVersionIri: https://axiolune.ai/orders/intents/missing-contra-party/version/v1
+      account: https://axiolune.ai/accounts/ACC-1
+      executionParty: https://axiolune.ai/parties/investor-1
+      contraAccount: https://axiolune.ai/accounts/CONTRA-1
+      executingBroker: https://axiolune.ai/parties/broker-1
+      instrument: https://axiolune.ai/instruments/AAPL
+      listingVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+      side: Buy
+      quantity: {value: "10", unit: urn:unit:share}
+      price: {amount: "100", currency: USD}
+      quotation:
+        versionIri: https://axiolune.ai/quotations/XNAS-AAPL/version/v1
+        contextVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+        instrument: https://axiolune.ai/instruments/AAPL
+        quoteCurrency: USD
+        denominatorUnit: urn:unit:share
+
+  - id: OE-NEG-019-executing-broker-cannot-substitute-contra-account
+    contract: ExecutionContract
+    expectedResult: rejected
+    expectedReason: missing logical account/instrument or principal/contra party-account role
+    instance:
+      streamVersionIri: https://axiolune.ai/orders/streams/missing-contra-account/version/v1
+      externalOrderVersionIri: https://axiolune.ai/orders/external/missing-contra-account/version/v1
+      orderIntentVersionIri: https://axiolune.ai/orders/intents/missing-contra-account/version/v1
+      account: https://axiolune.ai/accounts/ACC-1
+      executionParty: https://axiolune.ai/parties/investor-1
+      contraParty: https://axiolune.ai/parties/contra-1
+      executingBroker: https://axiolune.ai/parties/broker-1
+      instrument: https://axiolune.ai/instruments/AAPL
+      listingVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+      side: Buy
+      quantity: {value: "10", unit: urn:unit:share}
+      price: {amount: "100", currency: USD}
+      quotation:
+        versionIri: https://axiolune.ai/quotations/XNAS-AAPL/version/v1
+        contextVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+        instrument: https://axiolune.ai/instruments/AAPL
+        quoteCurrency: USD
+        denominatorUnit: urn:unit:share
+
+  - id: OE-NEG-020-order-lineage-cycle
+    contract: OrderIntentLineageContract
+    expectedResult: rejected
+    expectedReason: order-intent lineage graph contains a directed cycle
+    instance:
+      focusVersionIri: https://axiolune.ai/orders/lineages/split-a-bc/version/v1
+      intents:
+        - &lineage-intent-a
+          type: OrderIntent
+          versionIri: https://axiolune.ai/orders/intents/lineage-a/version/v1
+          instrument: https://axiolune.ai/instruments/AAPL
+          side: Buy
+          quantity: {value: "100", unit: urn:unit:share}
+          validFrom: "2026-01-01T00:00:00Z"
+          knowledgeFrom: "2026-01-01T00:00:01Z"
+          availableFrom: "2026-01-01T00:00:02Z"
+        - &lineage-intent-b
+          type: OrderIntent
+          versionIri: https://axiolune.ai/orders/intents/lineage-b/version/v1
+          instrument: https://axiolune.ai/instruments/AAPL
+          side: Buy
+          quantity: {value: "40", unit: urn:unit:share}
+          validFrom: "2026-01-01T00:00:03Z"
+          knowledgeFrom: "2026-01-01T00:00:04Z"
+          availableFrom: "2026-01-01T00:00:05Z"
+        - &lineage-intent-c
+          type: OrderIntent
+          versionIri: https://axiolune.ai/orders/intents/lineage-c/version/v1
+          instrument: https://axiolune.ai/instruments/AAPL
+          side: Buy
+          quantity: {value: "60", unit: urn:unit:share}
+          validFrom: "2026-01-01T00:00:03Z"
+          knowledgeFrom: "2026-01-01T00:00:04Z"
+          availableFrom: "2026-01-01T00:00:05Z"
+      lineages:
+        - &valid-split-lineage
+          versionIri: https://axiolune.ai/orders/lineages/split-a-bc/version/v1
+          kind: split
+          sourceIntentVersionIris:
+            - https://axiolune.ai/orders/intents/lineage-a/version/v1
+          sourceIntentCount: 1
+          sourceIntentVersionSetDigest: sha256:938d7707de78dc377f56e33ac73adc3d6ad1feff25a694bcdcf9dbfbf87e0152
+          resultIntentVersionIris:
+            - https://axiolune.ai/orders/intents/lineage-b/version/v1
+            - https://axiolune.ai/orders/intents/lineage-c/version/v1
+          resultIntentCount: 2
+          resultIntentVersionSetDigest: sha256:948a17873ba073ca3f73edf4e8ae7d363917f91c9afa97b5d2ba855f6dcaf439
+          orderLineageKeyDigest: sha256:cb29e2ea680f6e6831c09e72571d41bf1880f361881bd11befce17db6b2d1ba1
+          validFrom: "2026-01-01T00:00:03Z"
+          knowledgeFrom: "2026-01-01T00:00:06Z"
+          availableFrom: "2026-01-01T00:00:06Z"
+          sourceArtifactRef: https://evidence.axiolune.ai/orders/router/run-1
+          sourceArtifactDigest: sha256:7777777777777777777777777777777777777777777777777777777777777777
+          sourceLocator: $.routingTransformations[0]
+        - versionIri: https://axiolune.ai/orders/lineages/aggregate-bc-a/version/v1
+          kind: aggregation
+          sourceIntentVersionIris:
+            - https://axiolune.ai/orders/intents/lineage-b/version/v1
+            - https://axiolune.ai/orders/intents/lineage-c/version/v1
+          sourceIntentCount: 2
+          sourceIntentVersionSetDigest: sha256:948a17873ba073ca3f73edf4e8ae7d363917f91c9afa97b5d2ba855f6dcaf439
+          resultIntentVersionIris:
+            - https://axiolune.ai/orders/intents/lineage-a/version/v1
+          resultIntentCount: 1
+          resultIntentVersionSetDigest: sha256:938d7707de78dc377f56e33ac73adc3d6ad1feff25a694bcdcf9dbfbf87e0152
+          orderLineageKeyDigest: sha256:dc243ce287c109d00cec3f93c27611c6138cf4579d3cca5164617c9cd62919e2
+          validFrom: "2026-01-01T00:00:03Z"
+          knowledgeFrom: "2026-01-01T00:00:07Z"
+          availableFrom: "2026-01-01T00:00:07Z"
+          sourceArtifactRef: https://evidence.axiolune.ai/orders/router/run-cycle
+          sourceArtifactDigest: sha256:9999999999999999999999999999999999999999999999999999999999999999
+          sourceLocator: $.routingTransformations[1]
+
+  - id: OE-NEG-021-order-lineage-orphan-endpoint
+    contract: OrderIntentLineageContract
+    expectedResult: rejected
+    expectedReason: "order-intent lineage endpoint is orphaned: https://axiolune.ai/orders/intents/lineage-c/version/v1"
+    instance:
+      focusVersionIri: https://axiolune.ai/orders/lineages/split-a-bc/version/v1
+      intents: [*lineage-intent-a, *lineage-intent-b]
+      lineages: [*valid-split-lineage]
+
+  - id: OE-NEG-022-order-lineage-duplicate-transformation
+    contract: OrderIntentLineageContract
+    expectedResult: rejected
+    expectedReason: order-intent lineage graph contains a duplicate transformation key
+    instance:
+      focusVersionIri: https://axiolune.ai/orders/lineages/split-a-bc/version/v1
+      intents: [*lineage-intent-a, *lineage-intent-b, *lineage-intent-c]
+      lineages:
+        - *valid-split-lineage
+        - <<: *valid-split-lineage
+          versionIri: https://axiolune.ai/orders/lineages/split-a-bc/version/v2
+
+  - id: OE-NEG-023-order-lineage-wrong-endpoint-type
+    contract: OrderIntentLineageContract
+    expectedResult: rejected
+    expectedReason: order-intent lineage endpoint has the wrong type
+    instance:
+      focusVersionIri: https://axiolune.ai/orders/lineages/split-a-bc/version/v1
+      intents:
+        - *lineage-intent-a
+        - *lineage-intent-b
+        - <<: *lineage-intent-c
+          type: ExternalOrder
+      lineages: [*valid-split-lineage]
+
+  - id: OE-NEG-024-order-lineage-quantity-not-conserved
+    contract: OrderIntentLineageContract
+    expectedResult: rejected
+    expectedReason: order-intent lineage does not conserve exact Quantity
+    instance:
+      focusVersionIri: https://axiolune.ai/orders/lineages/split-a-bc/version/v1
+      intents:
+        - *lineage-intent-a
+        - *lineage-intent-b
+        - <<: *lineage-intent-c
+          quantity: {value: "59", unit: urn:unit:share}
+      lineages: [*valid-split-lineage]
+
+  - id: OE-NEG-025-order-lineage-runtime-reservation-forbidden
+    contract: OrderIntentLineageContract
+    expectedResult: rejected
+    expectedReason: runtime reservation state is forbidden in M2 order lineage
+    instance:
+      focusVersionIri: https://axiolune.ai/orders/lineages/split-a-bc/version/v1
+      intents: [*lineage-intent-a, *lineage-intent-b, *lineage-intent-c]
+      lineages:
+        - <<: *valid-split-lineage
+          reservationId: runtime-reservation-1
+
+  - id: OE-NEG-026-order-lineage-unsorted-source-set
+    contract: OrderIntentLineageContract
+    expectedResult: rejected
+    expectedReason: source intent exact-version set must be UTF-8 sorted
+    instance:
+      focusVersionIri: https://axiolune.ai/orders/lineages/aggregate-cb-a/version/v1
+      intents: [*lineage-intent-a, *lineage-intent-b, *lineage-intent-c]
+      lineages:
+        - versionIri: https://axiolune.ai/orders/lineages/aggregate-cb-a/version/v1
+          kind: aggregation
+          sourceIntentVersionIris:
+            - https://axiolune.ai/orders/intents/lineage-c/version/v1
+            - https://axiolune.ai/orders/intents/lineage-b/version/v1
+          sourceIntentCount: 2
+          sourceIntentVersionSetDigest: sha256:948a17873ba073ca3f73edf4e8ae7d363917f91c9afa97b5d2ba855f6dcaf439
+          resultIntentVersionIris:
+            - https://axiolune.ai/orders/intents/lineage-a/version/v1
+          resultIntentCount: 1
+          resultIntentVersionSetDigest: sha256:938d7707de78dc377f56e33ac73adc3d6ad1feff25a694bcdcf9dbfbf87e0152
+          orderLineageKeyDigest: sha256:dc243ce287c109d00cec3f93c27611c6138cf4579d3cca5164617c9cd62919e2
+          validFrom: "2026-01-01T00:00:03Z"
+          knowledgeFrom: "2026-01-01T00:00:07Z"
+          availableFrom: "2026-01-01T00:00:07Z"
+          sourceArtifactRef: https://evidence.axiolune.ai/orders/router/run-unsorted
+          sourceArtifactDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          sourceLocator: $.routingTransformations[2]
+
+  - id: OE-NEG-027-order-lineage-source-locator-required
+    contract: OrderIntentLineageContract
+    expectedResult: rejected
+    expectedReason: order-intent lineage source locator is missing or invalid
+    instance:
+      focusVersionIri: https://axiolune.ai/orders/lineages/split-a-bc/version/v1
+      intents: [*lineage-intent-a, *lineage-intent-b, *lineage-intent-c]
+      lineages:
+        - <<: *valid-split-lineage
+          sourceLocator: null

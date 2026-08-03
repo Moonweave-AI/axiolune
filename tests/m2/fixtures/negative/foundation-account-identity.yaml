@@ -1,0 +1,328 @@
+contract: FoundationAccountIdentityMutation
+baseFixtureFile: ../positive/foundation-account-identity.yaml
+cases:
+  - id: assignment-subject-type-incompatible-with-scheme
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: assignment-compatibility-matrix
+    mutation:
+      op: replace
+      path: /assignments/0/subjectType
+      value: Security
+  - id: missing-account-type
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: accountType-cardinality
+    mutation:
+      op: remove
+      path: /accounts/0/accountType
+  - id: unreviewed-account-type
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: accountType-member
+    mutation:
+      op: replace
+      path: /accounts/0/accountType/0
+      value: margin
+  - id: account-identity-type-drift-creates-new-logical-account
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: account-identity-key-bijection
+    mutation:
+      op: replace
+      path: /accounts/1/logicalIri
+      value: https://axiolune.ai/data/accounts/incorrect-new-logical-account
+  - id: account-scheme-kind-mismatch
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: account-scheme-kind
+    mutation:
+      op: replace
+      path: /schemeVersions/0/kind
+      value: internalInstrument
+  - id: scheme-validator-iri-must-be-nfc
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: identifier-scheme-version-closure
+    mutation:
+      op: replace
+      path: /schemeVersions/0/validatorRef
+      value: "https://axiolune.ai/validators/cafe\u0301"
+  - id: account-value-subtype-mismatch
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: account-value-subtype
+    mutation:
+      op: replace
+      path: /identifierValues/0/type
+      value: ISINValue
+  - id: account-value-scheme-mismatch
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: identifier-value-scheme-closure
+    mutation:
+      op: replace
+      path: /identifierValues/0/schemeLogicalIri
+      value: https://axiolune.ai/data/identifier-schemes/another
+  - id: identifier-value-key-cannot-have-two-logical-iris
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: identifier-value-identity-key-bijection
+    mutation:
+      op: add
+      path: /identifierValues/-
+      value:
+        logicalIri: https://axiolune.ai/data/identifier-value/incorrect-alias
+        versionIri: https://axiolune.ai/data/identifier-value/incorrect-alias/version/sha256-v1
+        type: LocalIdentifierValue
+        schemeLogicalIri: https://axiolune.ai/data/identifier-schemes/broker-account
+        lexicalValue: ACCT-001
+        validFrom: 2025-01-01T00:00:00Z
+        validTo: null
+        knowledgeFrom: 2025-01-01T00:00:00Z
+        availableFrom: 2025-01-01T00:00:00Z
+        source: https://axiolune.ai/sources/synthetic-foundation-fixture-v1
+        revision: 0
+  - id: identifier-value-logical-iri-cannot-change-its-key
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: identifier-value-identity-key-bijection
+    mutation:
+      op: add
+      path: /identifierValues/-
+      value:
+        logicalIri: https://axiolune.ai/data/identifier-value/sha256-account-001
+        versionIri: https://axiolune.ai/data/identifier-value/sha256-account-001/version/sha256-v2
+        type: LocalIdentifierValue
+        schemeLogicalIri: https://axiolune.ai/data/identifier-schemes/broker-account
+        lexicalValue: ACCT-002
+        validFrom: 2025-01-01T00:00:00Z
+        validTo: null
+        knowledgeFrom: 2025-01-01T00:00:00Z
+        availableFrom: 2025-01-01T00:00:00Z
+        source: https://axiolune.ai/sources/synthetic-foundation-fixture-v1
+        revision: 0
+  - id: assignment-without-assigning-authorization
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: assignment-authorization
+    mutation:
+      op: replace
+      path: /authorizations/0/role
+      value: maintainingAuthority
+  - id: authorization-does-not-cover-assignment
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: assignment-authorization
+    mutation:
+      op: replace
+      path: /authorizations/0/validTo
+      value: 2025-06-01T00:00:00Z
+  - id: authorization-invalid-nonleap-calendar-date
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: authorization-temporal-interval
+    mutation:
+      op: replace
+      path: /authorizations/0/validFrom
+      value: 2025-02-29T00:00:00Z
+  - id: authorization-noncanonical-timezone-offset
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: authorization-temporal-interval
+    mutation:
+      op: replace
+      path: /authorizations/0/validFrom
+      value: 2025-01-01T00:00:00+00:00
+  - id: authorization-nanosecond-boundary-does-not-cover-assignment
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: assignment-authorization
+    mutation:
+      op: replace
+      path: /authorizations/0/validFrom
+      value: 2026-01-01T00:00:00.000000001Z
+  - id: authorization-knowledge-after-assignment-pivot
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: assignment-authorization
+    mutation:
+      op: replace
+      path: /authorizations/0/knowledgeFrom
+      value: 2026-01-01T00:00:00.000000001Z
+  - id: authorization-availability-after-assignment-pivot
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: assignment-authorization
+    mutation:
+      op: replace
+      path: /authorizations/0/availableFrom
+      value: 2026-01-01T00:00:00.000000001Z
+  - id: scheme-knowledge-after-assignment-pivot
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: assignment-exact-version-pit-eligibility
+    mutation:
+      op: replace
+      path: /schemeVersions/0/knowledgeFrom
+      value: 2026-01-01T00:00:00.000000001Z
+  - id: identifier-value-availability-after-assignment-pivot
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: assignment-exact-version-pit-eligibility
+    mutation:
+      op: replace
+      path: /identifierValues/0/availableFrom
+      value: 2026-01-01T00:00:00.000000001Z
+  - id: assignment-validity-interval-is-inverted
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: assignment-version-closure
+    mutation:
+      op: replace
+      path: /assignments/0/validTo
+      value: 2025-12-31T23:59:59.999999999Z
+  - id: assignment-missing-knowledge-axis
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: assignment-version-closure
+    mutation:
+      op: remove
+      path: /assignments/0/knowledgeFrom
+  - id: assignment-forbids-inline-knowledge-closure
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: assignment-version-closure
+    mutation:
+      op: add
+      path: /assignments/0/knowledgeTo
+      value: 2027-01-01T00:00:00Z
+  - id: account-forbids-inline-availability-closure
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: account-version-closure
+    mutation:
+      op: add
+      path: /accounts/0/availableTo
+      value: 2027-01-01T00:00:00Z
+  - id: assignment-missing-version-revision
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: assignment-version-closure
+    mutation:
+      op: remove
+      path: /assignments/0/revision
+  - id: scheme-missing-version-revision
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: identifier-scheme-version-closure
+    mutation:
+      op: remove
+      path: /schemeVersions/0/revision
+  - id: authorization-missing-version-revision
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: authorization-temporal-interval
+    mutation:
+      op: remove
+      path: /authorizations/0/revision
+  - id: account-party-role-missing-version-revision
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: account-party-role-version-closure
+    mutation:
+      op: remove
+      path: /partyRoles/0/revision
+  - id: assignment-conflict-missing-version-revision
+    baseFixtureId: global-overlap-is-an-explicit-conflict
+    expectedViolation: assignment-conflict-closure
+    mutation:
+      op: remove
+      path: /conflicts/0/revision
+  - id: assignment-id-has-control-character
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: assignment-version-closure
+    mutation:
+      op: replace
+      path: /assignments/0/assignmentId
+      value: "account\u0001-001"
+  - id: identifier-value-missing-availability-axis
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: identifier-value-scheme-closure
+    mutation:
+      op: remove
+      path: /identifierValues/0/availableFrom
+  - id: account-availability-interval-is-inverted
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: account-version-closure
+    mutation:
+      op: add
+      path: /accounts/0/availableTo
+      value: 2025-12-31T23:59:59.999999999Z
+  - id: party-role-source-iri-has-control-character
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: account-party-role-version-closure
+    mutation:
+      op: replace
+      path: /partyRoles/0/source
+      value: "https://axiolune.ai/sources/synthetic\u0001"
+  - id: scheme-missing-provenance-source
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: identifier-scheme-version-closure
+    mutation:
+      op: remove
+      path: /schemeVersions/0/source
+  - id: authority-missing-valid-axis
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: identifier-authority-version-closure
+    mutation:
+      op: remove
+      path: /authorityVersions/0/validFrom
+  - id: stored-primary-identifier-duplicates-assignment-truth
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: forbidden-derived-truth
+    mutation:
+      op: add
+      path: /assignments/0/hasPrimaryIdentifier
+      value: ACCT-001
+  - id: stored-account-holder-edge-duplicates-party-role-truth
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: forbidden-derived-truth
+    mutation:
+      op: add
+      path: /accounts/0/hasAccountHolder
+      value: https://axiolune.ai/data/parties/customer-001
+  - id: invalid-account-party-role-member
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: account-party-role-member
+    mutation:
+      op: replace
+      path: /partyRoles/0/role/0
+      value: accountManager
+  - id: missing-account-party-reference
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: account-party-role-cardinality
+    mutation:
+      op: remove
+      path: /partyRoles/0/partyLogicalIri
+  - id: global-overlap-without-explicit-conflict
+    baseFixtureId: global-overlap-is-an-explicit-conflict
+    expectedViolation: missing-assignment-conflict
+    mutation:
+      op: replace
+      path: /conflicts
+      value: []
+  - id: global-conflict-rejects-legacy-unframed-set-digest
+    baseFixtureId: global-overlap-is-an-explicit-conflict
+    expectedViolation: assignment-conflict-closure
+    mutation:
+      op: replace
+      path: /conflicts/0/assignmentVersionSetDigest
+      value: sha256:a1e479790cd0c49d2be9c2099b7947313f57ab399273e5acdbecb870bc871b96
+  - id: global-conflict-forbids-silent-winner
+    baseFixtureId: global-overlap-is-an-explicit-conflict
+    expectedViolation: assignment-conflict-silent-winner
+    mutation:
+      op: add
+      path: /conflicts/0/winningAssignmentVersionIri
+      value: https://axiolune.ai/data/assignments/a1/version/sha256-a1
+  - id: unsupported-global-conflict-is-not-authoritative
+    baseFixtureId: account-type-change-preserves-logical-identity
+    expectedViolation: assignment-conflict-false-predicate
+    mutation:
+      op: add
+      path: /conflicts/-
+      value:
+        logicalIri: https://axiolune.ai/data/identifier-assignment-conflicts/sha256-false
+        assignmentVersionIris:
+          - https://axiolune.ai/data/assignments/false-a/version/sha256-a
+          - https://axiolune.ai/data/assignments/false-b/version/sha256-b
+        schemeVersionIri: https://axiolune.ai/data/identifier-schemes/false/version/sha256-s
+        identifierValueVersionIri: https://axiolune.ai/data/identifier-values/false/version/sha256-v
+        assignmentVersionSetDigest: sha256:0000000000000000000000000000000000000000000000000000000000000000
+        generatingContextRef: https://axiolune.ai/data/runs/false-conflict
+        validFrom: 2026-01-01T00:00:00Z
+        validTo: null
+        knowledgeFrom: 2026-01-01T00:00:00Z
+        availableFrom: 2026-01-01T00:00:00Z
+        source: https://axiolune.ai/sources/synthetic-foundation-fixture-v1
+        revision: 0
+  - id: global-conflict-missing-availability-axis
+    baseFixtureId: global-overlap-is-an-explicit-conflict
+    expectedViolation: assignment-conflict-closure
+    mutation:
+      op: remove
+      path: /conflicts/0/availableFrom

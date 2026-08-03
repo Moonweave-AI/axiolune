@@ -1,43 +1,46 @@
-# Axiolune Ontology Meta-Model - Layer 2: Cross-Domain Fact Patterns
-# Version: 0.4.0
-# Date: 2026-07-29
-# Governance: Follows ADR-001, ADR-002, ADR-003, ADR-004, ADR-012 architecture decisions
-# Changes: Introduced formal PatternDefinition structure; updated module system
-
 module:
-  moduleIri: "https://axiolune.ai/ontology/meta/patterns"
-  baseIri: "https://axiolune.ai/ontology/meta/patterns/"
-  preferredPrefix: "ax-pattern"
-  version: "0.4.0"
+  moduleIri: https://axiolune.ai/ontology/meta/patterns
+  baseIri: https://axiolune.ai/ontology/meta/patterns/
+  preferredPrefix: ax-pattern
+  version: 0.6.0
   curiePrefixes:
-    ax-meta: "https://axiolune.ai/ontology/meta/"
-    ax-pattern: "https://axiolune.ai/ontology/meta/patterns/"
-    fin: "https://axiolune.ai/ontology/domain/"
+    ax-meta: https://axiolune.ai/ontology/meta/
+    ax-pattern: https://axiolune.ai/ontology/meta/patterns/
+    fin: https://axiolune.ai/ontology/domain/
   imports:
-    - moduleIri: "https://axiolune.ai/ontology/meta/core#sha256:a8abfe0e96ab7f84f8ae322f8ffedfe2dda29bbdb6ba020d2a68aad11d67d01d"
-      version: "0.4.0"
-      artifactDigest: "sha256:a8abfe0e96ab7f84f8ae322f8ffedfe2dda29bbdb6ba020d2a68aad11d67d01d"
+    - moduleIri: https://axiolune.ai/ontology/meta/core
+      version: 0.6.0
       importMode: All
-  exports: []  # Export all pattern definitions
-
+  exports: []
 CrossDomainPatterns:
-  version: "0.4.0"
-  description: "Reusable patterns for identity, time, provenance, evidence, and lifecycle that apply across domain objects"
+  version: 0.6.0
+  description: Reusable patterns for identity, time, provenance, evidence, and
+    lifecycle that apply across domain objects
   layer: 2
   changes:
-    - "v0.4.0: All 10 constraints migrated to ConstraintDefinition grammar (expression structure, scope, capitalized enums)"
+    - "v0.6.0: Made the owl:Class signature of every concrete PatternDefinition
+      IRI explicit"
+    - "v0.6.0: Rebased pattern injection and constraint closure on the strict M3
+      0.6.0 core"
+    - "v0.4.0: All 10 constraints migrated to ConstraintDefinition grammar
+      (expression structure, scope, capitalized enums)"
     - "v0.4.0: NoFutureKnowledge severity raised to Error (production-blocking)"
-    - "v0.4.0: AvailabilityBeforeUse made fail-closed (availableFrom required, OR NULL escape removed)"
-    - "v0.4.0: Added AvailabilityIntervalConsistency constraint (availableFrom <= availableTo)"
-    - "v0.4.0: TemporalFact availableFrom injection minCount raised to 1 (fail-closed for PIT)"
-    - "v0.4.0: NoFutureKnowledge uses $referenceTime instead of CURRENT_TIMESTAMP (ADR-012 reproducibility)"
+    - "v0.4.0: AvailabilityBeforeUse made fail-closed (availableFrom required,
+      OR NULL escape removed)"
+    - "v0.4.0: Added AvailabilityIntervalConsistency constraint (availableFrom
+      <= availableTo)"
+    - "v0.4.0: TemporalFact availableFrom injection minCount raised to 1
+      (fail-closed for PIT)"
+    - "v0.4.0: NoFutureKnowledge uses $referenceTime instead of
+      CURRENT_TIMESTAMP (ADR-012 reproducibility)"
     - "v0.4.0: Added AvailabilityBeforeUse constraint (ADR-012)"
-    - "v0.4.0: TemporalFact injects availableFrom/availableTo (three-axis availability, ADR-012)"
-    - "v0.4.0: asOfQuerySemantics requires explicit asOfAvailable (no implicit now)"
+    - "v0.4.0: TemporalFact injects availableFrom/availableTo (three-axis
+      availability, ADR-012)"
+    - "v0.4.0: asOfQuerySemantics requires explicit asOfAvailable (no implicit
+      now)"
     - "v0.3.0: Global rename to *Definition suffix (ADR-004)"
     - "v0.3.0: Updated module system with version-locked imports"
     - "v0.3.0: Introduced formal PatternDefinition (ADR-003)"
-
   note: |
     Layer 2 patterns are now formally defined using PatternDefinition.
     Each pattern has:
@@ -46,534 +49,537 @@ CrossDomainPatterns:
     - Parameters for customization
     - Injected attributes/relations
     - OWL/SHACL projection rules
-
-  # ==================== Pattern Definition Meta-Type ====================
   PatternDefinition:
-    definition: "a meta-classifier for reusable cross-domain semantic patterns that can be bound to ObjectTypes and AssociationTypes"
-    purpose: "Formalizes patterns like Temporal, Provenance, Evidence as first-class ontology elements with IRIs, versions, and composition rules"
-
+    definition: a meta-classifier for reusable cross-domain semantic patterns that
+      can be bound to ObjectTypes and AssociationTypes
+    purpose: Formalizes patterns like Temporal, Provenance, Evidence as first-class
+      ontology elements with IRIs, versions, and composition rules
+    owlProjection:
+      kind: class
+      note: Every concrete PatternDefinition IRI is an owl:Class; instance-level
+        owlProjection describes additional axioms contributed when the pattern
+        is bound
     requiredFields:
       iri:
         type: uri
         unique: true
         required: true
-        description: "globally unique IRI for this pattern"
-        example: "https://axiolune.ai/ontology/meta/patterns/TemporalFact"
-
+        description: globally unique IRI for this pattern
+        example: https://axiolune.ai/ontology/meta/patterns/TemporalFact
       namespace:
         type: string
         required: true
-        description: "module namespace prefix"
-
+        description: module namespace prefix
       localName:
         type: string
         required: true
-        description: "pattern name within namespace"
-
+        description: pattern name within namespace
       label:
         type: string
         required: true
-        example: "Bi-Temporal Fact Pattern"
-
+        example: Bi-Temporal Fact Pattern
       definition:
         type: string
         required: true
         iso704: true
-        example: "pattern for bi-temporal semantics distinguishing business validity time from system knowledge time"
-
+        example: pattern for bi-temporal semantics distinguishing business validity time
+          from system knowledge time
       version:
         type: string
         required: true
-        pattern: "^\\d+\\.\\d+\\.\\d+$"
-        example: "1.0.0"
-
+        pattern: ^\d+\.\d+\.\d+$
+        example: 1.0.0
       appliesTo:
-        type: "list[enum]"
+        type: list[enum]
         required: true
-        values: [ObjectTypeDefinition, AssociationTypeDefinition, AttributeTypeDefinition, RelationTypeDefinition]
-        description: "which meta-types this pattern can be bound to"
-
+        values:
+          - ObjectTypeDefinition
+          - AssociationTypeDefinition
+          - AttributeTypeDefinition
+          - RelationTypeDefinition
+        description: which meta-types this pattern can be bound to
       injectedAttributes:
-        type: "list[AttributeUse]"
+        type: list[AttributeUse]
         required: true
         minCount: 1
-        description: "attributes that will be added to types using this pattern"
-
+        description: attributes that will be added to types using this pattern
     optionalFields:
       parameters:
-        type: "list[PatternParameter]"
-        description: "parameterized configuration options"
-
+        type: list[PatternParameter]
+        description: parameterized configuration options
       dependencies:
-        type: "list[uri]"
-        description: "other patterns that must also be bound"
-
+        type: list[uri]
+        description: other patterns that must also be bound
       conflicts:
-        type: "list[uri]"
-        description: "patterns that cannot be bound simultaneously"
-
+        type: list[uri]
+        description: patterns that cannot be bound simultaneously
       injectedRelations:
-        type: "list[RelationUse]"
-        description: "relations that will be added to types using this pattern"
-
+        type: list[RelationUse]
+        description: relations that will be added to types using this pattern
       constraintsAdded:
-        type: "list[ConstraintBinding]"
-        description: "validation rules enforced by this pattern"
-
+        type: list[ConstraintBinding]
+        description: validation rules enforced by this pattern
       owlProjection:
         type: PatternOWLProjection
-        description: "how this pattern projects to OWL ontology"
-
+        description: how this pattern projects to OWL ontology
       shaclShape:
         type: PatternSHACLShape
-        description: "SHACL shape for validating pattern conformance"
-
+        description: SHACL shape for validating pattern conformance
       alignments:
-        type: "list[Alignment]"
-        description: "mappings to external standards (FIBO, PROV-O, etc.)"
-
+        type: list[Alignment]
+        description: mappings to external standards (FIBO, PROV-O, etc.)
       examples:
-        type: "list[PatternExample]"
-        description: "example usages of this pattern"
-
-  # ==================== Pattern Parameter ====================
+        type: list[PatternExample]
+        description: example usages of this pattern
   PatternParameter:
-    definition: "a configuration parameter for customizing pattern behavior"
-
+    definition: a configuration parameter for customizing pattern behavior
     requiredFields:
       name:
         type: string
         required: true
-        example: "timeGranularity"
-
+        example: timeGranularity
       type:
         type: string
         required: true
-        description: "parameter value type"
-        example: "enum"
-
+        description: parameter value type
+        example: enum
     optionalFields:
       required:
         type: boolean
         default: false
-
       defaultValue:
         type: any
-        example: "instant"
-
+        example: instant
       allowedValues:
-        type: "list[any]"
-        example: ["instant", "date", "dateTime"]
-
+        type: list[any]
+        example:
+          - instant
+          - date
+          - dateTime
       description:
         type: string
-
-  # ==================== Pattern OWL Projection ====================
   PatternOWLProjection:
-    definition: "specification of how a pattern maps to OWL constructs"
-
+    definition: specification of how a pattern maps to OWL constructs
     fields:
       kind:
         type: enum
-        values: [mixin, restriction, unionOf, propertyChain]
-        description: "OWL projection strategy"
-
+        values:
+          - mixin
+          - restriction
+          - unionOf
+          - propertyChain
+        description: OWL projection strategy
       additionalClasses:
-        type: "list[uri]"
-        description: "OWL classes to add to types using this pattern"
-        example: ["owl:Class", "time:TemporalEntity"]
-
+        type: list[uri]
+        description: OWL classes to add to types using this pattern
+        example:
+          - owl:Class
+          - time:TemporalEntity
       propertyRestrictions:
-        type: "list[OWLRestriction]"
-        description: "OWL property restrictions"
-
-  # ==================== Pattern SHACL Shape ====================
+        type: list[OWLRestriction]
+        description: OWL property restrictions
+  OWLRestriction:
+    definition: closed OWL restriction emitted when a pattern is projected onto a
+      bound domain type
+    requiredFields:
+      onProperty:
+        type: uri
+      restrictionKind:
+        type: enum
+        values:
+          - someValuesFrom
+          - allValuesFrom
+          - hasValue
+          - minCardinality
+          - maxCardinality
+          - exactCardinality
+      value:
+        type: union[uri,nonNegativeSafeInteger]
   PatternSHACLShape:
-    definition: "SHACL shape for validating instances that use this pattern"
-
+    definition: SHACL shape for validating instances that use this pattern
     fields:
       shapeIri:
         type: uri
-        description: "IRI of the SHACL shape"
-
+        description: IRI of the SHACL shape
       targetClass:
         type: uri
-        description: "target class for this shape"
-
+        description: target class for this shape
       propertyShapes:
-        type: "list[SHACLPropertyShape]"
-        description: "property-level constraints"
-
-  # ==================== Pattern Example ====================
+        type: list[SHACLPropertyShape]
+        description: property-level constraints
+  SHACLPropertyShape:
+    definition: closed property-level SHACL projection contributed by one
+      cross-domain pattern
+    requiredFields:
+      path:
+        type: uri
+    optionalFields:
+      minCount:
+        type: nonNegativeSafeInteger
+      maxCount:
+        type: nonNegativeSafeInteger
+      datatype:
+        type: uri
+      class:
+        type: uri
+      nodeKind:
+        type: uri
+      pattern:
+        type: string
+      in:
+        type: list[any]
+      hasValue:
+        type: any
   PatternExample:
-    definition: "an example of how this pattern is used"
-
+    definition: an example of how this pattern is used
     fields:
       description:
         type: string
-
       boundToType:
         type: uri
-        description: "ObjectTypeDefinition or AssociationTypeDefinition IRI"
-
+        description: ObjectTypeDefinition or AssociationTypeDefinition IRI
       parameterValues:
         type: dict
-        description: "parameter values for this binding"
-
+        description: parameter values for this binding
       resultingAttributes:
-        type: "list[string]"
-        description: "attributes added to the type"
-
-  # ==================== Patterns ====================
-
-  # ==================== Constraint Definitions ====================
-  # Added to complete constraint closure (P0-2 fix)
-
+        type: list[string]
+        description: attributes added to the type
   constraints:
-    # All constraints conform to ConstraintDefinition (core Layer 1):
-    #   required: iri, namespace, localName, label, definition, constraintType,
-    #             scope, expression {language, expression}, severity, message
-    #   pattern-extension: targetElement (the attribute this constraint validates)
-    #   runtime-parameterized: $referenceTime / $queryTime bound by PIT validator
-    #     (not static SHACL; enforced by the PIT validator per ADR-012)
-
     PublishBeforeReceive:
-      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/PublishBeforeReceive"
-      namespace: "pattern"
-      localName: "PublishBeforeReceive"
-      label: "Publish Before Receive Constraint"
-      definition: "validation rule ensuring that the publication timestamp of information does not occur after its reception timestamp"
-      constraintType: "Logical"
-      scope: "Object"
+      iri: https://axiolune.ai/ontology/meta/patterns/constraints/PublishBeforeReceive
+      namespace: pattern
+      localName: PublishBeforeReceive
+      label: Publish Before Receive Constraint
+      definition: validation rule ensuring that the publication timestamp of
+        information does not occur after its reception timestamp
+      constraintType: Logical
+      scope: Object
       expression:
-        language: "Custom"
-        expression: 'publishedAt <= receivedAt OR receivedAt IS NULL'
-      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/publishedAt"
-      severity: "Error"
-      message: "Publication time must not be after reception time"
-      note: "Allows null receivedAt for unpublished drafts; enforces causal consistency"
-
+        language: Custom
+        expression: publishedAt <= receivedAt OR receivedAt IS NULL
+      targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/publishedAt
+      severity: Error
+      message: Publication time must not be after reception time
+      note: Allows null receivedAt for unpublished drafts; enforces causal consistency
     ValidIntervalConsistency:
-      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/ValidIntervalConsistency"
-      namespace: "pattern"
-      localName: "ValidIntervalConsistency"
-      label: "Valid Interval Consistency Constraint"
-      definition: "validation rule ensuring that the start of a business validity interval does not occur after its end"
-      constraintType: "Logical"
-      scope: "Object"
+      iri: https://axiolune.ai/ontology/meta/patterns/constraints/ValidIntervalConsistency
+      namespace: pattern
+      localName: ValidIntervalConsistency
+      label: Valid Interval Consistency Constraint
+      definition: validation rule ensuring that the start of a business validity
+        interval does not occur after its end
+      constraintType: Logical
+      scope: Object
       expression:
-        language: "Custom"
-        expression: 'validFrom <= validTo OR validTo IS NULL'
-      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/validFrom"
-      severity: "Error"
-      message: "Valid interval start must not be after end"
-      note: "Allows open-ended intervals (null validTo); enforces temporal coherence"
-
+        language: Custom
+        expression: validFrom <= validTo OR validTo IS NULL
+      targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/validFrom
+      severity: Error
+      message: Valid interval start must not be after end
+      note: Allows open-ended intervals (null validTo); enforces temporal coherence
     KnowledgeIntervalConsistency:
-      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/KnowledgeIntervalConsistency"
-      namespace: "pattern"
-      localName: "KnowledgeIntervalConsistency"
-      label: "Knowledge Interval Consistency Constraint"
-      definition: "validation rule ensuring that the start of a knowledge time interval does not occur after its end"
-      constraintType: "Logical"
-      scope: "Object"
+      iri: https://axiolune.ai/ontology/meta/patterns/constraints/KnowledgeIntervalConsistency
+      namespace: pattern
+      localName: KnowledgeIntervalConsistency
+      label: Knowledge Interval Consistency Constraint
+      definition: validation rule ensuring that the start of a knowledge time interval
+        does not occur after its end
+      constraintType: Logical
+      scope: Object
       expression:
-        language: "Custom"
-        expression: 'knowledgeFrom <= knowledgeTo OR knowledgeTo IS NULL'
-      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom"
-      severity: "Error"
-      message: "Knowledge interval start must not be after end"
-      note: "Allows open-ended knowledge (null knowledgeTo); critical for bi-temporal queries"
-
+        language: Custom
+        expression: knowledgeFrom <= knowledgeTo OR knowledgeTo IS NULL
+      targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom
+      severity: Error
+      message: Knowledge interval start must not be after end
+      note: Allows open-ended knowledge (null knowledgeTo); critical for bi-temporal
+        queries
     NoFutureKnowledge:
-      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/NoFutureKnowledge"
-      namespace: "pattern"
-      localName: "NoFutureKnowledge"
-      label: "No Future Knowledge Constraint"
-      definition: "validation rule ensuring that knowledge acquisition time does not occur in the future relative to the immutable reference time of the materialization run"
-      constraintType: "Logical"
-      scope: "Object"
+      iri: https://axiolune.ai/ontology/meta/patterns/constraints/NoFutureKnowledge
+      namespace: pattern
+      localName: NoFutureKnowledge
+      label: No Future Knowledge Constraint
+      definition: validation rule ensuring that knowledge acquisition time does not
+        occur in the future relative to the immutable reference time of the
+        materialization run
+      constraintType: Logical
+      scope: Object
       expression:
-        language: "Custom"
-        expression: 'knowledgeFrom <= $referenceTime'
+        language: Custom
+        expression: knowledgeFrom <= $referenceTime
       parameters:
         - name: referenceTime
           type: instant
           required: true
-          description: "immutable reference time from MaterializationRun (ADR-012); bound by PIT validator, not static SHACL"
-      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom"
-      severity: "Error"
-      message: "Knowledge time must not be in the future relative to the run reference time"
-      note: "Reproducible (ADR-012): $referenceTime is bound to MaterializationRun.referenceTime, an immutable value captured at run start. Severity is Error (production-blocking) for financial PIT integrity. Enforced by the PIT validator, not static SHACL."
-
+          description: immutable reference time from MaterializationRun (ADR-012); bound
+            by PIT validator, not static SHACL
+      targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom
+      severity: Error
+      message: Knowledge time must not be in the future relative to the run reference
+        time
+      note: "Reproducible (ADR-012): $referenceTime is bound to
+        MaterializationRun.referenceTime, an immutable value captured at run
+        start. Severity is Error (production-blocking) for financial PIT
+        integrity. Enforced by the PIT validator, not static SHACL."
     ObservationBeforeRecording:
-      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/ObservationBeforeRecording"
-      namespace: "pattern"
-      localName: "ObservationBeforeRecording"
-      label: "Observation Before Recording Constraint"
-      definition: "validation rule ensuring that the observation timestamp does not occur after the recording timestamp"
-      constraintType: "Logical"
-      scope: "Object"
+      iri: https://axiolune.ai/ontology/meta/patterns/constraints/ObservationBeforeRecording
+      namespace: pattern
+      localName: ObservationBeforeRecording
+      label: Observation Before Recording Constraint
+      definition: validation rule ensuring that the observation timestamp does not
+        occur after the recording timestamp
+      constraintType: Logical
+      scope: Object
       expression:
-        language: "Custom"
-        expression: 'observedAt <= recordedAt'
-      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/observedAt"
-      severity: "Error"
-      message: "Observation time must not be after recording time"
-      note: "Used by TemporalObservation pattern; enforces causal ordering"
-
+        language: Custom
+        expression: observedAt <= recordedAt
+      targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
+      severity: Error
+      message: Observation time must not be after recording time
+      note: Used by TemporalObservation pattern; enforces causal ordering
     ConfidenceRange:
-      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/ConfidenceRange"
-      namespace: "pattern"
-      localName: "ConfidenceRange"
-      label: "Confidence Range Constraint"
-      definition: "validation rule ensuring that confidence values are bounded within the closed interval from zero to one"
-      constraintType: "ValueRange"
-      scope: "Attribute"
+      iri: https://axiolune.ai/ontology/meta/patterns/constraints/ConfidenceRange
+      namespace: pattern
+      localName: ConfidenceRange
+      label: Confidence Range Constraint
+      definition: validation rule ensuring that confidence values are bounded within
+        the closed interval from zero to one
+      constraintType: ValueRange
+      scope: Attribute
       expression:
-        language: "Custom"
-        expression: 'confidence >= 0.0 AND confidence <= 1.0'
-      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/confidence"
-      severity: "Error"
-      message: "Confidence must be between 0.0 and 1.0 inclusive"
-      note: "Enforces probability interpretation; 0.0 = no confidence, 1.0 = certainty"
-
+        language: Custom
+        expression: confidence >= 0.0 AND confidence <= 1.0
+      targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/confidence
+      severity: Error
+      message: Confidence must be between 0.0 and 1.0 inclusive
+      note: Enforces probability interpretation; 0.0 = no confidence, 1.0 = certainty
     DigestFormat:
-      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/DigestFormat"
-      namespace: "pattern"
-      localName: "DigestFormat"
-      label: "Digest Format Constraint"
-      definition: "validation rule ensuring that cryptographic digest values conform to the canonical format of algorithm prefix followed by colon and hexadecimal hash"
-      constraintType: "Pattern"
-      scope: "Attribute"
+      iri: https://axiolune.ai/ontology/meta/patterns/constraints/DigestFormat
+      namespace: pattern
+      localName: DigestFormat
+      label: Digest Format Constraint
+      definition: validation rule ensuring that cryptographic digest values conform to
+        the canonical format of algorithm prefix followed by colon and
+        hexadecimal hash
+      constraintType: Pattern
+      scope: Attribute
       expression:
-        language: "Regex"
-        expression: '^(sha256|sha512|blake3):[a-f0-9]{64,128}$'
-      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/evidenceDigest"
-      severity: "Error"
-      message: "Digest must be in format algorithm:hexdigest (e.g., sha256:abc123...)"
-      note: "Supports sha256 (64 hex), sha512 (128 hex), blake3 (64 hex); ensures integrity verification"
-
+        language: Regex
+        expression: ^(sha256|sha512|blake3):[a-f0-9]{64,128}$
+      targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/evidenceDigest
+      severity: Error
+      message: Digest must be in format algorithm:hexdigest (e.g., sha256:abc123...)
+      note: Supports sha256 (64 hex), sha512 (128 hex), blake3 (64 hex); ensures
+        integrity verification
     SemanticVersionFormat:
-      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/SemanticVersionFormat"
-      namespace: "pattern"
-      localName: "SemanticVersionFormat"
-      label: "Semantic Version Format Constraint"
-      definition: "validation rule ensuring that semantic version strings conform to the MAJOR.MINOR.PATCH specification"
-      constraintType: "Pattern"
-      scope: "Attribute"
+      iri: https://axiolune.ai/ontology/meta/patterns/constraints/SemanticVersionFormat
+      namespace: pattern
+      localName: SemanticVersionFormat
+      label: Semantic Version Format Constraint
+      definition: validation rule ensuring that semantic version strings conform to
+        the MAJOR.MINOR.PATCH specification
+      constraintType: Pattern
+      scope: Attribute
       expression:
-        language: "Regex"
-        expression: '^\\d+\\.\\d+\\.\\d+$'
-      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/semanticVersion"
-      severity: "Error"
-      message: "Semantic version must be in format MAJOR.MINOR.PATCH (e.g., 1.2.3)"
-      note: "Follows SemVer 2.0.0 specification; pre-release and build metadata not currently supported"
-
+        language: Regex
+        expression: ^\\d+\\.\\d+\\.\\d+$
+      targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/semanticVersion
+      severity: Error
+      message: Semantic version must be in format MAJOR.MINOR.PATCH (e.g., 1.2.3)
+      note: Follows SemVer 2.0.0 specification; pre-release and build metadata not
+        currently supported
     AvailabilityBeforeUse:
-      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/AvailabilityBeforeUse"
-      namespace: "pattern"
-      localName: "AvailabilityBeforeUse"
-      label: "Availability Before Use Constraint"
-      definition: "fail-closed validation rule ensuring that a fact is not consumed before the beginning of its availability period, preventing look-ahead bias in backtesting and enforcing data-licensing compliance"
-      constraintType: "Logical"
-      scope: "Object"
+      iri: https://axiolune.ai/ontology/meta/patterns/constraints/AvailabilityBeforeUse
+      namespace: pattern
+      localName: AvailabilityBeforeUse
+      label: Availability Before Use Constraint
+      definition: fail-closed validation rule ensuring that a fact is not consumed
+        before the beginning of its availability period, preventing look-ahead
+        bias in backtesting and enforcing data-licensing compliance
+      constraintType: Logical
+      scope: Object
       expression:
-        language: "Custom"
-        expression: '$queryTime >= availableFrom'
+        language: Custom
+        expression: $queryTime >= availableFrom
       parameters:
         - name: queryTime
           type: instant
           required: true
-          description: "explicit asOfAvailable query parameter (ADR-012); bound by PIT validator, not static SHACL"
-      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom"
-      severity: "Error"
-      message: "Cannot query data before its availability period begins"
-      note: "Fail-closed (ADR-012): availableFrom MUST be present for PIT consumption — the OR availableFrom IS NULL escape was removed. If availableFrom is missing the fact is NOT consumable in a PIT context. $queryTime is the explicit asOfAvailable parameter; implicit 'now' is forbidden."
-
+          description: explicit asOfAvailable query parameter (ADR-012); bound by PIT
+            validator, not static SHACL
+      targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom
+      severity: Error
+      message: Cannot query data before its availability period begins
+      note: "Fail-closed (ADR-012): availableFrom MUST be present for PIT consumption
+        — the OR availableFrom IS NULL escape was removed. If availableFrom is
+        missing the fact is NOT consumable in a PIT context. $queryTime is the
+        explicit asOfAvailable parameter; implicit 'now' is forbidden."
     AvailabilityIntervalConsistency:
-      iri: "https://axiolune.ai/ontology/meta/patterns/constraints/AvailabilityIntervalConsistency"
-      namespace: "pattern"
-      localName: "AvailabilityIntervalConsistency"
-      label: "Availability Interval Consistency Constraint"
-      definition: "validation rule ensuring that the start of an availability interval does not occur after its end"
-      constraintType: "Logical"
-      scope: "Object"
+      iri: https://axiolune.ai/ontology/meta/patterns/constraints/AvailabilityIntervalConsistency
+      namespace: pattern
+      localName: AvailabilityIntervalConsistency
+      label: Availability Interval Consistency Constraint
+      definition: validation rule ensuring that the start of an availability interval
+        does not occur after its end
+      constraintType: Logical
+      scope: Object
       expression:
-        language: "Custom"
-        expression: 'availableFrom <= availableTo OR availableTo IS NULL'
-      targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom"
-      severity: "Error"
-      message: "Availability interval start must not be after end"
-      note: "Allows open-ended availability (null availableTo = available indefinitely once availableFrom is reached)"
-
-
+        language: Custom
+        expression: availableFrom <= availableTo OR availableTo IS NULL
+      targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom
+      severity: Error
+      message: Availability interval start must not be after end
+      note: Allows open-ended availability (null availableTo = available indefinitely
+        once availableFrom is reached)
   patterns:
-    # ==================== Publication Timing Pattern (Base) ====================
     - pattern: PublicationTiming
-      iri: "https://axiolune.ai/ontology/meta/patterns/PublicationTiming"
-      namespace: "pattern"
-      localName: "PublicationTiming"
-      label: "Publication Timing Pattern"
-      definition: "foundational pattern for tracking when information was published by its source and received by the platform"
-      version: "1.0.0"
-      appliesTo: [ObjectTypeDefinition, AssociationTypeDefinition]
-      note: "Extracted as shared base pattern to avoid conflicts between TemporalFact and ProvenancedFact"
-
+      iri: https://axiolune.ai/ontology/meta/patterns/PublicationTiming
+      namespace: pattern
+      localName: PublicationTiming
+      label: Publication Timing Pattern
+      definition: foundational pattern for tracking when information was published by
+        its source and received by the platform
+      version: 1.0.0
+      appliesTo:
+        - ObjectTypeDefinition
+        - AssociationTypeDefinition
+      note: Extracted as shared base pattern to avoid conflicts between TemporalFact
+        and ProvenancedFact
       injectedAttributes:
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/publishedAt"
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/publishedAt
           minCount: 0
           maxCount: 1
-          label: "Published At"
-          description: "when the data provider published this information"
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/receivedAt"
+          label: Published At
+          description: when the data provider published this information
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/receivedAt
           minCount: 0
           maxCount: 1
-          label: "Received At"
-          description: "when the platform received this information"
-
+          label: Received At
+          description: when the platform received this information
       constraintsAdded:
-        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/PublishBeforeReceive"
-          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/publishedAt"
+        - constraintRef: https://axiolune.ai/ontology/meta/patterns/constraints/PublishBeforeReceive
+          targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/publishedAt
           parameters:
-            rule: "publishedAt <= receivedAt OR receivedAt IS NULL"
-            message: "Publication must occur before or at reception time"
-
-    # ==================== Temporal Fact Pattern ====================
+            rule: publishedAt <= receivedAt OR receivedAt IS NULL
+            message: Publication must occur before or at reception time
     - pattern: TemporalFact
-      iri: "https://axiolune.ai/ontology/meta/patterns/TemporalFact"
-      namespace: "pattern"
-      localName: "TemporalFact"
-      label: "Bi-Temporal Fact Pattern"
-      definition: "pattern for bi-temporal semantics distinguishing business validity time (when the fact was true in the world) from system knowledge time (when the platform learned about it)"
-      version: "1.0.0"
-      appliesTo: [ObjectTypeDefinition, AssociationTypeDefinition]
-
+      iri: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+      namespace: pattern
+      localName: TemporalFact
+      label: Bi-Temporal Fact Pattern
+      definition: pattern for bi-temporal semantics distinguishing business validity
+        time (when the fact was true in the world) from system knowledge time
+        (when the platform learned about it)
+      version: 1.0.0
+      appliesTo:
+        - ObjectTypeDefinition
+        - AssociationTypeDefinition
       dependencies:
-        - "https://axiolune.ai/ontology/meta/patterns/PublicationTiming"
-
+        - https://axiolune.ai/ontology/meta/patterns/PublicationTiming
       conflicts:
-        - "https://axiolune.ai/ontology/meta/patterns/TemporalObservation"
-
-      note: "Depends on PublicationTiming for publishedAt field; conflicts with TemporalObservation (mutually exclusive temporal models)"
-
+        - https://axiolune.ai/ontology/meta/patterns/TemporalObservation
+      note: Depends on PublicationTiming for publishedAt field; conflicts with
+        TemporalObservation (mutually exclusive temporal models)
       parameters:
         - name: timeGranularity
           type: enum
-          allowedValues: [instant, date, dateTime]
+          allowedValues:
+            - instant
+            - date
+            - dateTime
           defaultValue: instant
-          description: "precision of temporal fields"
-
+          description: precision of temporal fields
         - name: requireValidTo
           type: boolean
           defaultValue: false
-          description: "whether validTo must be specified (true) or can be null for ongoing facts"
-
+          description: whether validTo must be specified (true) or can be null for ongoing
+            facts
       injectedAttributes:
-        # Business Valid Time (when the fact was true in the real world)
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/validFrom"
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/validFrom
           minCount: 1
           maxCount: 1
-          label: "Valid From"
-          description: "business time when this fact became true in the real world"
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/validTo"
+          label: Valid From
+          description: business time when this fact became true in the real world
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/validTo
           minCount: 0
           maxCount: 1
-          label: "Valid To"
-          description: "business time when this fact ceased to be true (null = still valid)"
-
-        # Knowledge Time (when the platform learned about the fact)
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom"
+          label: Valid To
+          description: business time when this fact ceased to be true (null = still valid)
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom
           minCount: 1
           maxCount: 1
-          label: "Knowledge From"
-          description: "system time when the platform began to assert this version as true"
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo"
+          label: Knowledge From
+          description: system time when the platform began to assert this version as true
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo
           minCount: 0
           maxCount: 1
-          label: "Knowledge To"
-          description: "system time when the platform ceased to assert this version (null = current version, not superseded or retracted)"
-
-        # Auxiliary Time Fields
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/observedAt"
+          label: Knowledge To
+          description: system time when the platform ceased to assert this version (null =
+            current version, not superseded or retracted)
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
           minCount: 0
           maxCount: 1
-          label: "Observed At"
-          description: "when the observation or measurement was made (for market data)"
-
-        # Availability Time (when consumers may legally use this data)
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom"
+          label: Observed At
+          description: when the observation or measurement was made (for market data)
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom
           minCount: 1
           maxCount: 1
-          label: "Available From"
-          description: "beginning of the availability period during which this data may be consumed (delays, authorization, embargo). Required (fail-closed) for TemporalFact — a fact without an availability start is NOT consumable in PIT contexts."
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/availableTo"
+          label: Available From
+          description: beginning of the availability period during which this data may be
+            consumed (delays, authorization, embargo). Required (fail-closed)
+            for TemporalFact — a fact without an availability start is NOT
+            consumable in PIT contexts.
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/availableTo
           minCount: 0
           maxCount: 1
-          label: "Available To"
-          description: "end of the availability period (null = available indefinitely once availableFrom is reached)"
-
-        # Note: publishedAt and receivedAt come from PublicationTiming dependency
-
+          label: Available To
+          description: end of the availability period (null = available indefinitely once
+            availableFrom is reached)
       constraintsAdded:
-        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/ValidIntervalConsistency"
-          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/validFrom"
-
-        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/KnowledgeIntervalConsistency"
-          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom"
-
-        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/NoFutureKnowledge"
-          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom"
-
-        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/AvailabilityBeforeUse"
-          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom"
-
-        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/AvailabilityIntervalConsistency"
-          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom"
-
+        - constraintRef: https://axiolune.ai/ontology/meta/patterns/constraints/ValidIntervalConsistency
+          targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/validFrom
+        - constraintRef: https://axiolune.ai/ontology/meta/patterns/constraints/KnowledgeIntervalConsistency
+          targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom
+        - constraintRef: https://axiolune.ai/ontology/meta/patterns/constraints/NoFutureKnowledge
+          targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom
+        - constraintRef: https://axiolune.ai/ontology/meta/patterns/constraints/AvailabilityBeforeUse
+          targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom
+        - constraintRef: https://axiolune.ai/ontology/meta/patterns/constraints/AvailabilityIntervalConsistency
+          targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom
       owlProjection:
         kind: mixin
         additionalClasses:
-          - "owl:Class"
-          - "time:TemporalEntity"
-
+          - owl:Class
+          - time:TemporalEntity
       shaclShape:
-        shapeIri: "https://axiolune.ai/ontology/meta/patterns/shapes/TemporalFactShape"
+        shapeIri: https://axiolune.ai/ontology/meta/patterns/shapes/TemporalFactShape
         propertyShapes:
-          - path: "https://axiolune.ai/ontology/meta/patterns/attributes/validFrom"
+          - path: https://axiolune.ai/ontology/meta/patterns/attributes/validFrom
             minCount: 1
             maxCount: 1
-            datatype: "xsd:dateTime"
-          - path: "https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom"
+            datatype: xsd:dateTime
+          - path: https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom
             minCount: 1
             maxCount: 1
-            datatype: "xsd:dateTime"
-
-      alignments:
-        - vocabulary: "FIBO"
-          targetIri: "https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/hasStartDate"
-          relation: "skos:closeMatch"
-          rationale: "validFrom aligns with FIBO start date concept"
-
+            datatype: xsd:dateTime
       asOfQuerySemantics:
-        description: "formal Point-in-Time query semantics across three temporal axes (ADR-012)"
+        description: formal Point-in-Time query semantics across three temporal axes
+          (ADR-012)
         parameters:
           - name: asOfKnowledge
             type: instant
             required: true
-            description: "query at this point on the knowledge time axis; required (no implicit now)"
+            description: query at this point on the knowledge time axis; required (no
+              implicit now)
           - name: asOfValid
             type: instant
             required: true
-            description: "query at this point on the business (valid) time axis; required"
+            description: query at this point on the business (valid) time axis; required
           - name: asOfAvailable
             type: instant
             required: true
-            description: "query restricted to data available at this point on the availability time axis; required (prevents look-ahead bias)"
+            description: query restricted to data available at this point on the
+              availability time axis; required (prevents look-ahead bias)
         logicalQuery: |
           SELECT *
           FROM facts
@@ -585,10 +591,9 @@ CrossDomainPatterns:
             AND (availableTo IS NULL OR availableTo > :asOfAvailable)
           ORDER BY knowledgeFrom DESC, validFrom DESC
           LIMIT 1 PER logical_key
-
       examples:
-        - description: "Market price observation with bi-temporal tracking"
-          boundToType: "fin:PriceObservation"
+        - description: Market price observation with bi-temporal tracking
+          boundToType: fin:PriceObservation
           parameterValues:
             timeGranularity: instant
             requireValidTo: false
@@ -599,264 +604,238 @@ CrossDomainPatterns:
             - knowledgeTo
             - observedAt
             - publishedAt
-
-    # ==================== Temporal Observation Pattern ====================
     - pattern: TemporalObservation
-      iri: "https://axiolune.ai/ontology/meta/patterns/TemporalObservation"
-      namespace: "pattern"
-      localName: "TemporalObservation"
-      label: "Temporal Observation Pattern"
-      definition: "pattern for single-timestamp observations without explicit validity periods (e.g., sensor readings, event timestamps)"
-      version: "1.0.0"
-      appliesTo: [AssociationTypeDefinition]
-
+      iri: https://axiolune.ai/ontology/meta/patterns/TemporalObservation
+      namespace: pattern
+      localName: TemporalObservation
+      label: Temporal Observation Pattern
+      definition: pattern for single-timestamp observations without explicit validity
+        periods (e.g., sensor readings, event timestamps)
+      version: 1.0.0
+      appliesTo:
+        - AssociationTypeDefinition
       conflicts:
-        - "https://axiolune.ai/ontology/meta/patterns/TemporalFact"
-
+        - https://axiolune.ai/ontology/meta/patterns/TemporalFact
       injectedAttributes:
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/observedAt"
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
           minCount: 1
           maxCount: 1
-          label: "Observed At"
-          description: "when the measurement or observation was made"
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/recordedAt"
+          label: Observed At
+          description: when the measurement or observation was made
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/recordedAt
           minCount: 1
           maxCount: 1
-          label: "Recorded At"
-          description: "when the observation was recorded in the system"
-
+          label: Recorded At
+          description: when the observation was recorded in the system
       constraintsAdded:
-        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/ObservationBeforeRecording"
-          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/observedAt"
+        - constraintRef: https://axiolune.ai/ontology/meta/patterns/constraints/ObservationBeforeRecording
+          targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
           parameters:
-            rule: "observedAt <= recordedAt"
-            message: "Observation must occur before or at recording time"
-
-    # ==================== Provenance Pattern ====================
+            rule: observedAt <= recordedAt
+            message: Observation must occur before or at recording time
     - pattern: ProvenancedFact
-      iri: "https://axiolune.ai/ontology/meta/patterns/ProvenancedFact"
-      namespace: "pattern"
-      localName: "ProvenancedFact"
-      label: "Provenance Tracking Pattern"
-      definition: "pattern for tracking the origin, authority, lineage, and confidence of information"
-      version: "1.0.0"
-      appliesTo: [ObjectTypeDefinition, AssociationTypeDefinition]
-      reference: "W3C PROV-O"
-
+      iri: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+      namespace: pattern
+      localName: ProvenancedFact
+      label: Provenance Tracking Pattern
+      definition: pattern for tracking the origin, authority, lineage, and confidence
+        of information
+      version: 1.0.0
+      appliesTo:
+        - ObjectTypeDefinition
+        - AssociationTypeDefinition
+      reference: W3C PROV-O
       dependencies:
-        - "https://axiolune.ai/ontology/meta/patterns/PublicationTiming"
-      note: "Depends on PublicationTiming for publishedAt and receivedAt fields"
-
+        - https://axiolune.ai/ontology/meta/patterns/PublicationTiming
+      note: Depends on PublicationTiming for publishedAt and receivedAt fields
       injectedAttributes:
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/source"
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/source
           minCount: 1
           maxCount: 1
-          label: "Source"
-          description: "originating data source or provider URI"
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/sourceVersion"
+          label: Source
+          description: originating data source or provider URI
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/sourceVersion
           minCount: 0
           maxCount: 1
-          label: "Source Version"
-          description: "version or snapshot identifier of the source"
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/confidence"
+          label: Source Version
+          description: version or snapshot identifier of the source
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/confidence
           minCount: 0
           maxCount: 1
-          label: "Confidence Score"
-          description: "confidence score or probability (0.0 to 1.0)"
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/revision"
+          label: Confidence Score
+          description: confidence score or probability (0.0 to 1.0)
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/revision
           minCount: 0
           maxCount: 1
-          label: "Revision Number"
-          description: "revision number for this fact (increments on updates)"
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/derivedFrom"
+          label: Revision Number
+          description: revision number for this fact (increments on updates)
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/derivedFrom
           minCount: 0
           maxCount: null
-          label: "Derived From"
-          description: "URIs of facts this was derived from (for computed/transformed data)"
-
-        # Note: publishedAt and receivedAt come from PublicationTiming dependency
-
+          label: Derived From
+          description: URIs of facts this was derived from (for computed/transformed data)
       constraintsAdded:
-        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/ConfidenceRange"
-          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/confidence"
+        - constraintRef: https://axiolune.ai/ontology/meta/patterns/constraints/ConfidenceRange
+          targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/confidence
           parameters:
-            rule: "confidence >= 0.0 AND confidence <= 1.0"
-            message: "Confidence must be between 0.0 and 1.0"
-
-        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/PublishBeforeReceive"
-          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/publishedAt"
+            rule: confidence >= 0.0 AND confidence <= 1.0
+            message: Confidence must be between 0.0 and 1.0
+        - constraintRef: https://axiolune.ai/ontology/meta/patterns/constraints/PublishBeforeReceive
+          targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/publishedAt
           parameters:
-            rule: "publishedAt <= receivedAt"
-            message: "Source publication must precede platform receipt"
-
-      alignments:
-        - vocabulary: "PROV-O"
-          targetIri: "http://www.w3.org/ns/prov#Entity"
-          relation: "rdfs:subClassOf"
-          rationale: "ProvenancedFact instances are PROV Entities"
-
-        - vocabulary: "PROV-O"
-          targetIri: "http://www.w3.org/ns/prov#wasDerivedFrom"
-          relation: "skos:exactMatch"
-          rationale: "derivedFrom maps to PROV wasDerivedFrom"
-
-    # ==================== Evidence Pattern ====================
+            rule: publishedAt <= receivedAt
+            message: Source publication must precede platform receipt
     - pattern: Evidence
-      iri: "https://axiolune.ai/ontology/meta/patterns/Evidence"
-      namespace: "pattern"
-      localName: "Evidence"
-      label: "Evidence Tracking Pattern"
-      definition: "pattern for linking facts to supporting evidence, documents, and data artifacts for audit and reproducibility"
-      version: "1.0.0"
-      appliesTo: [ObjectTypeDefinition, AssociationTypeDefinition]
-
+      iri: https://axiolune.ai/ontology/meta/patterns/Evidence
+      namespace: pattern
+      localName: Evidence
+      label: Evidence Tracking Pattern
+      definition: pattern for linking facts to supporting evidence, documents, and
+        data artifacts for audit and reproducibility
+      version: 1.0.0
+      appliesTo:
+        - ObjectTypeDefinition
+        - AssociationTypeDefinition
       injectedAttributes:
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/evidenceType"
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/evidenceType
           minCount: 1
           maxCount: 1
-          label: "Evidence Type"
-          description: "category of evidence"
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/evidenceRef"
+          label: Evidence Type
+          description: category of evidence
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/evidenceRef
           minCount: 1
           maxCount: 1
-          label: "Evidence Reference"
-          description: "URI reference to evidence artifact"
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/evidenceDigest"
+          label: Evidence Reference
+          description: URI reference to evidence artifact
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/evidenceDigest
           minCount: 0
           maxCount: 1
-          label: "Evidence Digest"
-          description: "cryptographic hash of evidence artifact for immutability verification"
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/evidenceTimestamp"
+          label: Evidence Digest
+          description: cryptographic hash of evidence artifact for immutability verification
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/evidenceTimestamp
           minCount: 0
           maxCount: 1
-          label: "Evidence Timestamp"
-          description: "when the evidence was created or captured"
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/evidenceDescription"
+          label: Evidence Timestamp
+          description: when the evidence was created or captured
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/evidenceDescription
           minCount: 0
           maxCount: 1
-          label: "Evidence Description"
-          description: "human-readable description of the evidence"
-
+          label: Evidence Description
+          description: human-readable description of the evidence
       constraintsAdded:
-        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/DigestFormat"
-          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/evidenceDigest"
+        - constraintRef: https://axiolune.ai/ontology/meta/patterns/constraints/DigestFormat
+          targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/evidenceDigest
           parameters:
-            pattern: "^(sha256|sha512):[a-f0-9]+$"
-            message: "Evidence digest must be in format 'algorithm:hexhash'"
-
-    # ==================== Lifecycle Pattern ====================
+            pattern: ^(sha256|sha512):[a-f0-9]+$
+            message: Evidence digest must be in format 'algorithm:hexhash'
     - pattern: Lifecycle
-      iri: "https://axiolune.ai/ontology/meta/patterns/Lifecycle"
-      namespace: "pattern"
-      localName: "Lifecycle"
-      label: "Lifecycle State Management Pattern"
-      definition: "pattern for managing entity lifecycle states, transitions, and history"
-      version: "1.0.0"
-      appliesTo: [ObjectTypeDefinition, AssociationTypeDefinition]
-
+      iri: https://axiolune.ai/ontology/meta/patterns/Lifecycle
+      namespace: pattern
+      localName: Lifecycle
+      label: Lifecycle State Management Pattern
+      definition: pattern for managing entity lifecycle states, transitions, and history
+      version: 1.0.0
+      appliesTo:
+        - ObjectTypeDefinition
+        - AssociationTypeDefinition
       injectedAttributes:
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/lifecycleState"
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/lifecycleState
           minCount: 1
           maxCount: 1
-          label: "Lifecycle State"
-          description: "current lifecycle state of the entity"
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/lifecycleVersion"
+          label: Lifecycle State
+          description: current lifecycle state of the entity
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/lifecycleVersion
           minCount: 1
           maxCount: 1
-          label: "Lifecycle Version"
-          description: "version number incremented on each state transition"
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/createdAt"
+          label: Lifecycle Version
+          description: version number incremented on each state transition
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/createdAt
           minCount: 1
           maxCount: 1
-          label: "Created At"
-          description: "when the entity was first created"
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/updatedAt"
+          label: Created At
+          description: when the entity was first created
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/updatedAt
           minCount: 1
           maxCount: 1
-          label: "Updated At"
-          description: "when the entity was last updated"
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/deprecatedAt"
+          label: Updated At
+          description: when the entity was last updated
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/deprecatedAt
           minCount: 0
           maxCount: 1
-          label: "Deprecated At"
-          description: "when the entity was deprecated (if applicable)"
-
-      note: "State transition history should be tracked as separate StateTransition events, not as a list field"
-
-    # ==================== Versioning Pattern ====================
+          label: Deprecated At
+          description: when the entity was deprecated (if applicable)
+      note: State transition history should be tracked as separate StateTransition
+        events, not as a list field
     - pattern: Versioning
-      iri: "https://axiolune.ai/ontology/meta/patterns/Versioning"
-      namespace: "pattern"
-      localName: "Versioning"
-      label: "Semantic Versioning Pattern"
-      definition: "pattern for tracking semantic versions of ontology artifacts (not business fact revisions)"
-      version: "1.0.0"
-      appliesTo: [ObjectTypeDefinition, AssociationTypeDefinition, AttributeTypeDefinition, RelationTypeDefinition]
-      note: "This is for ONTOLOGY ARTIFACT versioning, not business fact modification (use TemporalFact for that)"
-
+      iri: https://axiolune.ai/ontology/meta/patterns/Versioning
+      namespace: pattern
+      localName: Versioning
+      label: Semantic Versioning Pattern
+      definition: pattern for tracking semantic versions of ontology artifacts (not
+        business fact revisions)
+      version: 1.0.0
+      appliesTo:
+        - ObjectTypeDefinition
+        - AssociationTypeDefinition
+        - AttributeTypeDefinition
+        - RelationTypeDefinition
+      note: This is for ONTOLOGY ARTIFACT versioning, not business fact modification
+        (use TemporalFact for that)
       injectedAttributes:
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/semanticVersion"
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/semanticVersion
           minCount: 1
           maxCount: 1
-          label: "Semantic Version"
-          description: "semantic version in MAJOR.MINOR.PATCH format"
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/versionedIri"
+          label: Semantic Version
+          description: semantic version in MAJOR.MINOR.PATCH format
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/versionedIri
           minCount: 1
           maxCount: 1
-          label: "Versioned IRI"
-          description: "IRI including version identifier"
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/priorVersion"
+          label: Versioned IRI
+          description: IRI including version identifier
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/priorVersion
           minCount: 0
           maxCount: 1
-          label: "Prior Version"
-          description: "IRI of the immediately preceding version"
-
-        - attribute: "https://axiolune.ai/ontology/meta/patterns/attributes/incompatibleWith"
+          label: Prior Version
+          description: IRI of the immediately preceding version
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/incompatibleWith
           minCount: 0
           maxCount: null
-          label: "Incompatible With"
-          description: "version IRIs this version is incompatible with"
-
+          label: Incompatible With
+          description: version IRIs this version is incompatible with
       constraintsAdded:
-        - constraintRef: "https://axiolune.ai/ontology/meta/patterns/constraints/SemanticVersionFormat"
-          targetElement: "https://axiolune.ai/ontology/meta/patterns/attributes/semanticVersion"
+        - constraintRef: https://axiolune.ai/ontology/meta/patterns/constraints/SemanticVersionFormat
+          targetElement: https://axiolune.ai/ontology/meta/patterns/attributes/semanticVersion
           parameters:
-            pattern: "^\\d+\\.\\d+\\.\\d+$"
-            message: "Semantic version must be in MAJOR.MINOR.PATCH format"
-
-  # ==================== Validation Rules ====================
+            pattern: ^\d+\.\d+\.\d+$
+            message: Semantic version must be in MAJOR.MINOR.PATCH format
   ValidationRules:
-    - "All PatternDefinition instances must have unique IRIs"
-    - "PatternBinding.pattern must reference a valid PatternDefinition IRI"
-    - "Patterns with conflicts cannot be bound to the same type simultaneously"
-    - "Pattern dependencies must form a DAG (no circular dependencies)"
-    - "Injected attributes must not conflict with type's own attributes (same IRI)"
-    - "Pattern parameters must be provided if required=true"
-    - "Pattern composition must respect applicability constraints"
-    - "All pattern constraints MUST conform to ConstraintDefinition grammar (core Layer 1): required fields iri/namespace/localName/label/definition/constraintType/scope/expression/severity/message, where expression is structured {language, expression}"
-    - "Runtime-parameterized constraints (NoFutureKnowledge: $referenceTime, AvailabilityBeforeUse: $queryTime) are enforced by the dedicated PIT validator with MaterializationRun as explicit input (ADR-012); the SHACL sh:ConstraintComponent definitions serve as declarative specifications only — static SHACL shapes cannot bind runtime parameters"
-
-  # ==================== Notes ====================
+    - All PatternDefinition instances must have unique IRIs
+    - PatternBinding.pattern must reference a valid PatternDefinition IRI
+    - Patterns with conflicts cannot be bound to the same type simultaneously
+    - Pattern dependencies must form a DAG (no circular dependencies)
+    - Injected attributes must not conflict with type's own attributes (same IRI)
+    - Pattern parameters must be provided if required=true
+    - Pattern composition must respect applicability constraints
+    - "All pattern constraints MUST conform to ConstraintDefinition grammar
+      (core Layer 1): required fields
+      iri/namespace/localName/label/definition/constraintType/scope/expression/\
+      severity/message, where expression is structured {language, expression}"
+    - "Runtime-parameterized constraints (NoFutureKnowledge: $referenceTime,
+      AvailabilityBeforeUse: $queryTime) are enforced by the dedicated PIT
+      validator with MaterializationRun as explicit input (ADR-012); the SHACL
+      sh:ConstraintComponent definitions serve as declarative specifications
+      only — static SHACL shapes cannot bind runtime parameters"
   Notes:
-    - "Patterns are now first-class ontology elements with IRIs and versions"
-    - "PatternBinding in Layer 1 refers to PatternDefinition.iri in Layer 2"
-    - "TemporalFact and TemporalObservation are mutually exclusive (conflicts)"
-    - "Identity pattern is implicit in ObjectTypeDefinition/AssociationTypeDefinition; not a separate pattern"
-    - "FIBO alignment references retained for compatibility but should be formalized as Alignment objects"
-    - "Classification pattern omitted pending decision on whether it should be a pattern or a relation"
-    - "All IRIs are final per ADR-002 (Accepted); CURIE prefixes (ax-meta, ax-pattern, fin) expand to https://axiolune.ai/ontology/{meta,meta/patterns,domain}/ respectively; absolute IRIs are canonical"
+    - Patterns are now first-class ontology elements with IRIs and versions
+    - PatternBinding in Layer 1 refers to PatternDefinition.iri in Layer 2
+    - TemporalFact and TemporalObservation are mutually exclusive (conflicts)
+    - Identity pattern is implicit in
+      ObjectTypeDefinition/AssociationTypeDefinition; not a separate pattern
+    - FIBO alignment references retained for compatibility but should be
+      formalized as Alignment objects
+    - Classification pattern omitted pending decision on whether it should be a
+      pattern or a relation
+    - All IRIs are final per ADR-002 (Accepted); CURIE prefixes (ax-meta,
+      ax-pattern, fin) expand to
+      https://axiolune.ai/ontology/{meta,meta/patterns,domain}/ respectively;
+      absolute IRIs are canonical

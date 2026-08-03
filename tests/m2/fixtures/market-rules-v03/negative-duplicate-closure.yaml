@@ -1,0 +1,14 @@
+caseId: market-rules-v03-negative-duplicate-closure
+extends: positive-cq-execution.yaml
+mutations:
+  - op: set
+    path: "closures[1]"
+    value:
+      id: https://axiolune.ai/data/fact-closure-assertion/sha256-7fa7978f0c727bc451e7d3675741abf0732a425af9c0bf772466590324102849
+      targetVersionIri: urn:applicability:price-conflict-b:version:1
+      axis: availability
+      closedAt: "2026-07-21T00:00:00Z"
+      causeKind: sourceWithdrawal
+      evidenceRef: urn:evidence:duplicate-source-withdrawal
+      generatingContextRef: urn:validation-run:market-rules-v03
+expected: {valid: false, codes: [RULE_CLOSURE_DUPLICATE]}

@@ -1,0 +1,867 @@
+schemaVersion: '1.0'
+anchors:
+  authority: &authority
+    referenceMode: logical
+    logicalIri: https://axiolune.ai/data/party/research-governance
+  generator: &generator
+    referenceMode: version
+    logicalIri: https://axiolune.ai/data/strategy/generator/momentum
+    versionIri: https://axiolune.ai/data/strategy/generator/momentum/version/3
+  factor: &factor
+    referenceMode: version
+    logicalIri: https://axiolune.ai/data/factor/roe
+    versionIri: https://axiolune.ai/data/factor/roe/version/4
+  strategy: &strategy
+    referenceMode: version
+    logicalIri: https://axiolune.ai/data/strategy/value-momentum
+    versionIri: https://axiolune.ai/data/strategy/value-momentum/version/7
+  instrument: &instrument
+    referenceMode: version
+    logicalIri: https://axiolune.ai/data/instrument/US0378331005
+    versionIri: https://axiolune.ai/data/instrument/US0378331005/version/2
+  listing: &listing
+    referenceMode: version
+    logicalIri: https://axiolune.ai/data/listing/XNAS-AAPL
+    versionIri: https://axiolune.ai/data/listing/XNAS-AAPL/version/5
+    listedInstrumentVersionIri: https://axiolune.ai/data/instrument/US0378331005/version/2
+  run: &run
+    referenceMode: version
+    logicalIri: https://axiolune.ai/data/run/backtest-2024
+    versionIri: https://axiolune.ai/data/run/backtest-2024/version/1
+  metric: &metric
+    ref:
+      referenceMode: version
+      logicalIri: https://axiolune.ai/data/metric/sharpe
+      versionIri: https://axiolune.ai/data/metric/sharpe/version/2
+    valueKind: quantity
+    metricCode: sharpe
+  calculation: &calculation
+    ref:
+      referenceMode: version
+      logicalIri: https://axiolune.ai/data/calculation/daily-252
+      versionIri: https://axiolune.ai/data/calculation/daily-252/version/3
+    frequency: daily
+    annualizationFactor: {value: '252', unit: https://axiolune.ai/units/one, rounding: half-even}
+    riskFreeRate: {value: '0.02', unit: https://axiolune.ai/units/one, rounding: half-even}
+    window: {value: '252', unit: https://axiolune.ai/units/trading-day, rounding: half-even}
+    implementationDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+  temporal: &temporal
+    validFrom: '2024-06-03T13:30:00Z'
+    validTo: '2024-06-10T13:30:00Z'
+    knowledgeFrom: '2024-06-03T13:30:01Z'
+    availableFrom: '2024-06-03T13:30:02Z'
+    revision: 0
+  inputContext: &inputContext
+    recordRef: https://axiolune.ai/run/materialization/context-2025-01-11
+    recordDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+    completedAt: '2025-01-11T00:00:00Z'
+    status: completed
+    datasetSnapshots:
+      - datasetKind: corporateAction
+        datasetRef: https://axiolune.ai/data/dataset/corporate-actions/locked-2025-01-07
+        artifactDigest: sha256:3333333333333333333333333333333333333333333333333333333333333333
+        schemaDigest: sha256:4444444444444444444444444444444444444444444444444444444444444444
+  pitReport: &pitReport
+    status: passed
+    generatingContextRef: https://axiolune.ai/run/materialization/pit-validator-2025-01-07
+    requestRef: https://axiolune.ai/run/pit/request-2025-01-07
+    requestDigest: sha256:5555555555555555555555555555555555555555555555555555555555555555
+    contextRef: https://axiolune.ai/run/materialization/context-2025-01-11
+    contextDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+    asOfValid: '2024-12-31T23:59:59Z'
+    asOfKnowledge: '2025-01-06T23:59:59Z'
+    asOfAvailable: '2025-01-07T00:00:00Z'
+
+cases:
+  - id: reject-metric-definition-with-unlocked-formula
+    kind: metricDefinition
+    expected: reject
+    expectedCode: DIGEST_FORMAT
+    payload:
+      authority: *authority
+      metricDefinitionId: sharpe
+      metricName: Sharpe Ratio
+      metricValueKind: quantity
+      formulaDigest: unlocked-formula
+      implementationDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+      inputContractDigest: sha256:1212121212121212121212121212121212121212121212121212121212121212
+      outputContractDigest: sha256:1313131313131313131313131313131313131313131313131313131313131313
+      toolLockRef: https://axiolune.ai/artifact/tool-lock/metric-runtime-2025-01
+      toolLockDigest: sha256:1414141414141414141414141414141414141414141414141414141414141414
+      runtimeDigest: sha256:1515151515151515151515151515151515151515151515151515151515151515
+      temporal: *temporal
+      identity:
+        logicalIri: https://axiolune.ai/data/metric/sharpe
+        versionIri: https://axiolune.ai/data/metric/sharpe/version/2
+        logicalKey: [https://axiolune.ai/data/party/research-governance, sharpe]
+        versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', '2024-06-03T13:30:02Z', 0]
+
+  - id: reject-calculation-context-with-unpaired-benchmark
+    kind: calculationContext
+    expected: reject
+    expectedCode: REF_DIGEST_PAIR
+    payload:
+      authority: *authority
+      calculationContextId: daily-252
+      calculationFrequency: daily
+      annualizationFactor: {value: '252', unit: https://axiolune.ai/units/one, rounding: half-even}
+      riskFreeRate: {value: '0.02', unit: https://axiolune.ai/units/one, rounding: half-even}
+      calculationWindow: {value: '252', unit: https://axiolune.ai/units/trading-day, rounding: half-even}
+      confidenceLevel: {value: '0.95', unit: https://axiolune.ai/units/one, rounding: half-even}
+      calculationImplementationDigest: sha256:1616161616161616161616161616161616161616161616161616161616161616
+      benchmarkRef: https://axiolune.ai/data/instrument/benchmark/SPX/version/1
+      temporal: *temporal
+      identity:
+        logicalIri: https://axiolune.ai/data/calculation/daily-252
+        versionIri: https://axiolune.ai/data/calculation/daily-252/version/3
+        logicalKey: [https://axiolune.ai/data/party/research-governance, daily-252]
+        versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', '2024-06-03T13:30:02Z', 0]
+
+  - id: reject-calculation-context-with-missing-parameter-snapshot-digest
+    kind: calculationContext
+    expected: reject
+    expectedCode: CALCULATION_PARAMETER_SNAPSHOT_PAIR
+    payload:
+      authority: *authority
+      calculationContextId: missing-parameter-digest
+      calculationFrequency: daily
+      annualizationFactor: {value: '252', unit: https://axiolune.ai/units/one, rounding: half-even}
+      riskFreeRate: {value: '0.02', unit: https://axiolune.ai/units/one, rounding: half-even}
+      calculationWindow: {value: '252', unit: https://axiolune.ai/units/trading-day, rounding: half-even}
+      confidenceLevel: {value: '0.95', unit: https://axiolune.ai/units/one, rounding: half-even}
+      calculationImplementationDigest: sha256:1616161616161616161616161616161616161616161616161616161616161616
+      calculationParameterSnapshotRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/strategy-research/evidence/calculation-parameters-daily-simple-compound-v1.json}
+      calculationParameterSnapshotLocator:
+        kind: wholeFile
+        path: tests/m2/fixtures/strategy-research/evidence/calculation-parameters-daily-simple-compound-v1.json
+        mediaType: application/json
+        extractorProfileRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/strategy-research/evidence/whole-file-json-v1.json}
+        extractorProfileDigest: sha256:dd1f703e804ab47cf6f5c4e102a08f6bcabec865c3fb8fd8ba8447ae045e85d8
+        selectionDigest: sha256:3631b4117d79c4d01d33945cd4a39f4b0f02982ea96261d92c1f781e93aba80a
+      benchmarkRef: https://axiolune.ai/data/instrument/benchmark/SPX/version/1
+      benchmarkDigest: sha256:1717171717171717171717171717171717171717171717171717171717171717
+      temporal: *temporal
+      identity:
+        logicalIri: https://axiolune.ai/data/calculation/missing-parameter-digest
+        versionIri: https://axiolune.ai/data/calculation/missing-parameter-digest/version/1
+        logicalKey: [https://axiolune.ai/data/party/research-governance, missing-parameter-digest]
+        versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', '2024-06-03T13:30:02Z', 0]
+
+  - id: reject-calculation-context-with-wrong-parameter-snapshot-digest
+    kind: calculationContext
+    expected: reject
+    expectedCode: CALCULATION_PARAMETER_SNAPSHOT_DIGEST
+    payload:
+      authority: *authority
+      calculationContextId: wrong-parameter-digest
+      calculationFrequency: daily
+      annualizationFactor: {value: '252', unit: https://axiolune.ai/units/one, rounding: half-even}
+      riskFreeRate: {value: '0.02', unit: https://axiolune.ai/units/one, rounding: half-even}
+      calculationWindow: {value: '252', unit: https://axiolune.ai/units/trading-day, rounding: half-even}
+      confidenceLevel: {value: '0.95', unit: https://axiolune.ai/units/one, rounding: half-even}
+      calculationImplementationDigest: sha256:1616161616161616161616161616161616161616161616161616161616161616
+      calculationParameterSnapshotRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/strategy-research/evidence/calculation-parameters-daily-simple-compound-v1.json}
+      calculationParameterSnapshotDigest: sha256:24a69f0e2c387a9a525a46baba344acce00e872915144610a63d43b8cb5f19c4
+      calculationParameterSnapshotLocator:
+        kind: wholeFile
+        path: tests/m2/fixtures/strategy-research/evidence/calculation-parameters-daily-simple-compound-v1.json
+        mediaType: application/json
+        extractorProfileRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/strategy-research/evidence/whole-file-json-v1.json}
+        extractorProfileDigest: sha256:dd1f703e804ab47cf6f5c4e102a08f6bcabec865c3fb8fd8ba8447ae045e85d8
+        selectionDigest: sha256:3631b4117d79c4d01d33945cd4a39f4b0f02982ea96261d92c1f781e93aba80a
+      benchmarkRef: https://axiolune.ai/data/instrument/benchmark/SPX/version/1
+      benchmarkDigest: sha256:1717171717171717171717171717171717171717171717171717171717171717
+      temporal: *temporal
+      identity:
+        logicalIri: https://axiolune.ai/data/calculation/wrong-parameter-digest
+        versionIri: https://axiolune.ai/data/calculation/wrong-parameter-digest/version/1
+        logicalKey: [https://axiolune.ai/data/party/research-governance, wrong-parameter-digest]
+        versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', '2024-06-03T13:30:02Z', 0]
+
+  - id: reject-calculation-context-with-unreviewed-parameter-bytes
+    kind: calculationContext
+    expected: reject
+    expectedCode: CALCULATION_PARAMETER_SNAPSHOT_CONTENT
+    payload:
+      authority: *authority
+      calculationContextId: invalid-parameter-policy
+      calculationFrequency: daily
+      annualizationFactor: {value: '252', unit: https://axiolune.ai/units/one, rounding: half-even}
+      riskFreeRate: {value: '0.02', unit: https://axiolune.ai/units/one, rounding: half-even}
+      calculationWindow: {value: '252', unit: https://axiolune.ai/units/trading-day, rounding: half-even}
+      confidenceLevel: {value: '0.95', unit: https://axiolune.ai/units/one, rounding: half-even}
+      calculationImplementationDigest: sha256:1616161616161616161616161616161616161616161616161616161616161616
+      calculationParameterSnapshotRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/strategy-research/evidence/calculation-parameters-invalid-policy-v1.json}
+      calculationParameterSnapshotDigest: sha256:3af73927ed5f93169d34937f1c49d0f005493997b4ea0b561744f514e6518cd4
+      calculationParameterSnapshotLocator:
+        kind: wholeFile
+        path: tests/m2/fixtures/strategy-research/evidence/calculation-parameters-invalid-policy-v1.json
+        mediaType: application/json
+        extractorProfileRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/strategy-research/evidence/whole-file-json-v1.json}
+        extractorProfileDigest: sha256:dd1f703e804ab47cf6f5c4e102a08f6bcabec865c3fb8fd8ba8447ae045e85d8
+        selectionDigest: sha256:60a12db9830945f9fbde1bcd71d76fc364a03ef80be288a073e8a96a5f93088d
+      benchmarkRef: https://axiolune.ai/data/instrument/benchmark/SPX/version/1
+      benchmarkDigest: sha256:1717171717171717171717171717171717171717171717171717171717171717
+      temporal: *temporal
+      identity:
+        logicalIri: https://axiolune.ai/data/calculation/invalid-parameter-policy
+        versionIri: https://axiolune.ai/data/calculation/invalid-parameter-policy/version/1
+        logicalKey: [https://axiolune.ai/data/party/research-governance, invalid-parameter-policy]
+        versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', '2024-06-03T13:30:02Z', 0]
+
+  - id: reject-calculation-context-parameter-change-with-stale-digest
+    kind: calculationContext
+    expected: reject
+    expectedCode: CALCULATION_PARAMETER_SNAPSHOT_MISMATCH
+    payload:
+      authority: *authority
+      calculationContextId: stale-parameter-digest
+      calculationFrequency: daily
+      annualizationFactor: {value: '365', unit: https://axiolune.ai/units/one, rounding: half-even}
+      riskFreeRate: {value: '0.02', unit: https://axiolune.ai/units/one, rounding: half-even}
+      calculationWindow: {value: '252', unit: https://axiolune.ai/units/trading-day, rounding: half-even}
+      confidenceLevel: {value: '0.95', unit: https://axiolune.ai/units/one, rounding: half-even}
+      calculationImplementationDigest: sha256:1616161616161616161616161616161616161616161616161616161616161616
+      calculationParameterSnapshotRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/strategy-research/evidence/calculation-parameters-daily-simple-compound-v1.json}
+      calculationParameterSnapshotDigest: sha256:14a69f0e2c387a9a525a46baba344acce00e872915144610a63d43b8cb5f19c4
+      calculationParameterSnapshotLocator:
+        kind: wholeFile
+        path: tests/m2/fixtures/strategy-research/evidence/calculation-parameters-daily-simple-compound-v1.json
+        mediaType: application/json
+        extractorProfileRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/strategy-research/evidence/whole-file-json-v1.json}
+        extractorProfileDigest: sha256:dd1f703e804ab47cf6f5c4e102a08f6bcabec865c3fb8fd8ba8447ae045e85d8
+        selectionDigest: sha256:3631b4117d79c4d01d33945cd4a39f4b0f02982ea96261d92c1f781e93aba80a
+      benchmarkRef: https://axiolune.ai/data/instrument/benchmark/SPX/version/1
+      benchmarkDigest: sha256:1717171717171717171717171717171717171717171717171717171717171717
+      temporal: *temporal
+      identity:
+        logicalIri: https://axiolune.ai/data/calculation/stale-parameter-digest
+        versionIri: https://axiolune.ai/data/calculation/stale-parameter-digest/version/1
+        logicalKey: [https://axiolune.ai/data/party/research-governance, stale-parameter-digest]
+        versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', '2024-06-03T13:30:02Z', 0]
+
+  - id: reject-calculation-context-lookahead-backfill-policy
+    kind: calculationContext
+    expected: reject
+    expectedCode: CALCULATION_PARAMETER_SNAPSHOT_LOOKAHEAD
+    payload:
+      authority: *authority
+      calculationContextId: lookahead-backfill-policy
+      calculationFrequency: daily
+      annualizationFactor: {value: '252', unit: https://axiolune.ai/units/one, rounding: half-even}
+      riskFreeRate: {value: '0.02', unit: https://axiolune.ai/units/one, rounding: half-even}
+      calculationWindow: {value: '252', unit: https://axiolune.ai/units/trading-day, rounding: half-even}
+      confidenceLevel: {value: '0.95', unit: https://axiolune.ai/units/one, rounding: half-even}
+      calculationImplementationDigest: sha256:1616161616161616161616161616161616161616161616161616161616161616
+      calculationParameterSnapshotRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/strategy-research/evidence/calculation-parameters-lookahead-bfill-v1.json}
+      calculationParameterSnapshotDigest: sha256:2e915855ec015610d6322008a8d0c1bde9668ce18542b337ed0d76072f8c6ee9
+      calculationParameterSnapshotLocator:
+        kind: wholeFile
+        path: tests/m2/fixtures/strategy-research/evidence/calculation-parameters-lookahead-bfill-v1.json
+        mediaType: application/json
+        extractorProfileRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/strategy-research/evidence/whole-file-json-v1.json}
+        extractorProfileDigest: sha256:dd1f703e804ab47cf6f5c4e102a08f6bcabec865c3fb8fd8ba8447ae045e85d8
+        selectionDigest: sha256:a238a43626ad40a4c2d468a1e43a3871fac5d920e886f0757217968d80236db8
+      benchmarkRef: https://axiolune.ai/data/instrument/benchmark/SPX/version/1
+      benchmarkDigest: sha256:1717171717171717171717171717171717171717171717171717171717171717
+      temporal: *temporal
+      identity:
+        logicalIri: https://axiolune.ai/data/calculation/lookahead-backfill-policy
+        versionIri: https://axiolune.ai/data/calculation/lookahead-backfill-policy/version/1
+        logicalKey: [https://axiolune.ai/data/party/research-governance, lookahead-backfill-policy]
+        versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', '2024-06-03T13:30:02Z', 0]
+
+  - id: reject-daily-calculation-context-with-month-end-anchor
+    kind: calculationContext
+    expected: reject
+    expectedCode: CALCULATION_PARAMETER_SNAPSHOT_ANCHOR
+    payload:
+      authority: *authority
+      calculationContextId: daily-month-end-anchor
+      calculationFrequency: daily
+      annualizationFactor: {value: '252', unit: https://axiolune.ai/units/one, rounding: half-even}
+      riskFreeRate: {value: '0.02', unit: https://axiolune.ai/units/one, rounding: half-even}
+      calculationWindow: {value: '252', unit: https://axiolune.ai/units/trading-day, rounding: half-even}
+      confidenceLevel: {value: '0.95', unit: https://axiolune.ai/units/one, rounding: half-even}
+      calculationImplementationDigest: sha256:1616161616161616161616161616161616161616161616161616161616161616
+      calculationParameterSnapshotRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/strategy-research/evidence/calculation-parameters-daily-month-end-v1.json}
+      calculationParameterSnapshotDigest: sha256:e4b198da94f2672c6ef457d542be92ee8acd7d9efa95e7d56ccfd5b7eb2549af
+      calculationParameterSnapshotLocator:
+        kind: wholeFile
+        path: tests/m2/fixtures/strategy-research/evidence/calculation-parameters-daily-month-end-v1.json
+        mediaType: application/json
+        extractorProfileRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/strategy-research/evidence/whole-file-json-v1.json}
+        extractorProfileDigest: sha256:dd1f703e804ab47cf6f5c4e102a08f6bcabec865c3fb8fd8ba8447ae045e85d8
+        selectionDigest: sha256:ef5194849a426e84f81e58ea6c7f64acc9ce92263c3b0b0d85f963213fde6ca1
+      benchmarkRef: https://axiolune.ai/data/instrument/benchmark/SPX/version/1
+      benchmarkDigest: sha256:1717171717171717171717171717171717171717171717171717171717171717
+      temporal: *temporal
+      identity:
+        logicalIri: https://axiolune.ai/data/calculation/daily-month-end-anchor
+        versionIri: https://axiolune.ai/data/calculation/daily-month-end-anchor/version/1
+        logicalKey: [https://axiolune.ai/data/party/research-governance, daily-month-end-anchor]
+        versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', '2024-06-03T13:30:02Z', 0]
+
+  - id: reject-strategy-without-explicit-factor-dependency
+    kind: generatorDefinition
+    expected: reject
+    expectedCode: STRATEGY_USES_FACTOR
+    payload:
+      directType: StrategyDefinition
+      authority: *authority
+      generatorId: factorless-strategy
+      generatorName: Factorless Strategy
+      implementationDigest: sha256:2020202020202020202020202020202020202020202020202020202020202020
+      inputContractDigest: sha256:2121212121212121212121212121212121212121212121212121212121212121
+      outputContractDigest: sha256:2323232323232323232323232323232323232323232323232323232323232323
+      toolLockRef: https://axiolune.ai/artifact/tool-lock/strategy-runtime-2025-01
+      toolLockDigest: sha256:2424242424242424242424242424242424242424242424242424242424242424
+      runtimeDigest: sha256:2525252525252525252525252525252525252525252525252525252525252525
+      sourceArtifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/strategy-research/evidence/factorless-v1.py}
+      sourceArtifactDigest: sha256:4e27b9efc24d5dedc9f78ad21dfe55e3db9dbc1ca9b2eae2f5a5a7d426ece239
+      sourceLocator:
+        kind: wholeFile
+        path: tests/m2/fixtures/strategy-research/evidence/factorless-v1.py
+        mediaType: text/x-python
+        extractorProfileRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/strategy-research/evidence/whole-file-python-v1.json}
+        extractorProfileDigest: sha256:d25f8b425de53b829fd2386725a8496e99d659297c69ba98f2ed641b531c48c1
+        selectionDigest: sha256:f657e4fd6efe14054795997311d88d02d35bbd6c129721bb3e38a6a3ce779ac5
+      usesFactors: []
+      temporal:
+        validFrom: '2024-01-01T00:00:00Z'
+        knowledgeFrom: '2024-01-02T00:00:00Z'
+        availableFrom: '2024-01-02T00:00:01Z'
+        revision: 0
+      identity:
+        logicalIri: https://axiolune.ai/data/strategy/factorless-strategy
+        versionIri: https://axiolune.ai/data/strategy/factorless-strategy/version/0
+        logicalKey: [https://axiolune.ai/data/party/research-governance, factorless-strategy]
+        versionKey: ['2024-01-01T00:00:00Z', '2024-01-02T00:00:00Z', '2024-01-02T00:00:01Z', 0]
+
+  - id: reject-signal-strength-outside-unit-interval
+    kind: signal
+    expected: reject
+    expectedCode: QUANTITY_RANGE
+    payload:
+      generator: *generator
+      instrument: *instrument
+      listing: *listing
+      runContext: *run
+      sourceSignalId: sig-too-strong
+      direction: long
+      strength: {value: '1.01', unit: https://axiolune.ai/units/one, rounding: half-even}
+      horizon: P1D
+      temporal: *temporal
+      identity:
+        logicalIri: https://axiolune.ai/data/signal/momentum/backtest-2024/sig-too-strong
+        versionIri: https://axiolune.ai/data/signal/momentum/backtest-2024/sig-too-strong/version/0
+        logicalKey: [https://axiolune.ai/data/strategy/generator/momentum, https://axiolune.ai/data/run/backtest-2024, sig-too-strong]
+        versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', '2024-06-03T13:30:02Z', 0]
+
+  - id: reject-signal-listing-instrument-mismatch
+    kind: signal
+    expected: reject
+    expectedCode: SIGNAL_LISTING_INSTRUMENT
+    payload:
+      generator: *generator
+      instrument: *instrument
+      listing:
+        referenceMode: version
+        logicalIri: https://axiolune.ai/data/listing/XNYS-MSFT
+        versionIri: https://axiolune.ai/data/listing/XNYS-MSFT/version/2
+        listedInstrumentVersionIri: https://axiolune.ai/data/instrument/US5949181045/version/1
+      runContext: *run
+      sourceSignalId: sig-wrong-listing
+      direction: neutral
+      strength: {value: '0.5', unit: https://axiolune.ai/units/one, rounding: half-even}
+      horizon: P1D
+      temporal: *temporal
+      identity:
+        logicalIri: https://axiolune.ai/data/signal/momentum/backtest-2024/sig-wrong-listing
+        versionIri: https://axiolune.ai/data/signal/momentum/backtest-2024/sig-wrong-listing/version/0
+        logicalKey: [https://axiolune.ai/data/strategy/generator/momentum, https://axiolune.ai/data/run/backtest-2024, sig-wrong-listing]
+        versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', '2024-06-03T13:30:02Z', 0]
+
+  - id: reject-duplicate-source-signal-identity
+    kind: signalSet
+    expected: reject
+    expectedCode: SIGNAL_SOURCE_ID_UNIQUENESS
+    payload:
+      signals:
+        - generator: *generator
+          instrument: *instrument
+          runContext: *run
+          sourceSignalId: duplicate-42
+          direction: long
+          strength: {value: '0.7', unit: https://axiolune.ai/units/one, rounding: half-even}
+          horizon: P1D
+          temporal: *temporal
+          identity:
+            logicalIri: https://axiolune.ai/data/signal/duplicate/A
+            versionIri: https://axiolune.ai/data/signal/duplicate/A/version/0
+            logicalKey: [https://axiolune.ai/data/strategy/generator/momentum, https://axiolune.ai/data/run/backtest-2024, duplicate-42]
+            versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', '2024-06-03T13:30:02Z', 0]
+        - generator: *generator
+          instrument: *instrument
+          runContext: *run
+          sourceSignalId: duplicate-42
+          direction: short
+          strength: {value: '0.4', unit: https://axiolune.ai/units/one, rounding: half-even}
+          horizon: P1D
+          temporal: *temporal
+          identity:
+            logicalIri: https://axiolune.ai/data/signal/duplicate/B
+            versionIri: https://axiolune.ai/data/signal/duplicate/B/version/0
+            logicalKey: [https://axiolune.ai/data/strategy/generator/momentum, https://axiolune.ai/data/run/backtest-2024, duplicate-42]
+            versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', '2024-06-03T13:30:02Z', 0]
+
+  - id: reject-qlib-storage-pointer-as-domain-relation
+    kind: factorRevision
+    expected: reject
+    expectedCode: FACTOR_STORAGE_POINTER
+    payload:
+      previous:
+        factor: *factor
+        instrument: *instrument
+        runContext: *run
+        sourceFactorId: provider-roe
+        reportingPeriodKey: '2023FY'
+        value: {value: '0.184', unit: https://axiolune.ai/units/one, rounding: half-even}
+        temporal:
+          validFrom: '2023-01-01T00:00:00Z'
+          validTo: '2024-01-01T00:00:00Z'
+          knowledgeFrom: '2024-02-01T09:00:00Z'
+          availableFrom: '2024-02-01T09:05:00Z'
+          revision: 0
+        identity:
+          logicalIri: https://axiolune.ai/data/factor-observation/roe/AAPL/2023FY/provider-roe
+          versionIri: https://axiolune.ai/data/factor-observation/roe/AAPL/2023FY/provider-roe/version/0
+          logicalKey: [https://axiolune.ai/data/factor/roe, https://axiolune.ai/data/instrument/US0378331005, provider-roe, '2023FY']
+          versionKey: ['2023-01-01T00:00:00Z', '2024-02-01T09:00:00Z', '2024-02-01T09:05:00Z', 0]
+      current:
+        factor: *factor
+        instrument: *instrument
+        runContext: *run
+        priorVersion:
+          referenceMode: version
+          logicalIri: https://axiolune.ai/data/factor-observation/roe/AAPL/2023FY/provider-roe
+          versionIri: https://axiolune.ai/data/factor-observation/roe/AAPL/2023FY/provider-roe/version/0
+        sourceFactorId: provider-roe
+        reportingPeriodKey: '2023FY'
+        qlibNextPointer: 4096
+        value: {value: '0.192', unit: https://axiolune.ai/units/one, rounding: half-even}
+        temporal:
+          validFrom: '2023-01-01T00:00:00Z'
+          validTo: '2024-01-01T00:00:00Z'
+          knowledgeFrom: '2024-03-01T09:00:00Z'
+          availableFrom: '2024-03-01T09:05:00Z'
+          revision: 1
+        identity:
+          logicalIri: https://axiolune.ai/data/factor-observation/roe/AAPL/2023FY/provider-roe
+          versionIri: https://axiolune.ai/data/factor-observation/roe/AAPL/2023FY/provider-roe/version/1
+          logicalKey: [https://axiolune.ai/data/factor/roe, https://axiolune.ai/data/instrument/US0378331005, provider-roe, '2023FY']
+          versionKey: ['2023-01-01T00:00:00Z', '2024-03-01T09:00:00Z', '2024-03-01T09:05:00Z', 1]
+      knowledgeClosure:
+        axis: knowledge
+        targetVersion: https://axiolune.ai/data/factor-observation/roe/AAPL/2023FY/provider-roe/version/0
+        closedAt: '2024-03-01T09:00:00Z'
+        causeKind: successor
+        causeVersion: https://axiolune.ai/data/factor-observation/roe/AAPL/2023FY/provider-roe/version/1
+        evidenceRef: https://axiolune.ai/data/factor-observation/roe/AAPL/2023FY/provider-roe/version/1
+        generatingContextRef: https://axiolune.ai/run/materialization/research-roe-revision
+      availabilityClosure:
+        axis: availability
+        targetVersion: https://axiolune.ai/data/factor-observation/roe/AAPL/2023FY/provider-roe/version/0
+        closedAt: '2024-03-01T09:05:00Z'
+        causeKind: successor
+        causeVersion: https://axiolune.ai/data/factor-observation/roe/AAPL/2023FY/provider-roe/version/1
+        evidenceRef: https://axiolune.ai/data/factor-observation/roe/AAPL/2023FY/provider-roe/version/1
+        generatingContextRef: https://axiolune.ai/run/materialization/research-roe-revision
+
+  - id: reject-backtest-input-context-not-strictly-prior
+    kind: backtest
+    expected: reject
+    expectedCode: INPUT_CONTEXT_NOT_PRIOR
+    payload:
+      runAuthority: *authority
+      runContextId: backtest-2024
+      runKind: backtest
+      startedAt: '2025-01-10T00:00:00Z'
+      parameterSnapshotRef: https://axiolune.ai/artifact/parameter/backtest-2024
+      parameterSnapshotDigest: sha256:6666666666666666666666666666666666666666666666666666666666666666
+      ontologyClosureDigest: sha256:7777777777777777777777777777777777777777777777777777777777777777
+      mappingClosureDigest: sha256:8888888888888888888888888888888888888888888888888888888888888888
+      calendarSnapshotRef: https://axiolune.ai/artifact/calendar/XNAS-2024
+      calendarSnapshotDigest: sha256:9999999999999999999999999999999999999999999999999999999999999999
+      compilerDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      inputContextRef: https://axiolune.ai/run/materialization/context-2025-01-11
+      inputContextRecordDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+      pitRequestRef: https://axiolune.ai/run/pit/request-2025-01-07
+      pitRequestRecordDigest: sha256:5555555555555555555555555555555555555555555555555555555555555555
+      inputContext: *inputContext
+      pitReport: *pitReport
+      strategy: *strategy
+      simulationFrom: '2024-01-01T00:00:00Z'
+      simulationTo: '2025-01-01T00:00:00Z'
+      initialCapital: {amount: '1000000.00', currency: USD, scale: 2}
+      codeDefinitionDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+      feeAssumptionRef: https://axiolune.ai/artifact/assumption/fee/v2
+      feeAssumptionDigest: sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+      slippageAssumptionRef: https://axiolune.ai/artifact/assumption/slippage/v2
+      slippageAssumptionDigest: sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+      fillAssumptionRef: https://axiolune.ai/artifact/assumption/fill/v3
+      fillAssumptionDigest: sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+      benchmarkRef: https://axiolune.ai/artifact/benchmark/SPX-2024
+      benchmarkDigest: sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+      deterministicSeed: 74219
+      temporal:
+        validFrom: '2024-01-01T00:00:00Z'
+        validTo: '2025-01-01T00:00:00Z'
+        knowledgeFrom: '2025-01-10T00:00:00Z'
+        availableFrom: '2025-01-10T00:00:01Z'
+        revision: 0
+      identity:
+        logicalIri: https://axiolune.ai/data/run/backtest-2024
+        versionIri: https://axiolune.ai/data/run/backtest-2024/version/1
+        logicalKey: [https://axiolune.ai/data/party/research-governance, backtest-2024]
+        versionKey: ['2024-01-01T00:00:00Z', '2025-01-10T00:00:00Z', '2025-01-10T00:00:01Z', 0]
+
+  - id: reject-performance-both-value-branches
+    kind: performance
+    expected: reject
+    expectedCode: METRIC_VALUE_XONE
+    payload:
+      metric: *metric
+      runContext: *run
+      calculationContext: *calculation
+      sourcePerformanceId: sharpe-both-values
+      performanceMoneyValue: {amount: '1.47', currency: USD, scale: 2}
+      performanceQuantityValue: {value: '1.47', unit: https://axiolune.ai/units/one, rounding: half-even}
+      temporal: *temporal
+      identity:
+        logicalIri: https://axiolune.ai/data/performance/backtest-2024/sharpe-both-values
+        versionIri: https://axiolune.ai/data/performance/backtest-2024/sharpe-both-values/version/0
+        logicalKey: [https://axiolune.ai/data/run/backtest-2024, https://axiolune.ai/data/metric/sharpe, https://axiolune.ai/data/calculation/daily-252, sharpe-both-values]
+        versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', '2024-06-03T13:30:02Z', 0]
+
+  - id: reject-sharpe-without-required-context
+    kind: performance
+    expected: reject
+    expectedCode: QUANTITY_REQUIRED
+    payload:
+      metric: *metric
+      runContext: *run
+      calculationContext:
+        ref:
+          referenceMode: version
+          logicalIri: https://axiolune.ai/data/calculation/incomplete
+          versionIri: https://axiolune.ai/data/calculation/incomplete/version/1
+        frequency: daily
+        implementationDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+      sourcePerformanceId: sharpe-missing-context
+      performanceQuantityValue: {value: '1.1', unit: https://axiolune.ai/units/one, rounding: half-even}
+      temporal: *temporal
+      identity:
+        logicalIri: https://axiolune.ai/data/performance/backtest-2024/sharpe-missing-context
+        versionIri: https://axiolune.ai/data/performance/backtest-2024/sharpe-missing-context/version/0
+        logicalKey: [https://axiolune.ai/data/run/backtest-2024, https://axiolune.ai/data/metric/sharpe, https://axiolune.ai/data/calculation/incomplete, sharpe-missing-context]
+        versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', '2024-06-03T13:30:02Z', 0]
+
+  - id: reject-performance-without-value
+    kind: performance
+    expected: reject
+    expectedCode: METRIC_VALUE_XONE
+    payload:
+      metric: *metric
+      runContext: *run
+      calculationContext: *calculation
+      sourcePerformanceId: sharpe-without-value
+      temporal: *temporal
+      identity:
+        logicalIri: https://axiolune.ai/data/performance/backtest-2024/sharpe-without-value
+        versionIri: https://axiolune.ai/data/performance/backtest-2024/sharpe-without-value/version/0
+        logicalKey: [https://axiolune.ai/data/run/backtest-2024, https://axiolune.ai/data/metric/sharpe, https://axiolune.ai/data/calculation/daily-252, sharpe-without-value]
+        versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', '2024-06-03T13:30:02Z', 0]
+
+  - id: reject-performance-revision-with-wrong-prior-version
+    kind: performanceRevision
+    expected: reject
+    expectedCode: PERFORMANCE_SUPERSESSION
+    payload:
+      previous:
+        metric: *metric
+        runContext: *run
+        calculationContext: *calculation
+        sourcePerformanceId: sharpe-daily-2024-12-30
+        performanceQuantityValue: {value: '1.39', unit: https://axiolune.ai/units/one, rounding: half-even}
+        temporal:
+          validFrom: '2024-12-30T21:00:00Z'
+          validTo: '2024-12-31T21:00:00Z'
+          knowledgeFrom: '2025-01-10T00:04:00Z'
+          availableFrom: '2025-01-10T00:04:01Z'
+          revision: 0
+        identity:
+          logicalIri: https://axiolune.ai/data/performance/backtest-2024/sharpe-daily-2024-12-30
+          versionIri: https://axiolune.ai/data/performance/backtest-2024/sharpe-daily-2024-12-30/version/0
+          logicalKey: [https://axiolune.ai/data/run/backtest-2024, https://axiolune.ai/data/metric/sharpe, https://axiolune.ai/data/calculation/daily-252, sharpe-daily-2024-12-30]
+          versionKey: ['2024-12-30T21:00:00Z', '2025-01-10T00:04:00Z', '2025-01-10T00:04:01Z', 0]
+      current:
+        metric: *metric
+        runContext: *run
+        calculationContext: *calculation
+        priorVersion:
+          referenceMode: version
+          logicalIri: https://axiolune.ai/data/performance/backtest-2024/sharpe-daily-2024-12-30
+          versionIri: https://axiolune.ai/data/performance/backtest-2024/sharpe-daily-2024-12-30/version/999
+        sourcePerformanceId: sharpe-daily-2024-12-30
+        performanceQuantityValue: {value: '1.41', unit: https://axiolune.ai/units/one, rounding: half-even}
+        temporal:
+          validFrom: '2024-12-30T21:00:00Z'
+          validTo: '2024-12-31T21:00:00Z'
+          knowledgeFrom: '2025-01-10T00:07:00Z'
+          availableFrom: '2025-01-10T00:07:01Z'
+          revision: 1
+        identity:
+          logicalIri: https://axiolune.ai/data/performance/backtest-2024/sharpe-daily-2024-12-30
+          versionIri: https://axiolune.ai/data/performance/backtest-2024/sharpe-daily-2024-12-30/version/1
+          logicalKey: [https://axiolune.ai/data/run/backtest-2024, https://axiolune.ai/data/metric/sharpe, https://axiolune.ai/data/calculation/daily-252, sharpe-daily-2024-12-30]
+          versionKey: ['2024-12-30T21:00:00Z', '2025-01-10T00:07:00Z', '2025-01-10T00:07:01Z', 1]
+      knowledgeClosure:
+        axis: knowledge
+        targetVersion: https://axiolune.ai/data/performance/backtest-2024/sharpe-daily-2024-12-30/version/0
+        closedAt: '2025-01-10T00:07:00Z'
+        causeKind: successor
+        causeVersion: https://axiolune.ai/data/performance/backtest-2024/sharpe-daily-2024-12-30/version/1
+        evidenceRef: https://axiolune.ai/data/performance/backtest-2024/sharpe-daily-2024-12-30/version/1
+        generatingContextRef: https://axiolune.ai/run/materialization/backtest-2024-performance-revision
+      availabilityClosure:
+        axis: availability
+        targetVersion: https://axiolune.ai/data/performance/backtest-2024/sharpe-daily-2024-12-30/version/0
+        closedAt: '2025-01-10T00:07:01Z'
+        causeKind: successor
+        causeVersion: https://axiolune.ai/data/performance/backtest-2024/sharpe-daily-2024-12-30/version/1
+        evidenceRef: https://axiolune.ai/data/performance/backtest-2024/sharpe-daily-2024-12-30/version/1
+        generatingContextRef: https://axiolune.ai/run/materialization/backtest-2024-performance-revision
+
+  - id: reject-out-of-order-sharpe-trajectory
+    kind: performanceTrajectory
+    expected: reject
+    expectedCode: PERFORMANCE_TRAJECTORY_ORDER
+    payload:
+      from: '2024-12-29T21:00:00Z'
+      to: '2024-12-31T21:00:00Z'
+      asOfValid: '2024-12-31T20:59:59Z'
+      asOfKnowledge: '2025-01-10T00:10:00Z'
+      asOfAvailable: '2025-01-10T00:10:01Z'
+      observations:
+        - metric: *metric
+          runContext: *run
+          calculationContext: *calculation
+          sourcePerformanceId: sharpe-daily-2024-12-30
+          performanceQuantityValue: {value: '1.41', unit: https://axiolune.ai/units/one, rounding: half-even}
+          temporal:
+            validFrom: '2024-12-30T21:00:00Z'
+            validTo: '2024-12-31T21:00:00Z'
+            knowledgeFrom: '2025-01-10T00:07:00Z'
+            availableFrom: '2025-01-10T00:07:01Z'
+            revision: 0
+          identity:
+            logicalIri: https://axiolune.ai/data/performance/backtest-2024/sharpe-daily-2024-12-30
+            versionIri: https://axiolune.ai/data/performance/backtest-2024/sharpe-daily-2024-12-30/version/0
+            logicalKey: [https://axiolune.ai/data/run/backtest-2024, https://axiolune.ai/data/metric/sharpe, https://axiolune.ai/data/calculation/daily-252, sharpe-daily-2024-12-30]
+            versionKey: ['2024-12-30T21:00:00Z', '2025-01-10T00:07:00Z', '2025-01-10T00:07:01Z', 0]
+        - metric: *metric
+          runContext: *run
+          calculationContext: *calculation
+          sourcePerformanceId: sharpe-daily-2024-12-29
+          performanceQuantityValue: {value: '1.37', unit: https://axiolune.ai/units/one, rounding: half-even}
+          temporal:
+            validFrom: '2024-12-29T21:00:00Z'
+            validTo: '2024-12-30T21:00:00Z'
+            knowledgeFrom: '2025-01-10T00:03:00Z'
+            availableFrom: '2025-01-10T00:03:01Z'
+            revision: 0
+          identity:
+            logicalIri: https://axiolune.ai/data/performance/backtest-2024/sharpe-daily-2024-12-29
+            versionIri: https://axiolune.ai/data/performance/backtest-2024/sharpe-daily-2024-12-29/version/0
+            logicalKey: [https://axiolune.ai/data/run/backtest-2024, https://axiolune.ai/data/metric/sharpe, https://axiolune.ai/data/calculation/daily-252, sharpe-daily-2024-12-29]
+            versionKey: ['2024-12-29T21:00:00Z', '2025-01-10T00:03:00Z', '2025-01-10T00:03:01Z', 0]
+
+  - id: reject-completed-backtest-performance-run-mismatch
+    kind: completedBacktestResults
+    expected: reject
+    expectedCode: COMPLETED_BACKTEST_PERFORMANCE_JOIN
+    payload:
+      run: *run
+      terminalStatus:
+        run: *run
+        sourceRunEventId: evt-completed-2
+        sequence: 2
+        state: completed
+        previous:
+          ref:
+            referenceMode: version
+            logicalIri: https://axiolune.ai/data/backtest-status/backtest-2024/evt-running-1
+            versionIri: https://axiolune.ai/data/backtest-status/backtest-2024/evt-running-1/version/0
+          sequence: 1
+          state: running
+        temporal:
+          validFrom: '2025-01-10T00:05:20Z'
+          knowledgeFrom: '2025-01-10T00:05:20Z'
+          availableFrom: '2025-01-10T00:05:21Z'
+          revision: 0
+        identity:
+          logicalIri: https://axiolune.ai/data/backtest-status/backtest-2024/evt-completed-2
+          versionIri: https://axiolune.ai/data/backtest-status/backtest-2024/evt-completed-2/version/0
+          logicalKey: [https://axiolune.ai/data/run/backtest-2024, evt-completed-2]
+          versionKey: ['2025-01-10T00:05:20Z', '2025-01-10T00:05:20Z', '2025-01-10T00:05:21Z', 0]
+      performances:
+        - metric: *metric
+          runContext:
+            referenceMode: version
+            logicalIri: https://axiolune.ai/data/run/other-backtest
+            versionIri: https://axiolune.ai/data/run/other-backtest/version/1
+          calculationContext: *calculation
+          sourcePerformanceId: sharpe-full-run-completed
+          performanceQuantityValue: {value: '1.47', unit: https://axiolune.ai/units/one, rounding: half-even}
+          temporal:
+            validFrom: '2024-01-01T00:00:00Z'
+            validTo: '2025-01-01T00:00:00Z'
+            knowledgeFrom: '2025-01-10T00:05:22Z'
+            availableFrom: '2025-01-10T00:05:23Z'
+            revision: 0
+          identity:
+            logicalIri: https://axiolune.ai/data/performance/other-backtest/sharpe-full-run-completed
+            versionIri: https://axiolune.ai/data/performance/other-backtest/sharpe-full-run-completed/version/0
+            logicalKey: [https://axiolune.ai/data/run/other-backtest, https://axiolune.ai/data/metric/sharpe, https://axiolune.ai/data/calculation/daily-252, sharpe-full-run-completed]
+            versionKey: ['2024-01-01T00:00:00Z', '2025-01-10T00:05:22Z', '2025-01-10T00:05:23Z', 0]
+
+  - id: reject-attribution-with-two-position-subjects
+    kind: attribution
+    expected: reject
+    expectedCode: ATTRIBUTION_SUBJECT_XONE
+    payload:
+      positionSnapshot:
+        referenceMode: version
+        logicalIri: https://axiolune.ai/data/position/account-1/AAPL
+        versionIri: https://axiolune.ai/data/position/account-1/AAPL/version/2024-12-31
+      positionLot:
+        referenceMode: version
+        logicalIri: https://axiolune.ai/data/lot/account-1/AAPL/lot-7
+        versionIri: https://axiolune.ai/data/lot/account-1/AAPL/lot-7/version/2
+      generator: *generator
+      runContext: *run
+      metric: *metric
+      calculationContext: *calculation
+      sourceAttributionId: invalid-two-subjects
+      attributionQuantityValue: {value: '0.31', unit: https://axiolune.ai/units/one, rounding: half-even}
+      temporal: *temporal
+      identity:
+        logicalIri: https://axiolune.ai/data/attribution/invalid-two-subjects
+        versionIri: https://axiolune.ai/data/attribution/invalid-two-subjects/version/0
+        logicalKey: [https://axiolune.ai/data/position/account-1/AAPL, https://axiolune.ai/data/strategy/generator/momentum, https://axiolune.ai/data/run/backtest-2024, https://axiolune.ai/data/metric/sharpe, invalid-two-subjects]
+        versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', '2024-06-03T13:30:02Z', 0]
+
+  - id: reject-attribution-with-two-value-branches
+    kind: attribution
+    expected: reject
+    expectedCode: METRIC_VALUE_XONE
+    payload:
+      positionSnapshot:
+        referenceMode: version
+        logicalIri: https://axiolune.ai/data/position/account-1/AAPL
+        versionIri: https://axiolune.ai/data/position/account-1/AAPL/version/2024-12-31
+      generator: *generator
+      runContext: *run
+      metric: *metric
+      calculationContext: *calculation
+      sourceAttributionId: invalid-two-values
+      attributionMoneyValue: {amount: '0.31', currency: USD, scale: 2}
+      attributionQuantityValue: {value: '0.31', unit: https://axiolune.ai/units/one, rounding: half-even}
+      temporal: *temporal
+      identity:
+        logicalIri: https://axiolune.ai/data/attribution/invalid-two-values
+        versionIri: https://axiolune.ai/data/attribution/invalid-two-values/version/0
+        logicalKey: [https://axiolune.ai/data/position/account-1/AAPL, https://axiolune.ai/data/strategy/generator/momentum, https://axiolune.ai/data/run/backtest-2024, https://axiolune.ai/data/metric/sharpe, invalid-two-values]
+        versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', '2024-06-03T13:30:02Z', 0]
+
+  - id: reject-research-run-with-backtest-kind
+    kind: researchRun
+    expected: reject
+    expectedCode: RUN_KIND
+    payload:
+      runAuthority: *authority
+      runContextId: invalid-research-kind
+      runKind: backtest
+      startedAt: '2025-01-12T00:00:00Z'
+      parameterSnapshotRef: https://axiolune.ai/artifact/parameter/invalid-research-kind
+      parameterSnapshotDigest: sha256:1616161616161616161616161616161616161616161616161616161616161616
+      ontologyClosureDigest: sha256:7777777777777777777777777777777777777777777777777777777777777777
+      mappingClosureDigest: sha256:8888888888888888888888888888888888888888888888888888888888888888
+      calendarSnapshotRef: https://axiolune.ai/artifact/calendar/XNAS-2024
+      calendarSnapshotDigest: sha256:9999999999999999999999999999999999999999999999999999999999999999
+      compilerDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      inputContextRef: https://axiolune.ai/run/materialization/context-2025-01-11
+      inputContextRecordDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+      pitRequestRef: https://axiolune.ai/run/pit/request-2025-01-07
+      pitRequestRecordDigest: sha256:5555555555555555555555555555555555555555555555555555555555555555
+      inputContext: *inputContext
+      pitReport: *pitReport
+      generator: *generator
+      researchQuestionRef: https://axiolune.ai/research/question/invalid-kind
+      researchQuestionDigest: sha256:1212121212121212121212121212121212121212121212121212121212121212
+      researchDatasetRef: https://axiolune.ai/artifact/dataset/invalid-kind
+      researchDatasetDigest: sha256:1313131313131313131313131313131313131313131313131313131313131313
+      researchOutputContractDigest: sha256:1414141414141414141414141414141414141414141414141414141414141414
+      deterministicSeed: 1
+      temporal: *temporal
+      identity:
+        logicalIri: https://axiolune.ai/data/run/invalid-research-kind
+        versionIri: https://axiolune.ai/data/run/invalid-research-kind/version/0
+        logicalKey: [https://axiolune.ai/data/party/research-governance, invalid-research-kind]
+        versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', '2024-06-03T13:30:02Z', 0]
+
+  - id: reject-terminal-status-transition
+    kind: statusEvent
+    expected: reject
+    expectedCode: STATUS_TRANSITION
+    payload:
+      run: *run
+      sourceRunEventId: evt-restarted-after-complete
+      sequence: 4
+      state: running
+      previous:
+        ref:
+          referenceMode: version
+          logicalIri: https://axiolune.ai/data/backtest-status/backtest-2024/evt-completed
+          versionIri: https://axiolune.ai/data/backtest-status/backtest-2024/evt-completed/version/0
+        sequence: 3
+        state: completed
+      temporal: *temporal
+      identity:
+        logicalIri: https://axiolune.ai/data/backtest-status/backtest-2024/evt-restarted-after-complete
+        versionIri: https://axiolune.ai/data/backtest-status/backtest-2024/evt-restarted-after-complete/version/0
+        logicalKey: [https://axiolune.ai/data/run/backtest-2024, evt-restarted-after-complete]
+        versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', '2024-06-03T13:30:02Z', 0]
+
+  - id: reject-missing-availability-axis
+    kind: signal
+    expected: reject
+    expectedCode: INSTANT_FORMAT
+    payload:
+      generator: *generator
+      instrument: *instrument
+      runContext: *run
+      sourceSignalId: sig-no-availability
+      direction: long
+      strength: {value: '0.4', unit: https://axiolune.ai/units/one, rounding: half-even}
+      horizon: P1D
+      temporal:
+        validFrom: '2024-06-03T13:30:00Z'
+        knowledgeFrom: '2024-06-03T13:30:01Z'
+        revision: 0
+      identity:
+        logicalIri: https://axiolune.ai/data/signal/momentum/backtest-2024/sig-no-availability
+        versionIri: https://axiolune.ai/data/signal/momentum/backtest-2024/sig-no-availability/version/0
+        logicalKey: [https://axiolune.ai/data/strategy/generator/momentum, https://axiolune.ai/data/run/backtest-2024, sig-no-availability]
+        versionKey: ['2024-06-03T13:30:00Z', '2024-06-03T13:30:01Z', null, 0]

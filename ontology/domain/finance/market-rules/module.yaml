@@ -2,226 +2,2203 @@ module:
   moduleIri: https://axiolune.ai/ontology/finance/market-rules
   baseIri: https://axiolune.ai/ontology/finance/market-rules/
   preferredPrefix: fin-market-rules
-  version: 0.2.0
+  version: 1.0.0
   label: Market Rules
   definition: >-
-    trading, settlement, and admission rules with scoped applicability, versioning, and temporal validity that govern
-    how instruments are traded on venues
+    versioned market-rule sets, executable clauses and parameters, explicit applicability, precedence and conflict
+    facts, and corporate-action schedule semantics for the finance domain
   imports:
     - moduleIri: https://axiolune.ai/ontology/finance/foundation
-      version: 0.1.0
-      artifactDigest: sha256:e64d6782499a636bb016bed59056cbcffef160c9ad43d78ff93a479285998295
-      importMode: All
     - moduleIri: https://axiolune.ai/ontology/finance/market-structure
-      version: 0.1.0
-      artifactDigest: sha256:53ad88cebb3a0525721bcbe8620cc49fae1cd051511df395b7212e0b283d9d7e
-      importMode: All
+    - moduleIri: https://axiolune.ai/ontology/finance/instruments
   exports: []
   status: approved
+  governance:
+    ownerRef: urn:axiolune:principal:repository-owner
+    status: approved
 domain:
-  RuleType:
-    iri: https://axiolune.ai/ontology/finance/market-rules/RuleType
-    namespace: fin-market-rules
-    localName: RuleType
-    label: Rule Type
-    definition: controlled vocabulary of market rule types governing trading and settlement behavior
-    values:
-      - PriceLimit
-      - TickSchedule
-      - LotSchedule
-      - SettlementCycle
-      - TradingHours
-      - MarginRequirement
-      - PositionLimit
-      - ShortSellingRestriction
-      - CircuitBreaker
-      - CloseTodayOffset
-      - TPlusTradingRestriction
-    version: 0.1.0
-    maintainer: Axiolune
-    vocabulary: https://axiolune.ai/ontology/finance/market-rules/RuleType
-    note: >-
-      Axiolune-native code list. CloseTodayOffset / TPlusTradingRestriction added Round-2 from vnpy Offset.CLOSETODAY
-      and rqalpha stock_t1 — expressed as RuleApplicability facts, not static Venue attributes.
-  RuleLifecycleStatus:
-    iri: https://axiolune.ai/ontology/finance/market-rules/RuleLifecycleStatus
-    namespace: fin-market-rules
-    localName: RuleLifecycleStatus
-    label: Rule Lifecycle Status
-    definition: controlled vocabulary of lifecycle states for a market rule applicability binding
-    values:
-      - active
-      - superseded
-      - expired
-      - proposed
-    version: 0.1.0
-    maintainer: Axiolune
-    vocabulary: https://axiolune.ai/ontology/finance/market-rules/RuleLifecycleStatus
-    note: Axiolune-native code list
-  InstrumentClass:
-    iri: https://axiolune.ai/ontology/finance/market-rules/InstrumentClass
-    namespace: fin-market-rules
-    localName: InstrumentClass
-    label: Instrument Class
-    definition: controlled vocabulary of broad instrument classes used for rule scoping
-    values:
-      - Equity
-      - Bond
-      - Future
-      - Option
-      - Swap
-      - Fund
-      - Commodity
-    version: 0.1.0
-    maintainer: Axiolune
-    vocabulary: https://axiolune.ai/ontology/finance/market-rules/InstrumentClass
-    note: Axiolune-native code list for rule applicability scoping
-  hasRuleType:
-    iri: https://axiolune.ai/ontology/finance/market-rules/hasRuleType
-    namespace: fin-market-rules
-    localName: hasRuleType
-    label: Has Rule Type
-    definition: relation from a market rule to its type classification from the RuleType code list
-    valueType: codelist
-    codeListReference: RuleType
-    defaultCardinality:
-      minCount: 1
-      maxCount: 1
-  hasRuleParameterValue:
-    iri: https://axiolune.ai/ontology/finance/market-rules/hasRuleParameterValue
-    namespace: fin-market-rules
-    localName: hasRuleParameterValue
-    label: Has Rule Parameter Value
-    definition: relation from a market rule to its primary parameter value (e.g. 0.10 for a 10% price limit, 1 for T+1 settlement)
-    valueType: https://axiolune.ai/ontology/finance/foundation/QuantityValue
-    defaultCardinality:
-      minCount: 0
-      maxCount: 1
-  hasRuleParameterUnit:
-    iri: https://axiolune.ai/ontology/finance/market-rules/hasRuleParameterUnit
-    namespace: fin-market-rules
-    localName: hasRuleParameterUnit
-    label: Has Rule Parameter Unit
-    definition: relation from a market rule to the unit of its parameter value (e.g. percent, days, shares)
-    valueType: string
-    defaultCardinality:
-      minCount: 0
-      maxCount: 1
-  hasRuleSource:
-    iri: https://axiolune.ai/ontology/finance/market-rules/hasRuleSource
-    namespace: fin-market-rules
-    localName: hasRuleSource
-    label: Has Rule Source
-    definition: relation from a market rule to the authority or document that established it
-    valueType: string
-    defaultCardinality:
-      minCount: 0
-      maxCount: 1
-    note: e.g. exchange notice, regulatory filing
-  hasRuleRevision:
-    iri: https://axiolune.ai/ontology/finance/market-rules/hasRuleRevision
-    namespace: fin-market-rules
-    localName: hasRuleRevision
-    label: Has Rule Revision
-    definition: relation from a market rule to its revision number or version identifier
-    valueType: string
-    defaultCardinality:
-      minCount: 0
-      maxCount: 1
-  hasLifecycleStatus:
-    iri: https://axiolune.ai/ontology/finance/market-rules/hasLifecycleStatus
-    namespace: fin-market-rules
-    localName: hasLifecycleStatus
-    label: Has Lifecycle Status
-    definition: relation from a rule applicability to its lifecycle status from the RuleLifecycleStatus code list
-    valueType: codelist
-    codeListReference: RuleLifecycleStatus
-    defaultCardinality:
-      minCount: 1
-      maxCount: 1
-  appliesToInstrumentClass:
-    iri: https://axiolune.ai/ontology/finance/market-rules/appliesToInstrumentClass
-    namespace: fin-market-rules
-    localName: appliesToInstrumentClass
-    label: Applies To Instrument Class
-    definition: relation from a rule applicability to the instrument class it applies to
-    valueType: codelist
-    codeListReference: InstrumentClass
-    defaultCardinality:
-      minCount: 0
-      maxCount: 1
-    note: references an InstrumentClass code list value; null = applies to all classes
-  MarketRule:
-    iri: https://axiolune.ai/ontology/finance/market-rules/MarketRule
-    namespace: fin-market-rules
-    localName: MarketRule
-    label: Market Rule
-    definition: >-
-      named trading or settlement rule that governs how instruments are traded, matched, or settled on a trading venue,
-      with a rule type, parameter value, unit, source, and revision
-    superTypes: []
-    attributeUses:
-      - attribute: https://axiolune.ai/ontology/finance/market-rules/hasRuleType
+  objectTypes:
+    MarketRuleSet:
+      iri: https://axiolune.ai/ontology/finance/market-rules/MarketRuleSet
+      namespace: fin-market-rules
+      localName: MarketRuleSet
+      label: Market Rule Set
+      definition: >-
+        versioned collection of market rules maintained by one exact authority version under one authority-scoped set
+        identifier; logical identity is exactly (authority logical IRI, ruleSetId), its immutable fact version is the
+        comparison boundary for applicability priority, and its authoritative evidence is the sole ProvenancedFact
+        source
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/ruleSetId
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    MarketRule:
+      iri: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      namespace: fin-market-rules
+      localName: MarketRule
+      label: Market Rule
+      definition: >-
+        versioned rule with one authority-scoped identifier, one reviewed rule kind, one exact containing RuleSet
+        version, one authoritative ProvenancedFact source, and one or more typed clauses; the standard three-axis fact
+        version is the only stored rule revision and logical identity is exactly (RuleSet logical IRI, ruleId)
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/ruleId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/hasRuleType
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/ruleGapPolicy
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    RuleClause:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      namespace: fin-market-rules
+      localName: RuleClause
+      label: Rule Clause
+      definition: >-
+        ordered, versioned executable clause owned by one exact MarketRule version, with explicit range boundaries and
+        ordering that is checked against the owning rule's explicit gap policy rather than an implicit scalar
+        interpretation; logical identity is exactly (MarketRule logical IRI, ruleClauseId)
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/ruleClauseId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/clauseSequence
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/clauseLowerBound
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/clauseUpperBound
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/clauseLowerInclusive
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/clauseUpperInclusive
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    RuleParameter:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RuleParameter
+      namespace: fin-market-rules
+      localName: RuleParameter
+      label: Rule Parameter
+      definition: >-
+        typed executable parameter owned by one exact RuleClause version and populated by exactly one of Money,
+        Quantity, reviewed CodeValue, or an exact referenced RuleClause version; logical identity is exactly (RuleClause
+        logical IRI, ruleParameterId)
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/ruleParameterId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/ruleMoneyParameterValue
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/ruleQuantityParameterValue
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/ruleCodeParameterValue
+          minCount: 0
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    TickSizeClause:
+      iri: https://axiolune.ai/ontology/finance/market-rules/TickSizeClause
+      namespace: fin-market-rules
+      localName: TickSizeClause
+      label: Tick Size Clause
+      definition: ordered RuleClause that supplies one positive price-increment Quantity for its non-overlapping range
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/tickSize
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    LotSizeClause:
+      iri: https://axiolune.ai/ontology/finance/market-rules/LotSizeClause
+      namespace: fin-market-rules
+      localName: LotSizeClause
+      label: Lot Size Clause
+      definition: ordered RuleClause that supplies one positive order-quantity increment for its non-overlapping range
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/lotSize
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    PriceLimitClause:
+      iri: https://axiolune.ai/ontology/finance/market-rules/PriceLimitClause
+      namespace: fin-market-rules
+      localName: PriceLimitClause
+      label: Price Limit Clause
+      definition: >-
+        ordered RuleClause that supplies exactly one percentage Quantity or Money amount boundary relative to the rule's
+        reviewed reference-price method
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/priceLimitPercentage
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/priceLimitAmount
+          minCount: 0
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    CircuitBreakerClause:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerClause
+      namespace: fin-market-rules
+      localName: CircuitBreakerClause
+      label: Circuit Breaker Clause
+      definition: ordered RuleClause containing one positive trigger threshold and one non-negative halt-duration Quantity
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/circuitBreakerThreshold
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/circuitBreakerHaltDuration
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    SettlementCycleClause:
+      iri: https://axiolune.ai/ontology/finance/market-rules/SettlementCycleClause
+      namespace: fin-market-rules
+      localName: SettlementCycleClause
+      label: Settlement Cycle Clause
+      definition: >-
+        RuleClause carrying a non-negative business-day Quantity from trade date to contractual settlement date; it is
+        distinct from any resale restriction
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/settlementCycle
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    ResaleRestrictionClause:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ResaleRestrictionClause
+      namespace: fin-market-rules
+      localName: ResaleRestrictionClause
+      label: Resale Restriction Clause
+      definition: >-
+        RuleClause expressing whether same-day resale is permitted and, when prohibited, the minimum holding-period
+        Quantity; it does not reuse settlement-cycle semantics
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/sameDayResaleAllowed
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/minimumResaleHoldingPeriod
+          minCount: 0
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    CorporateActionEntitlementClause:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionEntitlementClause
+      namespace: fin-market-rules
+      localName: CorporateActionEntitlementClause
+      label: Corporate Action Entitlement Clause
+      definition: >-
+        RuleClause that selects exactly one entitlement mode and the resolved entitlement pivot. Due-bill mode
+        additionally freezes a half-open cum-entitlement trade interval and settlement-qualification policy, while
+        ordinary mode forbids those due-bill-only fields. The clause never refers to a downstream Event instance.
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/corporateActionEntitlementMode
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/entitlementPivotDateField
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/cumEntitlementTradeStartOffset
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/cumEntitlementTradeEndOffset
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/dueBillSettlementQualification
+          minCount: 0
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    CorporateActionDateResolutionClause:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDateResolutionClause
+      namespace: fin-market-rules
+      localName: CorporateActionDateResolutionClause
+      label: Corporate Action Date Resolution Clause
+      definition: >-
+        typed executable RuleClause resolving one output date role from one published Event date-field role, a signed
+        business-day Quantity offset, and an explicit business-day adjustment. It encodes reviewed schedule semantics
+        rather than hiding the date rule behind prose or a digest.
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/resolvedDateRole
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/sourceEventDateField
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/dateResolutionOffset
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/dateBusinessDayAdjustment
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    CorporateActionDateOrderingClause:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDateOrderingClause
+      namespace: fin-market-rules
+      localName: CorporateActionDateOrderingClause
+      label: Corporate Action Date Ordering Clause
+      definition: >-
+        typed executable RuleClause comparing two distinct resolved date roles with one explicit ordering operator; each
+        schedule authors its reviewed jurisdiction/profile-specific ordering and no universal order is inferred.
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/orderingLeftDateRole
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/dateOrderingOperator
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/orderingRightDateRole
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    TickScheduleRule:
+      iri: https://axiolune.ai/ontology/finance/market-rules/TickScheduleRule
+      namespace: fin-market-rules
+      localName: TickScheduleRule
+      label: Tick Schedule Rule
+      definition: MarketRule whose ordered non-overlapping clauses are exclusively TickSizeClause versions
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      attributeUses: []
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    LotScheduleRule:
+      iri: https://axiolune.ai/ontology/finance/market-rules/LotScheduleRule
+      namespace: fin-market-rules
+      localName: LotScheduleRule
+      label: Lot Schedule Rule
+      definition: MarketRule whose ordered non-overlapping clauses are exclusively LotSizeClause versions
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      attributeUses: []
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    PriceLimitRule:
+      iri: https://axiolune.ai/ontology/finance/market-rules/PriceLimitRule
+      namespace: fin-market-rules
+      localName: PriceLimitRule
+      label: Price Limit Rule
+      definition: MarketRule whose executable boundary clauses are exclusively PriceLimitClause versions
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      attributeUses: []
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    CircuitBreakerRule:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerRule
+      namespace: fin-market-rules
+      localName: CircuitBreakerRule
+      label: Circuit Breaker Rule
+      definition: MarketRule whose ordered trigger and halt clauses are exclusively CircuitBreakerClause versions
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      attributeUses: []
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    SettlementCycleRule:
+      iri: https://axiolune.ai/ontology/finance/market-rules/SettlementCycleRule
+      namespace: fin-market-rules
+      localName: SettlementCycleRule
+      label: Settlement Cycle Rule
+      definition: MarketRule whose executable settlement clauses are exclusively SettlementCycleClause versions
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      attributeUses: []
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    ResaleRestrictionRule:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ResaleRestrictionRule
+      namespace: fin-market-rules
+      localName: ResaleRestrictionRule
+      label: Resale Restriction Rule
+      definition: MarketRule whose executable resale clauses are exclusively ResaleRestrictionClause versions
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      attributeUses: []
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    CorporateActionDistributionAssessmentMethod:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDistributionAssessmentMethod
+      namespace: fin-market-rules
+      localName: CorporateActionDistributionAssessmentMethod
+      label: Corporate Action Distribution Assessment Method
+      definition: >-
+        versioned reviewed executable method identified by method authority and authority-scoped method ID. It freezes
+        the permitted calculation input, optional market-price selection rule, precision, rounding, formula digest, and
+        implementation digest used to test a candidate schedule rule's distribution-percentage interval.
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentMethodId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentInputKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentPriceSelection
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentRequiresMarketPrice
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentRequiredPriceKindIri
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentPrecision
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentRoundingMode
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentFormulaDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentImplementationDigest
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    CorporateActionScheduleRule:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionScheduleRule
+      namespace: fin-market-rules
+      localName: CorporateActionScheduleRule
+      label: Corporate Action Schedule Rule
+      definition: >-
+        MarketRule that selects one of the three supported CorporateActionKind members, freezes deterministic date
+        resolution, ordering, and calendar/cutoff contracts, optionally binds one exact reviewed distribution assessment
+        method when and only when a percentage interval is authored, and owns exactly one entitlement clause consumed by
+        Post-trade without a reverse module dependency.
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/corporateActionKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/scheduleDateResolutionContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/scheduleDateOrderingContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/scheduleCalendarCutoffContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/distributionPercentageLowerBound
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/distributionPercentageLowerInclusive
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/distributionPercentageUpperBound
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/distributionPercentageUpperInclusive
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/nonTransferableDirectSubscription
+          minCount: 0
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    RuleEvaluationRequest:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      namespace: fin-market-rules
+      localName: RuleEvaluationRequest
+      label: Rule Evaluation Request
+      definition: >-
+        immutable request fact identified by request-authority logical IRI and authority-scoped request ID, binding
+        explicit exact scope versions, three PIT pivots, and one strictly prior completed input context
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/ruleEvaluationRequestId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/asOfValid
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/asOfKnowledge
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/asOfAvailable
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/inputContextRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/inputContextRecordDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/requestAccountType
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/requestedCorporateActionKind
+          minCount: 0
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+  associationTypes:
+    RuleApplicability:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability
+      namespace: fin-market-rules
+      localName: RuleApplicability
+      label: Rule Applicability
+      definition: >-
+        temporal and provenanced fact binding one exact rule version to at least one explicit scope among listing,
+        instrument, segment, venue, AccountType, or jurisdiction; its RuleSet version is reached only through the rule's
+        canonical marketRuleSet relation, every authored scope must match the normalized RuleEvaluationRequest, absence
+        never means global, and authoritative evidence is the ProvenancedFact source
+      participantRoles:
+        - id: applicableRuleVersion
+          range: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+          minCount: 1
+          maxCount: 1
+          label: applicable rule version
+          definition: exact MarketRule fact version selected as a candidate by this applicability
+        - id: scopeListingVersion
+          range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+          minCount: 0
+          maxCount: 1
+          label: scope listing version
+          definition: optional exact InstrumentListing fact version that is the strongest applicability discriminator
+        - id: scopeInstrumentVersion
+          range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+          minCount: 0
+          maxCount: 1
+          label: scope instrument version
+          definition: optional exact FinancialInstrument fact version explicitly scoped by this applicability
+        - id: scopeSegmentVersion
+          range: https://axiolune.ai/ontology/finance/market-structure/MarketSegment
+          minCount: 0
+          maxCount: 1
+          label: scope segment version
+          definition: optional exact MarketSegment fact version explicitly scoped by this applicability
+        - id: scopeVenueVersion
+          range: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
+          minCount: 0
+          maxCount: 1
+          label: scope venue version
+          definition: optional exact TradingFacility fact version explicitly scoped by this applicability
+        - id: scopeJurisdictionVersion
+          range: https://axiolune.ai/ontology/finance/foundation/Jurisdiction
+          minCount: 0
+          maxCount: 1
+          label: scope jurisdiction version
+          definition: optional exact Jurisdiction fact version explicitly scoped by this applicability
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/applicabilityPriority
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/applicabilityAccountType
+          minCount: 0
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    RulePrecedence:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RulePrecedence
+      namespace: fin-market-rules
+      localName: RulePrecedence
+      label: Rule Precedence
+      definition: >-
+        reviewed temporal fact declaring that one exact rule version dominates another exact version of the same rule
+        kind over overlapping normalized scope; active precedence edges must form an irreflexive DAG and the reviewed
+        authority is carried by its ProvenancedFact source
+      participantRoles:
+        - id: higherRuleVersion
+          range: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+          minCount: 1
+          maxCount: 1
+          label: higher rule version
+          definition: exact MarketRule fact version that dominates the lower rule for the reviewed overlap
+        - id: lowerRuleVersion
+          range: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+          minCount: 1
+          maxCount: 1
+          label: lower rule version
+          definition: exact MarketRule fact version dominated by the higher rule for the reviewed overlap
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/precedenceReason
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    RuleConflict:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RuleConflict
+      namespace: fin-market-rules
+      localName: RuleConflict
+      label: Rule Conflict
+      definition: >-
+        explicit no-winner fact emitted when at least two surviving applicability versions produce incompatible typed
+        results for one exact evaluation request; logical identity is request logical IRI plus the candidate set digest
+        and generating context is provenance only
+      participantRoles:
+        - id: candidateApplicabilityVersion
+          range: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability
+          minCount: 2
+          maxCount: null
+          label: candidate applicability version
+          definition: exact surviving RuleApplicability fact version participating in the incompatible result set
+        - id: evaluationRequestVersion
+          range: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+          minCount: 1
+          maxCount: 1
+          label: evaluation request version
+          definition: exact RuleEvaluationRequest fact version for which no silent winner may be chosen
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/ruleConflictKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/candidateApplicabilitySetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+  relationTypes:
+    ruleSetAuthority:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ruleSetAuthority
+      namespace: fin-market-rules
+      localName: ruleSetAuthority
+      label: Rule Set Authority
+      definition: direct reference from a MarketRuleSet version to its exact maintaining Party fact version
+      domain: https://axiolune.ai/ontology/finance/market-rules/MarketRuleSet
+      range: https://axiolune.ai/ontology/finance/foundation/Party
+      characteristics:
+        - functional
+    marketRuleSet:
+      iri: https://axiolune.ai/ontology/finance/market-rules/marketRuleSet
+      namespace: fin-market-rules
+      localName: marketRuleSet
+      label: Market Rule Set
+      definition: direct reference from a MarketRule version to the exact containing MarketRuleSet version
+      domain: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      range: https://axiolune.ai/ontology/finance/market-rules/MarketRuleSet
+      characteristics:
+        - functional
+    ruleHasClause:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ruleHasClause
+      namespace: fin-market-rules
+      localName: ruleHasClause
+      label: Rule Has Clause
+      definition: direct reference from a MarketRule version to one exact executable RuleClause version
+      domain: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      range: https://axiolune.ai/ontology/finance/market-rules/RuleClause
+    parameterForClause:
+      iri: https://axiolune.ai/ontology/finance/market-rules/parameterForClause
+      namespace: fin-market-rules
+      localName: parameterForClause
+      label: Parameter For Clause
+      definition: direct ownership reference from a RuleParameter version to its exact containing RuleClause version
+      domain: https://axiolune.ai/ontology/finance/market-rules/RuleParameter
+      range: https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      characteristics:
+        - functional
+    parameterClauseReference:
+      iri: https://axiolune.ai/ontology/finance/market-rules/parameterClauseReference
+      namespace: fin-market-rules
+      localName: parameterClauseReference
+      label: Parameter Clause Reference
+      definition: optional exclusive-one-of branch from a RuleParameter version to one exact referenced RuleClause version
+      domain: https://axiolune.ai/ontology/finance/market-rules/RuleParameter
+      range: https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      characteristics:
+        - functional
+    distributionAssessmentMethodAuthority:
+      iri: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentMethodAuthority
+      namespace: fin-market-rules
+      localName: distributionAssessmentMethodAuthority
+      label: Distribution Assessment Method Authority
+      definition: exact Party fact version maintaining one reviewed distribution-assessment method version
+      domain: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDistributionAssessmentMethod
+      range: https://axiolune.ai/ontology/finance/foundation/Party
+      characteristics:
+        - functional
+    corporateActionDistributionAssessmentMethod:
+      iri: https://axiolune.ai/ontology/finance/market-rules/corporateActionDistributionAssessmentMethod
+      namespace: fin-market-rules
+      localName: corporateActionDistributionAssessmentMethod
+      label: Corporate Action Distribution Assessment Method
+      definition: optional exact reviewed method version bound iff a CorporateActionScheduleRule authors a percentage interval
+      domain: https://axiolune.ai/ontology/finance/market-rules/CorporateActionScheduleRule
+      range: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDistributionAssessmentMethod
+      characteristics:
+        - functional
+    requestAuthority:
+      iri: https://axiolune.ai/ontology/finance/market-rules/requestAuthority
+      namespace: fin-market-rules
+      localName: requestAuthority
+      label: Request Authority
+      definition: direct reference from a RuleEvaluationRequest to the exact Party fact version that issued it
+      domain: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      range: https://axiolune.ai/ontology/finance/foundation/Party
+      characteristics:
+        - functional
+    requestListingScope:
+      iri: https://axiolune.ai/ontology/finance/market-rules/requestListingScope
+      namespace: fin-market-rules
+      localName: requestListingScope
+      label: Request Listing Scope
+      definition: optional exact InstrumentListing fact version bound by a RuleEvaluationRequest
+      domain: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+      characteristics:
+        - functional
+    requestInstrumentScope:
+      iri: https://axiolune.ai/ontology/finance/market-rules/requestInstrumentScope
+      namespace: fin-market-rules
+      localName: requestInstrumentScope
+      label: Request Instrument Scope
+      definition: optional exact FinancialInstrument fact version bound by a RuleEvaluationRequest
+      domain: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+      characteristics:
+        - functional
+    requestSegmentScope:
+      iri: https://axiolune.ai/ontology/finance/market-rules/requestSegmentScope
+      namespace: fin-market-rules
+      localName: requestSegmentScope
+      label: Request Segment Scope
+      definition: optional exact MarketSegment fact version bound by a RuleEvaluationRequest
+      domain: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      range: https://axiolune.ai/ontology/finance/market-structure/MarketSegment
+      characteristics:
+        - functional
+    requestVenueScope:
+      iri: https://axiolune.ai/ontology/finance/market-rules/requestVenueScope
+      namespace: fin-market-rules
+      localName: requestVenueScope
+      label: Request Venue Scope
+      definition: optional exact TradingFacility fact version bound by a RuleEvaluationRequest
+      domain: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      range: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
+      characteristics:
+        - functional
+    requestJurisdictionScope:
+      iri: https://axiolune.ai/ontology/finance/market-rules/requestJurisdictionScope
+      namespace: fin-market-rules
+      localName: requestJurisdictionScope
+      label: Request Jurisdiction Scope
+      definition: optional exact Jurisdiction fact version bound by a RuleEvaluationRequest
+      domain: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      range: https://axiolune.ai/ontology/finance/foundation/Jurisdiction
+      characteristics:
+        - functional
+  attributeTypes:
+    ruleSetId:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ruleSetId
+      namespace: fin-market-rules
+      localName: ruleSetId
+      label: Rule Set Identifier
+      definition: non-empty NFC authority-scoped identifier of a MarketRuleSet logical identity
+      valueType: string
+      defaultCardinality:
         minCount: 1
         maxCount: 1
-      - attribute: https://axiolune.ai/ontology/finance/market-rules/hasRuleParameterValue
-        minCount: 0
-        maxCount: 1
-      - attribute: https://axiolune.ai/ontology/finance/market-rules/hasRuleParameterUnit
-        minCount: 0
-        maxCount: 1
-      - attribute: https://axiolune.ai/ontology/finance/market-rules/hasRuleSource
-        minCount: 0
-        maxCount: 1
-      - attribute: https://axiolune.ai/ontology/finance/market-rules/hasRuleRevision
-        minCount: 0
-        maxCount: 1
-    note: >-
-      Axiolune-native; FIBO has no MarketRule class. T+1, price limits, tick schedules, settlement cycles are instances
-      of MarketRule bound to venues/segments/instruments via RuleApplicability.
-  SettlementConvention:
-    iri: https://axiolune.ai/ontology/finance/market-rules/SettlementConvention
-    namespace: fin-market-rules
-    localName: SettlementConvention
-    label: Settlement Convention
-    definition: market rule that defines the standard settlement cycle (e.g. T+1, T+2) for trades executed on a venue
-    superTypes:
-      - https://axiolune.ai/ontology/finance/market-rules/MarketRule
-    attributeUses: []
-    note: Axiolune-native; parameter value = N (days), unit = 'days'. E.g. T+1 = parameterValue 1, unit 'days'.
-  RuleApplicability:
-    iri: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability
-    namespace: fin-market-rules
-    localName: RuleApplicability
-    label: Rule Applicability
-    definition: >-
-      association that binds a market rule to a specific scope defined by venue, market segment, instrument class,
-      and/or investor category, with valid-time and knowledge-time intervals, source, revision, and lifecycle status
-    participantRoles:
-      - roleName: appliesRule
-        range: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      pattern: ^\S(?:.*\S)?$
+    ruleId:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ruleId
+      namespace: fin-market-rules
+      localName: ruleId
+      label: Rule Identifier
+      definition: non-empty NFC identifier of a MarketRule within its exact containing RuleSet
+      valueType: string
+      defaultCardinality:
         minCount: 1
         maxCount: 1
-        roleIri: https://axiolune.ai/ontology/finance/market-rules/appliesRule
-        label: applies rule
-        definition: the market rule being scoped by this applicability fact
-      - roleName: scopedToVenue
-        range: https://axiolune.ai/ontology/finance/market-structure/TradingVenue
-        minCount: 0
-        maxCount: 1
-        roleIri: https://axiolune.ai/ontology/finance/market-rules/scopedToVenue
-        label: scoped to venue
-        definition: optional venue scope (null = all venues in higher policy)
-    attributeUses:
-      - attribute: https://axiolune.ai/ontology/finance/market-rules/appliesToInstrumentClass
-        minCount: 0
-        maxCount: 1
-      - attribute: https://axiolune.ai/ontology/finance/market-rules/hasLifecycleStatus
+      pattern: ^\S(?:.*\S)?$
+    ruleClauseId:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ruleClauseId
+      namespace: fin-market-rules
+      localName: ruleClauseId
+      label: Rule Clause Identifier
+      definition: non-empty NFC identifier of a RuleClause within its exact owning rule version
+      valueType: string
+      defaultCardinality:
         minCount: 1
         maxCount: 1
-    note: >-
-      Binds a MarketRule to a scope with temporal validity. T+1 / price-limit / close-today are instances of this
-      association (rqalpha/vnpy evidence), not parallel ChinaEquity ontologies.
-    patternBindings:
-      - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
-      - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+      pattern: ^\S(?:.*\S)?$
+    ruleParameterId:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ruleParameterId
+      namespace: fin-market-rules
+      localName: ruleParameterId
+      label: Rule Parameter Identifier
+      definition: non-empty NFC identifier of a typed RuleParameter within its exact owning clause version
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    hasRuleType:
+      iri: https://axiolune.ai/ontology/finance/market-rules/hasRuleType
+      namespace: fin-market-rules
+      localName: hasRuleType
+      label: Has Rule Type
+      definition: reviewed RuleType member required on every MarketRule fact version
+      valueType: https://axiolune.ai/ontology/finance/market-rules/RuleType
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    clauseSequence:
+      iri: https://axiolune.ai/ontology/finance/market-rules/clauseSequence
+      namespace: fin-market-rules
+      localName: clauseSequence
+      label: Clause Sequence
+      definition: zero-based non-negative order of a RuleClause within one rule version
+      valueType: integer
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    clauseLowerBound:
+      iri: https://axiolune.ai/ontology/finance/market-rules/clauseLowerBound
+      namespace: fin-market-rules
+      localName: clauseLowerBound
+      label: Clause Lower Bound
+      definition: optional typed Quantity lower bound of the ordered clause input range
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    clauseUpperBound:
+      iri: https://axiolune.ai/ontology/finance/market-rules/clauseUpperBound
+      namespace: fin-market-rules
+      localName: clauseUpperBound
+      label: Clause Upper Bound
+      definition: optional typed Quantity upper bound of the ordered clause input range
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    clauseLowerInclusive:
+      iri: https://axiolune.ai/ontology/finance/market-rules/clauseLowerInclusive
+      namespace: fin-market-rules
+      localName: clauseLowerInclusive
+      label: Clause Lower Inclusive
+      definition: whether a present lower bound belongs to the clause's half-open or closed input range
+      valueType: boolean
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    clauseUpperInclusive:
+      iri: https://axiolune.ai/ontology/finance/market-rules/clauseUpperInclusive
+      namespace: fin-market-rules
+      localName: clauseUpperInclusive
+      label: Clause Upper Inclusive
+      definition: whether a present upper bound belongs to the clause's open or closed input range
+      valueType: boolean
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    ruleGapPolicy:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ruleGapPolicy
+      namespace: fin-market-rules
+      localName: ruleGapPolicy
+      label: Rule Gap Policy
+      definition: reviewed rule-level decision whether uncovered ranges between its ordered clauses are rejected or allowed
+      valueType: https://axiolune.ai/ontology/finance/market-rules/ClauseGapPolicy
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    ruleMoneyParameterValue:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ruleMoneyParameterValue
+      namespace: fin-market-rules
+      localName: ruleMoneyParameterValue
+      label: Rule Money Parameter Value
+      definition: optional canonical Money branch of the RuleParameter exclusive-one-of
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    ruleQuantityParameterValue:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ruleQuantityParameterValue
+      namespace: fin-market-rules
+      localName: ruleQuantityParameterValue
+      label: Rule Quantity Parameter Value
+      definition: optional canonical Quantity branch of the RuleParameter exclusive-one-of
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    ruleCodeParameterValue:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ruleCodeParameterValue
+      namespace: fin-market-rules
+      localName: ruleCodeParameterValue
+      label: Rule Code Parameter Value
+      definition: optional reviewed RuleParameterCode member branch of the RuleParameter exclusive-one-of
+      valueType: https://axiolune.ai/ontology/finance/market-rules/RuleParameterCode
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    tickSize:
+      iri: https://axiolune.ai/ontology/finance/market-rules/tickSize
+      namespace: fin-market-rules
+      localName: tickSize
+      label: Tick Size
+      definition: positive canonical Quantity representing the minimum price increment in a TickSizeClause
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    lotSize:
+      iri: https://axiolune.ai/ontology/finance/market-rules/lotSize
+      namespace: fin-market-rules
+      localName: lotSize
+      label: Lot Size
+      definition: positive canonical Quantity representing the order-size increment in a LotSizeClause
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    priceLimitPercentage:
+      iri: https://axiolune.ai/ontology/finance/market-rules/priceLimitPercentage
+      namespace: fin-market-rules
+      localName: priceLimitPercentage
+      label: Price Limit Percentage
+      definition: optional dimensionless percentage Quantity branch of a PriceLimitClause boundary
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    priceLimitAmount:
+      iri: https://axiolune.ai/ontology/finance/market-rules/priceLimitAmount
+      namespace: fin-market-rules
+      localName: priceLimitAmount
+      label: Price Limit Amount
+      definition: optional canonical Money branch of a PriceLimitClause boundary
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    circuitBreakerThreshold:
+      iri: https://axiolune.ai/ontology/finance/market-rules/circuitBreakerThreshold
+      namespace: fin-market-rules
+      localName: circuitBreakerThreshold
+      label: Circuit Breaker Threshold
+      definition: positive dimensionless trigger-threshold Quantity in a CircuitBreakerClause
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    circuitBreakerHaltDuration:
+      iri: https://axiolune.ai/ontology/finance/market-rules/circuitBreakerHaltDuration
+      namespace: fin-market-rules
+      localName: circuitBreakerHaltDuration
+      label: Circuit Breaker Halt Duration
+      definition: non-negative duration Quantity applied after a circuit-breaker threshold is met
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    settlementCycle:
+      iri: https://axiolune.ai/ontology/finance/market-rules/settlementCycle
+      namespace: fin-market-rules
+      localName: settlementCycle
+      label: Settlement Cycle
+      definition: non-negative business-day Quantity between trade date and contractual settlement date
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    sameDayResaleAllowed:
+      iri: https://axiolune.ai/ontology/finance/market-rules/sameDayResaleAllowed
+      namespace: fin-market-rules
+      localName: sameDayResaleAllowed
+      label: Same-day Resale Allowed
+      definition: explicit Boolean outcome of a resale-restriction clause, separate from settlement-cycle semantics
+      valueType: boolean
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    minimumResaleHoldingPeriod:
+      iri: https://axiolune.ai/ontology/finance/market-rules/minimumResaleHoldingPeriod
+      namespace: fin-market-rules
+      localName: minimumResaleHoldingPeriod
+      label: Minimum Resale Holding Period
+      definition: optional non-negative duration Quantity required before resale when same-day resale is prohibited
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    corporateActionEntitlementMode:
+      iri: https://axiolune.ai/ontology/finance/market-rules/corporateActionEntitlementMode
+      namespace: fin-market-rules
+      localName: corporateActionEntitlementMode
+      label: Corporate Action Entitlement Mode
+      definition: exact entitlement mode selected by the schedule rule's sole entitlement clause
+      valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionEntitlementMode
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    entitlementPivotDateField:
+      iri: https://axiolune.ai/ontology/finance/market-rules/entitlementPivotDateField
+      namespace: fin-market-rules
+      localName: entitlementPivotDateField
+      label: Entitlement Pivot Date Field
+      definition: exact CorporateActionEvent date-field role from which the entitlement pivot is deterministically resolved
+      valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionEventDateField
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    cumEntitlementTradeStartOffset:
+      iri: https://axiolune.ai/ontology/finance/market-rules/cumEntitlementTradeStartOffset
+      namespace: fin-market-rules
+      localName: cumEntitlementTradeStartOffset
+      label: Cum-entitlement Trade Start Offset
+      definition: due-bill-only signed business-day Quantity resolving the inclusive start of the cum-entitlement interval
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    cumEntitlementTradeEndOffset:
+      iri: https://axiolune.ai/ontology/finance/market-rules/cumEntitlementTradeEndOffset
+      namespace: fin-market-rules
+      localName: cumEntitlementTradeEndOffset
+      label: Cum-entitlement Trade End Offset
+      definition: due-bill-only signed business-day Quantity resolving the exclusive end of the cum-entitlement interval
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    dueBillSettlementQualification:
+      iri: https://axiolune.ai/ontology/finance/market-rules/dueBillSettlementQualification
+      namespace: fin-market-rules
+      localName: dueBillSettlementQualification
+      label: Due-bill Settlement Qualification
+      definition: exact evidence mode required for a trade to qualify for due-bill processing
+      valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionSettlementQualification
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    resolvedDateRole:
+      iri: https://axiolune.ai/ontology/finance/market-rules/resolvedDateRole
+      namespace: fin-market-rules
+      localName: resolvedDateRole
+      label: Resolved Corporate Action Date Role
+      definition: exact schedule-resolution output date role produced by a date-resolution clause
+      valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionResolvedDateRole
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    sourceEventDateField:
+      iri: https://axiolune.ai/ontology/finance/market-rules/sourceEventDateField
+      namespace: fin-market-rules
+      localName: sourceEventDateField
+      label: Source Corporate Action Event Date Field
+      definition: exact published Event date-field role consumed by a date-resolution clause
+      valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionEventDateField
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    dateResolutionOffset:
+      iri: https://axiolune.ai/ontology/finance/market-rules/dateResolutionOffset
+      namespace: fin-market-rules
+      localName: dateResolutionOffset
+      label: Corporate Action Date Resolution Offset
+      definition: signed business-day Quantity applied before the explicit adjustment convention
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    dateBusinessDayAdjustment:
+      iri: https://axiolune.ai/ontology/finance/market-rules/dateBusinessDayAdjustment
+      namespace: fin-market-rules
+      localName: dateBusinessDayAdjustment
+      label: Corporate Action Date Business-day Adjustment
+      definition: explicit adjustment applied when the offset result is not a business day
+      valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionBusinessDayAdjustment
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    orderingLeftDateRole:
+      iri: https://axiolune.ai/ontology/finance/market-rules/orderingLeftDateRole
+      namespace: fin-market-rules
+      localName: orderingLeftDateRole
+      label: Corporate Action Ordering Left Date Role
+      definition: first distinct resolved date role in one executable ordering comparison
+      valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionResolvedDateRole
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    dateOrderingOperator:
+      iri: https://axiolune.ai/ontology/finance/market-rules/dateOrderingOperator
+      namespace: fin-market-rules
+      localName: dateOrderingOperator
+      label: Corporate Action Date Ordering Operator
+      definition: exact ordering relation applied between the two resolved date roles
+      valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDateOrderingOperator
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    orderingRightDateRole:
+      iri: https://axiolune.ai/ontology/finance/market-rules/orderingRightDateRole
+      namespace: fin-market-rules
+      localName: orderingRightDateRole
+      label: Corporate Action Ordering Right Date Role
+      definition: second distinct resolved date role in one executable ordering comparison
+      valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionResolvedDateRole
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    corporateActionKind:
+      iri: https://axiolune.ai/ontology/finance/market-rules/corporateActionKind
+      namespace: fin-market-rules
+      localName: corporateActionKind
+      label: Corporate Action Kind
+      definition: reviewed CorporateActionKind member selected by one CorporateActionScheduleRule
+      valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionKind
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    distributionAssessmentMethodId:
+      iri: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentMethodId
+      namespace: fin-market-rules
+      localName: distributionAssessmentMethodId
+      label: Distribution Assessment Method Identifier
+      definition: non-empty method identifier unique within the logical method-authority scope
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    distributionAssessmentInputKind:
+      iri: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentInputKind
+      namespace: fin-market-rules
+      localName: distributionAssessmentInputKind
+      label: Distribution Assessment Input Kind
+      definition: exact calculation or official-authority input branch accepted by this reviewed method
+      valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDistributionAssessmentInputKind
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    distributionAssessmentPriceSelection:
+      iri: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentPriceSelection
+      namespace: fin-market-rules
+      localName: distributionAssessmentPriceSelection
+      label: Distribution Assessment Price Selection
+      definition: exact price-selection function; notApplicable is required when the method does not consume market price
+      valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionPriceSelectionFunction
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    distributionAssessmentRequiresMarketPrice:
+      iri: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentRequiresMarketPrice
+      namespace: fin-market-rules
+      localName: distributionAssessmentRequiresMarketPrice
+      label: Distribution Assessment Requires Market Price
+      definition: explicit Boolean deciding whether one PIT-eligible affected-security PriceObservation is required
+      valueType: boolean
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    distributionAssessmentRequiredPriceKindIri:
+      iri: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentRequiredPriceKindIri
+      namespace: fin-market-rules
+      localName: distributionAssessmentRequiredPriceKindIri
+      label: Distribution Assessment Required Price Kind IRI
+      definition: >-
+        absolute IRI of the Market Data PriceKind member required when market price is consumed without importing that
+        downstream module
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+      pattern: ^https?://\S+$
+    distributionAssessmentPrecision:
+      iri: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentPrecision
+      namespace: fin-market-rules
+      localName: distributionAssessmentPrecision
+      label: Distribution Assessment Precision
+      definition: non-negative decimal precision used by the reviewed percentage calculation
+      valueType: integer
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    distributionAssessmentRoundingMode:
+      iri: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentRoundingMode
+      namespace: fin-market-rules
+      localName: distributionAssessmentRoundingMode
+      label: Distribution Assessment Rounding Mode
+      definition: non-empty reviewed rounding-mode identifier used after formula evaluation
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    distributionAssessmentFormulaDigest:
+      iri: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentFormulaDigest
+      namespace: fin-market-rules
+      localName: distributionAssessmentFormulaDigest
+      label: Distribution Assessment Formula Digest
+      definition: SHA-256 digest of the exact canonical calculation formula
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    distributionAssessmentImplementationDigest:
+      iri: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentImplementationDigest
+      namespace: fin-market-rules
+      localName: distributionAssessmentImplementationDigest
+      label: Distribution Assessment Implementation Digest
+      definition: SHA-256 digest of the exact executable method implementation
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    scheduleDateResolutionContractDigest:
+      iri: https://axiolune.ai/ontology/finance/market-rules/scheduleDateResolutionContractDigest
+      namespace: fin-market-rules
+      localName: scheduleDateResolutionContractDigest
+      label: Schedule Date Resolution Contract Digest
+      definition: SHA-256 digest of the exact event-date-to-resolved-date selection contract
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    scheduleDateOrderingContractDigest:
+      iri: https://axiolune.ai/ontology/finance/market-rules/scheduleDateOrderingContractDigest
+      namespace: fin-market-rules
+      localName: scheduleDateOrderingContractDigest
+      label: Schedule Date Ordering Contract Digest
+      definition: SHA-256 digest of the jurisdiction/profile-specific legal date-ordering contract
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    scheduleCalendarCutoffContractDigest:
+      iri: https://axiolune.ai/ontology/finance/market-rules/scheduleCalendarCutoffContractDigest
+      namespace: fin-market-rules
+      localName: scheduleCalendarCutoffContractDigest
+      label: Schedule Calendar and Cutoff Contract Digest
+      definition: SHA-256 digest of the exact calendar, timezone, and cutoff normalization contract
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    distributionPercentageLowerBound:
+      iri: https://axiolune.ai/ontology/finance/market-rules/distributionPercentageLowerBound
+      namespace: fin-market-rules
+      localName: distributionPercentageLowerBound
+      label: Distribution Percentage Lower Bound
+      definition: optional dimensionless lower bound of the candidate applicability percentage interval
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    distributionPercentageLowerInclusive:
+      iri: https://axiolune.ai/ontology/finance/market-rules/distributionPercentageLowerInclusive
+      namespace: fin-market-rules
+      localName: distributionPercentageLowerInclusive
+      label: Distribution Percentage Lower Inclusive
+      definition: present exactly when a lower bound is authored and states whether that endpoint is included
+      valueType: boolean
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    distributionPercentageUpperBound:
+      iri: https://axiolune.ai/ontology/finance/market-rules/distributionPercentageUpperBound
+      namespace: fin-market-rules
+      localName: distributionPercentageUpperBound
+      label: Distribution Percentage Upper Bound
+      definition: optional dimensionless upper bound of the candidate applicability percentage interval
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    distributionPercentageUpperInclusive:
+      iri: https://axiolune.ai/ontology/finance/market-rules/distributionPercentageUpperInclusive
+      namespace: fin-market-rules
+      localName: distributionPercentageUpperInclusive
+      label: Distribution Percentage Upper Inclusive
+      definition: present exactly when an upper bound is authored and states whether that endpoint is included
+      valueType: boolean
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    nonTransferableDirectSubscription:
+      iri: https://axiolune.ai/ontology/finance/market-rules/nonTransferableDirectSubscription
+      namespace: fin-market-rules
+      localName: nonTransferableDirectSubscription
+      label: Non-transferable Direct Subscription
+      definition: >-
+        rights-issue-only Boolean that requires the non-transferable direct-subscription profile and rejects
+        transferable-right models
+      valueType: boolean
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    applicabilityPriority:
+      iri: https://axiolune.ai/ontology/finance/market-rules/applicabilityPriority
+      namespace: fin-market-rules
+      localName: applicabilityPriority
+      label: Applicability Priority
+      definition: >-
+        numeric priority comparable only inside one RuleSet version, authoritative source, and byte-identical normalized
+        scope; it never substitutes for computed specificity or cross-authority precedence
+      valueType: integer
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    applicabilityAccountType:
+      iri: https://axiolune.ai/ontology/finance/market-rules/applicabilityAccountType
+      namespace: fin-market-rules
+      localName: applicabilityAccountType
+      label: Applicability Account Type
+      definition: optional Foundation AccountType member explicitly scoped by a RuleApplicability
+      valueType: https://axiolune.ai/ontology/finance/foundation/AccountType
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    precedenceReason:
+      iri: https://axiolune.ai/ontology/finance/market-rules/precedenceReason
+      namespace: fin-market-rules
+      localName: precedenceReason
+      label: Precedence Reason
+      definition: non-empty reviewed explanation supporting one explicit RulePrecedence edge
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    ruleConflictKind:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ruleConflictKind
+      namespace: fin-market-rules
+      localName: ruleConflictKind
+      label: Rule Conflict Kind
+      definition: reviewed RuleConflictKind member explaining why no silent winner was produced
+      valueType: https://axiolune.ai/ontology/finance/market-rules/RuleConflictKind
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    candidateApplicabilitySetDigest:
+      iri: https://axiolune.ai/ontology/finance/market-rules/candidateApplicabilitySetDigest
+      namespace: fin-market-rules
+      localName: candidateApplicabilitySetDigest
+      label: Candidate Applicability Set Digest
+      definition: framed digest of the sorted exact applicability-version IRI set forming a RuleConflict identity
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    ruleEvaluationRequestId:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ruleEvaluationRequestId
+      namespace: fin-market-rules
+      localName: ruleEvaluationRequestId
+      label: Rule Evaluation Request Identifier
+      definition: non-empty NFC identifier unique within the logical request-authority scope
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    asOfValid:
+      iri: https://axiolune.ai/ontology/finance/market-rules/asOfValid
+      namespace: fin-market-rules
+      localName: asOfValid
+      label: As-of Valid Time
+      definition: explicit valid-time pivot of a RuleEvaluationRequest
+      valueType: instant
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    asOfKnowledge:
+      iri: https://axiolune.ai/ontology/finance/market-rules/asOfKnowledge
+      namespace: fin-market-rules
+      localName: asOfKnowledge
+      label: As-of Knowledge Time
+      definition: explicit knowledge-time pivot of a RuleEvaluationRequest
+      valueType: instant
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    asOfAvailable:
+      iri: https://axiolune.ai/ontology/finance/market-rules/asOfAvailable
+      namespace: fin-market-rules
+      localName: asOfAvailable
+      label: As-of Availability Time
+      definition: explicit availability-time pivot of a RuleEvaluationRequest
+      valueType: instant
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    requestAccountType:
+      iri: https://axiolune.ai/ontology/finance/market-rules/requestAccountType
+      namespace: fin-market-rules
+      localName: requestAccountType
+      label: Request Account Type
+      definition: optional Foundation AccountType member supplied as an exact rule-evaluation scope
+      valueType: https://axiolune.ai/ontology/finance/foundation/AccountType
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    requestedCorporateActionKind:
+      iri: https://axiolune.ai/ontology/finance/market-rules/requestedCorporateActionKind
+      namespace: fin-market-rules
+      localName: requestedCorporateActionKind
+      label: Requested Corporate Action Kind
+      definition: optional exact CorporateActionKind typed parameter required for a corporate-action schedule evaluation
+      valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionKind
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+  identifierTypes: {}
+  codeLists:
+    RuleType:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RuleType
+      namespace: fin-market-rules
+      localName: RuleType
+      label: Rule Type
+      definition: closed classification of rule specializations supported by the executable market-rule profile
+      vocabulary: Rule Type
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/RuleType/value/tickSchedule
+          notation: tickSchedule
+          label: Tick schedule
+          definition: rule composed of ordered tick-size clauses
+        - iri: https://axiolune.ai/ontology/finance/market-rules/RuleType/value/lotSchedule
+          notation: lotSchedule
+          label: Lot schedule
+          definition: rule composed of ordered lot-size clauses
+        - iri: https://axiolune.ai/ontology/finance/market-rules/RuleType/value/priceLimit
+          notation: priceLimit
+          label: Price limit
+          definition: rule composed of typed price-limit boundary clauses
+        - iri: https://axiolune.ai/ontology/finance/market-rules/RuleType/value/circuitBreaker
+          notation: circuitBreaker
+          label: Circuit breaker
+          definition: rule composed of trigger-threshold and halt-duration clauses
+        - iri: https://axiolune.ai/ontology/finance/market-rules/RuleType/value/settlementCycle
+          notation: settlementCycle
+          label: Settlement cycle
+          definition: rule determining contractual settlement-date offsets
+        - iri: https://axiolune.ai/ontology/finance/market-rules/RuleType/value/resaleRestriction
+          notation: resaleRestriction
+          label: Resale restriction
+          definition: rule determining same-day or minimum-holding-period resale eligibility
+        - iri: https://axiolune.ai/ontology/finance/market-rules/RuleType/value/corporateActionSchedule
+          notation: corporateActionSchedule
+          label: Corporate action schedule
+          definition: rule determining corporate-action dates, assessment methods, and entitlement clauses
+    RuleParameterCode:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RuleParameterCode
+      namespace: fin-market-rules
+      localName: RuleParameterCode
+      label: Rule Parameter Code
+      definition: closed generic code branch for executable RuleParameter values that are neither Money nor Quantity
+      vocabulary: Rule Parameter Code
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/RuleParameterCode/value/enabled
+          notation: enabled
+          label: Enabled
+          definition: parameter branch is enabled
+        - iri: https://axiolune.ai/ontology/finance/market-rules/RuleParameterCode/value/disabled
+          notation: disabled
+          label: Disabled
+          definition: parameter branch is disabled
+        - iri: https://axiolune.ai/ontology/finance/market-rules/RuleParameterCode/value/businessDays
+          notation: businessDays
+          label: Business days
+          definition: day-count parameter is interpreted using the applicable trading calendar
+        - iri: https://axiolune.ai/ontology/finance/market-rules/RuleParameterCode/value/calendarDays
+          notation: calendarDays
+          label: Calendar days
+          definition: day-count parameter is interpreted as calendar days
+    ClauseGapPolicy:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ClauseGapPolicy
+      namespace: fin-market-rules
+      localName: ClauseGapPolicy
+      label: Clause Gap Policy
+      definition: closed decision for uncovered ranges between ordered clauses
+      vocabulary: Clause Gap Policy
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ClauseGapPolicy/value/reject
+          notation: reject
+          label: Reject gaps
+          definition: any uncovered input range fails rule evaluation
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ClauseGapPolicy/value/allow
+          notation: allow
+          label: Allow gaps
+          definition: uncovered input ranges intentionally produce no applicable clause
+    RuleConflictKind:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RuleConflictKind
+      namespace: fin-market-rules
+      localName: RuleConflictKind
+      label: Rule Conflict Kind
+      definition: closed classification of no-winner rule-resolution outcomes
+      vocabulary: Rule Conflict Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/RuleConflictKind/value/incompatibleResults
+          notation: incompatibleResults
+          label: Incompatible results
+          definition: surviving applicability versions produce different canonical typed results
+        - iri: https://axiolune.ai/ontology/finance/market-rules/RuleConflictKind/value/incomparableAuthorities
+          notation: incomparableAuthorities
+          label: Incomparable authorities
+          definition: candidates from different authorities lack an explicit reviewed precedence edge
+    CorporateActionKind:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionKind
+      namespace: fin-market-rules
+      localName: CorporateActionKind
+      label: Corporate Action Kind
+      definition: closed classification used by schedule-rule requests and clauses rather than downstream Event identity
+      vocabulary: Corporate Action Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionKind/value/cashDividend
+          notation: cashDividend
+          label: Cash dividend
+          definition: distribution paid as cash per entitled unit
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionKind/value/stockSplit
+          notation: stockSplit
+          label: Stock split
+          definition: proportional change in units without a cash distribution
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionKind/value/rightsIssue
+          notation: rightsIssue
+          label: Rights issue
+          definition: non-transferable direct-subscription rights issue; separately tradable rights are deferred
+    CorporateActionDistributionAssessmentInputKind:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDistributionAssessmentInputKind
+      namespace: fin-market-rules
+      localName: CorporateActionDistributionAssessmentInputKind
+      label: Corporate Action Distribution Assessment Input Kind
+      definition: closed source-input branch consumed by one reviewed assessment method
+      vocabulary: Corporate Action Distribution Assessment Input Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: >-
+            https://axiolune.ai/ontology/finance/market-rules/CorporateActionDistributionAssessmentInputKind/value/cashCalculated
+          notation: cashCalculated
+          label: Cash calculated
+          definition: cashPerUnit divided by a selected affected-security reference price
+        - iri: >-
+            https://axiolune.ai/ontology/finance/market-rules/CorporateActionDistributionAssessmentInputKind/value/splitCalculated
+          notation: splitCalculated
+          label: Split calculated
+          definition: splitRatio evaluated by the locked method formula
+        - iri: >-
+            https://axiolune.ai/ontology/finance/market-rules/CorporateActionDistributionAssessmentInputKind/value/rightsCalculated
+          notation: rightsCalculated
+          label: Rights calculated
+          definition: entitlementRatio and subscriptionPrice evaluated by the locked method formula
+        - iri: >-
+            https://axiolune.ai/ontology/finance/market-rules/CorporateActionDistributionAssessmentInputKind/value/officialPercentage
+          notation: officialPercentage
+          label: Official percentage
+          definition: exact authority artifact digest and locator supply the percentage
+    CorporateActionPriceSelectionFunction:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionPriceSelectionFunction
+      namespace: fin-market-rules
+      localName: CorporateActionPriceSelectionFunction
+      label: Corporate Action Price Selection Function
+      definition: closed temporal price-selection function frozen by one reviewed assessment method
+      vocabulary: Corporate Action Price Selection Function
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionPriceSelectionFunction/value/exactAt
+          notation: exactAt
+          label: Exact at pivot
+          definition: select the unique eligible observation exactly at the locked valuation pivot
+        - iri: >-
+            https://axiolune.ai/ontology/finance/market-rules/CorporateActionPriceSelectionFunction/value/latestStrictlyBefore
+          notation: latestStrictlyBefore
+          label: Latest strictly before
+          definition: select the unique latest eligible observation strictly before the locked pivot
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionPriceSelectionFunction/value/notApplicable
+          notation: notApplicable
+          label: Not applicable
+          definition: the reviewed method consumes no market price
+    CorporateActionEntitlementMode:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionEntitlementMode
+      namespace: fin-market-rules
+      localName: CorporateActionEntitlementMode
+      label: Corporate Action Entitlement Mode
+      definition: closed classification of ordinary-record-date and due-bill entitlement calculation modes
+      vocabulary: Corporate Action Entitlement Mode
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: >-
+            https://axiolune.ai/ontology/finance/market-rules/CorporateActionEntitlementMode/value/ordinaryRecordPosition
+          notation: ordinaryRecordPosition
+          label: Ordinary record position
+          definition: entitlement uses the exact record-position snapshot with no due-bill input
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionEntitlementMode/value/dueBillAdjusted
+          notation: dueBillAdjusted
+          label: Due-bill adjusted
+          definition: entitlement adjusts record position by the complete qualifying due-bill obligation set
+    CorporateActionEventDateField:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionEventDateField
+      namespace: fin-market-rules
+      localName: CorporateActionEventDateField
+      label: Corporate Action Event Date Field
+      definition: closed downstream-neutral event date-field roles a schedule contract may select
+      vocabulary: Corporate Action Event Date Field
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionEventDateField/value/announcementDate
+          notation: announcementDate
+          label: Announcement date
+          definition: event announcement date field
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionEventDateField/value/exDate
+          notation: exDate
+          label: Ex date
+          definition: event ex date field
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionEventDateField/value/recordDate
+          notation: recordDate
+          label: Record date
+          definition: event record date field
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionEventDateField/value/paymentDate
+          notation: paymentDate
+          label: Payment date
+          definition: event payment date field
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionEventDateField/value/effectiveDate
+          notation: effectiveDate
+          label: Effective date
+          definition: event effective date field
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionEventDateField/value/electionDeadline
+          notation: electionDeadline
+          label: Election deadline
+          definition: event election deadline field
+    CorporateActionResolvedDateRole:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionResolvedDateRole
+      namespace: fin-market-rules
+      localName: CorporateActionResolvedDateRole
+      label: Corporate Action Resolved Date Role
+      definition: closed schedule-resolution output date roles, including the two rights-fulfillment dates
+      vocabulary: Corporate Action Resolved Date Role
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionResolvedDateRole/value/announcementDate
+          notation: announcementDate
+          label: Announcement date
+          definition: normalized announcement date
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionResolvedDateRole/value/exDate
+          notation: exDate
+          label: Ex date
+          definition: normalized ex date
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionResolvedDateRole/value/recordDate
+          notation: recordDate
+          label: Record date
+          definition: normalized record date
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionResolvedDateRole/value/paymentDate
+          notation: paymentDate
+          label: Payment date
+          definition: normalized payment date
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionResolvedDateRole/value/effectiveDate
+          notation: effectiveDate
+          label: Effective date
+          definition: normalized effective date
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionResolvedDateRole/value/electionDeadline
+          notation: electionDeadline
+          label: Election deadline
+          definition: normalized election deadline
+        - iri: >-
+            https://axiolune.ai/ontology/finance/market-rules/CorporateActionResolvedDateRole/value/subscriptionCashDueDate
+          notation: subscriptionCashDueDate
+          label: Subscription cash due date
+          definition: separately resolved rights subscription cash due date
+        - iri: >-
+            https://axiolune.ai/ontology/finance/market-rules/CorporateActionResolvedDateRole/value/successorDeliveryDate
+          notation: successorDeliveryDate
+          label: Successor delivery date
+          definition: separately resolved successor-security delivery date
+    CorporateActionBusinessDayAdjustment:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionBusinessDayAdjustment
+      namespace: fin-market-rules
+      localName: CorporateActionBusinessDayAdjustment
+      label: Corporate Action Business-day Adjustment
+      definition: closed business-day adjustment convention for schedule date resolution
+      vocabulary: Corporate Action Business-day Adjustment
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionBusinessDayAdjustment/value/unadjusted
+          notation: unadjusted
+          label: Unadjusted
+          definition: retain the offset date even when it is not a business day
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionBusinessDayAdjustment/value/preceding
+          notation: preceding
+          label: Preceding
+          definition: choose the first prior business day
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionBusinessDayAdjustment/value/following
+          notation: following
+          label: Following
+          definition: choose the first following business day
+    CorporateActionDateOrderingOperator:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDateOrderingOperator
+      namespace: fin-market-rules
+      localName: CorporateActionDateOrderingOperator
+      label: Corporate Action Date Ordering Operator
+      definition: closed comparison operator between two resolved date roles
+      vocabulary: Corporate Action Date Ordering Operator
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDateOrderingOperator/value/before
+          notation: before
+          label: Before
+          definition: left date is strictly before right date
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDateOrderingOperator/value/notAfter
+          notation: notAfter
+          label: Not after
+          definition: left date is before or equal to right date
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDateOrderingOperator/value/sameDate
+          notation: sameDate
+          label: Same date
+          definition: left and right dates are equal
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDateOrderingOperator/value/notBefore
+          notation: notBefore
+          label: Not before
+          definition: left date is after or equal to right date
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDateOrderingOperator/value/after
+          notation: after
+          label: After
+          definition: left date is strictly after right date
+    CorporateActionSettlementQualification:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionSettlementQualification
+      namespace: fin-market-rules
+      localName: CorporateActionSettlementQualification
+      label: Corporate Action Settlement Qualification
+      definition: closed evidence requirement for a due-bill trade qualification
+      vocabulary: Corporate Action Settlement Qualification
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionSettlementQualification/value/executionOnly
+          notation: executionOnly
+          label: Execution only
+          definition: qualifying execution evidence is sufficient
+        - iri: >-
+            https://axiolune.ai/ontology/finance/market-rules/CorporateActionSettlementQualification/value/settlementEvidence
+          notation: settlementEvidence
+          label: Settlement evidence
+          definition: exact eligible settlement-status and DVP atomic evidence are required
+  constraints:
+    RuleApplicabilityRequiresExplicitScope:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RuleApplicabilityRequiresExplicitScope
+      namespace: fin-market-rules
+      localName: RuleApplicabilityRequiresExplicitScope
+      label: Rule Applicability Requires Explicit Scope
+      definition: >-
+        requires at least one authored listing, instrument, segment, venue, Foundation AccountType, or jurisdiction
+        scope and rejects classifier, investor-category, and implicit-global substitutes
+      constraintType: CrossField
+      scope: Association
+      expression:
+        language: Custom
+        expression: contract=rfc001-rule-scope-nonempty-v1;scopeOrder=listing,instrument,segment,venue,accountType,jurisdiction
+      severity: Error
+      message: RuleApplicability must carry at least one explicit supported scope
+    RuleApplicabilityMustMatchRequest:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RuleApplicabilityMustMatchRequest
+      namespace: fin-market-rules
+      localName: RuleApplicabilityMustMatchRequest
+      label: Rule Applicability Must Match Request
+      definition: >-
+        requires every authored applicability scope to match the PIT-normalized evaluation request and computes the
+        six-position specificity vector without accepting a caller-authored specificity value
+      constraintType: CrossField
+      scope: Association
+      expression:
+        language: Custom
+        expression: contract=rfc001-rule-scope-match-v1;allAuthoredScopesMatch=true;specificity=derived
+      severity: Error
+      message: one or more authored applicability scopes do not match the normalized request
+    RulePriorityComparability:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RulePriorityComparability
+      namespace: fin-market-rules
+      localName: RulePriorityComparability
+      label: Rule Priority Comparability
+      definition: >-
+        permits numeric-priority comparison only inside one RuleSet version, authoritative source, and identical
+        normalized-scope digest; other candidates require explicit precedence
+      constraintType: CrossField
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          contract=rfc001-rule-priority-comparability-v1; crossAuthority=false; sameRuleSetVersion=true;
+          authoritativeSource=provenance.source; normalizedScopeDigest=identical; authorityLedgerJoin=reviewed
+      severity: Error
+      message: numeric priority was used across incomparable rule candidates
+    RuleParameterExclusiveOneOf:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RuleParameterExclusiveOneOf
+      namespace: fin-market-rules
+      localName: RuleParameterExclusiveOneOf
+      label: Rule Parameter Exclusive One Of
+      definition: >-
+        requires exactly one RuleParameter value branch among Money, Quantity, reviewed CodeValue, or exact referenced
+        RuleClause and rejects zero or multiple branches
+      constraintType: CrossField
+      scope: Object
+      expression:
+        language: Custom
+        expression: contract=rfc001-rule-parameter-xone-v1;branches=money,quantity,code,clauseReference
+      severity: Error
+      message: RuleParameter must populate exactly one typed value branch
+    RuleClauseRangeIntegrity:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RuleClauseRangeIntegrity
+      namespace: fin-market-rules
+      localName: RuleClauseRangeIntegrity
+      label: Rule Clause Range Integrity
+      definition: >-
+        requires ordered clause ranges to use compatible Quantity units, be non-reversed and non-overlapping, and either
+        reject or explicitly allow every gap
+      constraintType: CrossField
+      scope: Object
+      expression:
+        language: Custom
+        expression: contract=rfc001-rule-clause-range-v1;ordered=true;overlap=false;gapPolicy=required
+      severity: Error
+      message: rule clauses are unordered, overlapping, reversed, unit-incompatible, or have an implicit gap
+    RuleSubtypeClauseCompatibility:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RuleSubtypeClauseCompatibility
+      namespace: fin-market-rules
+      localName: RuleSubtypeClauseCompatibility
+      label: Rule Subtype Clause Compatibility
+      definition: >-
+        closes the matrix from each supported MarketRule subtype and RuleType member to its legal RuleClause subtype,
+        including distinct settlement-cycle and resale-restriction branches and the entitlement, date-resolution, and
+        date-ordering clauses that are the only legal CorporateActionScheduleRule clause types
+      constraintType: CrossField
+      scope: Object
+      expression:
+        language: Custom
+        expression: contract=rfc001-rule-subtype-clause-matrix-v2;closed=true
+      severity: Error
+      message: MarketRule subtype, RuleType member, and clause subtype are incompatible
+    PriceLimitClauseExclusiveBoundary:
+      iri: https://axiolune.ai/ontology/finance/market-rules/PriceLimitClauseExclusiveBoundary
+      namespace: fin-market-rules
+      localName: PriceLimitClauseExclusiveBoundary
+      label: Price Limit Clause Exclusive Boundary
+      definition: requires exactly one percentage Quantity or Money amount boundary on a PriceLimitClause
+      constraintType: CrossField
+      scope: Object
+      expression:
+        language: Custom
+        expression: contract=rfc001-price-limit-boundary-xone-v1;branches=percentage,amount
+      severity: Error
+      message: PriceLimitClause must carry exactly one compatible boundary branch
+    RulePrecedenceIntegrity:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RulePrecedenceIntegrity
+      namespace: fin-market-rules
+      localName: RulePrecedenceIntegrity
+      label: Rule Precedence Integrity
+      definition: >-
+        requires distinct same-kind rule versions with overlapping normalized scope and an authoritative reviewed
+        source; active precedence facts form a directed acyclic graph
+      constraintType: CrossField
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          contract=rfc001-rule-precedence-v1; sameRuleKind=true; normalizedScopeOverlap=true;
+          authoritativeSource=provenance.source; reviewedReason=required; authorityLedgerJoin=reviewed;
+          activeAtThreeAxisPit=true; closureAware=true; closureRunCompletedByReference=true; halfOpenIntervals=true;
+          irreflexive=true; acyclic=true
+      severity: Error
+      message: RulePrecedence is reflexive, cyclic, cross-kind, unsupported, or non-overlapping
+    RuleConflictNoSilentWinner:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RuleConflictNoSilentWinner
+      namespace: fin-market-rules
+      localName: RuleConflictNoSilentWinner
+      label: Rule Conflict No Silent Winner
+      definition: >-
+        requires one RuleConflict for incompatible surviving candidates, exact candidate-set identity, one generating
+        Run reference, and no normal result selected from that request
+      constraintType: CrossField
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          contract=rfc001-rule-conflict-v1; identityBaseIri=https://axiolune.ai/data/rule-conflict;
+          logicalKey(versionOf(evaluationRequestVersion),candidateApplicabilitySetDigest);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision); winner=forbidden; candidateSetDigest=required;
+          exactCurrentConflictCount=1; generatingRunLedgerJoin=completed
+      severity: Error
+      message: incompatible surviving rule candidates were silently resolved or conflict identity is incomplete
+    RuleEvaluationRequestIntegrity:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequestIntegrity
+      namespace: fin-market-rules
+      localName: RuleEvaluationRequestIntegrity
+      label: Rule Evaluation Request Integrity
+      definition: >-
+        enforces request-authority/request-ID logical identity, three explicit PIT pivots, a strictly prior completed
+        input context, and exact scope versions; schedule requests additionally require CorporateActionKind
+      constraintType: CrossField
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          contract=rfc001-rule-evaluation-request-v1; identityBaseIri=https://axiolune.ai/data/rule-evaluation-request;
+          logicalKey(versionOf(requestAuthority),ruleEvaluationRequestId);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision); inputContext=strictlyPrior; pitAxes=3;
+          scopeClosure=listingToInstrumentAndFacility|segmentToVenue
+      severity: Error
+      message: RuleEvaluationRequest identity, context, PIT pivots, scope, or typed schedule parameter is incomplete
+    CorporateActionScheduleRuleIntegrity:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionScheduleRuleIntegrity
+      namespace: fin-market-rules
+      localName: CorporateActionScheduleRuleIntegrity
+      label: Corporate Action Schedule Rule Integrity
+      definition: >-
+        freezes the three-kind field matrix and date contracts, requires exactly one typed resolution clause for each
+        kind-required output date and at least one explicit ordering clause, requires a non-empty well-formed percentage
+        interval xone no interval, binds one exact assessment-method version iff an interval exists, requires exactly
+        one entitlement clause, and limits rightsIssue to non-transferable direct subscription with both due-date roles
+      constraintType: CrossField
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          contract=rfc001-corporate-action-schedule-rule-v3;kindSet=cashDividend|stockSplit|rightsIssue;requiredDateResolutionCoverage=true;orderingClauseMinCount=1;methodIffPercentageInterval=true;entitlementClauseCount=1;downstreamEventReference=false
+      severity: Error
+      message: >-
+        CorporateActionScheduleRule violates the frozen kind, method, percentage interval, date, rights, or
+        entitlement-clause contract
+    CorporateActionDistributionAssessmentMethodIntegrity:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDistributionAssessmentMethodIntegrity
+      namespace: fin-market-rules
+      localName: CorporateActionDistributionAssessmentMethodIntegrity
+      label: Corporate Action Distribution Assessment Method Integrity
+      definition: >-
+        enforces authority-scoped logical identity, exact input branch, non-negative precision, formula and
+        implementation digests, and the requires-market-price iff non-notApplicable selection and required PriceKind IRI
+      constraintType: CrossField
+      scope: Object
+      expression:
+        language: Custom
+        expression: contract=rfc001-corporate-action-distribution-assessment-method-v1;priceFields=iffRequiresMarketPrice
+      severity: Error
+      message: distribution-assessment method identity, execution lock, or price-selection matrix is inconsistent
+    CorporateActionEntitlementClauseIntegrity:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionEntitlementClauseIntegrity
+      namespace: fin-market-rules
+      localName: CorporateActionEntitlementClauseIntegrity
+      label: Corporate Action Entitlement Clause Integrity
+      definition: >-
+        requires exactly ordinaryRecordPosition xone dueBillAdjusted; ordinary mode forbids due-bill fields, while
+        due-bill mode requires a valid half-open trade interval and one exact settlement-qualification member
+      constraintType: CrossField
+      scope: Object
+      expression:
+        language: Custom
+        expression: contract=rfc001-corporate-action-entitlement-clause-v1;interval=halfOpen;modeFields=exact
+      severity: Error
+      message: corporate-action entitlement mode, pivot, due-bill interval, or settlement qualification is inconsistent
+    CorporateActionDateResolutionClauseIntegrity:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDateResolutionClauseIntegrity
+      namespace: fin-market-rules
+      localName: CorporateActionDateResolutionClauseIntegrity
+      label: Corporate Action Date Resolution Clause Integrity
+      definition: >-
+        requires one output role, one published Event date-field role, one business-day Quantity offset, and one
+        explicit adjustment convention; a ScheduleRule may resolve each required output role exactly once
+      constraintType: CrossField
+      scope: Object
+      expression:
+        language: Custom
+        expression: contract=rfc001-corporate-action-date-resolution-clause-v1;outputRoleUniquePerSchedule=true
+      severity: Error
+      message: corporate-action date-resolution clause is incomplete, duplicated, or uses an invalid offset/adjustment
+    CorporateActionDateOrderingClauseIntegrity:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDateOrderingClauseIntegrity
+      namespace: fin-market-rules
+      localName: CorporateActionDateOrderingClauseIntegrity
+      label: Corporate Action Date Ordering Clause Integrity
+      definition: requires two distinct resolved date roles and one reviewed ordering operator
+      constraintType: CrossField
+      scope: Object
+      expression:
+        language: Custom
+        expression: contract=rfc001-corporate-action-date-ordering-clause-v1;distinctRoles=true
+      severity: Error
+      message: corporate-action date-ordering clause has missing or identical roles or an unsupported operator
+  relationUses:
+    - relation: https://axiolune.ai/ontology/finance/market-rules/ruleSetAuthority
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/MarketRuleSet
+      objectType: https://axiolune.ai/ontology/finance/foundation/Party
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/ruleSetAuthority
+    - relation: https://axiolune.ai/ontology/finance/market-rules/marketRuleSet
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      objectType: https://axiolune.ai/ontology/finance/market-rules/MarketRuleSet
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/marketRuleSet
+    - relation: https://axiolune.ai/ontology/finance/market-rules/ruleHasClause
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      objectType: https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      outboundCardinality:
+        minCount: 1
+        maxCount: null
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/ruleHasClause
+    - relation: https://axiolune.ai/ontology/finance/market-rules/parameterForClause
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/RuleParameter
+      objectType: https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/parameterForClause
+    - relation: https://axiolune.ai/ontology/finance/market-rules/parameterClauseReference
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/RuleParameter
+      objectType: https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/parameterClauseReference
+    - relation: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentMethodAuthority
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDistributionAssessmentMethod
+      objectType: https://axiolune.ai/ontology/finance/foundation/Party
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentMethodAuthority
+    - relation: https://axiolune.ai/ontology/finance/market-rules/corporateActionDistributionAssessmentMethod
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionScheduleRule
+      objectType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDistributionAssessmentMethod
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/corporateActionDistributionAssessmentMethod
+    - relation: https://axiolune.ai/ontology/finance/market-rules/requestAuthority
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      objectType: https://axiolune.ai/ontology/finance/foundation/Party
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/requestAuthority
+    - relation: https://axiolune.ai/ontology/finance/market-rules/requestListingScope
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      objectType: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/requestListingScope
+    - relation: https://axiolune.ai/ontology/finance/market-rules/requestInstrumentScope
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      objectType: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/requestInstrumentScope
+    - relation: https://axiolune.ai/ontology/finance/market-rules/requestSegmentScope
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      objectType: https://axiolune.ai/ontology/finance/market-structure/MarketSegment
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/requestSegmentScope
+    - relation: https://axiolune.ai/ontology/finance/market-rules/requestVenueScope
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      objectType: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/requestVenueScope
+    - relation: https://axiolune.ai/ontology/finance/market-rules/requestJurisdictionScope
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      objectType: https://axiolune.ai/ontology/finance/foundation/Jurisdiction
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/requestJurisdictionScope
+  constraintBindings:
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability/role/applicableRuleVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability/role/scopeListingVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability/role/scopeInstrumentVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability/role/scopeSegmentVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability/role/scopeVenueVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability/role/scopeJurisdictionVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RulePrecedence/role/higherRuleVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RulePrecedence/role/lowerRuleVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleConflict/role/candidateApplicabilityVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleConflict/role/evaluationRequestVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/RuleApplicabilityRequiresExplicitScope
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/RuleApplicabilityMustMatchRequest
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/RulePriorityComparability
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/RuleParameterExclusiveOneOf
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleParameter
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/RuleClauseRangeIntegrity
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/RuleSubtypeClauseCompatibility
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/PriceLimitClauseExclusiveBoundary
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/PriceLimitClause
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/RulePrecedenceIntegrity
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RulePrecedence
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/RuleConflictNoSilentWinner
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleConflict
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequestIntegrity
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/CorporateActionScheduleRuleIntegrity
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/CorporateActionScheduleRule
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDistributionAssessmentMethodIntegrity
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDistributionAssessmentMethod
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/CorporateActionEntitlementClauseIntegrity
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/CorporateActionEntitlementClause
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDateResolutionClauseIntegrity
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDateResolutionClause
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDateOrderingClauseIntegrity
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDateOrderingClause
+      enforcementLevel: Mandatory

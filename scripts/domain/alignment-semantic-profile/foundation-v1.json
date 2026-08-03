@@ -1,0 +1,208 @@
+{
+  "schemaVersion": "1.0",
+  "profileId": "urn:axiolune:alignment-semantic-profile:foundation:v1",
+  "modulePath": "ontology/domain/finance/foundation/module.yaml",
+  "referenceId": "fibo-local-evidence",
+  "expectedTargetModuleMaturityIri": "https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/Release",
+  "expectedInlineVerification": {
+    "status": "reviewed",
+    "verifiedBy": "urn:axiolune:agent:codex:m2-alignment-semantic-review-2026-08-01",
+    "verifiedAt": "2026-08-01T01:35:11+08:00",
+    "notes": "Machine semantic review closed against locked FIBO bytes and generated OWL projection; not terminal DRI approval."
+  },
+  "machineReview": {
+    "conclusion": "pass",
+    "performedBy": "urn:axiolune:agent:codex:m2-alignment-semantic-review-2026-08-01",
+    "performedAt": "2026-08-01T01:35:11+08:00",
+    "notes": "Machine semantic review closed inline verification.status=reviewed for digest-check closure; terminal DRI approval remains separate."
+  },
+  "decisions": [
+    {
+      "decisionId": "foundation-financial-account-fibo-account",
+      "outcome": "retained-machine-reviewed",
+      "local": {
+        "container": "objectTypes",
+        "key": "FinancialAccount",
+        "iri": "https://axiolune.ai/ontology/finance/foundation/FinancialAccount",
+        "expectedProjectionType": "http://www.w3.org/2002/07/owl#Class"
+      },
+      "external": {
+        "targetIri": "https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/ClientsAndAccounts/Account",
+        "sourcePath": "FBC/ProductsAndServices/ClientsAndAccounts.rdf",
+        "expectedResourceDigest": "sha256:57780613cb7753b48961dcdb62d284d9c15f09233509432eb3b0dceb24ca8a36",
+        "expectedRdfType": "http://www.w3.org/2002/07/owl#Class",
+        "expectedLabel": "account",
+        "expectedDefinition": "container for records associated with a business arrangement for regular transactions and services",
+        "expectedDirectParentIris": []
+      },
+      "relation": "rdfs:subClassOf",
+      "rationale": "FIBO Account is the broader account container for regular transactions and services; Axiolune narrows it to a governed cash, securities-custody, or multi-asset holding account with scheme-bound identity and separate temporal party-role facts.",
+      "semanticBasis": "The local account types and identity/party-role contract narrow the target account container; local temporal and provenance semantics add further restrictions."
+    },
+    {
+      "decisionId": "foundation-party-commons-party",
+      "outcome": "removed-unverifiable-target-semantics",
+      "local": {
+        "container": "objectTypes",
+        "key": "Party",
+        "iri": "https://axiolune.ai/ontology/finance/foundation/Party",
+        "expectedProjectionType": "http://www.w3.org/2002/07/owl#Class"
+      },
+      "external": {
+        "targetIri": "https://www.omg.org/spec/Commons/PartiesAndSituations/Party",
+        "sourcePath": "FND/Parties/Parties.rdf",
+        "expectedResourceDigest": "sha256:9e386a5d737fefa56631febe5b54a4544f8b57cc23d9c7245b9c4afb37c0ff73",
+        "expectedRdfType": "http://www.w3.org/2002/07/owl#Class",
+        "expectedLabel": null,
+        "expectedDefinition": null,
+        "expectedDirectParentIris": [],
+        "requiredImportIri": "https://www.omg.org/spec/Commons/PartiesAndSituations/"
+      },
+      "formerRelation": "rdfs:subClassOf",
+      "semanticBasis": "The locked FIBO file only adds optional-address restrictions and a disjointness axiom to the imported OMG Commons class. It contains no label or definition for the target and the imported Commons bytes are not in the lock, so the subclass claim cannot be reviewed from locked semantics."
+    },
+    {
+      "decisionId": "foundation-legal-entity-commons-legal-entity",
+      "outcome": "removed-unverifiable-target-semantics",
+      "local": {
+        "container": "objectTypes",
+        "key": "LegalEntity",
+        "iri": "https://axiolune.ai/ontology/finance/foundation/LegalEntity",
+        "expectedProjectionType": "http://www.w3.org/2002/07/owl#Class"
+      },
+      "external": {
+        "targetIri": "https://www.omg.org/spec/Commons/Organizations/LegalEntity",
+        "sourcePath": "BE/LegalEntities/FormalBusinessOrganizations.rdf",
+        "expectedResourceDigest": "sha256:701bf0cf016c0f4db371a7c3cbeec04693d5dfc75a69b5cb46e82b9735ee3b25",
+        "expectedRdfType": "http://www.w3.org/2002/07/owl#Class",
+        "expectedLabel": null,
+        "expectedDefinition": null,
+        "expectedDirectParentIris": [],
+        "requiredImportIri": "https://www.omg.org/spec/Commons/Organizations/"
+      },
+      "formerRelation": "rdfs:subClassOf",
+      "semanticBasis": "The locked FIBO file only adds optional governance and industry-classification restrictions to the imported OMG Commons class. It contains no label or definition for the target and the imported Commons bytes are not in the lock, so the subclass claim cannot be reviewed from locked semantics."
+    },
+    {
+      "decisionId": "foundation-currency-fibo-currency",
+      "outcome": "retained-machine-reviewed",
+      "local": {
+        "container": "objectTypes",
+        "key": "Currency",
+        "iri": "https://axiolune.ai/ontology/finance/foundation/Currency",
+        "expectedProjectionType": "http://www.w3.org/2002/07/owl#Class"
+      },
+      "external": {
+        "targetIri": "https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/Currency",
+        "sourcePath": "FND/Accounting/CurrencyAmount.rdf",
+        "expectedResourceDigest": "sha256:c95b8dfd564507ff75e582e68e999264325df35fe46d2abc328e25d7770794ec",
+        "expectedRdfType": "http://www.w3.org/2002/07/owl#Class",
+        "expectedLabel": "currency",
+        "expectedDefinition": "medium of exchange value, defined by reference to the geographical location of the monetary authorities responsible for it",
+        "expectedDirectParentIris": [
+          "https://www.omg.org/spec/Commons/QuantitiesAndUnits/MeasurementUnit"
+        ]
+      },
+      "relation": "rdfs:subClassOf",
+      "rationale": "FIBO Currency is the ISO 4217 monetary measurement-unit concept; Axiolune narrows it to a versioned and provenanced currency identity whose registry attributes are represented by ISO4217RegistryEntry facts.",
+      "semanticBasis": "The local definition adopts the target ISO 4217 currency meaning and adds version/provenance plus a separate registry-entry truth model, so only the subclass direction is asserted."
+    },
+    {
+      "decisionId": "foundation-has-legal-name-fibo-has-legal-name",
+      "outcome": "retained-machine-reviewed",
+      "local": {
+        "container": "attributeTypes",
+        "key": "hasLegalName",
+        "iri": "https://axiolune.ai/ontology/finance/foundation/hasLegalName",
+        "expectedProjectionType": "http://www.w3.org/2002/07/owl#DatatypeProperty"
+      },
+      "external": {
+        "targetIri": "https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/hasLegalName",
+        "sourcePath": "FND/Relations/Relations.rdf",
+        "expectedResourceDigest": "sha256:3e03bbc3da56eebdd4c7e5681f43e001026408cc35765992770e3539a53eba3b",
+        "expectedRdfType": "http://www.w3.org/2002/07/owl#DatatypeProperty",
+        "expectedLabel": "has legal name",
+        "expectedDefinition": "specifies the name used to refer to a party in legal communications",
+        "expectedDirectParentIris": [
+          "https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/hasFormalName"
+        ]
+      },
+      "relation": "rdfs:subPropertyOf",
+      "rationale": "FIBO hasLegalName denotes a name used for a party in legal communications; Axiolune narrows that datatype property to the registered legal name carried by a LegalEntity version.",
+      "semanticBasis": "Both sides are datatype properties and the local registered-name meaning is narrower than the target legal-communication name meaning."
+    },
+    {
+      "decisionId": "foundation-isin-value-fibo-isin",
+      "outcome": "retained-machine-reviewed",
+      "local": {
+        "container": "objectTypes",
+        "key": "ISINValue",
+        "iri": "https://axiolune.ai/ontology/finance/foundation/ISINValue",
+        "expectedProjectionType": "http://www.w3.org/2002/07/owl#Class"
+      },
+      "external": {
+        "targetIri": "https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesIdentification/InternationalSecuritiesIdentificationNumber",
+        "sourcePath": "SEC/Securities/SecuritiesIdentification.rdf",
+        "expectedResourceDigest": "sha256:eda76f3cf3e114a8f4e90a88a4d9ad06dd74133d96ac4d77f8ddb4cbdd84815d",
+        "expectedRdfType": "http://www.w3.org/2002/07/owl#Class",
+        "expectedLabel": "international securities identification number",
+        "expectedDefinition": "security identifier that is defined as specified in ISO 6166, Securities and related financial instruments -- International securities identification numbering system (ISIN)",
+        "expectedDirectParentIris": [
+          "https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesIdentification/SecurityIdentifier",
+          "https://www.omg.org/spec/Commons/ContextualIdentifiers/StructuredIdentifier"
+        ]
+      },
+      "relation": "rdfs:subClassOf",
+      "rationale": "FIBO models the ISO 6166 identifier as an OWL class; Axiolune ISINValue is the narrower scheme-bound, temporal, and provenanced identifier-value class, while the lexical ISIN datatype remains unaligned.",
+      "semanticBasis": "The class-to-class alignment is attached to the scheme-bound IdentifierValue object, not to the lexical rdfs:Datatype; the local class adopts ISO 6166 meaning and adds temporal/provenance restrictions."
+    },
+    {
+      "decisionId": "foundation-lei-value-fibo-lei",
+      "outcome": "retained-machine-reviewed",
+      "local": {
+        "container": "objectTypes",
+        "key": "LEIValue",
+        "iri": "https://axiolune.ai/ontology/finance/foundation/LEIValue",
+        "expectedProjectionType": "http://www.w3.org/2002/07/owl#Class"
+      },
+      "external": {
+        "targetIri": "https://spec.edmcouncil.org/fibo/ontology/BE/LegalEntities/LEIEntities/LegalEntityIdentifier",
+        "sourcePath": "BE/LegalEntities/LEIEntities.rdf",
+        "expectedResourceDigest": "sha256:6361af545288af7329df0924d49b8912ba0c7ba411789e4e8d9f0abffefb2fc6",
+        "expectedRdfType": "http://www.w3.org/2002/07/owl#Class",
+        "expectedLabel": "legal entity identifier",
+        "expectedDefinition": "an organization identifier that uniquely identifies a legal person as defined in ISO 17442",
+        "expectedDirectParentIris": [
+          "https://www.omg.org/spec/Commons/Organizations/OrganizationIdentifier"
+        ]
+      },
+      "relation": "rdfs:subClassOf",
+      "rationale": "FIBO models the ISO 17442 identifier as an OWL class; Axiolune LEIValue is the narrower scheme-bound, temporal, and provenanced identifier-value class, while the lexical LEI datatype remains unaligned.",
+      "semanticBasis": "The class-to-class alignment is attached to the scheme-bound IdentifierValue object, not to the lexical rdfs:Datatype; the local class adopts ISO 17442 meaning and adds temporal/provenance restrictions."
+    },
+    {
+      "decisionId": "foundation-mic-value-fibo-market-identifier",
+      "outcome": "retained-machine-reviewed",
+      "local": {
+        "container": "objectTypes",
+        "key": "MICValue",
+        "iri": "https://axiolune.ai/ontology/finance/foundation/MICValue",
+        "expectedProjectionType": "http://www.w3.org/2002/07/owl#Class"
+      },
+      "external": {
+        "targetIri": "https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/Markets/MarketIdentifier",
+        "sourcePath": "FBC/FunctionalEntities/Markets.rdf",
+        "expectedResourceDigest": "sha256:d3147cfc5b385b806e573951fb24831084b562539b6bf07e4c11b075277d51a7",
+        "expectedRdfType": "http://www.w3.org/2002/07/owl#Class",
+        "expectedLabel": "market identifier",
+        "expectedDefinition": "identifier that specifies a universal method of identifying exchanges, trading platforms, regulated or non-regulated markets, and data reporting services providers as sources of prices and related information in order to facilitate automated processing",
+        "expectedDirectParentIris": [
+          "https://www.omg.org/spec/Commons/Identifiers/Identifier"
+        ]
+      },
+      "relation": "rdfs:subClassOf",
+      "rationale": "FIBO models the ISO 10383 market identifier as an OWL class; Axiolune MICValue is the narrower scheme-bound, temporal, and provenanced identifier-value class, while the lexical MIC datatype remains unaligned.",
+      "semanticBasis": "The class-to-class alignment is attached to the scheme-bound IdentifierValue object, not to the lexical rdfs:Datatype; the local class adopts ISO 10383 meaning and adds temporal/provenance restrictions."
+    }
+  ]
+}

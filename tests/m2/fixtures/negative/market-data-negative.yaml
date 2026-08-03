@@ -1,188 +1,200 @@
-# M2 Market Data — Negative Test Fixtures
-# Invalid instances that must be rejected by validation
+# Canonical Market Data v0.3 structural negatives executed by pySHACL.
+# Every row names one exact validation-result tuple. Engine/runtime failure is fatal.
+schemaVersion: "1.0"
 fixtures:
-  - id: price-obs-neg-001-missing-available-time
-    description: Price observation missing availableFrom (fail-closed per ADR-012)
-    type: https://axiolune.ai/ontology/finance/market-data/PriceObservation
-    instance:
-      iri: https://axiolune.ai/data/market-data/price-obs-neg-001
-      observedInstrument: https://axiolune.ai/data/instruments/equity-AAPL-US
-      hasPriceValue:
-        type: MonetaryAmount
-        hasNumericAmount: '150.25'
-        hasCurrencyCode: USD
-      hasPriceKind: Last
-      hasCurrencyCode: USD
-      validFrom: '2026-07-29T14:30:00Z'
-      validTo: '2026-07-29T14:30:01Z'
-      knowledgeFrom: '2026-07-29T14:30:00.123Z'
-      knowledgeTo: null
-      availableFrom: null
-      source: nasdaq-data-feed
+  - id: market-data-v03-neg-missing-availability
+    profile: market-data-v03-shacl
+    target: PriceObservation
+    context: listed
+    omit: [availableFrom]
     expectedResult: rejected
-    violationType: missing-availability-time
-    note: 'M2-PLAN §2.5: availableFrom missing must fail-closed to prevent unconstrained availability'
-  - id: price-obs-neg-002-future-available
-    description: PIT query with asOfAvailable before data availableFrom (look-ahead bias)
-    type: https://axiolune.ai/ontology/finance/market-data/PriceObservation
-    instance:
-      iri: https://axiolune.ai/data/market-data/price-obs-neg-002
-      observedInstrument: https://axiolune.ai/data/instruments/equity-AAPL-US
-      hasPriceValue:
-        type: MonetaryAmount
-        hasNumericAmount: '150.25'
-        hasCurrencyCode: USD
-      hasPriceKind: Last
-      hasCurrencyCode: USD
-      validFrom: '2026-07-29T14:30:00Z'
-      validTo: '2026-07-29T14:30:01Z'
-      knowledgeFrom: '2026-07-29T14:30:00.123Z'
-      knowledgeTo: null
-      availableFrom: '2026-07-29T14:30:05.000Z'
-      source: nasdaq-data-feed
-    pitQuery:
-      asOfValid: '2026-07-29T14:30:00.500Z'
-      asOfKnowledge: '2026-07-29T14:30:01.000Z'
-      asOfAvailable: '2026-07-29T14:30:03.000Z'
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/market-data-v03-neg-missing-availability
+      path: https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom
+      severity: http://www.w3.org/ns/shacl#Violation
+
+  - id: market-data-v03-neg-mutable-knowledge-end
+    profile: market-data-v03-shacl
+    target: PriceObservation
+    context: listed
+    add: [knowledgeTo]
     expectedResult: rejected
-    violationType: future-data-leakage
-    note: 'CQ-MD1: Query at 14:30:03 cannot see data available only from 14:30:05'
-  - id: price-obs-neg-003-interval-inversion
-    description: Price observation with validTo <= validFrom
-    type: https://axiolune.ai/ontology/finance/market-data/PriceObservation
-    instance:
-      iri: https://axiolune.ai/data/market-data/price-obs-neg-003
-      observedInstrument: https://axiolune.ai/data/instruments/equity-AAPL-US
-      hasPriceValue:
-        type: MonetaryAmount
-        hasNumericAmount: '150.25'
-        hasCurrencyCode: USD
-      hasPriceKind: Last
-      hasCurrencyCode: USD
-      validFrom: '2026-07-29T14:30:00Z'
-      validTo: '2026-07-29T14:29:00Z'
-      knowledgeFrom: '2026-07-29T14:30:00.123Z'
-      knowledgeTo: null
-      availableFrom: '2026-07-29T14:30:00.500Z'
-      source: nasdaq-data-feed
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MaxCountConstraintComponent
+      focus: https://axiolune.ai/data/test/market-data-v03-neg-mutable-knowledge-end
+      path: https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo
+      severity: http://www.w3.org/ns/shacl#Violation
+
+  - id: market-data-v03-neg-zero-length-valid-interval
+    profile: market-data-v03-shacl
+    target: PriceObservation
+    context: listed
+    add: [validToEqual]
     expectedResult: rejected
-    violationType: interval-inversion
-    note: 'M2-PLAN §2.5: All intervals use half-open [from, to); to <= from is invalid'
-  - id: quote-obs-neg-001-missing-both-sides
-    description: Quote observation with both bid and ask null
-    type: https://axiolune.ai/ontology/finance/market-data/QuoteObservation
-    instance:
-      iri: https://axiolune.ai/data/market-data/quote-obs-neg-001
-      observedInstrument: https://axiolune.ai/data/instruments/equity-AAPL-US
-      hasBidPrice: null
-      hasAskPrice: null
-      hasCurrencyCode: USD
-      validFrom: '2026-07-29T14:30:00Z'
-      validTo: '2026-07-29T14:30:01Z'
-      knowledgeFrom: '2026-07-29T14:30:00.100Z'
-      knowledgeTo: null
-      availableFrom: '2026-07-29T14:30:00.300Z'
-      source: nasdaq-L2-feed
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#SPARQLConstraintComponent
+      focus: https://axiolune.ai/data/test/market-data-v03-neg-zero-length-valid-interval
+      path: https://axiolune.ai/ontology/meta/patterns/attributes/validTo
+      severity: http://www.w3.org/ns/shacl#Violation
+
+  - id: market-data-v03-neg-no-context
+    profile: market-data-v03-shacl
+    target: PriceObservation
+    context: none
     expectedResult: rejected
-    violationType: missing-quote-sides
-    note: 'CQ-MD4: At least one of (hasBidPrice, hasAskPrice) must be present'
-  - id: bar-neg-001-ohlc-violation
-    description: Bar with Open > High (OHLC ordering violation)
-    type: https://axiolune.ai/ontology/finance/market-data/Bar
-    instance:
-      iri: https://axiolune.ai/data/market-data/bar-neg-001
-      observedInstrument: https://axiolune.ai/data/instruments/equity-AAPL-US
-      hasOpenPrice:
-        type: MonetaryAmount
-        hasNumericAmount: '150.6'
-        hasCurrencyCode: USD
-      hasHighPrice:
-        type: MonetaryAmount
-        hasNumericAmount: '150.5'
-        hasCurrencyCode: USD
-      hasLowPrice:
-        type: MonetaryAmount
-        hasNumericAmount: '150'
-        hasCurrencyCode: USD
-      hasClosePrice:
-        type: MonetaryAmount
-        hasNumericAmount: '150.25'
-        hasCurrencyCode: USD
-      hasVolume:
-        type: QuantityValue
-        hasNumericAmount: '125000'
-        hasUnitCode: share
-      hasBarAggregation: Time
-      hasBarDuration: PT5M
-      hasCurrencyCode: USD
-      validFrom: '2026-07-29T14:25:00Z'
-      validTo: '2026-07-29T14:30:00Z'
-      knowledgeFrom: '2026-07-29T14:30:00.500Z'
-      knowledgeTo: null
-      availableFrom: '2026-07-29T14:30:01.000Z'
-      source: bar-aggregator
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#XoneConstraintComponent
+      focus: https://axiolune.ai/data/test/market-data-v03-neg-no-context
+      severity: http://www.w3.org/ns/shacl#Violation
+
+  - id: market-data-v03-neg-two-contexts
+    profile: market-data-v03-shacl
+    target: PriceObservation
+    context: both
     expectedResult: rejected
-    violationType: ohlc-ordering-violation
-    note: 'CQ-MD5: Open must satisfy Low <= Open <= High'
-  - id: bar-neg-002-low-high-inversion
-    description: Bar with Low > High
-    type: https://axiolune.ai/ontology/finance/market-data/Bar
-    instance:
-      iri: https://axiolune.ai/data/market-data/bar-neg-002
-      observedInstrument: https://axiolune.ai/data/instruments/equity-AAPL-US
-      hasOpenPrice:
-        type: MonetaryAmount
-        hasNumericAmount: '150.45'
-        hasCurrencyCode: USD
-      hasHighPrice:
-        type: MonetaryAmount
-        hasNumericAmount: '150.3'
-        hasCurrencyCode: USD
-      hasLowPrice:
-        type: MonetaryAmount
-        hasNumericAmount: '150.5'
-        hasCurrencyCode: USD
-      hasClosePrice:
-        type: MonetaryAmount
-        hasNumericAmount: '150.45'
-        hasCurrencyCode: USD
-      hasVolume:
-        type: QuantityValue
-        hasNumericAmount: '125000'
-        hasUnitCode: share
-      hasBarAggregation: Time
-      hasCurrencyCode: USD
-      validFrom: '2026-07-29T14:25:00Z'
-      validTo: '2026-07-29T14:30:00Z'
-      knowledgeFrom: '2026-07-29T14:30:00.500Z'
-      knowledgeTo: null
-      availableFrom: '2026-07-29T14:30:01.000Z'
-      source: bar-aggregator
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#XoneConstraintComponent
+      focus: https://axiolune.ai/data/test/market-data-v03-neg-two-contexts
+      severity: http://www.w3.org/ns/shacl#Violation
+
+  - id: market-data-v03-neg-missing-quotation
+    profile: market-data-v03-shacl
+    target: PriceObservation
+    context: listed
+    omit: [quotationContract]
     expectedResult: rejected
-    violationType: low-high-inversion
-    note: 'CQ-MD5: Low <= High must hold'
-  - id: price-obs-neg-004-future-valid-time
-    description: PIT query returns observation with validFrom after asOfValid
-    type: https://axiolune.ai/ontology/finance/market-data/PriceObservation
-    instance:
-      iri: https://axiolune.ai/data/market-data/price-obs-neg-004
-      observedInstrument: https://axiolune.ai/data/instruments/equity-AAPL-US
-      hasPriceValue:
-        type: MonetaryAmount
-        hasNumericAmount: '150.25'
-        hasCurrencyCode: USD
-      hasPriceKind: Last
-      hasCurrencyCode: USD
-      validFrom: '2026-07-29T15:00:00Z'
-      validTo: '2026-07-29T15:00:01Z'
-      knowledgeFrom: '2026-07-29T14:30:00.123Z'
-      knowledgeTo: null
-      availableFrom: '2026-07-29T14:30:00.500Z'
-      source: nasdaq-data-feed
-    pitQuery:
-      asOfValid: '2026-07-29T14:30:00Z'
-      asOfKnowledge: '2026-07-29T14:35:00Z'
-      asOfAvailable: '2026-07-29T14:35:00Z'
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/market-data-v03-neg-missing-quotation
+      path: https://axiolune.ai/ontology/finance/market-data/PriceObservation/role/quotationContract
+      severity: http://www.w3.org/ns/shacl#Violation
+
+  - id: market-data-v03-neg-missing-revision
+    profile: market-data-v03-shacl
+    target: PriceObservation
+    context: listed
+    omit: [revision]
     expectedResult: rejected
-    violationType: future-valid-time
-    note: 'CQ-MD1: validFrom <= asOfValid < validTo must hold; this observation is not yet valid'
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/market-data-v03-neg-missing-revision
+      path: https://axiolune.ai/ontology/meta/patterns/attributes/revision
+      severity: http://www.w3.org/ns/shacl#Violation
+
+  - id: market-data-v03-neg-money-no-currency
+    profile: market-data-v03-shacl
+    target: PriceObservation
+    context: listed
+    omit: [moneyCurrency]
+    expectedResult: rejected
+    expectedViolations:
+      - component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+        focus: https://axiolune.ai/data/test/market-data-v03-neg-money-no-currency/money/price
+        path: https://axiolune.ai/ontology/meta/core/properties/hasCurrency
+        severity: http://www.w3.org/ns/shacl#Violation
+        sourceShape: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount/shape/component/fe9bfb7364d0a0cccc1676ba
+      - component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+        focus: https://axiolune.ai/data/test/market-data-v03-neg-money-no-currency/money/price
+        path: https://axiolune.ai/ontology/meta/core/properties/hasCurrency
+        severity: http://www.w3.org/ns/shacl#Violation
+        sourceShape: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount/shape/component/fe9bfb7364d0a0cccc1676ba
+      - component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+        focus: https://axiolune.ai/data/test/market-data-v03-neg-money-no-currency/money/price
+        path: https://axiolune.ai/ontology/meta/core/properties/hasCurrency
+        severity: http://www.w3.org/ns/shacl#Violation
+        sourceShape: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount/shape/component/fe9bfb7364d0a0cccc1676ba
+      - component: http://www.w3.org/ns/shacl#NodeConstraintComponent
+        focus: https://axiolune.ai/data/test/market-data-v03-neg-money-no-currency
+        path: https://axiolune.ai/ontology/finance/market-data/priceValue
+        severity: http://www.w3.org/ns/shacl#Violation
+        sourceShape: https://axiolune.ai/ontology/finance/market-data/PriceObservation/shape/attribute/e72e9009311cb843769518c0
+      - component: http://www.w3.org/ns/shacl#NodeConstraintComponent
+        focus: https://axiolune.ai/data/test/market-data-v03-neg-money-no-currency
+        path: https://axiolune.ai/ontology/finance/market-data/priceValue
+        severity: http://www.w3.org/ns/shacl#Violation
+        sourceShape: https://axiolune.ai/ontology/finance/market-data/priceValueShape
+
+  - id: market-data-v03-neg-partial-quote
+    profile: market-data-v03-shacl
+    target: QuoteObservation
+    context: listed
+    omit: [askSize]
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/market-data-v03-neg-partial-quote
+      path: https://axiolune.ai/ontology/finance/market-data/askSize
+      severity: http://www.w3.org/ns/shacl#Violation
+
+  - id: market-data-v03-neg-trade-no-source-id
+    profile: market-data-v03-shacl
+    target: TradeObservation
+    context: listed
+    omit: [sourceTradeId]
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/market-data-v03-neg-trade-no-source-id
+      path: https://axiolune.ai/ontology/finance/market-data/sourceTradeId
+      severity: http://www.w3.org/ns/shacl#Violation
+
+  - id: market-data-v03-neg-quote-bar-side-missing
+    profile: market-data-v03-shacl
+    target: QuoteBar
+    context: listed
+    omit: [askClosePrice]
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/market-data-v03-neg-quote-bar-side-missing
+      path: https://axiolune.ai/ontology/finance/market-data/askClosePrice
+      severity: http://www.w3.org/ns/shacl#Violation
+
+  - id: market-data-v03-neg-fx-rate-missing
+    profile: market-data-v03-shacl
+    target: FXRateObservation
+    context: otc
+    omit: [fxRate]
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/market-data-v03-neg-fx-rate-missing
+      path: https://axiolune.ai/ontology/finance/market-data/fxRate
+      severity: http://www.w3.org/ns/shacl#Violation
+
+  - id: market-data-v03-neg-stream-role-missing
+    profile: market-data-v03-shacl
+    target: PriceObservation
+    context: listed
+    omit: [observationStream]
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/market-data-v03-neg-stream-role-missing
+      path: https://axiolune.ai/ontology/finance/market-data/PriceObservation/role/observationStream
+      severity: http://www.w3.org/ns/shacl#Violation
+
+  - id: market-data-v03-neg-otc-instrument-missing
+    profile: market-data-v03-shacl
+    target: PriceObservation
+    context: otc
+    omit: [observedInstrument]
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/market-data-v03-neg-otc-instrument-missing
+      path: https://axiolune.ai/ontology/finance/market-data/PriceObservation/role/observedInstrument
+      severity: http://www.w3.org/ns/shacl#Violation
+
+  - id: market-data-v03-neg-multiple-price-kind
+    profile: market-data-v03-shacl
+    target: PriceObservation
+    context: listed
+    add: [secondPriceKind]
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MaxCountConstraintComponent
+      focus: https://axiolune.ai/data/test/market-data-v03-neg-multiple-price-kind
+      path: https://axiolune.ai/ontology/finance/market-data/priceKind
+      severity: http://www.w3.org/ns/shacl#Violation

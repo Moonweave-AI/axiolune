@@ -1,18 +1,100 @@
-# Axiolune M2 Risk Module — Competency Questions (stub)
-# Status: draft
+# Axiolune M2 Risk ? Competency Questions
+# Module: fin-risk | Version: 0.3.0 | Status: active (semantic approval)
 
 cqs:
   - id: CQ-R1
-    question: 在指定三轴 as-of 下，某组合对某风险度量的敞口是多少？
-    dependsOn:
-      - https://axiolune.ai/ontology/finance/risk/ExposureObservation
-    expected: 返回可追溯 ExposureObservation 或明确空结果
-    negative: 缺 availableFrom 或使用未来知识的敞口必须被拒绝
-    status: draft
+    question: >-
+      At a specified three-axis as-of time, what is a portfolio's exposure to a risk measure
+      for a given instrument or factor, and which holdings contributed?
+    businessContext: Pre-trade and intraday risk aggregation; must not use future knowledge or unavailable inputs
+    scopeConstraints:
+      - RiskMeasurement must satisfy TemporalFact three-axis bounds
+      - availableFrom required (fail-closed)
+      - contributing holdings must be explicit, not inferred "current position"
+    expectedResult: RiskMeasurement with measure, amount, currency, contributing holding references, or explicit empty
+    negativeExample: Measurement with asOfKnowledge before knowledgeFrom or missing availableFrom is rejected
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/risk/RiskMeasurement
+      - https://axiolune.ai/ontology/finance/risk/measuredForPortfolio
+      - https://axiolune.ai/ontology/finance/risk/appliesRiskMeasure
+      - https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
+    testFixtures:
+      - fixture: risk-v03-positive-exposure
+        expectedOutcome: returns measurement linked to holdings
+      - fixture: risk-v03-negative-future-knowledge
+        expectedOutcome: rejected or empty
+    riskLevel: high
+    status: active
+
   - id: CQ-R2
-    question: 某敞口是否触发限额违例，依据哪条限额与证据？
-    dependsOn:
+    question: >-
+      Does a risk measurement breach a risk limit, and what evidence supports the breach decision?
+    businessContext: Limit monitoring and compliance escalation
+    scopeConstraints:
+      - LimitBreach must reference limit definition, risk measurement, and evidence
+      - limit must be effective at evaluation valid time
+    expectedResult: LimitBreach chain (limit, measurement, evidence) or no breach
+    negativeExample: Breach without evidence or with expired limit definition must not be confirmed
+    dependsOnElements:
       - https://axiolune.ai/ontology/finance/risk/LimitBreach
-    expected: 返回 LimitBreach 到 limit/exposure/evidence 的链
-    negative: 无证据或限额已失效的违例不得放行
-    status: draft
+      - https://axiolune.ai/ontology/finance/risk/RiskLimitDefinition
+      - https://axiolune.ai/ontology/finance/risk/RiskMeasurement
+    testFixtures:
+      - fixture: risk-v03-positive-breach
+        expectedOutcome: returns breach with evidence chain
+      - fixture: risk-v03-negative-missing-evidence
+        expectedOutcome: rejected
+    riskLevel: high
+    status: active
+
+  - id: CQ-R3
+    question: What risk limits apply to a portfolio or mandate at a given valid time?
+    businessContext: Limit inventory before order placement
+    expectedResult: list of RiskLimitDefinition IRIs effective for scope
+    negativeExample: limit without effective interval or scope is not returned as active
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/risk/RiskLimitDefinition
+      - https://axiolune.ai/ontology/finance/portfolio-positions/ManagementMandate
+    riskLevel: medium
+    status: active
+
+  - id: CQ-R4
+    question: >-
+      For a limit breach, which order intent or execution triggered or contributed to the exposure?
+    businessContext: Explainability linking trading activity to risk outcomes (nautilus/Lean pre-trade path)
+    expectedResult: trace from LimitBreach or RiskMeasurement to OrderIntent or Execution via holdings
+    negativeExample: orphan breach without portfolio or trading context
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/risk/LimitBreach
+      - https://axiolune.ai/ontology/finance/orders-execution/Execution
+      - https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
+    testFixtures:
+      - fixture: risk-order-trace-v03-positive
+        expectedOutcome: breach traceable to execution via holding
+      - fixture: risk-order-trace-v03-negative
+        expectedOutcome: orphan breach without execution path rejected
+    riskLevel: high
+    status: active
+
+  - id: CQ-R5
+    question: >-
+      For a stress scenario definition, which stress test run was executed against a portfolio and what
+      RiskMeasurement output did it produce?
+    businessContext: Regulatory and internal stress testing explainability (Basel ICAAP / internal risk policy)
+    scopeConstraints:
+      - StressTestRun must reference exact ScenarioDefinition, Portfolio, and output RiskMeasurement versions
+      - scenario shock parameters are fixed on ScenarioDefinition, not recomputed on the run
+    expectedResult: StressTestRun chain (scenario, portfolio, output measurement) or explicit empty
+    negativeExample: stress run without output measurement or without scenario version must not be confirmed
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/risk/ScenarioDefinition
+      - https://axiolune.ai/ontology/finance/risk/StressTestRun
+      - https://axiolune.ai/ontology/finance/risk/RiskMeasurement
+      - https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
+    testFixtures:
+      - fixture: risk-stress-scenario-v03-positive
+        expectedOutcome: returns stress run with scenario and output measurement
+      - fixture: risk-stress-scenario-v03-negative
+        expectedOutcome: orphan run without output rejected
+    riskLevel: medium
+    status: active

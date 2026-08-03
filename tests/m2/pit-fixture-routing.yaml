@@ -1,0 +1,57 @@
+schemaVersion: '1.0'
+referenceTimeBinding: tests/m2/fixtures/slice-a/cq-v03/s5/control-chain/control-chain-input.json
+routes:
+  - id: market-structure-shacl
+    engine: domain-shacl
+    module: market-structure
+    fixtureFiles:
+      - tests/m2/fixtures/positive/market-structure-positive.yaml
+      - tests/m2/fixtures/negative/market-structure-negative.yaml
+
+  - id: market-data-shacl
+    engine: domain-shacl
+    module: market-data
+    fixtureFiles:
+      - tests/m2/fixtures/positive/market-data-positive.yaml
+      - tests/m2/fixtures/negative/market-data-negative.yaml
+
+  - id: orders-execution-shacl
+    engine: domain-shacl
+    module: orders-execution
+    fixtureFiles:
+      - tests/m2/fixtures/positive/orders-execution-positive.yaml
+      - tests/m2/fixtures/negative/orders-execution-negative.yaml
+
+  - id: portfolio-positions-shacl
+    engine: domain-shacl
+    module: portfolio-positions
+    fixtureFiles:
+      - tests/m2/fixtures/positive/portfolio-positions-positive.yaml
+      - tests/m2/fixtures/negative/portfolio-positions-negative.yaml
+
+  - id: strategy-research-shacl
+    engine: domain-shacl
+    module: strategy-research
+    fixtureFiles:
+      - tests/m2/fixtures/positive/strategy-research-positive.yaml
+      - tests/m2/fixtures/positive/factor-observation-revision.yaml
+      - tests/m2/fixtures/negative/strategy-research-negative.yaml
+      - tests/m2/fixtures/negative/factor-observation-revision-negative.yaml
+
+  - id: strategy-interval-pit
+    engine: validate-pit
+    fixtureFile: tests/m2/fixtures/negative/strategy-research-negative.yaml
+    fixtureIds:
+      - strategy-neg-002
+
+  - id: factor-availability-pit
+    engine: validate-pit
+    fixtureFile: tests/m2/fixtures/negative/factor-observation-revision-negative.yaml
+    fixtureIds:
+      - factor-obs-future-availability
+
+  - id: market-rule-availability-pit
+    engine: validate-pit
+    fixtureFile: tests/m2/fixtures/negative/rule-applicability-cn-market-negative.yaml
+    fixtureIds:
+      - rule-app-neg-future-availability

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axiolune.ai/schemas/m2/0.3.0/custom-constraint-instance-expectation-aggregate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "profileRef", "artifactKind", "polarity",
+    "sourceEvidenceRef", "sourceEvidenceDigest", "registryRef",
+    "registryDigest", "cases"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "profileRef": { "const": "https://axiolune.ai/conformance/m2/0.3.0" },
+    "artifactKind": { "const": "customConstraintInstanceExpectationAggregate" },
+    "polarity": { "enum": ["positive", "negative"] },
+    "sourceEvidenceRef": { "$ref": "#/$defs/artifactRef" },
+    "sourceEvidenceDigest": { "$ref": "#/$defs/digest" },
+    "registryRef": { "$ref": "#/$defs/artifactRef" },
+    "registryDigest": { "$ref": "#/$defs/digest" },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/case" }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "root", "path"],
+      "properties": {
+        "kind": { "const": "path" },
+        "root": { "const": "sourceTree" },
+        "path": { "type": "string", "minLength": 1 }
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "constraintInstanceId", "fixtureId", "originRef", "targetRef",
+        "sourceCaseId", "inputRef", "inputDigest", "evidenceRowDigest",
+        "expectedResult"
+      ],
+      "properties": {
+        "constraintInstanceId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "fixtureId": { "type": "string", "pattern": "^[\\x21-\\x7e]+$" },
+        "originRef": { "type": "string", "format": "uri" },
+        "targetRef": { "type": "string", "format": "uri" },
+        "sourceCaseId": { "type": "string", "minLength": 1 },
+        "inputRef": { "$ref": "#/$defs/artifactRef" },
+        "inputDigest": { "$ref": "#/$defs/digest" },
+        "evidenceRowDigest": { "$ref": "#/$defs/digest" },
+        "expectedResult": { "enum": ["conforms", "violates"] }
+      }
+    }
+  }
+}

@@ -4,12 +4,14 @@
  *
  * Projects the concrete, shipped artifacts of the meta-model into OWL2-DL
  * (Turtle). The meta-model ships two kinds of concrete projectable artifacts:
- *   (R1) Pattern attribute instances (core MetaModel.*, namespace=pattern)
- *        -> owl:DatatypeProperty with xsd range, rdfs:label/comment,
- *           owl:deprecated when deprecated:true.
+ *   (R1) Concrete core attribute instances -> the explicitly selected OWL
+ *        property kind (datatype, object, or annotation) with range,
+ *        rdfs:label/comment, and owl:deprecated when deprecated:true.
  *   (R2/R3) Structured value classes MoneyTypeDefinition / QuantityTypeDefinition
  *        -> owl:Class (MonetaryAmount / QuantityValue) + component
  *        owl:DatatypeProperty (from owlProjection.properties[]).
+ *
+ *   (R4) Every concrete Layer 2 PatternDefinition IRI -> owl:Class.
  *
  * Meta-type schemas (ObjectTypeDefinition, AttributeTypeDefinition, etc.) and
  * Identifier/CodeList schemas define the GRAMMAR for domain ontologies and have
@@ -25,8 +27,13 @@ const yaml = require('js-yaml');
 const { Writer, DataFactory } = require('n3');
 const { quad, namedNode, literal } = DataFactory;
 
-const META_DIR = path.join(__dirname, '..', '..', 'ontology', 'meta');
-const OUT = path.join(META_DIR, 'projection', 'axiolune-meta.owl.ttl');
+const META_DIR = process.env.META_DIR
+  ? path.resolve(process.env.META_DIR)
+  : path.join(__dirname, '..', '..', 'ontology', 'meta');
+const PROJECTION_DIR = process.env.META_PROJECTION_DIR
+  ? path.resolve(process.env.META_PROJECTION_DIR)
+  : path.join(META_DIR, 'projection');
+const OUT = path.join(PROJECTION_DIR, 'axiolune-meta.owl.ttl');
 
 const XSD = 'http://www.w3.org/2001/XMLSchema#';
 const OWL = 'http://www.w3.org/2002/07/owl#';
@@ -49,6 +56,8 @@ function expandRange(r) {
 }
 
 const core = yaml.load(fs.readFileSync(path.join(META_DIR, 'core-meta-model.yaml'), 'utf8'));
+const patterns = yaml.load(fs.readFileSync(path.join(META_DIR, 'cross-domain-patterns.yaml'), 'utf8'));
+const dataBinding = yaml.load(fs.readFileSync(path.join(META_DIR, 'data-binding-meta-model.yaml'), 'utf8'));
 const quads = [];
 
 function add(s, p, o) { quads.push(quad(s, p, o, namedNode(''))); }
@@ -56,24 +65,49 @@ function add(s, p, o) { quads.push(quad(s, p, o, namedNode(''))); }
 // ---- Ontology declaration ----
 const ONT = namedNode('https://axiolune.ai/ontology/meta');
 add(namedNode(ONT.value), namedNode(RDF + 'type'), namedNode(OWL + 'Ontology'));
-add(namedNode(ONT.value), namedNode(OWL + 'versionIRI'), namedNode(ONT.value + '/0.4.0'));
+add(
+  namedNode(ONT.value),
+  namedNode(OWL + 'versionIRI'),
+  namedNode(ONT.value + '/' + core.module.version),
+);
 
-// ---- R1: Pattern attribute instances -> DatatypeProperties ----
-let attrCount = 0, depCount = 0;
+// ---- R1: Concrete core attribute instances -> selected property kinds ----
+let attrCount = 0, depCount = 0, annotationCount = 0, objectAttributeCount = 0;
 for (const key of Object.keys(core.MetaModel || {})) {
   const v = core.MetaModel[key];
-  if (!v || v.namespace !== 'pattern' || !v.iri) continue;
+  if (!v || !v.iri || !v.namespace || !v.localName || !v.valueType) continue;
   const prop = namedNode(v.iri);
-  add(prop, namedNode(RDF + 'type'), namedNode(OWL + 'DatatypeProperty'));
+  const projectionKind = {
+    annotationProperty: OWL + 'AnnotationProperty',
+    objectProperty: OWL + 'ObjectProperty',
+    datatypeProperty: OWL + 'DatatypeProperty',
+  }[v.owlProjectionOverride || 'datatypeProperty'];
+  if (!projectionKind) {
+    throw new Error(`Unsupported owlProjectionOverride for MetaModel.${key}: ${v.owlProjectionOverride}`);
+  }
+  add(prop, namedNode(RDF + 'type'), namedNode(projectionKind));
   if (v.label) add(prop, namedNode(RDFS + 'label'), literal(v.label));
   if (v.definition) add(prop, namedNode(RDFS + 'comment'), literal(v.definition));
   const range = VT_TO_XSD[v.valueType] || XSD + 'string';
   add(prop, namedNode(RDFS + 'range'), namedNode(range));
+  if (v.owlProjectionOverride === 'annotationProperty') annotationCount++;
+  if (v.owlProjectionOverride === 'objectProperty') objectAttributeCount++;
   if (v.deprecated === true) {
     add(prop, namedNode(OWL + 'deprecated'), literal('true', namedNode(XSD + 'boolean')));
     depCount++;
   }
   attrCount++;
+}
+
+// ---- R4: Concrete PatternDefinition instances -> owl:Class ----
+let patternClassCount = 0;
+for (const pattern of (patterns.CrossDomainPatterns && patterns.CrossDomainPatterns.patterns) || []) {
+  if (!pattern || !pattern.iri) continue;
+  const cls = namedNode(pattern.iri);
+  add(cls, namedNode(RDF + 'type'), namedNode(OWL + 'Class'));
+  if (pattern.label) add(cls, namedNode(RDFS + 'label'), literal(pattern.label));
+  if (pattern.definition) add(cls, namedNode(RDFS + 'comment'), literal(pattern.definition));
+  patternClassCount++;
 }
 
 // ---- R2/R3: Structured value classes ----
@@ -91,6 +125,9 @@ function projectStructured(typeKey, v) {
     add(prop, namedNode(RDFS + 'domain'), cls);
     add(prop, namedNode(RDFS + 'range'), namedNode(expandRange(p.range)));
     if (p.pattern) add(prop, namedNode(RDFS + 'comment'), literal('pattern: ' + p.pattern));
+    if (Array.isArray(p.values)) {
+      add(prop, namedNode(RDFS + 'comment'), literal('allowed values: ' + p.values.join(', ')));
+    }
     n++;
   }
   return n;
@@ -98,6 +135,51 @@ function projectStructured(typeKey, v) {
 
 const moneyN = core.MetaModel && projectStructured('MoneyTypeDefinition', core.MetaModel.MoneyTypeDefinition);
 const qtyN = core.MetaModel && projectStructured('QuantityTypeDefinition', core.MetaModel.QuantityTypeDefinition);
+
+// ---- Layer 4 concrete projection vocabulary ----
+let bindingClassCount = 0, bindingPropertyCount = 0;
+const bindingRoot = dataBinding.DataBinding || {};
+for (const value of Object.values(bindingRoot)) {
+  if (!value || typeof value !== 'object') continue;
+  const projection = value.owlProjection || {};
+  if ((projection.kind === 'class' || projection.kind === 'structuredValueClass') && projection.classIri) {
+    const cls = namedNode(projection.classIri);
+    add(cls, namedNode(RDF + 'type'), namedNode(OWL + 'Class'));
+    if (value.definition) add(cls, namedNode(RDFS + 'comment'), literal(value.definition));
+    bindingClassCount++;
+  } else if (projection.kind === 'objectProperty' && projection.propertyIri) {
+    const prop = namedNode(projection.propertyIri);
+    add(prop, namedNode(RDF + 'type'), namedNode(OWL + 'ObjectProperty'));
+    if ((projection.characteristics || []).includes('functional')) {
+      add(prop, namedNode(RDF + 'type'), namedNode(OWL + 'FunctionalProperty'));
+    }
+    if (projection.domain) add(prop, namedNode(RDFS + 'domain'), namedNode(projection.domain));
+    if (projection.range) add(prop, namedNode(RDFS + 'range'), namedNode(projection.range));
+    if (value.definition) add(prop, namedNode(RDFS + 'comment'), literal(value.definition));
+    bindingPropertyCount++;
+  }
+
+  if (value.namespace === 'ax-binding' && value.iri && value.valueType) {
+    const prop = namedNode(value.iri);
+    const structuredRange = {
+      ArtifactRef: 'https://axiolune.ai/ontology/meta/data-binding/structures/ArtifactRef',
+      SourceLocator: 'https://axiolune.ai/ontology/meta/data-binding/structures/SourceLocator',
+    }[value.valueType];
+    add(
+      prop,
+      namedNode(RDF + 'type'),
+      namedNode(structuredRange ? OWL + 'ObjectProperty' : OWL + 'DatatypeProperty'),
+    );
+    add(
+      prop,
+      namedNode(RDFS + 'range'),
+      namedNode(structuredRange || (VT_TO_XSD[value.valueType] || XSD + 'string')),
+    );
+    if (value.label) add(prop, namedNode(RDFS + 'label'), literal(value.label));
+    if (value.definition) add(prop, namedNode(RDFS + 'comment'), literal(value.definition));
+    bindingPropertyCount++;
+  }
+}
 
 // ---- Serialize ----
 const writer = new Writer({ prefixes: {
@@ -110,6 +192,7 @@ writer.end((error, result) => {
   fs.mkdirSync(path.dirname(OUT), { recursive: true });
   fs.writeFileSync(OUT, result);
   console.log(`✓ OWL projected: ${attrCount} attribute properties (${depCount} deprecated), ` +
-    `MonetaryAmount (${moneyN} terms), QuantityValue (${qtyN} terms) -> ${path.basename(OUT)}`);
+    `MonetaryAmount (${moneyN} terms), QuantityValue (${qtyN} terms), ` +
+    `Layer4 ${bindingClassCount} classes/${bindingPropertyCount} properties -> ${path.basename(OUT)}`);
   console.log(`  ${quads.length} triples`);
 });

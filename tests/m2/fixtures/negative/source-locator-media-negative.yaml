@@ -1,0 +1,129 @@
+fixtures:
+  - id: source-locator-plain-string
+    contract: SourceLocator
+    expectedResult: rejected
+    violationType: scalar-locator
+    instance:
+      locator: regulatory/dtc.pdf#page=10
+  - id: source-locator-pdf-with-text-media
+    contract: SourceLocator
+    expectedResult: rejected
+    violationType: wrong-media
+    instance:
+      locator:
+        kind: pdfPageRange
+        path: regulatory/dtc.pdf
+        mediaType: text/plain
+        extractorProfileRef: {kind: iri, iri: https://axiolune.ai/toolchain/extractor/v1}
+        extractorProfileDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+        selectionDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+        startPage: 1
+        endPage: 2
+  - id: source-locator-cross-branch-field
+    contract: SourceLocator
+    expectedResult: rejected
+    violationType: branch-contamination
+    instance:
+      locator:
+        kind: textLineRange
+        path: rules/rule.txt
+        mediaType: text/plain
+        extractorProfileRef: {kind: iri, iri: https://axiolune.ai/toolchain/extractor/v1}
+        extractorProfileDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+        selectionDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+        startLine: 1
+        endLine: 2
+        pointer: /illegal
+  - id: source-locator-missing-selection-digest
+    contract: SourceLocator
+    expectedResult: rejected
+    violationType: missing-selection-digest
+    instance:
+      locator:
+        kind: wholeFile
+        path: evidence/readme.md
+        mediaType: text/markdown
+        extractorProfileRef: {kind: iri, iri: https://axiolune.ai/toolchain/extractor/v1}
+        extractorProfileDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+  - id: source-locator-parent-path
+    contract: SourceLocator
+    expectedResult: rejected
+    violationType: path-escape
+    instance:
+      locator:
+        kind: wholeFile
+        path: ../outside.txt
+        mediaType: text/plain
+        extractorProfileRef: {kind: iri, iri: https://axiolune.ai/toolchain/extractor/v1}
+        extractorProfileDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+        selectionDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+  - id: source-locator-noncanonical-json-pointer
+    contract: SourceLocator
+    expectedResult: rejected
+    violationType: malformed-selector
+    instance:
+      locator:
+        kind: jsonPointer
+        path: schemas/feed.json
+        mediaType: application/json
+        extractorProfileRef: {kind: iri, iri: https://axiolune.ai/toolchain/extractor/v1}
+        extractorProfileDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+        selectionDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+        pointer: properties/id
+  - id: source-locator-selection-digest-tamper
+    contract: SourceLocator
+    expectedResult: rejected
+    violationType: selection-digest-mismatch
+    instance:
+      selectedBytesBase64: dGFtcGVyZWQ=
+      locator:
+        kind: wholeFile
+        path: evidence/readme.md
+        mediaType: text/markdown
+        extractorProfileRef: {kind: iri, iri: https://axiolune.ai/toolchain/extractor/v1}
+        extractorProfileDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+        selectionDigest: sha256:9696c3b563a6bcd73633aeb6c9a4dd982bf3581e59cdc39bdfb5f0dd8fcf494a
+  - id: source-locator-empty-selection
+    contract: SourceLocator
+    expectedResult: rejected
+    violationType: empty-selection
+    instance:
+      selectedBytesBase64: ''
+      locator:
+        kind: wholeFile
+        path: evidence/empty.txt
+        mediaType: text/plain
+        extractorProfileRef: {kind: iri, iri: https://axiolune.ai/toolchain/extractor/v1}
+        extractorProfileDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+        selectionDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+  - id: source-locator-pdf-section-half-bounded
+    contract: SourceLocator
+    expectedResult: rejected
+    violationType: malformed-selector
+    instance:
+      locator:
+        kind: pdfNamedSection
+        path: regulatory/finra.pdf
+        mediaType: application/pdf
+        extractorProfileRef: {kind: iri, iri: https://axiolune.ai/toolchain/extractor/v1}
+        extractorProfileDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+        selectionDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+        sectionTitle: Due Bills
+        occurrence: 1
+        startPage: 20
+  - id: source-locator-mixed-artifact-ref
+    contract: SourceLocator
+    expectedResult: rejected
+    violationType: invalid-artifact-ref
+    instance:
+      locator:
+        kind: htmlFragment
+        path: guides/settlement.html
+        mediaType: text/html
+        extractorProfileRef:
+          kind: iri
+          iri: https://axiolune.ai/toolchain/extractor/v1
+          path: illegal
+        extractorProfileDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+        selectionDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+        fragmentId: settlement

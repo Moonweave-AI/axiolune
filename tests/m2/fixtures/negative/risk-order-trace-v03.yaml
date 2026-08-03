@@ -1,0 +1,15 @@
+schemaVersion: '1.0'
+description: CQ-R4 negative — breach without traceable execution/holding context.
+cases:
+  - id: orphan-breach-without-execution-holding-trace
+    baseFixtureId: cq-r4-breach-to-execution-trace
+    expectedViolation: breach-execution-trace
+    expectedResult: rejected
+    mutations:
+      - op: delete
+        path: records.0
+      - op: delete
+        path: records.1
+      - op: set
+        path: records.0.measurementAccount
+        value: https://example.test/account/unrelated

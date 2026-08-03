@@ -1,0 +1,126 @@
+schemaVersion: '1.0'
+contract: axiolune-m2-cq-post-trade/v2
+cases:
+  - id: cq-pto1-before-assessment-availability-is-empty
+    cqId: CQ-PTO1
+    query:
+      eventVersionIri: https://example.test/fact/assessment/event/v1
+      pivot:
+        asOfValid: '2026-05-08T12:00:00Z'
+        asOfKnowledge: '2026-05-08T12:04:00Z'
+        asOfAvailable: '2026-05-08T12:00:59Z'
+        referenceTime: '2026-07-31T00:00:00Z'
+    sourceMutations: []
+    expectedOutcome: empty
+
+  - id: cq-pto1-absent-event-version-is-empty
+    cqId: CQ-PTO1
+    query:
+      eventVersionIri: https://example.test/fact/corporate-action/event/absent/v1
+      pivot:
+        asOfValid: '2026-07-20T00:00:00Z'
+        asOfKnowledge: '2026-07-20T00:00:00Z'
+        asOfAvailable: '2026-07-20T00:00:00Z'
+        referenceTime: '2026-07-31T00:00:00Z'
+    sourceMutations: []
+    expectedOutcome: empty
+
+  - id: cq-pto1-failed-transfer-is-not-fulfillment
+    cqId: CQ-PTO1
+    baseCaseId: cq-pto1-stock-split-due-bill-correction-closure
+    sourceMutations:
+      - {op: set, path: 'fixtures[2].instance.transfers[3].state', value: failed}
+    expectedErrorCode: PTO_CQ_CANONICAL_CONTRACT
+    expectedCauseCode: transfer-closure-result
+
+  - id: cq-pto1-transfer-closure-probe-digest-is-recomputed
+    cqId: CQ-PTO1
+    baseCaseId: cq-pto1-stock-split-due-bill-correction-closure
+    sourceMutations:
+      - {op: set, path: 'fixtures[2].instance.transferClosures[0].closureProbe.digest', value: 'sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'}
+    expectedErrorCode: PTO_CQ_CANONICAL_CONTRACT
+    expectedCauseCode: transfer-closure-probe
+
+  - id: cq-pto1-selected-rights-election-cannot-decline
+    cqId: CQ-PTO1
+    baseCaseId: cq-pto1-rights-election-subscription-adjustment
+    sourceMutations:
+      - {op: set, path: 'fixtures[3].instance.electionCandidates[0].decision', value: decline}
+    expectedErrorCode: PTO_CQ_CANONICAL_CONTRACT
+    expectedCauseCode: rights-candidate-decline-quantity
+
+  - id: cq-pto2-dvp-cash-leg-must-be-reciprocal
+    cqId: CQ-PTO2
+    baseCaseId: cq-pto2-dvp-omnibus-economic-reconciliation
+    sourceMutations:
+      - {op: set, path: 'fixtures[4].instance.instructions[0].legs[1].fromParty', value: 'https://example.test/party/clearing-house'}
+    expectedErrorCode: PTO_CQ_CANONICAL_CONTRACT
+    expectedCauseCode: settlement-dvp-cash-reciprocity
+
+  - id: cq-pto2-canonical-settled-state-is-closed
+    cqId: CQ-PTO2
+    baseCaseId: cq-pto2-dvp-omnibus-economic-reconciliation
+    sourceMutations:
+      - {op: set, path: 'fixtures[4].instance.instructions[0].statusEvents[1].state', value: completed}
+    expectedErrorCode: PTO_CQ_CANONICAL_CONTRACT
+    expectedCauseCode: settlement-status-state
+
+  - id: cq-pto2-omnibus-endpoint-requires-bridge
+    cqId: CQ-PTO2
+    baseCaseId: cq-pto2-dvp-omnibus-economic-reconciliation
+    sourceMutations:
+      - {op: delete, path: 'fixtures[4].instance.allocations[0].toBridgeVersionIri'}
+    expectedErrorCode: PTO_CQ_CANONICAL_CONTRACT
+    expectedCauseCode: allocation-to-bridge-xone
+
+  - id: cq-pto2-execution-version-is-identity-locked
+    cqId: CQ-PTO2
+    baseCaseId: cq-pto2-dvp-omnibus-economic-reconciliation
+    sourceMutations:
+      - {op: set, path: 'fixtures[4].instance.allocations[0].execution.versionIri', value: 'https://example.test/fact/execution/ghost/v1'}
+    expectedErrorCode: PTO_CQ_IDENTITY_LOCK
+
+  - id: cq-pto2-reconciliation-finding-is-recomputed-from-values
+    cqId: CQ-PTO2
+    baseCaseId: cq-pto2-fop-direct-settlement-account-reconciliation
+    sourceMutations:
+      - {op: set, path: 'fixtures[7].instance.externalStatementLines[1].value.amount', value: '1000.00'}
+    expectedErrorCode: PTO_CQ_CANONICAL_CONTRACT
+    expectedCauseCode: reconciliation-finding-kind
+
+  - id: cq-pto2-reconciliation-status-provider-id-is-unique
+    cqId: CQ-PTO2
+    baseCaseId: cq-pto2-dvp-omnibus-economic-reconciliation
+    sourceMutations:
+      - {op: set, path: 'fixtures[6].instance.statusEvents[1].providerEventId', value: rec-1-open}
+    expectedErrorCode: PTO_CQ_CANONICAL_CONTRACT
+    expectedCauseCode: reconciliation-status-identity
+
+  - id: cq-pto2-missing-side-needs-completed-absence-probe
+    cqId: CQ-PTO2
+    baseCaseId: cq-pto2-dvp-omnibus-economic-reconciliation
+    sourceMutations:
+      - {op: set, path: 'fixtures[6].instance.missingSideAssertions[0].absenceProbe.result', value: false}
+    expectedErrorCode: PTO_CQ_CANONICAL_CONTRACT
+    expectedCauseCode: reconciliation-missing-absence-probe
+
+  - id: cq-pto2-canonical-knowledge-interval-controls-pit
+    cqId: CQ-PTO2
+    baseCaseId: cq-pto2-dvp-omnibus-economic-reconciliation
+    sourceMutations:
+      - {op: set, path: 'fixtures[6].instance.case.knowledgeTo', value: '2026-07-16T00:00:00Z'}
+    expectedErrorCode: PTO_CQ_CANONICAL_CONTRACT
+    expectedCauseCode: reconciliation-case-temporal-knowledge
+
+  - id: cq-pto2-before-case-availability-is-empty
+    cqId: CQ-PTO2
+    query:
+      instructionVersionIri: https://example.test/fact/instruction/dvp/v1
+      reconciliationCaseVersionIri: https://example.test/fact/reconciliation/case/1/v1
+      pivot:
+        asOfValid: '2026-07-15T23:59:59Z'
+        asOfKnowledge: '2026-07-16T00:00:00Z'
+        asOfAvailable: '2026-07-16T00:00:59Z'
+        referenceTime: '2026-07-31T00:00:00Z'
+    sourceMutations: []
+    expectedOutcome: empty

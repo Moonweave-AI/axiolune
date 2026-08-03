@@ -1,0 +1,253 @@
+schemaVersion: 1.0
+cases:
+  - id: measurement-missing-availability-axis
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: delete
+        path: records.1.availableFrom
+    expectedViolation: risk-canonical-required-field
+  - id: definition-uses-scalar-source-locator
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: set
+        path: records.0.sourceLocator
+        value: "$.riskPolicies[*]"
+    expectedViolation: definition-provenance
+    expectedBoundaryViolation: source-artifact-locator
+  - id: computed-measurement-misses-required-pattern-source
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: delete
+        path: records.1.source
+    expectedViolation: risk-canonical-required-field
+  - id: definition-has-two-representation-branches
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: set
+        path: records.0.definitionUnit
+        value: https://example.test/unit/ratio
+    expectedViolation: definition-representation-xone
+  - id: limit-stores-inline-knowledge-end
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: set
+        path: records.2.knowledgeTo
+        value: "2026-08-01T00:00:00Z"
+    expectedViolation: risk-canonical-unknown-field
+  - id: bucket-value-run-does-not-match-closure-run
+    baseFixtureId: cq-r1-bucketed-greeks-within-limit
+    mutations:
+      - op: set
+        path: records.3.generatingContextRef
+        value: urn:materialization:unrelated
+    expectedViolation: measurement-bucket-value-run
+  - id: measurement-two-value-branches
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: set
+        path: records.1.measuredQuantity
+        value:
+          value: "0.10"
+          unit: https://example.test/unit/ratio
+          rounding: half-even
+    expectedViolation: measurement-value-xone
+  - id: measurement-has-no-explicit-scope
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: delete
+        path: records.1.measurementPortfolio
+    expectedViolation: measurement-scope
+  - id: measurement-input-context-is-not-complete
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: set
+        path: records.1.inputContextCompleted
+        value: false
+    expectedViolation: measurement-input-context
+  - id: measurement-input-context-is-not-strictly-prior
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: set
+        path: inputContextRecords.0.completedAt
+        value: "2026-07-31T09:00:01Z"
+      - op: set
+        path: inputContextRecords.0.contextRef
+        value: urn:materialization:risk-input-late
+      - op: set
+        path: inputContextRecords.0.recordDigest
+        value: sha256:05acaf756b09009638f70421bf804b5a7a6928ab8ead04c9628a5fd5319a56a0
+      - op: set
+        path: inputContextRecords.0.recordSelector
+        value: materializationRuns.lateInput
+      - op: set
+        path: records.1.inputContextRef
+        value: urn:materialization:risk-input-late
+      - op: set
+        path: records.1.inputContextRecordDigest
+        value: sha256:05acaf756b09009638f70421bf804b5a7a6928ab8ead04c9628a5fd5319a56a0
+    expectedViolation: measurement-input-context-order
+  - id: measurement-input-context-ref-resolves-to-conflicting-records
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: set
+        path: inputContextRecords.1
+        value:
+          contextRef: urn:materialization:risk-input-shared
+          recordDigest: sha256:05acaf756b09009638f70421bf804b5a7a6928ab8ead04c9628a5fd5319a56a0
+          recordPath: tests/m2/fixtures/risk-evidence-v1.json
+          recordSelector: materializationRuns.lateInput
+          status: completed
+          completedAt: "2026-07-31T09:00:01Z"
+    expectedViolation: measurement-input-context
+  - id: measurement-money-currency-differs-from-definition
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: set
+        path: records.1.measuredMoney.currency
+        value: EUR
+    expectedViolation: risk-currency-compatibility
+  - id: limit-two-value-branches
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: set
+        path: records.2.limitQuantity
+        value:
+          value: "1"
+          unit: https://example.test/unit/ratio
+          rounding: half-even
+    expectedViolation: limit-value-xone
+  - id: measurement-and-limit-scope-differ
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: set
+        path: records.2.limitPortfolio
+        value: https://example.test/portfolio/beta
+    expectedViolation: measurement-limit-scope
+  - id: limit-approval-is-before-valid-interval
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: set
+        path: records.2.approvedAt
+        value: "2025-12-31T23:59:59Z"
+    expectedViolation: limit-approval
+  - id: evaluation-precedes-its-measurement
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: set
+        path: records.3.knowledgeFrom
+        value: "2026-07-31T08:59:59Z"
+    expectedViolation: evaluation-temporal-order
+  - id: deterministic-comparison-result-is-wrong
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: set
+        path: records.3.evaluationResult
+        value: https://axiolune.ai/ontology/finance/risk/RiskLimitEvaluationResult/value/breach
+    expectedViolation: evaluation-result
+  - id: non-breach-evaluation-has-breach-fact
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: set
+        path: records.4
+        value:
+          typeIri: https://axiolune.ai/ontology/finance/risk/LimitBreach
+          versionIri: https://example.test/risk/breach/var/version/1
+          breachEvaluation: https://example.test/risk/evaluation/var/version/1
+          breachMeasurement: https://example.test/risk/measurement/var/version/4
+          breachLimit: https://example.test/risk/limit/var/version/2
+          generatingContextRef: urn:materialization:risk-evaluation-43
+          validFrom: "2026-07-31T09:00:03Z"
+          knowledgeFrom: "2026-07-31T09:00:04Z"
+          availableFrom: "2026-07-31T09:00:05Z"
+          revision: 0
+          source: urn:source:risk-engine
+    expectedViolation: spurious-limit-breach
+  - id: breach-evaluation-has-no-breach-fact
+    baseFixtureId: cq-r2-quantity-breach-closes-exactly
+    mutations:
+      - op: remove
+        path: records.4
+    expectedViolation: missing-limit-breach
+  - id: breach-copies-a-different-limit-version
+    baseFixtureId: cq-r2-quantity-breach-closes-exactly
+    mutations:
+      - op: set
+        path: records.4.breachLimit
+        value: https://example.test/risk/limit/volatility/version/999
+    expectedViolation: breach-exact-references
+  - id: breach-generating-context-differs-from-evaluation
+    baseFixtureId: cq-r2-quantity-breach-closes-exactly
+    mutations:
+      - op: set
+        path: records.4.generatingContextRef
+        value: urn:materialization:unrelated
+    expectedViolation: breach-generating-context
+  - id: breach-temporally-precedes-evaluation
+    baseFixtureId: cq-r2-quantity-breach-closes-exactly
+    mutations:
+      - op: set
+        path: records.4.validFrom
+        value: "2026-07-31T09:00:02Z"
+    expectedViolation: breach-temporal-order
+  - id: bucket-closure-is-not-complete
+    baseFixtureId: cq-r1-bucketed-greeks-within-limit
+    mutations:
+      - op: set
+        path: records.2.closureCompleted
+        value: false
+    expectedViolation: measurement-bucket-closure
+  - id: bucket-keys-are-duplicated
+    baseFixtureId: cq-r1-bucketed-greeks-within-limit
+    mutations:
+      - op: set
+        path: records.4.bucketKey
+        value: delta
+    expectedViolation: measurement-bucket-duplicate-key
+  - id: bucket-exact-version-membership-is-duplicated
+    baseFixtureId: cq-r1-bucketed-greeks-within-limit
+    mutations:
+      - op: set
+        path: records.4.versionIri
+        value: https://example.test/risk/bucket/delta/version/1
+    expectedViolation: risk-canonical-duplicate-version
+  - id: bucket-unit-differs-from-schema
+    baseFixtureId: cq-r1-bucketed-greeks-within-limit
+    mutations:
+      - op: set
+        path: records.3.bucketQuantity.unit
+        value: https://example.test/unit/currency-delta
+    expectedViolation: measurement-bucket-unit
+  - id: measurement-and-limit-bucket-key-sets-differ
+    baseFixtureId: cq-r1-bucketed-greeks-within-limit
+    mutations:
+      - op: set
+        path: records.7.bucketKey
+        value: vega
+    expectedViolation: risk-bucket-compatibility
+  - id: indeterminate-result-needs-a-reason
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: set
+        path: records.3.evaluationResult
+        value: https://axiolune.ai/ontology/finance/risk/RiskLimitEvaluationResult/value/indeterminate
+    expectedViolation: evaluation-indeterminate-reason
+  - id: duplicate-knowledge-closure-for-one-target
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: set
+        path: temporalClosureRecords.1
+        value:
+          targetVersionIri: https://example.test/risk/measurement/var/version/4
+          axis: knowledge
+          closedAt: "2026-07-31T11:30:00Z"
+          causeKind: retraction
+          evidenceRef: urn:evidence:risk-measurement-retraction
+          generatingContextRef: urn:materialization:risk-closure-45
+    expectedViolation: risk-closure-duplicate
+  - id: closure-evidence-does-not-resolve
+    baseFixtureId: cq-r1-money-measurement-within-limit
+    mutations:
+      - op: set
+        path: temporalClosureRecords.0.evidenceRef
+        value: urn:evidence:not-locked
+    expectedViolation: risk-closure-evidence

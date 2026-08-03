@@ -1,0 +1,640 @@
+schemaVersion: 1.0
+caseId: market-rules-v03-positive-cq-execution
+graphRef: urn:graph:market-rules-v03-output
+referenceTime: "2026-07-31T12:00:00Z"
+templates:
+  source: &source
+    source: urn:authority:market-rulebook
+    sourceVersion: "2026-07"
+    sourceArtifactRef: {kind: iri, iri: urn:artifact:market-rulebook-2026-07}
+    sourceArtifactDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+    sourceLocator:
+      kind: wholeFile
+      path: synthetic/market-rulebook.json
+      mediaType: application/json
+      extractorProfileRef: {kind: iri, iri: urn:extractor:whole-file-v1}
+      extractorProfileDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+      selectionDigest: sha256:3333333333333333333333333333333333333333333333333333333333333333
+  requestSource: &requestSource
+    source: urn:party:resolver-client
+    sourceVersion: "2026-07"
+    sourceArtifactRef: {kind: iri, iri: urn:artifact:resolver-client-requests-2026-07}
+    sourceArtifactDigest: sha256:7777777777777777777777777777777777777777777777777777777777777777
+    sourceLocator:
+      kind: wholeFile
+      path: synthetic/resolver-client-requests.json
+      mediaType: application/json
+      extractorProfileRef: {kind: iri, iri: urn:extractor:whole-file-v1}
+      extractorProfileDigest: sha256:8888888888888888888888888888888888888888888888888888888888888888
+      selectionDigest: sha256:9999999999999999999999999999999999999999999999999999999999999999
+  resolverSource: &resolverSource
+    source: urn:resolver:market-rules-v03
+    sourceVersion: "0.3.0"
+    sourceArtifactRef: {kind: iri, iri: urn:artifact:market-rules-resolver-v03}
+    sourceArtifactDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    sourceLocator:
+      kind: wholeFile
+      path: synthetic/market-rules-resolver.cjs
+      mediaType: text/javascript
+      extractorProfileRef: {kind: iri, iri: urn:extractor:whole-file-v1}
+      extractorProfileDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+      selectionDigest: sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+  oldAxes: &oldAxes
+    validFrom: "2026-01-01T00:00:00Z"
+    validTo: "2026-07-01T00:00:00Z"
+    knowledgeFrom: "2026-01-01T00:00:01Z"
+    availableFrom: "2026-01-01T00:00:02Z"
+    revision: 0
+  currentAxes: &currentAxes
+    validFrom: "2026-07-01T00:00:00Z"
+    knowledgeFrom: "2026-06-01T00:00:01Z"
+    availableFrom: "2026-06-01T00:00:02Z"
+    revision: 1
+  stableAxes: &stableAxes
+    validFrom: "2026-01-01T00:00:00Z"
+    knowledgeFrom: "2026-01-01T00:00:01Z"
+    availableFrom: "2026-01-01T00:00:02Z"
+    revision: 0
+  revisionV0Axes: &revisionV0Axes
+    validFrom: "2026-01-01T00:00:00Z"
+    knowledgeFrom: "2026-01-01T00:00:01Z"
+    availableFrom: "2026-01-01T00:00:02Z"
+    revision: 0
+  revisionV1Axes: &revisionV1Axes
+    validFrom: "2026-01-01T00:00:00Z"
+    knowledgeFrom: "2026-07-10T00:00:00Z"
+    availableFrom: "2026-07-10T00:00:01Z"
+    revision: 1
+  requestAxes: &requestAxes
+    validFrom: "2026-07-15T12:00:00Z"
+    knowledgeFrom: "2026-07-15T12:00:01Z"
+    availableFrom: "2026-07-15T12:00:02Z"
+    revision: 0
+  conflictAxes: &conflictAxes
+    validFrom: "2026-07-15T12:00:00Z"
+    knowledgeFrom: "2026-07-16T00:00:00Z"
+    availableFrom: "2026-07-16T00:00:01Z"
+    revision: 0
+  requestCommon: &requestCommon
+    requestAuthorityVersionIri: urn:party:resolver-client:version:1
+    inputContextRef: urn:input-context:market-rules-v03
+    inputContextRecordDigest: sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+    axes: *requestAxes
+    provenance: *requestSource
+  conflictCommon: &conflictCommon
+    candidateApplicabilityVersionIris:
+      - urn:applicability:price-conflict-a:version:1
+      - urn:applicability:price-conflict-b:version:1
+    ruleConflictKind: https://axiolune.ai/ontology/finance/market-rules/RuleConflictKind/value/incomparableAuthorities
+    candidateApplicabilitySetDigest: sha256:77dcbc4945560b21cad96b8b695047ea29afa34a0e3bd3ea9467990ac60dfbb5
+    generatingContextRef: urn:run:market-rules-resolver-v03
+    axes: *conflictAxes
+    provenance: *resolverSource
+
+scopeVersions:
+  - {kind: instrument, versionIri: urn:instrument:alpha:version:1, logicalIri: urn:instrument:alpha, versionOf: urn:instrument:alpha, supersedes: urn:instrument:alpha:version:0, axes: *currentAxes, provenance: *source}
+  - {kind: instrument, versionIri: urn:instrument:alpha:version:0, logicalIri: urn:instrument:alpha, versionOf: urn:instrument:alpha, axes: *oldAxes, provenance: *source}
+  - {kind: instrument, versionIri: urn:instrument:beta:version:1, logicalIri: urn:instrument:beta, versionOf: urn:instrument:beta, axes: *stableAxes, provenance: *source}
+  - {kind: instrument, versionIri: urn:instrument:gamma:version:1, logicalIri: urn:instrument:gamma, versionOf: urn:instrument:gamma, axes: *stableAxes, provenance: *source}
+  - {kind: venue, versionIri: urn:facility:xnas:version:1, logicalIri: urn:facility:xnas, versionOf: urn:facility:xnas, axes: *stableAxes, provenance: *source}
+  - {kind: venue, versionIri: urn:facility:xnys:version:1, logicalIri: urn:facility:xnys, versionOf: urn:facility:xnys, axes: *stableAxes, provenance: *source}
+  - {kind: jurisdiction, versionIri: urn:jurisdiction:us:version:1, logicalIri: urn:jurisdiction:us, versionOf: urn:jurisdiction:us, axes: *stableAxes, provenance: *source}
+  - kind: listing
+    versionIri: urn:listing:alpha-xnas:version:1
+    logicalIri: urn:listing:alpha-xnas
+    versionOf: urn:listing:alpha-xnas
+    listedInstrumentVersionIri: urn:instrument:alpha:version:1
+    listingFacilityVersionIri: urn:segment:xnas-equities:version:1
+    axes: *stableAxes
+    provenance: *source
+  - kind: segment
+    versionIri: urn:segment:xnas-equities:version:1
+    logicalIri: urn:segment:xnas-equities
+    versionOf: urn:segment:xnas-equities
+    marketSegmentVenueVersionIri: urn:facility:xnas:version:1
+    axes: *stableAxes
+    provenance: *source
+
+requestAuthorityVersions:
+  - logicalIri: urn:party:resolver-client
+    versionIri: urn:party:resolver-client:version:1
+    versionOf: urn:party:resolver-client
+    axes: *stableAxes
+    provenance: *requestSource
+
+contextRecords:
+  - contextRef: urn:input-context:market-rules-v03
+    recordDigest: sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+    status: completed
+    completedAt: "2026-07-15T11:59:59Z"
+
+runRecords:
+  - runRef: urn:run:market-rules-resolver-v03
+    recordArtifactRef: {kind: iri, iri: urn:artifact:market-rules-resolver-run-v03}
+    recordDigest: sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+    recordLocator:
+      kind: wholeFile
+      path: synthetic/market-rules-resolver-run.json
+      mediaType: application/json
+      extractorProfileRef: {kind: iri, iri: urn:extractor:whole-file-v1}
+      extractorProfileDigest: sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+      selectionDigest: sha256:0101010101010101010101010101010101010101010101010101010101010101
+    status: completed
+    completedAt: "2026-07-16T00:00:00Z"
+    outputGraphRef: urn:graph:market-rules-v03-output
+    implementationArtifactRef: {kind: iri, iri: urn:artifact:market-rules-resolver-v03}
+    implementationArtifactDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    implementationLocator:
+      kind: wholeFile
+      path: synthetic/market-rules-resolver.cjs
+      mediaType: text/javascript
+      extractorProfileRef: {kind: iri, iri: urn:extractor:whole-file-v1}
+      extractorProfileDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+      selectionDigest: sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+  - runRef: urn:validation-run:market-rules-v03
+    recordArtifactRef: {kind: iri, iri: urn:artifact:market-rules-closure-run-v03}
+    recordDigest: sha256:1212121212121212121212121212121212121212121212121212121212121212
+    recordLocator:
+      kind: wholeFile
+      path: synthetic/market-rules-closure-run.json
+      mediaType: application/json
+      extractorProfileRef: {kind: iri, iri: urn:extractor:whole-file-v1}
+      extractorProfileDigest: sha256:1313131313131313131313131313131313131313131313131313131313131313
+      selectionDigest: sha256:1414141414141414141414141414141414141414141414141414141414141414
+    status: completed
+    completedAt: "2026-07-30T00:00:00Z"
+    outputGraphRef: urn:graph:market-rules-v03-output
+    implementationArtifactRef: {kind: iri, iri: urn:artifact:market-rules-closure-validator-v03}
+    implementationArtifactDigest: sha256:1515151515151515151515151515151515151515151515151515151515151515
+    implementationLocator:
+      kind: wholeFile
+      path: synthetic/market-rules-closure-validator.cjs
+      mediaType: text/javascript
+      extractorProfileRef: {kind: iri, iri: urn:extractor:whole-file-v1}
+      extractorProfileDigest: sha256:1616161616161616161616161616161616161616161616161616161616161616
+      selectionDigest: sha256:1717171717171717171717171717171717171717171717171717171717171717
+
+evaluationRequests:
+  - <<: *requestCommon
+    logicalIri: https://axiolune.ai/data/rule-evaluation-request/sha256-48f4f146c32dac96d375c17953890e9ba501d48bc9a2b392d364deb8e7d0451c
+    versionOf: https://axiolune.ai/data/rule-evaluation-request/sha256-48f4f146c32dac96d375c17953890e9ba501d48bc9a2b392d364deb8e7d0451c
+    versionIri: https://axiolune.ai/data/rule-evaluation-request/sha256-48f4f146c32dac96d375c17953890e9ba501d48bc9a2b392d364deb8e7d0451c/version/sha256-b17e946df5951e54fcffbb1440e1429c54d8c52f00d8c5cfbfa5ef9097836bd2
+    requestId: mr1-alpha-current
+    scopes: {instrument: urn:instrument:alpha:version:1, venue: urn:facility:xnas:version:1}
+    asOfValid: "2026-07-15T12:00:00Z"
+    asOfKnowledge: "2026-07-15T12:00:00Z"
+    asOfAvailable: "2026-07-15T12:00:00Z"
+  - <<: *requestCommon
+    logicalIri: https://axiolune.ai/data/rule-evaluation-request/sha256-7c254d3fd68575558de95dae6cb38f6b2b3c7d920128965103b3c9d4a6d326c9
+    versionOf: https://axiolune.ai/data/rule-evaluation-request/sha256-7c254d3fd68575558de95dae6cb38f6b2b3c7d920128965103b3c9d4a6d326c9
+    versionIri: https://axiolune.ai/data/rule-evaluation-request/sha256-7c254d3fd68575558de95dae6cb38f6b2b3c7d920128965103b3c9d4a6d326c9/version/sha256-b17e946df5951e54fcffbb1440e1429c54d8c52f00d8c5cfbfa5ef9097836bd2
+    requestId: mr1-alpha-before-valid
+    scopes: {instrument: urn:instrument:alpha:version:1, venue: urn:facility:xnas:version:1}
+    asOfValid: "2025-12-31T23:59:59Z"
+    asOfKnowledge: "2026-07-15T12:00:00Z"
+    asOfAvailable: "2026-07-15T12:00:00Z"
+  - <<: *requestCommon
+    logicalIri: https://axiolune.ai/data/rule-evaluation-request/sha256-b6df30e61a522bbd8816cd44a31f32c7586316084f25f51ce009870cf15de9de
+    versionOf: https://axiolune.ai/data/rule-evaluation-request/sha256-b6df30e61a522bbd8816cd44a31f32c7586316084f25f51ce009870cf15de9de
+    versionIri: https://axiolune.ai/data/rule-evaluation-request/sha256-b6df30e61a522bbd8816cd44a31f32c7586316084f25f51ce009870cf15de9de/version/sha256-b17e946df5951e54fcffbb1440e1429c54d8c52f00d8c5cfbfa5ef9097836bd2
+    requestId: mr1-listing-alpha
+    scopes: {listing: urn:listing:alpha-xnas:version:1}
+    asOfValid: "2026-07-15T12:00:00Z"
+    asOfKnowledge: "2026-07-15T12:00:00Z"
+    asOfAvailable: "2026-07-15T12:00:00Z"
+  - <<: *requestCommon
+    logicalIri: https://axiolune.ai/data/rule-evaluation-request/sha256-c890c3269a4e89b9e7eb125965b8d443bb11ffe7f4438b9f338902f8e54777f9
+    versionOf: https://axiolune.ai/data/rule-evaluation-request/sha256-c890c3269a4e89b9e7eb125965b8d443bb11ffe7f4438b9f338902f8e54777f9
+    versionIri: https://axiolune.ai/data/rule-evaluation-request/sha256-c890c3269a4e89b9e7eb125965b8d443bb11ffe7f4438b9f338902f8e54777f9/version/sha256-b17e946df5951e54fcffbb1440e1429c54d8c52f00d8c5cfbfa5ef9097836bd2
+    requestId: mr2-alpha
+    scopes: {instrument: urn:instrument:alpha:version:1, venue: urn:facility:xnas:version:1}
+    asOfValid: "2026-07-15T12:00:00Z"
+    asOfKnowledge: "2026-07-15T12:00:00Z"
+    asOfAvailable: "2026-07-15T12:00:00Z"
+  - <<: *requestCommon
+    logicalIri: https://axiolune.ai/data/rule-evaluation-request/sha256-f6258eb48823eaa57b1abcce6dd324272485dc51198522075c6c2de9389fb93b
+    versionOf: https://axiolune.ai/data/rule-evaluation-request/sha256-f6258eb48823eaa57b1abcce6dd324272485dc51198522075c6c2de9389fb93b
+    versionIri: https://axiolune.ai/data/rule-evaluation-request/sha256-f6258eb48823eaa57b1abcce6dd324272485dc51198522075c6c2de9389fb93b/version/sha256-b17e946df5951e54fcffbb1440e1429c54d8c52f00d8c5cfbfa5ef9097836bd2
+    requestId: mr2-segment-alpha
+    scopes: {instrument: urn:instrument:alpha:version:1, segment: urn:segment:xnas-equities:version:1}
+    asOfValid: "2026-07-15T12:00:00Z"
+    asOfKnowledge: "2026-07-15T12:00:00Z"
+    asOfAvailable: "2026-07-15T12:00:00Z"
+  - <<: *requestCommon
+    logicalIri: https://axiolune.ai/data/rule-evaluation-request/sha256-1c2418fe914a8e8c8b3cdc22529b778483a92766e28c89f0ee06115347be8b7d
+    versionOf: https://axiolune.ai/data/rule-evaluation-request/sha256-1c2418fe914a8e8c8b3cdc22529b778483a92766e28c89f0ee06115347be8b7d
+    versionIri: https://axiolune.ai/data/rule-evaluation-request/sha256-1c2418fe914a8e8c8b3cdc22529b778483a92766e28c89f0ee06115347be8b7d/version/sha256-b17e946df5951e54fcffbb1440e1429c54d8c52f00d8c5cfbfa5ef9097836bd2
+    requestId: mr2-conflict-beta
+    scopes: {instrument: urn:instrument:beta:version:1, venue: urn:facility:xnas:version:1}
+    asOfValid: "2026-07-15T12:00:00Z"
+    asOfKnowledge: "2026-07-15T12:00:00Z"
+    asOfAvailable: "2026-07-15T12:00:00Z"
+  - <<: *requestCommon
+    logicalIri: https://axiolune.ai/data/rule-evaluation-request/sha256-6d9ac462f5bbb59debb2a7741662d3bf40cd74e97189eb6de7167c77c2dbd9be
+    versionOf: https://axiolune.ai/data/rule-evaluation-request/sha256-6d9ac462f5bbb59debb2a7741662d3bf40cd74e97189eb6de7167c77c2dbd9be
+    versionIri: https://axiolune.ai/data/rule-evaluation-request/sha256-6d9ac462f5bbb59debb2a7741662d3bf40cd74e97189eb6de7167c77c2dbd9be/version/sha256-b17e946df5951e54fcffbb1440e1429c54d8c52f00d8c5cfbfa5ef9097836bd2
+    requestId: mr2-conflict-beta-before-withdrawal
+    scopes: {instrument: urn:instrument:beta:version:1, venue: urn:facility:xnas:version:1}
+    asOfValid: "2026-07-15T12:00:00Z"
+    asOfKnowledge: "2026-07-19T23:59:59Z"
+    asOfAvailable: "2026-07-19T23:59:59Z"
+  - <<: *requestCommon
+    logicalIri: https://axiolune.ai/data/rule-evaluation-request/sha256-4a7d78e70f46a37202ad53d5489b9e42d36b7fcdf46ade2eeba77d5ecfa5dfa2
+    versionOf: https://axiolune.ai/data/rule-evaluation-request/sha256-4a7d78e70f46a37202ad53d5489b9e42d36b7fcdf46ade2eeba77d5ecfa5dfa2
+    versionIri: https://axiolune.ai/data/rule-evaluation-request/sha256-4a7d78e70f46a37202ad53d5489b9e42d36b7fcdf46ade2eeba77d5ecfa5dfa2/version/sha256-b17e946df5951e54fcffbb1440e1429c54d8c52f00d8c5cfbfa5ef9097836bd2
+    requestId: mr2-conflict-beta-at-withdrawal
+    scopes: {instrument: urn:instrument:beta:version:1, venue: urn:facility:xnas:version:1}
+    asOfValid: "2026-07-15T12:00:00Z"
+    asOfKnowledge: "2026-07-20T00:00:00Z"
+    asOfAvailable: "2026-07-20T00:00:00Z"
+  - <<: *requestCommon
+    logicalIri: https://axiolune.ai/data/rule-evaluation-request/sha256-2291800e963262f389ff4b3275b0df98167c84f0cbb488175b2cdb8c455edc30
+    versionOf: https://axiolune.ai/data/rule-evaluation-request/sha256-2291800e963262f389ff4b3275b0df98167c84f0cbb488175b2cdb8c455edc30
+    versionIri: https://axiolune.ai/data/rule-evaluation-request/sha256-2291800e963262f389ff4b3275b0df98167c84f0cbb488175b2cdb8c455edc30/version/sha256-b17e946df5951e54fcffbb1440e1429c54d8c52f00d8c5cfbfa5ef9097836bd2
+    requestId: mr3-gamma-before
+    scopes: {instrument: urn:instrument:gamma:version:1, venue: urn:facility:xnas:version:1}
+    asOfValid: "2026-07-15T12:00:00Z"
+    asOfKnowledge: "2026-07-09T23:59:59Z"
+    asOfAvailable: "2026-07-15T12:00:00Z"
+  - <<: *requestCommon
+    logicalIri: https://axiolune.ai/data/rule-evaluation-request/sha256-21f70ad4b8148cfb62452e7450a3589998861da8f3d878362ecf79b3b54eb6ed
+    versionOf: https://axiolune.ai/data/rule-evaluation-request/sha256-21f70ad4b8148cfb62452e7450a3589998861da8f3d878362ecf79b3b54eb6ed
+    versionIri: https://axiolune.ai/data/rule-evaluation-request/sha256-21f70ad4b8148cfb62452e7450a3589998861da8f3d878362ecf79b3b54eb6ed/version/sha256-b17e946df5951e54fcffbb1440e1429c54d8c52f00d8c5cfbfa5ef9097836bd2
+    requestId: mr3-gamma-at
+    scopes: {instrument: urn:instrument:gamma:version:1, venue: urn:facility:xnas:version:1}
+    asOfValid: "2026-07-15T12:00:00Z"
+    asOfKnowledge: "2026-07-10T00:00:00Z"
+    asOfAvailable: "2026-07-15T12:00:00Z"
+
+evidenceRecords:
+  - evidenceRef: urn:evidence:authority-b-source-withdrawal
+    artifactRef: {kind: iri, iri: urn:artifact:authority-b-source-withdrawal}
+    artifactDigest: sha256:4444444444444444444444444444444444444444444444444444444444444444
+    sourceLocator:
+      kind: wholeFile
+      path: synthetic/authority-b-source-withdrawal.json
+      mediaType: application/json
+      extractorProfileRef: {kind: iri, iri: urn:extractor:whole-file-v1}
+      extractorProfileDigest: sha256:5555555555555555555555555555555555555555555555555555555555555555
+      selectionDigest: sha256:6666666666666666666666666666666666666666666666666666666666666666
+
+rules:
+  - logicalIri: urn:rule:settlement-main
+    versionIri: urn:rule:settlement-main:version:0
+    versionOf: urn:rule:settlement-main
+    ruleSetVersionIri: urn:rule-set:xnas:version:1
+    authorityLogicalIri: urn:party:xnas
+    ruleId: settlement-main
+    kind: settlementCycle
+    gapPolicy: reject
+    axes: *oldAxes
+    provenance: *source
+  - logicalIri: urn:rule:settlement-main
+    versionIri: urn:rule:settlement-main:version:1
+    versionOf: urn:rule:settlement-main
+    supersedes: urn:rule:settlement-main:version:0
+    ruleSetVersionIri: urn:rule-set:xnas:version:1
+    authorityLogicalIri: urn:party:xnas
+    ruleId: settlement-main
+    kind: settlementCycle
+    gapPolicy: reject
+    axes: *currentAxes
+    provenance: *source
+  - logicalIri: urn:rule:price-primary
+    versionIri: urn:rule:price-primary:version:1
+    versionOf: urn:rule:price-primary
+    ruleSetVersionIri: urn:rule-set:xnas:version:1
+    authorityLogicalIri: urn:party:xnas
+    ruleId: price-primary
+    kind: priceLimit
+    gapPolicy: reject
+    axes: *stableAxes
+    provenance: *source
+  - logicalIri: urn:rule:price-secondary
+    versionIri: urn:rule:price-secondary:version:1
+    versionOf: urn:rule:price-secondary
+    ruleSetVersionIri: urn:rule-set:xnas:version:1
+    authorityLogicalIri: urn:party:xnas
+    ruleId: price-secondary
+    kind: priceLimit
+    gapPolicy: reject
+    axes: *stableAxes
+    provenance: *source
+  - logicalIri: urn:rule:price-conflict-a
+    versionIri: urn:rule:price-conflict-a:version:1
+    versionOf: urn:rule:price-conflict-a
+    ruleSetVersionIri: urn:rule-set:authority-a:version:1
+    authorityLogicalIri: urn:party:authority-a
+    ruleId: price-conflict-a
+    kind: priceLimit
+    gapPolicy: reject
+    axes: *stableAxes
+    provenance: *source
+  - logicalIri: urn:rule:price-conflict-b
+    versionIri: urn:rule:price-conflict-b:version:1
+    versionOf: urn:rule:price-conflict-b
+    ruleSetVersionIri: urn:rule-set:authority-b:version:1
+    authorityLogicalIri: urn:party:authority-b
+    ruleId: price-conflict-b
+    kind: priceLimit
+    gapPolicy: reject
+    axes: *stableAxes
+    provenance: *source
+  - logicalIri: urn:rule:settlement-revisioned
+    versionIri: urn:rule:settlement-revisioned:version:0
+    versionOf: urn:rule:settlement-revisioned
+    ruleSetVersionIri: urn:rule-set:xnas:version:1
+    authorityLogicalIri: urn:party:xnas
+    ruleId: settlement-revisioned
+    kind: settlementCycle
+    gapPolicy: reject
+    axes: *revisionV0Axes
+    provenance: *source
+  - logicalIri: urn:rule:settlement-revisioned
+    versionIri: urn:rule:settlement-revisioned:version:1
+    versionOf: urn:rule:settlement-revisioned
+    supersedes: urn:rule:settlement-revisioned:version:0
+    ruleSetVersionIri: urn:rule-set:xnas:version:1
+    authorityLogicalIri: urn:party:xnas
+    ruleId: settlement-revisioned
+    kind: settlementCycle
+    gapPolicy: reject
+    axes: *revisionV1Axes
+    provenance: *source
+
+clauses:
+  - logicalIri: urn:clause:settlement-main
+    versionIri: urn:clause:settlement-main:version:0
+    versionOf: urn:clause:settlement-main
+    ruleVersionIri: urn:rule:settlement-main:version:0
+    clauseId: settlement-main
+    sequence: 0
+    type: SettlementCycleClause
+    settlementCycle: {value: 2, unit: urn:unit:business-day}
+    axes: *oldAxes
+    provenance: *source
+  - logicalIri: urn:clause:settlement-main
+    versionIri: urn:clause:settlement-main:version:1
+    versionOf: urn:clause:settlement-main
+    supersedes: urn:clause:settlement-main:version:0
+    ruleVersionIri: urn:rule:settlement-main:version:1
+    clauseId: settlement-main
+    sequence: 0
+    type: SettlementCycleClause
+    settlementCycle: {value: 1, unit: urn:unit:business-day}
+    axes: *currentAxes
+    provenance: *source
+  - logicalIri: urn:clause:price-primary
+    versionIri: urn:clause:price-primary:version:1
+    versionOf: urn:clause:price-primary
+    ruleVersionIri: urn:rule:price-primary:version:1
+    clauseId: price-primary
+    sequence: 0
+    type: PriceLimitClause
+    priceLimitPercentage: {value: "0.10", unit: urn:unit:dimensionless}
+    axes: *stableAxes
+    provenance: *source
+  - logicalIri: urn:clause:price-secondary
+    versionIri: urn:clause:price-secondary:version:1
+    versionOf: urn:clause:price-secondary
+    ruleVersionIri: urn:rule:price-secondary:version:1
+    clauseId: price-secondary
+    sequence: 0
+    type: PriceLimitClause
+    priceLimitPercentage: {value: "0.08", unit: urn:unit:dimensionless}
+    axes: *stableAxes
+    provenance: *source
+  - logicalIri: urn:clause:price-conflict-a
+    versionIri: urn:clause:price-conflict-a:version:1
+    versionOf: urn:clause:price-conflict-a
+    ruleVersionIri: urn:rule:price-conflict-a:version:1
+    clauseId: price-conflict-a
+    sequence: 0
+    type: PriceLimitClause
+    priceLimitPercentage: {value: "0.07", unit: urn:unit:dimensionless}
+    axes: *stableAxes
+    provenance: *source
+  - logicalIri: urn:clause:price-conflict-b
+    versionIri: urn:clause:price-conflict-b:version:1
+    versionOf: urn:clause:price-conflict-b
+    ruleVersionIri: urn:rule:price-conflict-b:version:1
+    clauseId: price-conflict-b
+    sequence: 0
+    type: PriceLimitClause
+    priceLimitPercentage: {value: "0.09", unit: urn:unit:dimensionless}
+    axes: *stableAxes
+    provenance: *source
+  - logicalIri: urn:clause:settlement-revisioned
+    versionIri: urn:clause:settlement-revisioned:version:0
+    versionOf: urn:clause:settlement-revisioned
+    ruleVersionIri: urn:rule:settlement-revisioned:version:0
+    clauseId: settlement-revisioned
+    sequence: 0
+    type: SettlementCycleClause
+    settlementCycle: {value: 2, unit: urn:unit:business-day}
+    axes: *revisionV0Axes
+    provenance: *source
+  - logicalIri: urn:clause:settlement-revisioned
+    versionIri: urn:clause:settlement-revisioned:version:1
+    versionOf: urn:clause:settlement-revisioned
+    supersedes: urn:clause:settlement-revisioned:version:0
+    ruleVersionIri: urn:rule:settlement-revisioned:version:1
+    clauseId: settlement-revisioned
+    sequence: 0
+    type: SettlementCycleClause
+    settlementCycle: {value: 1, unit: urn:unit:business-day}
+    axes: *revisionV1Axes
+    provenance: *source
+
+applicabilities:
+  - logicalIri: urn:applicability:settlement-main
+    versionIri: urn:applicability:settlement-main:version:0
+    versionOf: urn:applicability:settlement-main
+    ruleVersionIri: urn:rule:settlement-main:version:0
+    ruleSetVersionIri: urn:rule-set:xnas:version:1
+    sourceLogicalIri: urn:authority:market-rulebook
+    priority: 10
+    scopes:
+      instrument: urn:instrument:alpha:version:1
+      venue: urn:facility:xnas:version:1
+    axes: *oldAxes
+    provenance: *source
+  - logicalIri: urn:applicability:settlement-main
+    versionIri: urn:applicability:settlement-main:version:1
+    versionOf: urn:applicability:settlement-main
+    supersedes: urn:applicability:settlement-main:version:0
+    ruleVersionIri: urn:rule:settlement-main:version:1
+    ruleSetVersionIri: urn:rule-set:xnas:version:1
+    sourceLogicalIri: urn:authority:market-rulebook
+    priority: 10
+    scopes:
+      instrument: urn:instrument:alpha:version:1
+      venue: urn:facility:xnas:version:1
+    axes: *currentAxes
+    provenance: *source
+  - logicalIri: urn:applicability:price-primary
+    versionIri: urn:applicability:price-primary:version:1
+    versionOf: urn:applicability:price-primary
+    ruleVersionIri: urn:rule:price-primary:version:1
+    ruleSetVersionIri: urn:rule-set:xnas:version:1
+    sourceLogicalIri: urn:authority:market-rulebook
+    priority: 10
+    scopes:
+      instrument: urn:instrument:alpha:version:1
+      venue: urn:facility:xnas:version:1
+    axes: *stableAxes
+    provenance: *source
+  - logicalIri: urn:applicability:price-secondary
+    versionIri: urn:applicability:price-secondary:version:1
+    versionOf: urn:applicability:price-secondary
+    ruleVersionIri: urn:rule:price-secondary:version:1
+    ruleSetVersionIri: urn:rule-set:xnas:version:1
+    sourceLogicalIri: urn:authority:market-rulebook
+    priority: 20
+    scopes:
+      instrument: urn:instrument:alpha:version:1
+      venue: urn:facility:xnas:version:1
+    axes: *stableAxes
+    provenance: *source
+  - logicalIri: urn:applicability:price-conflict-a
+    versionIri: urn:applicability:price-conflict-a:version:1
+    versionOf: urn:applicability:price-conflict-a
+    ruleVersionIri: urn:rule:price-conflict-a:version:1
+    ruleSetVersionIri: urn:rule-set:authority-a:version:1
+    sourceLogicalIri: urn:authority:a
+    priority: 100
+    scopes:
+      instrument: urn:instrument:beta:version:1
+      venue: urn:facility:xnas:version:1
+    axes: *stableAxes
+    provenance:
+      <<: *source
+      source: urn:authority:a
+  - logicalIri: urn:applicability:price-conflict-b
+    versionIri: urn:applicability:price-conflict-b:version:1
+    versionOf: urn:applicability:price-conflict-b
+    ruleVersionIri: urn:rule:price-conflict-b:version:1
+    ruleSetVersionIri: urn:rule-set:authority-b:version:1
+    sourceLogicalIri: urn:authority:b
+    priority: 1
+    scopes:
+      instrument: urn:instrument:beta:version:1
+      venue: urn:facility:xnas:version:1
+    axes: *stableAxes
+    provenance:
+      <<: *source
+      source: urn:authority:b
+  - logicalIri: urn:applicability:settlement-revisioned
+    versionIri: urn:applicability:settlement-revisioned:version:0
+    versionOf: urn:applicability:settlement-revisioned
+    ruleVersionIri: urn:rule:settlement-revisioned:version:0
+    ruleSetVersionIri: urn:rule-set:xnas:version:1
+    sourceLogicalIri: urn:authority:market-rulebook
+    priority: 10
+    scopes:
+      instrument: urn:instrument:gamma:version:1
+      venue: urn:facility:xnas:version:1
+    axes: *revisionV0Axes
+    provenance: *source
+  - logicalIri: urn:applicability:settlement-revisioned
+    versionIri: urn:applicability:settlement-revisioned:version:1
+    versionOf: urn:applicability:settlement-revisioned
+    supersedes: urn:applicability:settlement-revisioned:version:0
+    ruleVersionIri: urn:rule:settlement-revisioned:version:1
+    ruleSetVersionIri: urn:rule-set:xnas:version:1
+    sourceLogicalIri: urn:authority:market-rulebook
+    priority: 10
+    scopes:
+      instrument: urn:instrument:gamma:version:1
+      venue: urn:facility:xnas:version:1
+    axes: *revisionV1Axes
+    provenance: *source
+
+precedence:
+  - logicalIri: urn:precedence:price-primary-over-secondary
+    versionIri: urn:precedence:price-primary-over-secondary:version:1
+    versionOf: urn:precedence:price-primary-over-secondary
+    higherRuleVersionIri: urn:rule:price-primary:version:1
+    lowerRuleVersionIri: urn:rule:price-secondary:version:1
+    reason: reviewed primary rulebook precedence
+    axes: *stableAxes
+    provenance: *source
+
+ruleConflicts:
+  - <<: *conflictCommon
+    logicalIri: https://axiolune.ai/data/rule-conflict/sha256-cc7178f296464abd7fe23e41e935c7b6d4d342f0d861b98723ab1a1270859bcf
+    versionOf: https://axiolune.ai/data/rule-conflict/sha256-cc7178f296464abd7fe23e41e935c7b6d4d342f0d861b98723ab1a1270859bcf
+    versionIri: https://axiolune.ai/data/rule-conflict/sha256-cc7178f296464abd7fe23e41e935c7b6d4d342f0d861b98723ab1a1270859bcf/version/sha256-cb9dfd3f81827fc0ee3ec3f0073d321868afdecdda82f30ab752193ba550d355
+    evaluationRequestVersionIri: https://axiolune.ai/data/rule-evaluation-request/sha256-1c2418fe914a8e8c8b3cdc22529b778483a92766e28c89f0ee06115347be8b7d/version/sha256-b17e946df5951e54fcffbb1440e1429c54d8c52f00d8c5cfbfa5ef9097836bd2
+  - <<: *conflictCommon
+    logicalIri: https://axiolune.ai/data/rule-conflict/sha256-745f4b3d179a61d9100b68e0380ace3bf1a4e587ca7fed8173035775e65df3f1
+    versionOf: https://axiolune.ai/data/rule-conflict/sha256-745f4b3d179a61d9100b68e0380ace3bf1a4e587ca7fed8173035775e65df3f1
+    versionIri: https://axiolune.ai/data/rule-conflict/sha256-745f4b3d179a61d9100b68e0380ace3bf1a4e587ca7fed8173035775e65df3f1/version/sha256-cb9dfd3f81827fc0ee3ec3f0073d321868afdecdda82f30ab752193ba550d355
+    evaluationRequestVersionIri: https://axiolune.ai/data/rule-evaluation-request/sha256-6d9ac462f5bbb59debb2a7741662d3bf40cd74e97189eb6de7167c77c2dbd9be/version/sha256-b17e946df5951e54fcffbb1440e1429c54d8c52f00d8c5cfbfa5ef9097836bd2
+
+closures:
+  - id: https://axiolune.ai/data/fact-closure-assertion/sha256-5d66828dd68d3306feac419e846dc710a59af87a0de993be156a8e9d745f4d9c
+    targetVersionIri: urn:applicability:price-conflict-b:version:1
+    axis: availability
+    closedAt: "2026-07-20T00:00:00Z"
+    causeKind: sourceWithdrawal
+    evidenceRef: urn:evidence:authority-b-source-withdrawal
+    generatingContextRef: urn:validation-run:market-rules-v03
+  - id: https://axiolune.ai/data/fact-closure-assertion/sha256-0b47579aa0ddc070d455afc4f2278d2d3d887d48e364016810ae8bb730f3ca15
+    targetVersionIri: urn:rule:settlement-revisioned:version:0
+    axis: knowledge
+    closedAt: "2026-07-10T00:00:00Z"
+    causeKind: successor
+    causeVersionIri: urn:rule:settlement-revisioned:version:1
+    evidenceRef: urn:rule:settlement-revisioned:version:1
+    generatingContextRef: urn:validation-run:market-rules-v03
+  - id: https://axiolune.ai/data/fact-closure-assertion/sha256-dcd25d3fb978816a52bf2a517ecd869f10a61f0c8dedb22b1f9749e236afe8e3
+    targetVersionIri: urn:instrument:alpha:version:0
+    axis: knowledge
+    closedAt: "2026-06-01T00:00:01Z"
+    causeKind: successor
+    causeVersionIri: urn:instrument:alpha:version:1
+    evidenceRef: urn:instrument:alpha:version:1
+    generatingContextRef: urn:validation-run:market-rules-v03
+  - id: https://axiolune.ai/data/fact-closure-assertion/sha256-1f429f7edbd10c48eb7acdb339f03e8bdff54699664990d8544967d507a401ca
+    targetVersionIri: urn:rule:settlement-main:version:0
+    axis: knowledge
+    closedAt: "2026-06-01T00:00:01Z"
+    causeKind: successor
+    causeVersionIri: urn:rule:settlement-main:version:1
+    evidenceRef: urn:rule:settlement-main:version:1
+    generatingContextRef: urn:validation-run:market-rules-v03
+  - id: https://axiolune.ai/data/fact-closure-assertion/sha256-cf8aca3564c0cf8583bbedccb3704f54051f98106cc66bbbd161e1d06824aebc
+    targetVersionIri: urn:clause:settlement-main:version:0
+    axis: knowledge
+    closedAt: "2026-06-01T00:00:01Z"
+    causeKind: successor
+    causeVersionIri: urn:clause:settlement-main:version:1
+    evidenceRef: urn:clause:settlement-main:version:1
+    generatingContextRef: urn:validation-run:market-rules-v03
+  - id: https://axiolune.ai/data/fact-closure-assertion/sha256-f4aabaa45fa0831c962e0c2ccec4dfb420707d680f80498f73f8574568d914ea
+    targetVersionIri: urn:applicability:settlement-main:version:0
+    axis: knowledge
+    closedAt: "2026-06-01T00:00:01Z"
+    causeKind: successor
+    causeVersionIri: urn:applicability:settlement-main:version:1
+    evidenceRef: urn:applicability:settlement-main:version:1
+    generatingContextRef: urn:validation-run:market-rules-v03
+  - id: https://axiolune.ai/data/fact-closure-assertion/sha256-a0db835ad6e3d728aa8c52efa09d09a2d3c1df122a465ef58e8a38000865b2ee
+    targetVersionIri: urn:clause:settlement-revisioned:version:0
+    axis: knowledge
+    closedAt: "2026-07-10T00:00:00Z"
+    causeKind: successor
+    causeVersionIri: urn:clause:settlement-revisioned:version:1
+    evidenceRef: urn:clause:settlement-revisioned:version:1
+    generatingContextRef: urn:validation-run:market-rules-v03
+  - id: https://axiolune.ai/data/fact-closure-assertion/sha256-97a8860b2f244accc64a9cb37fcb12aadb82a107e7fc3090bcca5da70a6daa3b
+    targetVersionIri: urn:applicability:settlement-revisioned:version:0
+    axis: knowledge
+    closedAt: "2026-07-10T00:00:00Z"
+    causeKind: successor
+    causeVersionIri: urn:applicability:settlement-revisioned:version:1
+    evidenceRef: urn:applicability:settlement-revisioned:version:1
+    generatingContextRef: urn:validation-run:market-rules-v03
+
+expected: {valid: true}

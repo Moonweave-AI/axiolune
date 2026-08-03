@@ -1,0 +1,38 @@
+schemaVersion: '1.0'
+description: Negative exotic CA — missing election deadline or ratio
+fixtures:
+  - id: post-trade-exotic-tender-negative
+    expectedResult: rejected
+    type: CorporateActionEvent
+    instance:
+      events:
+        - kind: tenderOffer
+          affectedSecurityIri: https://example.test/security/target
+          dates:
+            announcement: '2026-08-01'
+            ex: '2026-08-15'
+          sourceAuthorityVersionIri: https://example.test/fact/party/authority/version/1
+
+  - id: post-trade-exotic-spinoff-negative
+    expectedResult: rejected
+    type: CorporateActionEvent
+    instance:
+      events:
+        - kind: spinOff
+          affectedSecurityIri: https://example.test/security/parent
+          dates:
+            announcement: '2026-08-02'
+            ex: '2026-08-16'
+          sourceAuthorityVersionIri: https://example.test/fact/party/authority/version/1
+
+  - id: post-trade-exotic-exchange-negative
+    expectedResult: rejected
+    type: CorporateActionEvent
+    instance:
+      events:
+        - kind: exchangeOffer
+          affectedSecurityIri: https://example.test/security/old-bond
+          dates:
+            announcement: '2026-08-03'
+            ex: '2026-08-20'
+          sourceAuthorityVersionIri: https://example.test/fact/party/authority/version/1

@@ -1,201 +1,154 @@
-# Axiolune M2 Finance — Portfolio & Positions Negative Test Fixtures
-# Module: fin-portfolio-positions
-# Version: 0.1.0
-# Purpose: Demonstrate invalid temporal constraints, missing required fields, and price-to-valuation traceability violations
+schemaVersion: "1.0"
 fixtures:
-  - id: portfolio-neg-001
-    description: holding snapshot with missing availableFrom (must fail-closed per ADR-012)
-    type: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
-    instance:
-      iri: https://axiolune.ai/data/holdings/hold-neg-001
-      heldInPortfolio: https://axiolune.ai/data/portfolios/port-001
-      heldInstrument: https://axiolune.ai/data/instruments/inst-001
-      hasQuantity:
-        type: QuantityValue
-        hasNumericAmount: '100.00'
-        hasUnitCode: share
-      hasPositionSide: Long
-      validFrom: '2026-01-15T00:00:00Z'
-      knowledgeFrom: '2026-01-15T16:00:00Z'
-      availableFrom: null
-      source: portfolio-service-eod
+  - id: portfolio-v03-negative-portfolio-missing-id
+    description: Portfolio cannot be materialized without its stable portfolioId.
+    profile: portfolio-positions-v03-shacl
+    target: Portfolio
+    omit: [portfolioId]
     expectedResult: rejected
-    violationType: missing-availability-time
-    note: 'ADR-012 §2.5: availableFrom missing must fail-closed'
-  - id: portfolio-neg-002
-    description: holding snapshot queried before availableFrom (look-ahead bias)
-    type: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
-    instance:
-      iri: https://axiolune.ai/data/holdings/hold-neg-002
-      heldInPortfolio: https://axiolune.ai/data/portfolios/port-001
-      heldInstrument: https://axiolune.ai/data/instruments/inst-001
-      hasQuantity:
-        type: QuantityValue
-        hasNumericAmount: '100.00'
-        hasUnitCode: share
-      hasPositionSide: Long
-      validFrom: '2026-01-15T00:00:00Z'
-      knowledgeFrom: '2026-01-15T16:00:00Z'
-      availableFrom: '2026-01-15T20:00:00Z'
-      source: portfolio-service-eod
-    pitQuery:
-      asOfValid: '2026-01-15T12:00:00Z'
-      asOfKnowledge: '2026-01-15T18:00:00Z'
-      asOfAvailable: '2026-01-15T19:00:00Z'
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/portfolio-v03-negative-portfolio-missing-id
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioId
+
+  - id: portfolio-v03-negative-membership-missing-account
+    description: PortfolioAccountMembership requires one Foundation FinancialAccount.
+    profile: portfolio-positions-v03-shacl
+    target: PortfolioAccountMembership
+    omit: [memberAccount]
     expectedResult: rejected
-    note: 'PIT query fails: asOfAvailable < availableFrom (prevents future data leakage)'
-  - id: portfolio-neg-003
-    description: holding snapshot queried before knowledgeFrom
-    type: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
-    instance:
-      iri: https://axiolune.ai/data/holdings/hold-neg-003
-      heldInPortfolio: https://axiolune.ai/data/portfolios/port-001
-      heldInstrument: https://axiolune.ai/data/instruments/inst-001
-      hasQuantity:
-        type: QuantityValue
-        hasNumericAmount: '100.00'
-        hasUnitCode: share
-      hasPositionSide: Long
-      validFrom: '2026-01-15T00:00:00Z'
-      knowledgeFrom: '2026-01-15T16:00:00Z'
-      availableFrom: '2026-01-15T20:00:00Z'
-      source: portfolio-service-eod
-    pitQuery:
-      asOfValid: '2026-01-15T12:00:00Z'
-      asOfKnowledge: '2026-01-15T10:00:00Z'
-      asOfAvailable: '2026-01-15T21:00:00Z'
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/portfolio-v03-negative-membership-missing-account
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembership/role/memberAccount
+
+  - id: portfolio-v03-negative-mandate-missing-manager
+    description: Management mandate requires exactly one managing Party.
+    profile: portfolio-positions-v03-shacl
+    target: PortfolioManagementMandate
+    omit: [managingParty]
     expectedResult: rejected
-    note: 'PIT query fails: asOfKnowledge < knowledgeFrom (knowledge not yet established)'
-  - id: portfolio-neg-004
-    description: holding snapshot queried before validFrom
-    type: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
-    instance:
-      iri: https://axiolune.ai/data/holdings/hold-neg-004
-      heldInPortfolio: https://axiolune.ai/data/portfolios/port-001
-      heldInstrument: https://axiolune.ai/data/instruments/inst-001
-      hasQuantity:
-        type: QuantityValue
-        hasNumericAmount: '100.00'
-        hasUnitCode: share
-      hasPositionSide: Long
-      validFrom: '2026-01-15T00:00:00Z'
-      knowledgeFrom: '2026-01-15T16:00:00Z'
-      availableFrom: '2026-01-15T20:00:00Z'
-      source: portfolio-service-eod
-    pitQuery:
-      asOfValid: '2026-01-14T12:00:00Z'
-      asOfKnowledge: '2026-01-15T18:00:00Z'
-      asOfAvailable: '2026-01-15T21:00:00Z'
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/portfolio-v03-negative-mandate-missing-manager
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioManagementMandate/role/managingParty
+
+  - id: portfolio-v03-negative-holding-missing-quantity
+    description: HoldingSnapshot requires its canonical holdingQuantity value.
+    profile: portfolio-positions-v03-shacl
+    target: HoldingSnapshot
+    omit: [holdingQuantity]
     expectedResult: rejected
-    note: 'PIT query fails: asOfValid < validFrom (business effective time not reached)'
-  - id: portfolio-neg-005
-    description: temporal interval inversion (validFrom > validTo)
-    type: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
-    instance:
-      iri: https://axiolune.ai/data/holdings/hold-neg-005
-      heldInPortfolio: https://axiolune.ai/data/portfolios/port-001
-      heldInstrument: https://axiolune.ai/data/instruments/inst-001
-      hasQuantity:
-        type: QuantityValue
-        hasNumericAmount: '100.00'
-        hasUnitCode: share
-      hasPositionSide: Long
-      validFrom: '2026-01-20T00:00:00Z'
-      validTo: '2026-01-15T00:00:00Z'
-      knowledgeFrom: '2026-01-15T16:00:00Z'
-      availableFrom: '2026-01-15T20:00:00Z'
-      source: portfolio-service-eod
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/portfolio-v03-negative-holding-missing-quantity
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/portfolio-positions/holdingQuantity
+
+  - id: portfolio-v03-negative-position-mutable-knowledge-end
+    description: PositionSnapshot fact versions cannot carry mutable knowledgeTo.
+    profile: portfolio-positions-v03-shacl
+    target: PositionSnapshot
+    add: [knowledgeTo]
     expectedResult: rejected
-    violationType: interval-inversion
-    note: 'Interval inversion: validTo < validFrom violates ADR-012'
-  - id: portfolio-neg-006
-    description: valuation using future price (price.availableFrom > valuation.asOfAvailable)
-    type: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation
-    instance:
-      iri: https://axiolune.ai/data/valuations/val-neg-006
-      valuedHolding: https://axiolune.ai/data/holdings/hold-neg-006
-      usedPriceObservation: https://axiolune.ai/data/prices/price-neg-006
-      hasMarketValue:
-        type: MonetaryAmount
-        hasNumericAmount: '15500.00'
-        hasCurrencyCode: USD
-      hasValuationMethod: MarkToMarket
-      hasCurrencyCode: USD
-      validFrom: '2026-01-15T21:00:00Z'
-      knowledgeFrom: '2026-01-15T22:00:00Z'
-      availableFrom: '2026-01-15T22:30:00Z'
-      source: valuation-engine
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MaxCountConstraintComponent
+      focus: https://axiolune.ai/data/test/portfolio-v03-negative-position-mutable-knowledge-end
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo
+
+  - id: portfolio-v03-negative-external-basis-missing-observation-stream
+    description: External cost basis cannot omit the logical provider observation stream that scopes externalBasisId.
+    profile: portfolio-positions-v03-shacl
+    target: ExternalCostBasisObservation
+    omit: [externalBasisObservationStream]
     expectedResult: rejected
-    note: >-
-      CQ-S4 constraint violation: valuation uses future price (price available 2026-01-16T21:30 > valuation
-      2026-01-15T22:30)
-  - id: portfolio-neg-007
-    description: valuation with missing usedPriceObservation (breaks CQ-S4 traceability)
-    type: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation
-    instance:
-      iri: https://axiolune.ai/data/valuations/val-neg-007
-      valuedHolding: https://axiolune.ai/data/holdings/hold-neg-007
-      usedPriceObservation: null
-      hasMarketValue:
-        type: MonetaryAmount
-        hasNumericAmount: '15000.00'
-        hasCurrencyCode: USD
-      hasValuationMethod: MarkToMarket
-      hasCurrencyCode: USD
-      validFrom: '2026-01-15T21:00:00Z'
-      knowledgeFrom: '2026-01-15T22:00:00Z'
-      availableFrom: '2026-01-15T22:30:00Z'
-      source: valuation-engine
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/portfolio-v03-negative-external-basis-missing-observation-stream
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/portfolio-positions/ExternalCostBasisObservation/role/externalBasisObservationStream
+
+  - id: portfolio-v03-negative-external-basis-missing-definition
+    description: External cost basis cannot omit the exact calculation-definition version used by the source.
+    profile: portfolio-positions-v03-shacl
+    target: ExternalCostBasisObservation
+    omit: [externalBasisDefinition]
     expectedResult: rejected
-    note: 'SHACL validation fails: usedPriceObservation minCount=1 violated'
-  - id: portfolio-neg-008
-    description: holding snapshot with missing required quantity
-    type: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
-    instance:
-      iri: https://axiolune.ai/data/holdings/hold-neg-008
-      heldInPortfolio: https://axiolune.ai/data/portfolios/port-001
-      heldInstrument: https://axiolune.ai/data/instruments/inst-001
-      hasQuantity: null
-      hasPositionSide: Long
-      validFrom: '2026-01-15T00:00:00Z'
-      knowledgeFrom: '2026-01-15T16:00:00Z'
-      availableFrom: '2026-01-15T20:00:00Z'
-      source: portfolio-service-eod
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/portfolio-v03-negative-external-basis-missing-definition
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/portfolio-positions/ExternalCostBasisObservation/role/externalBasisDefinition
+
+  - id: portfolio-v03-negative-valuation-both-inputs
+    description: PositionValuation cannot select both holding and position inputs.
+    profile: portfolio-positions-v03-shacl
+    target: PositionValuation
+    input: both
     expectedResult: rejected
-    note: 'SHACL validation fails: hasQuantity minCount=1 violated'
-  - id: portfolio-neg-009
-    description: holding snapshot with missing required heldInstrument
-    type: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
-    instance:
-      iri: https://axiolune.ai/data/holdings/hold-neg-009
-      heldInPortfolio: https://axiolune.ai/data/portfolios/port-001
-      heldInstrument: null
-      hasQuantity:
-        type: QuantityValue
-        hasNumericAmount: '100.00'
-        hasUnitCode: share
-      hasPositionSide: Long
-      validFrom: '2026-01-15T00:00:00Z'
-      knowledgeFrom: '2026-01-15T16:00:00Z'
-      availableFrom: '2026-01-15T20:00:00Z'
-      source: portfolio-service-eod
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#XoneConstraintComponent
+      focus: https://axiolune.ai/data/test/portfolio-v03-negative-valuation-both-inputs
+      severity: http://www.w3.org/ns/shacl#Violation
+
+  - id: portfolio-v03-negative-valuation-no-input
+    description: PositionValuation cannot omit both snapshot input branches.
+    profile: portfolio-positions-v03-shacl
+    target: PositionValuation
+    input: none
     expectedResult: rejected
-    note: 'SHACL validation fails: heldInstrument minCount=1 violated'
-  - id: portfolio-neg-010
-    description: position lot with missing required lotForInstrument
-    type: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot
-    instance:
-      iri: https://axiolune.ai/data/lots/lot-neg-010
-      lotForInstrument: null
-      lotInAccount: https://axiolune.ai/data/accounts/acc-001
-      hasQuantity:
-        type: QuantityValue
-        hasNumericAmount: '50.00'
-        hasUnitCode: share
-      hasPositionSide: Long
-      validFrom: '2026-01-15T00:00:00Z'
-      knowledgeFrom: '2026-01-15T16:00:00Z'
-      availableFrom: '2026-01-15T20:00:00Z'
-      source: execution-tracker
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#XoneConstraintComponent
+      focus: https://axiolune.ai/data/test/portfolio-v03-negative-valuation-no-input
+      severity: http://www.w3.org/ns/shacl#Violation
+
+  - id: portfolio-v03-negative-valuation-missing-market-value
+    description: PositionValuation requires exactly one M3 MonetaryAmount marketValue.
+    profile: portfolio-positions-v03-shacl
+    target: PositionValuation
+    input: holding
+    omit: [marketValue]
     expectedResult: rejected
-    note: 'SHACL validation fails: lotForInstrument minCount=1 violated'
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/portfolio-v03-negative-valuation-missing-market-value
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/portfolio-positions/marketValue
+
+  - id: portfolio-v03-negative-valuation-money-without-currency
+    description: Canonical M3 MonetaryAmount must contain its sole currency truth.
+    profile: portfolio-positions-v03-shacl
+    target: PositionValuation
+    input: holding
+    omit: [moneyCurrency]
+    expectedResult: rejected
+    expectedViolations:
+      - component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+        focus: https://axiolune.ai/data/test/portfolio-v03-negative-valuation-money-without-currency/money/market-value
+        severity: http://www.w3.org/ns/shacl#Violation
+        path: https://axiolune.ai/ontology/meta/core/properties/hasCurrency
+        sourceShape: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount/shape/component/fe9bfb7364d0a0cccc1676ba
+      - component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+        focus: https://axiolune.ai/data/test/portfolio-v03-negative-valuation-money-without-currency/money/market-value
+        severity: http://www.w3.org/ns/shacl#Violation
+        path: https://axiolune.ai/ontology/meta/core/properties/hasCurrency
+        sourceShape: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount/shape/component/fe9bfb7364d0a0cccc1676ba
+      - component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+        focus: https://axiolune.ai/data/test/portfolio-v03-negative-valuation-money-without-currency/money/market-value
+        severity: http://www.w3.org/ns/shacl#Violation
+        path: https://axiolune.ai/ontology/meta/core/properties/hasCurrency
+        sourceShape: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount/shape/component/fe9bfb7364d0a0cccc1676ba
+      - component: http://www.w3.org/ns/shacl#NodeConstraintComponent
+        focus: https://axiolune.ai/data/test/portfolio-v03-negative-valuation-money-without-currency
+        severity: http://www.w3.org/ns/shacl#Violation
+        path: https://axiolune.ai/ontology/finance/portfolio-positions/marketValue
+        sourceShape: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation/shape/attribute/19e33c8fe8d7c9734010a76d
+      - component: http://www.w3.org/ns/shacl#NodeConstraintComponent
+        focus: https://axiolune.ai/data/test/portfolio-v03-negative-valuation-money-without-currency
+        severity: http://www.w3.org/ns/shacl#Violation
+        path: https://axiolune.ai/ontology/finance/portfolio-positions/marketValue
+        sourceShape: https://axiolune.ai/ontology/finance/portfolio-positions/marketValueShape

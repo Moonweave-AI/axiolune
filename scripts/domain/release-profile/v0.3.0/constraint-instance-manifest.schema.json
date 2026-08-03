@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axiolune.ai/schemas/m2/0.3.0/constraint-instance-manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "profileRef", "entries"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "profileRef": { "type": "string", "format": "uri" },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/entry" }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "artifactRef": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "iri"],
+          "properties": {
+            "kind": { "const": "iri" },
+            "iri": { "type": "string", "format": "uri" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "root", "path"],
+          "properties": {
+            "kind": { "const": "path" },
+            "root": {
+              "enum": ["sourceTree", "buildEvidence", "payload"]
+            },
+            "path": { "type": "string", "minLength": 1 }
+          }
+        }
+      ]
+    },
+    "expectationBase": {
+      "type": "object",
+      "properties": {
+        "fixtureId": { "type": "string", "pattern": "^[\\x21-\\x7e]+$" },
+        "artifactRef": { "$ref": "#/$defs/artifactRef" },
+        "artifactDigest": { "$ref": "#/$defs/digest" },
+        "schemaRef": { "$ref": "#/$defs/artifactRef" },
+        "schemaDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "positiveExpectation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fixtureId", "artifactRef", "artifactDigest", "schemaRef",
+        "schemaDigest", "expectedResult"
+      ],
+      "properties": {
+        "fixtureId": { "type": "string", "pattern": "^[\\x21-\\x7e]+$" },
+        "artifactRef": { "$ref": "#/$defs/artifactRef" },
+        "artifactDigest": { "$ref": "#/$defs/digest" },
+        "schemaRef": { "$ref": "#/$defs/artifactRef" },
+        "schemaDigest": { "$ref": "#/$defs/digest" },
+        "expectedResult": { "const": "conforms" }
+      }
+    },
+    "negativeExpectation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fixtureId", "artifactRef", "artifactDigest", "schemaRef",
+        "schemaDigest", "expectedResult"
+      ],
+      "properties": {
+        "fixtureId": { "type": "string", "pattern": "^[\\x21-\\x7e]+$" },
+        "artifactRef": { "$ref": "#/$defs/artifactRef" },
+        "artifactDigest": { "$ref": "#/$defs/digest" },
+        "schemaRef": { "$ref": "#/$defs/artifactRef" },
+        "schemaDigest": { "$ref": "#/$defs/digest" },
+        "expectedResult": { "const": "violates" }
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "constraintInstanceId", "originKind", "originRef", "targetRef",
+        "component", "severity", "generatedOrAuthored",
+        "positiveExpectation", "negativeExpectation"
+      ],
+      "properties": {
+        "constraintInstanceId": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "originKind": {
+          "enum": ["constraintDefinition", "generatedConstraint"]
+        },
+        "originRef": { "type": "string", "format": "uri" },
+        "targetRef": { "type": "string", "format": "uri" },
+        "pathKind": { "enum": ["iri", "posixPath"] },
+        "path": { "type": "string", "minLength": 1 },
+        "component": { "type": "string", "format": "uri" },
+        "severity": { "enum": ["violation", "warning", "info"] },
+        "generatedOrAuthored": { "enum": ["generated", "authored"] },
+        "positiveExpectation": { "$ref": "#/$defs/positiveExpectation" },
+        "negativeExpectation": { "$ref": "#/$defs/negativeExpectation" }
+      }
+    }
+  }
+}

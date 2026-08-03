@@ -1,6 +1,6 @@
 # Axiolune M2 领域本体实施计划
 
-**状态**：Proposed — 作为 M2 启动与逐模块签收的实施基线  
+**状态**：Accepted — M2 v1.0.0 实施基线（Round-12 签收）  
 **日期**：2026-07-30  
 **上游基线**：已接受的 M3 v0.5.1（以发布清单、模块摘要和提交 `1fefc18` 为准）  
 **适用范围**：金融投研、组合与交易语义层（M2）；不包含生产 M1 数据接入、运行时编排或真实外部下单
@@ -155,7 +155,7 @@ M3 语义字段不承载所有研究笔记。以下 sidecar 工件是 M2 发布�
 
 | 工件 | 每条记录必须包含 | 用途 |
 |---|---|---|
-| `references.lock.yaml` | authority、release/commit、license、retrieval date、artifact digest、入口 locator | 固定外部知识闭包和复现边界 |
+| `references.bibliography.yaml` | authority、release/commit、license、localPath、locator | 外部对齐与双轨 gap 参考书目（无 digest 锁） |
 | 术语卡 | term、IRI、ISO 704 定义、反例/排除项、来源定位、候选 M3 类型、状态 | 防止同名异义和先有代码后补定义 |
 | `alignments.yaml` | local IRI、target IRI、关系、source release/digest、rationale、review | 使互操作主张可审计 |
 | CQ 卡 | CQ ID、业务问题、范围、查询/probe、期望结果、依赖元素、风险等级 | 将需求直接连接至验证 |
@@ -258,7 +258,7 @@ ontology/domain/finance/
   post-trade-operations/
 
 docs/ontology/
-  references.lock.yaml
+  references.bibliography.yaml
   terminology/
   competency-questions/
   alignments/
@@ -596,7 +596,7 @@ ADR 编号以正式 register 为准；在未确认空号前不得擅自占用。
 
 ## 14. 参考资料与使用方式
 
-以下资料为本计划的设计依据；实施时必须在 `references.lock.yaml` 中锁定实际使用的 release/commit/digest，不能只保留网页链接。
+以下资料为本计划的设计依据；实施时在 `references.bibliography.yaml` 中记录实际使用的 release 与 localPath，不能只保留网页链接。不要求 artifact digest 字节锁（ADR-015）。
 
 | 类别 | 资料 | 在本计划中的用途 |
 |---|---|---|
@@ -616,7 +616,7 @@ ADR 编号以正式 register 为准；在未确认空号前不得擅自占用。
 
 1. 确认 M3 release manifest、四个上游模块摘要及生成器版本；
 2. 接受 M2 Authoring Profile 的 ADR，并完成 G0 最小 fixture；
-3. 建立 `references.lock.yaml`、术语卡、CQ、alignment 和 traceability 模板；
+3. 建立 `references.bibliography.yaml`、术语卡、CQ、alignment 和 traceability 模板；
 4. 锁定真实 SHACL-SPARQL runner 与 OWL 一致性检查的 CI 策略；
 5. 开始 `fin-foundation`、`fin-market-structure`、`fin-market-rules`、`fin-instruments` 的证据和 CQ，不写任何前向引用；
 6. 以 Slice A 的合成数据完成第一个 M2→M1 可验证闭环；

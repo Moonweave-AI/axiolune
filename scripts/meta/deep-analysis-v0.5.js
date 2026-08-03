@@ -34,8 +34,8 @@ function analyzeDataBinding() {
   const dataBindingPath = path.join(__dirname, '../../ontology/meta/data-binding-meta-model.yaml');
 
   if (!fs.existsSync(dataBindingPath)) {
-    console.log(`${colors.yellow}⚠️  v0.5 module not found, checking v0.4...${colors.reset}`);
-    return analyzeV04Compliance();
+    console.error(`${colors.red}Data-binding module is missing; v0.5 analysis cannot run.${colors.reset}`);
+    return 1;
   }
 
   const dataBinding = loadYaml(dataBindingPath);
@@ -44,8 +44,9 @@ function analyzeDataBinding() {
   console.log(`Module Version: ${colors.cyan}${version}${colors.reset}\n`);
 
   if (version !== '0.5.0') {
-    console.log(`${colors.yellow}⚠️  Expected v0.5.0, found ${version}${colors.reset}\n`);
-    return analyzeV04Compliance();
+    console.error(`${colors.red}This validator is pinned to v0.5.0 and refuses ${version}. ` +
+      `Use scripts/meta/validate-structure.js --strict for the current contract.${colors.reset}\n`);
+    return 1;
   }
 
   // ADR-011 Compliance Checks

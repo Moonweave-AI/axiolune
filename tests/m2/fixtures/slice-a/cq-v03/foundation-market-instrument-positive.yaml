@@ -1,0 +1,362 @@
+fixtureId: foundation-market-instrument-cq-positive-v1
+functionVersion: axiolune-m2-cq-foundation-market-instrument/v1
+graphFixture: foundation-market-instrument-graph.yaml
+templates:
+  pivot: &pivot
+    asOfValid: '2024-07-10T00:00:00Z'
+    asOfKnowledge: '2024-07-10T00:00:00Z'
+    asOfAvailable: '2024-07-10T00:00:00Z'
+    referenceTime: '2024-07-10T00:00:00Z'
+cases:
+  - caseId: cq-f1-same-subject
+    cqId: CQ-F1
+    query:
+      pivot: *pivot
+      bindings:
+        - assignmentVersionIri: urn:identifier-assignment:acme-isin:v1
+          schemeVersionIri: urn:identifier-scheme:isin:v1
+          valueVersionIri: urn:identifier-value:isin:acme:v1
+          authorizationVersionIri: urn:identifier-authorization:isin-iso6166:v1
+        - assignmentVersionIri: urn:identifier-assignment:acme-internal:v1
+          schemeVersionIri: urn:identifier-scheme:acme-internal:v1
+          valueVersionIri: urn:identifier-value:internal:acme:v1
+          authorizationVersionIri: urn:identifier-authorization:internal-acme:v1
+    expected:
+      status: ok
+      rows:
+        - resolution: sameSubject
+          subjectLogicalIri: urn:instrument:acme
+          subjectVersionIris:
+            - urn:instrument:acme:v1
+          assignmentVersionIris:
+            - urn:identifier-assignment:acme-internal:v1
+            - urn:identifier-assignment:acme-isin:v1
+  - caseId: cq-f1-explicit-conflict
+    cqId: CQ-F1
+    query:
+      pivot: *pivot
+      bindings:
+        - assignmentVersionIri: urn:identifier-assignment:conflict-acme:v1
+          schemeVersionIri: urn:identifier-scheme:isin:v1
+          valueVersionIri: urn:identifier-value:isin:conflict:v1
+          authorizationVersionIri: urn:identifier-authorization:isin-iso6166:v1
+        - assignmentVersionIri: urn:identifier-assignment:conflict-beta:v1
+          schemeVersionIri: urn:identifier-scheme:isin:v1
+          valueVersionIri: urn:identifier-value:isin:conflict:v1
+          authorizationVersionIri: urn:identifier-authorization:isin-iso6166:v1
+    expected:
+      status: ok
+      rows:
+        - resolution: IdentifierAssignmentConflict
+          conflictVersionIri: urn:identifier-conflict:isin-us0000000010:v1
+          subjectLogicalIris:
+            - urn:instrument:acme
+            - urn:instrument:beta
+          assignmentVersionIris:
+            - urn:identifier-assignment:conflict-acme:v1
+            - urn:identifier-assignment:conflict-beta:v1
+  - caseId: cq-f1-does-not-require-issuance
+    cqId: CQ-F1
+    mutations:
+      - op: set
+        path: issuances
+        value: []
+    query:
+      pivot: *pivot
+      bindings:
+        - assignmentVersionIri: urn:identifier-assignment:acme-isin:v1
+          schemeVersionIri: urn:identifier-scheme:isin:v1
+          valueVersionIri: urn:identifier-value:isin:acme:v1
+          authorizationVersionIri: urn:identifier-authorization:isin-iso6166:v1
+        - assignmentVersionIri: urn:identifier-assignment:acme-internal:v1
+          schemeVersionIri: urn:identifier-scheme:acme-internal:v1
+          valueVersionIri: urn:identifier-value:internal:acme:v1
+          authorizationVersionIri: urn:identifier-authorization:internal-acme:v1
+    expected:
+      status: ok
+      rows:
+        - resolution: sameSubject
+          subjectLogicalIri: urn:instrument:acme
+          subjectVersionIris:
+            - urn:instrument:acme:v1
+          assignmentVersionIris:
+            - urn:identifier-assignment:acme-internal:v1
+            - urn:identifier-assignment:acme-isin:v1
+  - caseId: cq-f1-different-subjects
+    cqId: CQ-F1
+    query:
+      pivot: *pivot
+      bindings:
+        - assignmentVersionIri: urn:identifier-assignment:acme-internal:v1
+          schemeVersionIri: urn:identifier-scheme:acme-internal:v1
+          valueVersionIri: urn:identifier-value:internal:acme:v1
+          authorizationVersionIri: urn:identifier-authorization:internal-acme:v1
+        - assignmentVersionIri: urn:identifier-assignment:beta-internal:v1
+          schemeVersionIri: urn:identifier-scheme:acme-internal:v1
+          valueVersionIri: urn:identifier-value:internal:beta:v1
+          authorizationVersionIri: urn:identifier-authorization:internal-acme:v1
+    expected:
+      status: ok
+      rows:
+        - resolution: differentSubjects
+          subjectLogicalIris:
+            - urn:instrument:acme
+            - urn:instrument:beta
+          assignmentVersionIris:
+            - urn:identifier-assignment:acme-internal:v1
+            - urn:identifier-assignment:beta-internal:v1
+  - caseId: cq-f2-usd-valid-in-us
+    cqId: CQ-F2
+    query:
+      pivot: *pivot
+      jurisdictionLogicalIri: urn:jurisdiction:us
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: ok
+      rows:
+        - jurisdictionLogicalIri: urn:jurisdiction:us
+          currencyLogicalIri: urn:currency:usd
+          currencyUsageVersionIri: urn:currency-usage:usd-us:v1
+          registryEntryVersionIri: urn:iso4217-entry:usd:v1
+          registryAuthorityLogicalIri: urn:authority:iso4217
+          alphabeticCode: USD
+          numericCode: '840'
+          minorUnit: 2
+  - caseId: cq-f2-prior-version-before-closure
+    cqId: CQ-F2
+    query:
+      pivot:
+        asOfValid: '2024-03-31T23:59:59Z'
+        asOfKnowledge: '2024-03-31T23:59:59Z'
+        asOfAvailable: '2024-03-31T23:59:59Z'
+        referenceTime: '2024-07-10T00:00:00Z'
+      jurisdictionLogicalIri: urn:jurisdiction:us
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: ok
+      rows:
+        - jurisdictionLogicalIri: urn:jurisdiction:us
+          currencyLogicalIri: urn:currency:usd
+          currencyUsageVersionIri: urn:currency-usage:usd-us:v0
+          registryEntryVersionIri: urn:iso4217-entry:usd:v1
+          registryAuthorityLogicalIri: urn:authority:iso4217
+          alphabeticCode: USD
+          numericCode: '840'
+          minorUnit: 2
+  - caseId: cq-f2-prior-version-one-nanosecond-before-both-closures
+    cqId: CQ-F2
+    query:
+      pivot:
+        asOfValid: '2024-04-01T00:00:00Z'
+        asOfKnowledge: '2024-03-31T23:59:59.999999999Z'
+        asOfAvailable: '2024-04-01T00:00:00.999999999Z'
+        referenceTime: '2024-07-10T00:00:00Z'
+      jurisdictionLogicalIri: urn:jurisdiction:us
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: ok
+      rows:
+        - jurisdictionLogicalIri: urn:jurisdiction:us
+          currencyLogicalIri: urn:currency:usd
+          currencyUsageVersionIri: urn:currency-usage:usd-us:v0
+          registryEntryVersionIri: urn:iso4217-entry:usd:v1
+          registryAuthorityLogicalIri: urn:authority:iso4217
+          alphabeticCode: USD
+          numericCode: '840'
+          minorUnit: 2
+  - caseId: cq-f2-successor-at-both-closure-boundaries
+    cqId: CQ-F2
+    query:
+      pivot:
+        asOfValid: '2024-04-01T00:00:01Z'
+        asOfKnowledge: '2024-04-01T00:00:00Z'
+        asOfAvailable: '2024-04-01T00:00:01Z'
+        referenceTime: '2024-07-10T00:00:00Z'
+      jurisdictionLogicalIri: urn:jurisdiction:us
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: ok
+      rows:
+        - jurisdictionLogicalIri: urn:jurisdiction:us
+          currencyLogicalIri: urn:currency:usd
+          currencyUsageVersionIri: urn:currency-usage:usd-us:v1
+          registryEntryVersionIri: urn:iso4217-entry:usd:v1
+          registryAuthorityLogicalIri: urn:authority:iso4217
+          alphabeticCode: USD
+          numericCode: '840'
+          minorUnit: 2
+  - caseId: cq-ms1-operating-mic
+    cqId: CQ-MS1
+    query:
+      pivot: *pivot
+      micValueVersionIri: urn:identifier-value:mic:xnas:v1
+    expected:
+      status: ok
+      rows:
+        - micValueVersionIri: urn:identifier-value:mic:xnas:v1
+          micLexicalValue: XNAS
+          micRegistryEntryVersionIri: urn:mic-entry:xnas:v1
+          entryType: OPRT
+          validFrom: '2024-01-01T00:00:00Z'
+          validTo: null
+          tradingFacilityVersionIri: urn:facility:xnas:v1
+          tradingFacilityLogicalIri: urn:facility:xnas
+          operatingMicEntryVersionIri: null
+  - caseId: cq-ms1-segment-mic
+    cqId: CQ-MS1
+    query:
+      pivot: *pivot
+      micValueVersionIri: urn:identifier-value:mic:xnms:v1
+    expected:
+      status: ok
+      rows:
+        - micValueVersionIri: urn:identifier-value:mic:xnms:v1
+          micLexicalValue: XNMS
+          micRegistryEntryVersionIri: urn:mic-entry:xnms:v1
+          entryType: SGMT
+          validFrom: '2024-01-01T00:00:00Z'
+          validTo: null
+          tradingFacilityVersionIri: urn:facility:xnms:v1
+          tradingFacilityLogicalIri: urn:facility:xnms
+          operatingMicEntryVersionIri: urn:mic-entry:xnas:v1
+  - caseId: cq-ms2-operating-to-active-segment-listing
+    cqId: CQ-MS2
+    query:
+      pivot: *pivot
+      businessDate: '2024-07-09'
+      operatingMicEntryVersionIri: urn:mic-entry:xnas:v1
+    expected:
+      status: ok
+      rows:
+        - operatingMicEntryVersionIri: urn:mic-entry:xnas:v1
+          segmentMicEntryVersionIri: urn:mic-entry:xnms:v1
+          marketSegmentVersionIri: urn:facility:xnms:v1
+          marketSegmentLogicalIri: urn:facility:xnms
+          listingVersionIri: urn:listing:xnms-acme:v1
+          listingLogicalIri: urn:listing:xnms-acme
+          instrumentVersionIri: urn:instrument:acme:v1
+          instrumentLogicalIri: urn:instrument:acme
+  - caseId: cq-ms3-early-close-adjustment
+    cqId: CQ-MS3
+    query:
+      pivot: *pivot
+      calendarVersionIri: urn:calendar:xnas:v1
+      instant: '2024-07-03T17:00:00Z'
+    expected:
+      status: ok
+      rows:
+        - calendarVersionIri: urn:calendar:xnas:v1
+          businessDate: '2024-07-03'
+          instant: '2024-07-03T17:00:00Z'
+          state: closed
+          occurrenceVersionIri: urn:session-occurrence:xnas:2024-07-03:v1
+          appliedExceptionVersionIri: urn:calendar-exception:xnas:2024-07-03:v1
+          effectiveStartUtc: '2024-07-03T13:30:00Z'
+          effectiveEndUtc: '2024-07-03T17:00:00Z'
+  - caseId: cq-ms3-open-inside-adjusted-occurrence
+    cqId: CQ-MS3
+    query:
+      pivot: *pivot
+      calendarVersionIri: urn:calendar:xnas:v1
+      instant: '2024-07-03T16:00:00Z'
+    expected:
+      status: ok
+      rows:
+        - calendarVersionIri: urn:calendar:xnas:v1
+          businessDate: '2024-07-03'
+          instant: '2024-07-03T16:00:00Z'
+          state: open
+          occurrenceVersionIri: urn:session-occurrence:xnas:2024-07-03:v1
+          appliedExceptionVersionIri: urn:calendar-exception:xnas:2024-07-03:v1
+          effectiveStartUtc: '2024-07-03T13:30:00Z'
+          effectiveEndUtc: '2024-07-03T17:00:00Z'
+  - caseId: cq-ms3-open-one-nanosecond-before-adjusted-end
+    cqId: CQ-MS3
+    query:
+      pivot: *pivot
+      calendarVersionIri: urn:calendar:xnas:v1
+      instant: '2024-07-03T16:59:59.999999999Z'
+    expected:
+      status: ok
+      rows:
+        - calendarVersionIri: urn:calendar:xnas:v1
+          businessDate: '2024-07-03'
+          instant: '2024-07-03T16:59:59.999999999Z'
+          state: open
+          occurrenceVersionIri: urn:session-occurrence:xnas:2024-07-03:v1
+          appliedExceptionVersionIri: urn:calendar-exception:xnas:2024-07-03:v1
+          effectiveStartUtc: '2024-07-03T13:30:00Z'
+          effectiveEndUtc: '2024-07-03T17:00:00Z'
+  - caseId: cq-i1-isin-security-issuance-issuer
+    cqId: CQ-I1
+    query:
+      pivot: *pivot
+      isinValueVersionIri: urn:identifier-value:isin:acme:v1
+    expected:
+      status: ok
+      rows:
+        - isinValueVersionIri: urn:identifier-value:isin:acme:v1
+          isin: US0000000002
+          assignmentVersionIri: urn:identifier-assignment:acme-isin:v1
+          securityVersionIri: urn:instrument:acme:v1
+          securityLogicalIri: urn:instrument:acme
+          issuanceVersionIri: urn:issuance:acme:v1
+          issuerVersionIri: urn:party:issuer:v1
+          issuerLogicalIri: urn:party:issuer
+  - caseId: cq-i2-listing-currency-rule-join
+    cqId: CQ-I2
+    query:
+      pivot: *pivot
+      businessDate: '2024-07-09'
+      listingVersionIri: urn:listing:xnms-acme:v1
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: ok
+      rows:
+        - listingVersionIri: urn:listing:xnms-acme:v1
+          listingLogicalIri: urn:listing:xnms-acme
+          listingIdentifierSchemeLogicalIri: urn:identifier-scheme:xnas-symbol
+          listingIdentifierSchemeVersionIri: urn:identifier-scheme:xnas-symbol:v1
+          listingIdentifierValueLogicalIri: urn:identifier-value:xnas-acme
+          listingIdentifierValueVersionIri: urn:identifier-value:xnas-acme:v1
+          listingSchemeAuthorizationVersionIri: urn:listing-scheme-authorization:xnas-symbol-xnms:v1
+          tradingFacilityVersionIri: urn:facility:xnms:v1
+          instrumentVersionIri: urn:instrument:acme:v1
+          instrumentLogicalIri: urn:instrument:acme
+          quoteCurrencyLogicalIri: urn:currency:usd
+          currencyRegistryEntryVersionIri: urn:iso4217-entry:usd:v1
+          registryAuthorityLogicalIri: urn:authority:iso4217
+          ruleApplicabilityVersionIris:
+            - urn:rule-applicability:xnms-acme-lot:v1
+            - urn:rule-applicability:xnms-acme-tick:v1
+          marketRuleVersionIris:
+            - urn:market-rule:xnms-acme-lot:v1
+            - urn:market-rule:xnms-acme-tick:v1
+          tickClauseVersionIri: urn:rule-clause:xnms-acme-tick:v1
+          lotClauseVersionIri: urn:rule-clause:xnms-acme-lot:v1
+          tickSize:
+            value: '0.01'
+            unitIri: https://axiolune.ai/units/USD-per-share
+          lotSize:
+            value: '100'
+            unitIri: https://axiolune.ai/units/share
+  - caseId: cq-i3-equity-security-closure
+    cqId: CQ-I3
+    query:
+      pivot: *pivot
+      instrumentVersionIri: urn:instrument:acme:v1
+    expected:
+      status: ok
+      rows:
+        - instrumentVersionIri: urn:instrument:acme:v1
+          instrumentLogicalIri: urn:instrument:acme
+          classIri: https://axiolune.ai/ontology/finance/instruments/EquitySecurity
+          inheritanceDepth: 0
+        - instrumentVersionIri: urn:instrument:acme:v1
+          instrumentLogicalIri: urn:instrument:acme
+          classIri: https://axiolune.ai/ontology/finance/instruments/Security
+          inheritanceDepth: 1
+        - instrumentVersionIri: urn:instrument:acme:v1
+          instrumentLogicalIri: urn:instrument:acme
+          classIri: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+          inheritanceDepth: 2

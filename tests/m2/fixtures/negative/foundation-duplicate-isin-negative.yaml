@@ -1,0 +1,19 @@
+schemaVersion: '1.0'
+description: >-
+  CQ-F4 integrity negative — duplicate active ISIN assignment for different instrument subjects.
+  Complements slice-a foundation-market-instrument conflict cases.
+fixtures:
+  - id: foundation-duplicate-isin-negative
+    expectedResult: rejected
+    violationType: identifier-integrity-duplicate-isin
+    note: two active assignments same ISIN scheme/value, different instrument subjects
+    instance:
+      assignments:
+        - assignmentVersionIri: urn:identifier-assignment:dup-a:v1
+          schemeVersionIri: urn:identifier-scheme:isin:v1
+          valueVersionIri: urn:identifier-value:isin:shared:v1
+          subjectVersionIri: urn:instrument:alpha:v1
+        - assignmentVersionIri: urn:identifier-assignment:dup-b:v1
+          schemeVersionIri: urn:identifier-scheme:isin:v1
+          valueVersionIri: urn:identifier-value:isin:shared:v1
+          subjectVersionIri: urn:instrument:beta:v1

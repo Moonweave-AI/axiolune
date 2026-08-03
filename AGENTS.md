@@ -3,7 +3,7 @@
 ## Repository layout (phase-separated)
 
 ```
-ontology/meta/           # M3 meta-model YAML + digests + projection (IRI-stable, do NOT move)
+ontology/meta/           # M3 meta-model YAML + projection (IRI-stable, do NOT move)
 ontology/domain/         # M2 domain ontology (finance modules under ontology/domain/finance/)
 scripts/meta/            # M3 validators + generators + tests (run from repo root)
 scripts/domain/          # M2 validators + generators + test-all-domain
@@ -14,8 +14,25 @@ docs/domain/             # M2-phase docs: planning (M2-PLAN), decisions (ADR-013
 assets/                  # banner/logo
 ```
 
-Do **not** claim M2 module `approved` / release complete unless M2-PLAN §0.1 evidence is machine-verified.
-Do **not** fabricate validation results. Prefer `node scripts/domain/test-all-domain.js` for the domain gate.
+Do **not** fabricate validation results. Prefer `node scripts/domain/test-all-domain.js` for the domain gate (semantic checks only; digest/byte-lock gates removed).
+
+## Canonical documentation (read first)
+
+| Need | Path |
+|------|------|
+| What to read / cite | `docs/CANONICAL-INDEX.md` |
+| Honest M2 progress | `docs/domain/decisions/PROGRESS-REPORT.md` |
+| Current review verdict | `docs/domain/decisions/M2-REVIEW-ROUND-12.md` |
+| v1.0.0 completion + M1 handoff | `docs/domain/decisions/ADR-017-m2-v1-completion-and-m1-handoff.md` |
+| Post-trade CQ matrix | `docs/domain/decisions/ADR-018-post-trade-cq-coverage-matrix.md` |
+| M1 handoff entry | `docs/domain/handoffs/M2-V1.0.0-M1-HANDOFF.md` |
+| Module alignments | `docs/ontology/alignments/` |
+| Traceability matrices | `docs/ontology/traceability/` |
+| v0.2.0 revocation | `docs/domain/decisions/ADR-015-revoke-v0.2.0-approval.md` |
+| Exotic CA defer (P2) | `docs/domain/decisions/ADR-016-defer-exotic-corporate-actions.md` |
+| M2 conformance contract | `docs/domain/planning/RFC-001-m2-conformance-profile-and-domain-contract.md` |
+
+**Do not cite** `docs/domain/decisions/superseded/` or `releases/superseded/` as completion or approval evidence.
 
 ## Quick verification
 
@@ -29,13 +46,17 @@ node scripts/meta/test-all.js
 
 ```
 node scripts/domain/test-all-domain.js
+node scripts/domain/run-all-cq-probes.cjs   # CQ honesty probes (120+ probes; 0 pending as of v1.0.0)
+node scripts/domain/run-pyshacl-smoke.cjs   # optional pySHACL smoke evidence JSON
 ```
+
+Optional SHACL runtime smoke (not semantic acceptance): see `docs/domain/infrastructure/SHACL-RUNTIME-NOTES.md`.
 
 ## Individual M3 commands
 
 ```
 node scripts/meta/validate-yaml.js ontology/meta/*.yaml        # syntax
-node scripts/meta/verify-meta-model.js                          # digests + imports + closures
+node scripts/meta/verify-meta-model.js                          # YAML syntax (+ delegated reference closure)
 node scripts/meta/validate-references.js                        # reference + version closure
 node scripts/meta/validate-structure.js                         # deep structural (use --strict for typo checks)
 node scripts/meta/test-structure-negative.js                    # negative tests
@@ -43,7 +64,7 @@ node scripts/meta/generate-owl.js && node scripts/meta/generate-shacl.js   # reg
 node scripts/meta/test-projection.js                            # projection verification
 ```
 
-M3 `test-all.js` runs the full meta-model gate (exit 0 = pass): YAML, digests/imports, ADR-011/012, references, structure (+strict), negative tests, OWL/SHACL projection, projection parse/validate, drift check.
+M3 `test-all.js` runs the meta-model gate (exit 0 = pass): YAML, references, structure (+strict), negative tests, OWL/SHACL projection parse/validate. Digest locks and projection byte-drift checks are removed.
 
 ## Individual M2 domain commands
 
@@ -51,7 +72,6 @@ M3 `test-all.js` runs the full meta-model gate (exit 0 = pass): YAML, digests/im
 node scripts/domain/validate-m2-core.js --all
 node scripts/domain/validate-m2-core.js --all --strict
 node scripts/domain/normalize-authoring-dialect.cjs --write
-node scripts/domain/compute-digests.cjs
 node scripts/domain/generate-m2-owl.cjs ontology/domain/finance/<mod>/module.yaml
 node scripts/domain/generate-m2-shacl.cjs ontology/domain/finance/<mod>/module.yaml
 node scripts/domain/validate-pit.cjs tests/m2/fixtures/negative/<file>.yaml
@@ -65,7 +85,7 @@ node scripts/domain/test-all-domain.js
   - `cross-domain-patterns.yaml` (Layer 2, v0.4.0) — identity/time/provenance/evidence/lifecycle patterns + 9 constraint definitions
   - `behavior-meta-model.yaml` (Layer 3, v0.4.0) — query/function/action/policy
   - `data-binding-meta-model.yaml` (Layer 4, v0.5.0) — ADR-011 single truth source (SemanticMappingDefinition canonical)
-- `digests.json` — SHA-256 of each module. Imports are content-addressed (`moduleIri#sha256:...`) with `artifactDigest`. Editing any file requires recomputing its digest and updating every importer (topological order: core -> patterns -> behavior -> data-binding) plus `digests.json`.
+- Imports use plain `moduleIri` + semver `version` (no content-addressed `#sha256:` fragments or `artifactDigest` locks).
 - `ontology/meta/projection/` — generated M3->M2 output (do not hand-edit; regenerate with the generators). Deterministic.
 - ADRs in `docs/meta/decisions/` (ADR-001..012). ADR-011 (canonical data binding) and ADR-012 (three-axis temporal) govern Layer 4.
 
@@ -79,16 +99,18 @@ node scripts/domain/test-all-domain.js
 
 ## Learned User Preferences
 
-- For M2 completeness reviews, read `reference/` project-by-project and file-by-file (FIBO/BIAN/regulatory ontologies and trading-engine source); treat them as authoritative alignment inputs alongside M2-PLAN.md.
+- For M2 completeness reviews, use dual-track comparison: M2-PLAN module blueprint plus `reference/` read project-by-project and file-by-file (FIBO/BIAN/FinRegOnt and trading-engine source); treat both as authoritative alignment inputs.
+- M2 target is the formal `approved` release path, but semantic/system completeness is the primary acceptance bar; formal validation gates are supporting evidence only — prefer content depth over hash/digest/date formalistic checks.
+- Flights-style ontology quality (identity, constrained value types, narratable definitions, cross-entity integrity, mapping coherence) is a rubric mapped onto existing M2 dialect fields — do not invent new dialect fields like `verbalizes` / `identify_by`.
 - Do not cite `docs/domain/decisions/superseded/` or `releases/superseded/` as completion or approval evidence.
-- `test-all-domain` PASS and module count do not substitute M2-PLAN §0.1's six acceptance criteria; keep Stop-Ship / draft until all are machine-verified.
+- `test-all-domain` PASS is a regression smoke signal only; semantic acceptance follows RFC-001 + Round review (Round-12 approved v1.0.0 2026-08-03).
 - When SHACL smoke or other runtime prerequisites are missing, report `pending-*` status honestly — never fabricate PASS.
 
 ## Learned Workspace Facts
 
 - `reference/` splits into `ontology-design-reference/` (FIBO, BIAN, FinRegOnt) and `project-reference/` (nautilus_trader, Lean, qlib, rqalpha, vnpy, lumibot, …).
-- `docs/ontology/references/references.lock.yaml` uses `localPath` → `reference/` with real SHA-256 digests; paywalled sources are `unavailable-paywalled`, not zero placeholders.
-- Canonical honest M2 progress lives in `docs/domain/decisions/PROGRESS-REPORT.md`; stale E3–E7 completion narratives are archived under `docs/domain/decisions/superseded/`.
-- All 11 finance modules remain `status: draft` until ADR-014 authorizes an `approved` release.
+- `docs/ontology/references/references.bibliography.yaml` maps authorities to `reference/` local paths; paywalled sources note `unavailable-paywalled` in terminology cards — no SHA digest locks.
+- Canonical M2 progress: [docs/domain/decisions/PROGRESS-REPORT.md](docs/domain/decisions/PROGRESS-REPORT.md) — **approved** v1.0.0 per [M2-REVIEW-ROUND-12.md](docs/domain/decisions/M2-REVIEW-ROUND-12.md). Do not cite superseded Round-9/v0.2 digest narratives or Round-11 alone as final sign-off.
+- Active finance modules: 10 under `ontology/domain/finance/` (excluding `registry`); all **`status: approved`** at v1.0.0 in module-registry.yaml.
+- The former FIBO adapter `ext-fibo-release-local` is archived under `ontology/domain/archive/` (not an active module); keep `imports: []` / no full-ontology FIBO import (FinRegOnt lesson).
 - pySHACL smoke evidence (`docs/domain/infrastructure/shacl-smoke-evidence.json`) is separate from domain SHACL shapes Adopt; structural negative fixtures may still be SHACL-execution pending.
-- FIBO alignment uses the `ext-fibo-release-local` adapter with `imports: []` — no full-ontology import anti-pattern (per FinRegOnt lesson).

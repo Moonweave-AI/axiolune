@@ -1,0 +1,421 @@
+schemaVersion: "1.1"
+contract: https://axiolune.ai/tests/m2/contracts/position-lot-identity
+
+costBasisPrecisionArtifact: &costBasisPrecisionArtifact
+  ref: https://axiolune.ai/policies/cost-basis-precision/1
+  digest: sha256:c3d4177149a5c5dd823176ebba5294a2580e60944f24599053c863856e73c6e4
+  payload:
+    amountScale: 6
+    arithmetic: exact-rational
+    intermediate: unbounded-integer
+    policyId: axiolune-cost-basis-precision-v1
+    quantityScale: 6
+    rateScale: 6
+    schemaVersion: "1.0"
+costBasisRoundingArtifact: &costBasisRoundingArtifact
+  ref: https://axiolune.ai/policies/cost-basis-rounding/1
+  digest: sha256:ff25c303a20c66d54664a4b7a2a36d97f323bee4964750419ea4c9ed1735a60d
+  payload:
+    mode: half-even
+    outputScale: 6
+    policyId: axiolune-cost-basis-rounding-v1
+    schemaVersion: "1.0"
+    stages: [opening-direct-unit-product, fee-allocation, remaining-basis-proration, fx-conversion]
+calculationContextPayload: &calculationContextPayload
+  completedAt: "2025-01-01T00:00:00Z"
+  contextId: position-lot-opening-v1
+  schemaVersion: "1.0"
+  status: completed
+listingAapl: &listingAapl
+  versionIri: https://axiolune.ai/data/listing/XNAS-AAPL/version/sha256-listing-aapl
+  instrument: https://axiolune.ai/data/instrument/AAPL
+  quoteCurrency: USD
+  validFrom: "2025-01-01T00:00:00Z"
+  knowledgeFrom: "2025-01-01T00:00:01Z"
+  availableFrom: "2025-01-01T00:00:02Z"
+quotationAapl: &quotationAapl
+  versionIri: https://axiolune.ai/data/quotation/XNAS-AAPL-direct/version/sha256-quotation-aapl
+  instrument: https://axiolune.ai/data/instrument/AAPL
+  listingVersionIri: https://axiolune.ai/data/listing/XNAS-AAPL/version/sha256-listing-aapl
+  quoteCurrency: USD
+  denominatorUnit: share
+  contractMultiplier: "1"
+  validFrom: "2025-01-01T00:00:00Z"
+  knowledgeFrom: "2025-01-01T00:00:01Z"
+  availableFrom: "2025-01-01T00:00:02Z"
+listingMsft: &listingMsft
+  versionIri: https://axiolune.ai/data/listing/XNAS-MSFT/version/sha256-listing-msft
+  instrument: https://axiolune.ai/data/instrument/MSFT
+  quoteCurrency: USD
+  validFrom: "2025-01-01T00:00:00Z"
+  knowledgeFrom: "2025-01-01T00:00:01Z"
+  availableFrom: "2025-01-01T00:00:02Z"
+quotationMsft: &quotationMsft
+  versionIri: https://axiolune.ai/data/quotation/XNAS-MSFT-direct/version/sha256-quotation-msft
+  instrument: https://axiolune.ai/data/instrument/MSFT
+  listingVersionIri: https://axiolune.ai/data/listing/XNAS-MSFT/version/sha256-listing-msft
+  quoteCurrency: USD
+  denominatorUnit: share
+  contractMultiplier: "1"
+  validFrom: "2025-01-01T00:00:00Z"
+  knowledgeFrom: "2025-01-01T00:00:01Z"
+  availableFrom: "2025-01-01T00:00:02Z"
+listingVod: &listingVod
+  versionIri: https://axiolune.ai/data/listing/XLON-VOD/version/sha256-listing-vod
+  instrument: https://axiolune.ai/data/instrument/VOD
+  quoteCurrency: EUR
+  validFrom: "2025-01-01T00:00:00Z"
+  knowledgeFrom: "2025-01-01T00:00:01Z"
+  availableFrom: "2025-01-01T00:00:02Z"
+quotationVod: &quotationVod
+  versionIri: https://axiolune.ai/data/quotation/XLON-VOD-direct/version/sha256-quotation-vod
+  instrument: https://axiolune.ai/data/instrument/VOD
+  listingVersionIri: https://axiolune.ai/data/listing/XLON-VOD/version/sha256-listing-vod
+  quoteCurrency: EUR
+  denominatorUnit: share
+  contractMultiplier: "1"
+  validFrom: "2025-01-01T00:00:00Z"
+  knowledgeFrom: "2025-01-01T00:00:01Z"
+  availableFrom: "2025-01-01T00:00:02Z"
+
+cases:
+  - id: position-lot-two-distinct-openings
+    expectedResult: accepted
+    lots:
+      - logicalIri: https://axiolune.ai/data/position-lot/lot-a
+        versionIri: https://axiolune.ai/data/position-lot/lot-a/version/sha256-1111
+        lotInAccount: https://axiolune.ai/data/account/ACC-1
+        lotForInstrument: https://axiolune.ai/data/instrument/AAPL
+        openingExecutionLogicalIri: https://axiolune.ai/data/execution/EXEC-1
+        openingExecution: https://axiolune.ai/data/execution/EXEC-1/version/sha256-aaaa
+        costBasisDefinitionLogicalIri: https://axiolune.ai/data/cost-basis/FIFO
+        costBasisDefinition: https://axiolune.ai/data/cost-basis/FIFO/version/sha256-bbbb
+        lotAtListing: https://axiolune.ai/data/listing/XNAS-AAPL/version/sha256-listing-aapl
+        lotQuotationContract: https://axiolune.ai/data/quotation/XNAS-AAPL-direct/version/sha256-quotation-aapl
+        lotDiscriminator: openingRemainder
+        originalQuantity: {amount: "40", unit: share, precision: 6}
+        openingGross: {amount: "4000.00", currency: USD, scale: 6}
+        openingCostBasis: {amount: "4001.00", currency: USD, scale: 6}
+        openingExecutionRecord:
+          logicalIri: https://axiolune.ai/data/execution/EXEC-1
+          versionIri: https://axiolune.ai/data/execution/EXEC-1/version/sha256-aaaa
+          account: https://axiolune.ai/data/account/ACC-1
+          instrument: https://axiolune.ai/data/instrument/AAPL
+          listingVersionIri: https://axiolune.ai/data/listing/XNAS-AAPL/version/sha256-listing-aapl
+          quotationContractVersionIri: https://axiolune.ai/data/quotation/XNAS-AAPL-direct/version/sha256-quotation-aapl
+          side: Buy
+          quantity: {amount: "40", unit: share, precision: 6}
+          price: {amount: "100", currency: USD, scale: 6}
+          validFrom: "2026-01-05T14:30:00Z"
+          knowledgeFrom: "2026-01-05T14:30:00Z"
+          availableFrom: "2026-01-05T14:30:00Z"
+        listingRecord: *listingAapl
+        quotationRecord: *quotationAapl
+        costBasisDefinitionRecord:
+          logicalIri: https://axiolune.ai/data/cost-basis/FIFO
+          versionIri: https://axiolune.ai/data/cost-basis/FIFO/version/sha256-bbbb
+          quotationContractVersionIri: https://axiolune.ai/data/quotation/XNAS-AAPL-direct/version/sha256-quotation-aapl
+          basisCurrency: USD
+          method: executionAllocatedDirectUnitCost
+          precisionPolicy: *costBasisPrecisionArtifact
+          roundingPolicy: *costBasisRoundingArtifact
+          validFrom: "2025-01-01T00:00:00Z"
+          knowledgeFrom: "2025-01-01T00:00:01Z"
+          availableFrom: "2025-01-01T00:00:02Z"
+        calculationContextRef: https://axiolune.ai/run/cost-basis/EXEC-1
+        calculationContext:
+          ref: https://axiolune.ai/run/cost-basis/EXEC-1
+          digest: sha256:64f5bf1c3296c959a18d4bac03ada2bb121dcf6edf35ce3a21a09fb38466d986
+          payload: *calculationContextPayload
+        source:
+          artifactRef: https://axiolune.ai/evidence/execution/EXEC-1
+          artifactDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          locator:
+            kind: jsonPointer
+            path: executions.json
+            mediaType: application/json
+            extractorProfileRef: https://axiolune.ai/tool/source-extractor/json-pointer-v1
+            extractorProfileDigest: sha256:1212121212121212121212121212121212121212121212121212121212121212
+            selectionDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+            pointer: /executions/0
+        validFrom: "2026-01-05T14:30:00Z"
+        knowledgeFrom: "2026-01-05T14:30:01Z"
+        availableFrom: "2026-01-05T14:30:02Z"
+        revision: 0
+      - logicalIri: https://axiolune.ai/data/position-lot/lot-b
+        versionIri: https://axiolune.ai/data/position-lot/lot-b/version/sha256-2222
+        lotInAccount: https://axiolune.ai/data/account/ACC-1
+        lotForInstrument: https://axiolune.ai/data/instrument/AAPL
+        openingExecutionLogicalIri: https://axiolune.ai/data/execution/EXEC-2
+        openingExecution: https://axiolune.ai/data/execution/EXEC-2/version/sha256-cccc
+        costBasisDefinitionLogicalIri: https://axiolune.ai/data/cost-basis/FIFO
+        costBasisDefinition: https://axiolune.ai/data/cost-basis/FIFO/version/sha256-bbbb
+        lotAtListing: https://axiolune.ai/data/listing/XNAS-AAPL/version/sha256-listing-aapl
+        lotQuotationContract: https://axiolune.ai/data/quotation/XNAS-AAPL-direct/version/sha256-quotation-aapl
+        lotDiscriminator: openingRemainder
+        originalQuantity: {amount: "-10", unit: share, precision: 6}
+        openingGross: {amount: "1010.00", currency: USD, scale: 6}
+        openingCostBasis: {amount: "-1009.00", currency: USD, scale: 6}
+        openingExecutionRecord:
+          logicalIri: https://axiolune.ai/data/execution/EXEC-2
+          versionIri: https://axiolune.ai/data/execution/EXEC-2/version/sha256-cccc
+          account: https://axiolune.ai/data/account/ACC-1
+          instrument: https://axiolune.ai/data/instrument/AAPL
+          listingVersionIri: https://axiolune.ai/data/listing/XNAS-AAPL/version/sha256-listing-aapl
+          quotationContractVersionIri: https://axiolune.ai/data/quotation/XNAS-AAPL-direct/version/sha256-quotation-aapl
+          side: Sell
+          quantity: {amount: "10", unit: share, precision: 6}
+          price: {amount: "101", currency: USD, scale: 6}
+          validFrom: "2026-01-06T14:30:00Z"
+          knowledgeFrom: "2026-01-06T14:30:00Z"
+          availableFrom: "2026-01-06T14:30:00Z"
+        listingRecord: *listingAapl
+        quotationRecord: *quotationAapl
+        costBasisDefinitionRecord:
+          logicalIri: https://axiolune.ai/data/cost-basis/FIFO
+          versionIri: https://axiolune.ai/data/cost-basis/FIFO/version/sha256-bbbb
+          quotationContractVersionIri: https://axiolune.ai/data/quotation/XNAS-AAPL-direct/version/sha256-quotation-aapl
+          basisCurrency: USD
+          method: executionAllocatedDirectUnitCost
+          precisionPolicy: *costBasisPrecisionArtifact
+          roundingPolicy: *costBasisRoundingArtifact
+          validFrom: "2025-01-01T00:00:00Z"
+          knowledgeFrom: "2025-01-01T00:00:01Z"
+          availableFrom: "2025-01-01T00:00:02Z"
+        calculationContextRef: https://axiolune.ai/run/cost-basis/EXEC-2
+        calculationContext:
+          ref: https://axiolune.ai/run/cost-basis/EXEC-2
+          digest: sha256:64f5bf1c3296c959a18d4bac03ada2bb121dcf6edf35ce3a21a09fb38466d986
+          payload: *calculationContextPayload
+        source:
+          artifactRef: https://axiolune.ai/evidence/execution/EXEC-2
+          artifactDigest: sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+          locator:
+            kind: jsonPointer
+            path: executions.json
+            mediaType: application/json
+            extractorProfileRef: https://axiolune.ai/tool/source-extractor/json-pointer-v1
+            extractorProfileDigest: sha256:1212121212121212121212121212121212121212121212121212121212121212
+            selectionDigest: sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+            pointer: /executions/1
+        validFrom: "2026-01-06T14:30:00Z"
+        knowledgeFrom: "2026-01-06T14:30:01Z"
+        availableFrom: "2026-01-06T14:30:02Z"
+        revision: 0
+
+  - id: position-lot-valid-correction
+    expectedResult: accepted
+    lots:
+      - logicalIri: https://axiolune.ai/data/position-lot/lot-c
+        versionIri: https://axiolune.ai/data/position-lot/lot-c/version/sha256-3333
+        lotInAccount: https://axiolune.ai/data/account/ACC-2
+        lotForInstrument: https://axiolune.ai/data/instrument/MSFT
+        openingExecutionLogicalIri: https://axiolune.ai/data/execution/EXEC-3
+        openingExecution: https://axiolune.ai/data/execution/EXEC-3/version/sha256-dddd
+        costBasisDefinitionLogicalIri: https://axiolune.ai/data/cost-basis/FIFO
+        costBasisDefinition: https://axiolune.ai/data/cost-basis/FIFO/version/sha256-msft-bbbb
+        lotAtListing: https://axiolune.ai/data/listing/XNAS-MSFT/version/sha256-listing-msft
+        lotQuotationContract: https://axiolune.ai/data/quotation/XNAS-MSFT-direct/version/sha256-quotation-msft
+        lotDiscriminator: openingRemainder
+        originalQuantity: {amount: "5", unit: share, precision: 6}
+        openingGross: {amount: "1500.00", currency: USD, scale: 6}
+        openingCostBasis: {amount: "1500.50", currency: USD, scale: 6}
+        openingExecutionRecord:
+          logicalIri: https://axiolune.ai/data/execution/EXEC-3
+          versionIri: https://axiolune.ai/data/execution/EXEC-3/version/sha256-dddd
+          account: https://axiolune.ai/data/account/ACC-2
+          instrument: https://axiolune.ai/data/instrument/MSFT
+          listingVersionIri: https://axiolune.ai/data/listing/XNAS-MSFT/version/sha256-listing-msft
+          quotationContractVersionIri: https://axiolune.ai/data/quotation/XNAS-MSFT-direct/version/sha256-quotation-msft
+          side: Buy
+          quantity: {amount: "5", unit: share, precision: 6}
+          price: {amount: "300", currency: USD, scale: 6}
+          validFrom: "2026-02-01T14:30:00Z"
+          knowledgeFrom: "2026-02-01T14:30:00Z"
+          availableFrom: "2026-02-01T14:30:00Z"
+        listingRecord: *listingMsft
+        quotationRecord: *quotationMsft
+        costBasisDefinitionRecord:
+          logicalIri: https://axiolune.ai/data/cost-basis/FIFO
+          versionIri: https://axiolune.ai/data/cost-basis/FIFO/version/sha256-msft-bbbb
+          quotationContractVersionIri: https://axiolune.ai/data/quotation/XNAS-MSFT-direct/version/sha256-quotation-msft
+          basisCurrency: USD
+          method: executionAllocatedDirectUnitCost
+          precisionPolicy: *costBasisPrecisionArtifact
+          roundingPolicy: *costBasisRoundingArtifact
+          validFrom: "2025-01-01T00:00:00Z"
+          knowledgeFrom: "2025-01-01T00:00:01Z"
+          availableFrom: "2025-01-01T00:00:02Z"
+        calculationContextRef: https://axiolune.ai/run/cost-basis/EXEC-3-v0
+        calculationContext:
+          ref: https://axiolune.ai/run/cost-basis/EXEC-3-v0
+          digest: sha256:64f5bf1c3296c959a18d4bac03ada2bb121dcf6edf35ce3a21a09fb38466d986
+          payload: *calculationContextPayload
+        source:
+          artifactRef: https://axiolune.ai/evidence/execution/EXEC-3-v0
+          artifactDigest: sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+          locator:
+            kind: jsonPointer
+            path: executions.json
+            mediaType: application/json
+            extractorProfileRef: https://axiolune.ai/tool/source-extractor/json-pointer-v1
+            extractorProfileDigest: sha256:1212121212121212121212121212121212121212121212121212121212121212
+            selectionDigest: sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+            pointer: /executions/2
+        validFrom: "2026-02-01T14:30:00Z"
+        knowledgeFrom: "2026-02-01T14:30:01Z"
+        knowledgeTo: "2026-02-02T09:00:00Z"
+        availableFrom: "2026-02-01T14:30:02Z"
+        revision: 0
+      - logicalIri: https://axiolune.ai/data/position-lot/lot-c
+        versionIri: https://axiolune.ai/data/position-lot/lot-c/version/sha256-4444
+        lotInAccount: https://axiolune.ai/data/account/ACC-2
+        lotForInstrument: https://axiolune.ai/data/instrument/MSFT
+        openingExecutionLogicalIri: https://axiolune.ai/data/execution/EXEC-3
+        openingExecution: https://axiolune.ai/data/execution/EXEC-3/version/sha256-eeee
+        costBasisDefinitionLogicalIri: https://axiolune.ai/data/cost-basis/FIFO
+        costBasisDefinition: https://axiolune.ai/data/cost-basis/FIFO/version/sha256-msft-ffff
+        lotAtListing: https://axiolune.ai/data/listing/XNAS-MSFT/version/sha256-listing-msft
+        lotQuotationContract: https://axiolune.ai/data/quotation/XNAS-MSFT-direct/version/sha256-quotation-msft
+        lotDiscriminator: openingRemainder
+        originalQuantity: {amount: "5", unit: share, precision: 6}
+        openingGross: {amount: "1499.50", currency: USD, scale: 6}
+        openingCostBasis: {amount: "1500.00", currency: USD, scale: 6}
+        openingExecutionRecord:
+          logicalIri: https://axiolune.ai/data/execution/EXEC-3
+          versionIri: https://axiolune.ai/data/execution/EXEC-3/version/sha256-eeee
+          account: https://axiolune.ai/data/account/ACC-2
+          instrument: https://axiolune.ai/data/instrument/MSFT
+          listingVersionIri: https://axiolune.ai/data/listing/XNAS-MSFT/version/sha256-listing-msft
+          quotationContractVersionIri: https://axiolune.ai/data/quotation/XNAS-MSFT-direct/version/sha256-quotation-msft
+          side: Buy
+          quantity: {amount: "5", unit: share, precision: 6}
+          price: {amount: "299.9", currency: USD, scale: 6}
+          validFrom: "2026-02-01T14:30:00Z"
+          knowledgeFrom: "2026-02-02T08:59:00Z"
+          availableFrom: "2026-02-02T08:59:01Z"
+        listingRecord: *listingMsft
+        quotationRecord: *quotationMsft
+        costBasisDefinitionRecord:
+          logicalIri: https://axiolune.ai/data/cost-basis/FIFO
+          versionIri: https://axiolune.ai/data/cost-basis/FIFO/version/sha256-msft-ffff
+          quotationContractVersionIri: https://axiolune.ai/data/quotation/XNAS-MSFT-direct/version/sha256-quotation-msft
+          basisCurrency: USD
+          method: executionAllocatedDirectUnitCost
+          precisionPolicy: *costBasisPrecisionArtifact
+          roundingPolicy: *costBasisRoundingArtifact
+          validFrom: "2025-01-01T00:00:00Z"
+          knowledgeFrom: "2026-02-02T08:00:00Z"
+          availableFrom: "2026-02-02T08:00:01Z"
+        calculationContextRef: https://axiolune.ai/run/cost-basis/EXEC-3-v1
+        calculationContext:
+          ref: https://axiolune.ai/run/cost-basis/EXEC-3-v1
+          digest: sha256:64f5bf1c3296c959a18d4bac03ada2bb121dcf6edf35ce3a21a09fb38466d986
+          payload: *calculationContextPayload
+        source:
+          artifactRef: https://axiolune.ai/evidence/execution/EXEC-3-v1
+          artifactDigest: sha256:abababababababababababababababababababababababababababababababab
+          locator:
+            kind: jsonPointer
+            path: executions.json
+            mediaType: application/json
+            extractorProfileRef: https://axiolune.ai/tool/source-extractor/json-pointer-v1
+            extractorProfileDigest: sha256:1212121212121212121212121212121212121212121212121212121212121212
+            selectionDigest: sha256:cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd
+            pointer: /executions/3
+        validFrom: "2026-02-01T14:30:00Z"
+        knowledgeFrom: "2026-02-02T09:00:00Z"
+        availableFrom: "2026-02-02T09:00:01Z"
+        revision: 1
+
+  - id: position-lot-cross-currency-opening-replay
+    expectedResult: accepted
+    lots:
+      - logicalIri: https://axiolune.ai/data/position-lot/lot-fx
+        versionIri: https://axiolune.ai/data/position-lot/lot-fx/version/sha256-fx-lot
+        lotInAccount: https://axiolune.ai/data/account/ACC-3
+        lotForInstrument: https://axiolune.ai/data/instrument/VOD
+        openingExecutionLogicalIri: https://axiolune.ai/data/execution/EXEC-FX
+        openingExecution: https://axiolune.ai/data/execution/EXEC-FX/version/sha256-fx-execution
+        costBasisDefinitionLogicalIri: https://axiolune.ai/data/cost-basis/FIFO-USD
+        costBasisDefinition: https://axiolune.ai/data/cost-basis/FIFO-USD/version/sha256-fx-definition
+        lotAtListing: https://axiolune.ai/data/listing/XLON-VOD/version/sha256-listing-vod
+        lotQuotationContract: https://axiolune.ai/data/quotation/XLON-VOD-direct/version/sha256-quotation-vod
+        lotDiscriminator: openingRemainder
+        originalQuantity: {amount: "2", unit: share, precision: 6}
+        openingGross: {amount: "110", currency: USD, scale: 6}
+        openingCostBasis: {amount: "111", currency: USD, scale: 6}
+        openingExecutionRecord:
+          logicalIri: https://axiolune.ai/data/execution/EXEC-FX
+          versionIri: https://axiolune.ai/data/execution/EXEC-FX/version/sha256-fx-execution
+          account: https://axiolune.ai/data/account/ACC-3
+          instrument: https://axiolune.ai/data/instrument/VOD
+          listingVersionIri: https://axiolune.ai/data/listing/XLON-VOD/version/sha256-listing-vod
+          quotationContractVersionIri: https://axiolune.ai/data/quotation/XLON-VOD-direct/version/sha256-quotation-vod
+          side: Buy
+          quantity: {amount: "2", unit: share, precision: 6}
+          price: {amount: "50", currency: EUR, scale: 6}
+          validFrom: "2026-03-01T09:00:00Z"
+          knowledgeFrom: "2026-03-01T09:00:00Z"
+          availableFrom: "2026-03-01T09:00:00Z"
+        listingRecord: *listingVod
+        quotationRecord: *quotationVod
+        costBasisDefinitionRecord:
+          logicalIri: https://axiolune.ai/data/cost-basis/FIFO-USD
+          versionIri: https://axiolune.ai/data/cost-basis/FIFO-USD/version/sha256-fx-definition
+          quotationContractVersionIri: https://axiolune.ai/data/quotation/XLON-VOD-direct/version/sha256-quotation-vod
+          basisCurrency: USD
+          method: executionAllocatedDirectUnitCost
+          precisionPolicy: *costBasisPrecisionArtifact
+          roundingPolicy: *costBasisRoundingArtifact
+          validFrom: "2025-01-01T00:00:00Z"
+          knowledgeFrom: "2025-01-01T00:00:01Z"
+          availableFrom: "2025-01-01T00:00:02Z"
+        calculationContextRef: https://axiolune.ai/run/cost-basis/EXEC-FX
+        calculationContext:
+          ref: https://axiolune.ai/run/cost-basis/EXEC-FX
+          digest: sha256:64f5bf1c3296c959a18d4bac03ada2bb121dcf6edf35ce3a21a09fb38466d986
+          payload: *calculationContextPayload
+        openingGrossFxConversionVersionIri: https://axiolune.ai/data/fx-conversion/EUR-USD/version/sha256-fx-conversion
+        openingGrossFxConversion:
+          versionIri: https://axiolune.ai/data/fx-conversion/EUR-USD/version/sha256-fx-conversion
+          rateVersionIri: https://axiolune.ai/data/fx-rate/EUR-USD/version/sha256-fx-rate
+          baseCurrency: EUR
+          quoteCurrency: USD
+          direction: baseToQuote
+          consumerKind: openingLot
+          consumerVersionIri: https://axiolune.ai/data/position-lot/lot-fx/version/sha256-fx-lot
+          validFrom: "2026-03-01T09:00:00Z"
+          knowledgeFrom: "2026-03-01T09:00:01Z"
+          availableFrom: "2026-03-01T09:00:01Z"
+          generatingContextRef: https://axiolune.ai/run/cost-basis/EXEC-FX
+          roundingPolicy: *costBasisRoundingArtifact
+          inputContext:
+            ref: https://axiolune.ai/run/cost-basis/EXEC-FX
+            digest: sha256:64f5bf1c3296c959a18d4bac03ada2bb121dcf6edf35ce3a21a09fb38466d986
+            payload: *calculationContextPayload
+          rateObservation:
+            versionIri: https://axiolune.ai/data/fx-rate/EUR-USD/version/sha256-fx-rate
+            baseCurrency: EUR
+            quoteCurrency: USD
+            rate: {amount: "1.1", unit: urn:unit:USD-per-EUR, precision: 6}
+            validFrom: "2026-03-01T08:59:00Z"
+            knowledgeFrom: "2026-03-01T08:59:01Z"
+            availableFrom: "2026-03-01T08:59:02Z"
+          inputMoney: {amount: "100", currency: EUR, scale: 6}
+          outputMoney: {amount: "110", currency: USD, scale: 6}
+        source:
+          artifactRef: https://axiolune.ai/evidence/execution/EXEC-FX
+          artifactDigest: sha256:edededededededededededededededededededededededededededededededed
+          locator:
+            kind: jsonPointer
+            path: executions.json
+            mediaType: application/json
+            extractorProfileRef: https://axiolune.ai/tool/source-extractor/json-pointer-v1
+            extractorProfileDigest: sha256:1212121212121212121212121212121212121212121212121212121212121212
+            selectionDigest: sha256:efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef
+            pointer: /executions/fx
+        validFrom: "2026-03-01T09:00:00Z"
+        knowledgeFrom: "2026-03-01T09:00:02Z"
+        availableFrom: "2026-03-01T09:00:03Z"
+        revision: 0

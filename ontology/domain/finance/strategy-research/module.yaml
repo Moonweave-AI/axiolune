@@ -2,396 +2,2162 @@ module:
   moduleIri: https://axiolune.ai/ontology/finance/strategy-research
   baseIri: https://axiolune.ai/ontology/finance/strategy-research/
   preferredPrefix: fin-strategy
-  version: 0.2.0
+  version: 1.0.0
   label: Strategy and Research
   definition: >-
-    factor definitions, signal generation, strategy specifications, backtest execution, and performance observations
-    that capture quantitative research and strategy development semantics
+    Finance ontology module that defines versioned factor and strategy specifications, research and backtest contexts,
+    signal and factor facts, metric calculation context, performance observations, and position attribution without
+    adopting implementation-private project vocabulary as canonical financial semantics.
   imports:
     - moduleIri: https://axiolune.ai/ontology/finance/foundation
-      version: 0.1.0
-      artifactDigest: sha256:e64d6782499a636bb016bed59056cbcffef160c9ad43d78ff93a479285998295
-      importMode: All
     - moduleIri: https://axiolune.ai/ontology/finance/instruments
-      version: 0.1.0
-      artifactDigest: sha256:081b14706df28e69f9b98308709c767885a58e2d958c265bf7b16768e3b901b7
-      importMode: All
+    - moduleIri: https://axiolune.ai/ontology/finance/market-data
     - moduleIri: https://axiolune.ai/ontology/finance/portfolio-positions
-      version: 0.1.0
-      artifactDigest: sha256:211bc89c44260a21f809e360f35a3456dc7b6da544173aa4a2366e1fd18bae50
-      importMode: All
   exports: []
   status: approved
+  governance:
+    ownerRef: urn:axiolune:principal:repository-owner
+    status: approved
 domain:
-  SignalDirection:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/SignalDirection
-    namespace: fin-strategy
-    localName: SignalDirection
-    label: Signal Direction
-    definition: controlled vocabulary indicating the directional bias of a trading signal (long, short, neutral, exit)
-    values:
-      - Long
-      - Short
-      - Neutral
-      - Exit
-    note: >-
-      Aligned with Qlib predictions (continuous scores) discretized to directions. NautilusTrader PositionSide. Lean
-      OrderDirection.
-    version: 0.1.0
-    maintainer: Axiolune
-    vocabulary: https://axiolune.ai/ontology/finance/strategy-research/SignalDirection
-  FactorCategory:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/FactorCategory
-    namespace: fin-strategy
-    localName: FactorCategory
-    label: Factor Category
-    definition: controlled vocabulary of factor types (fundamental, technical, alternative, macro)
-    values:
-      - Fundamental
-      - Technical
-      - Alternative
-      - Macro
-      - Statistical
-      - Sentiment
-    note: Common factor taxonomy in quantitative research. Qlib Alpha158 dataset contains technical+fundamental features.
-    version: 0.1.0
-    maintainer: Axiolune
-    vocabulary: https://axiolune.ai/ontology/finance/strategy-research/FactorCategory
-  BacktestStatus:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/BacktestStatus
-    namespace: fin-strategy
-    localName: BacktestStatus
-    label: Backtest Status
-    definition: controlled vocabulary of backtest execution states (pending, running, completed, failed, canceled)
-    values:
-      - Pending
-      - Running
-      - Completed
-      - Failed
-      - Canceled
-    note: Lifecycle states for backtest runs. Aligned with typical async job states.
-    version: 0.1.0
-    maintainer: Axiolune
-    vocabulary: https://axiolune.ai/ontology/finance/strategy-research/BacktestStatus
-  FactorDefinition:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/FactorDefinition
-    namespace: fin-strategy
-    localName: FactorDefinition
-    label: Factor Definition
-    definition: >-
-      specification of a quantitative factor including its calculation logic, input requirements, universe scope, and
-      validity conditions
-    note: >-
-      Qlib Factor (Alpha158, Alpha360 predefined factors). Does not store computed factor values (those are
-      FactorObservation Association).
-    attributeUses:
-      - attribute: https://axiolune.ai/ontology/finance/strategy-research/hasFactorName
+  objectTypes:
+    SignalGenerator:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/SignalGenerator
+      namespace: fin-strategy
+      localName: SignalGenerator
+      abstract: true
+      label: Signal Generator
+      definition: >-
+        Versioned specification that generates research signals under one authority and fixes its executable
+        implementation, input and output contracts, runtime, tool lock, and exact source artifact evidence.
+        FactorDefinition and StrategyDefinition are its concrete specializations.
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/generatorId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/generatorName
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/implementationDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/inputContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/outputContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/toolLockRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/toolLockDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/runtimeDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    FactorDefinition:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/FactorDefinition
+      namespace: fin-strategy
+      localName: FactorDefinition
+      label: Factor Definition
+      definition: >-
+        Signal generator specification that defines one quantitative factor, its executable expression artifact, value
+        contract, input universe, and revision identity without storing computed observations.
+      superTypes:
+        - https://axiolune.ai/ontology/finance/strategy-research/SignalGenerator
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/factorExpressionRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/factorExpressionDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/factorCategory
+          minCount: 0
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    StrategyDefinition:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/StrategyDefinition
+      namespace: fin-strategy
+      localName: StrategyDefinition
+      label: Strategy Definition
+      definition: >-
+        Signal generator specification that defines one trading or allocation strategy and makes every FactorDefinition
+        dependency an explicit exact-version relation rather than an implicit source-code import.
+      superTypes:
+        - https://axiolune.ai/ontology/finance/strategy-research/SignalGenerator
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/strategyDescription
+          minCount: 0
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    RunContext:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/RunContext
+      namespace: fin-strategy
+      localName: RunContext
+      label: Run Context
+      definition: >-
+        Versioned execution context that fixes one research, backtest, or live run identity together with its parameter
+        snapshot, ontology and mapping closure, calendar snapshot, compiler, strictly prior materialization context, and
+        matching three-axis PIT validation request.
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/runContextId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/runContextKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/runStartedAt
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/parameterSnapshotRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/parameterSnapshotDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/ontologyClosureDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/mappingClosureDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/calendarSnapshotRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/calendarSnapshotDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/compilerDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/inputContextRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/inputContextRecordDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/pitRequestRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/pitRequestRecordDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    BacktestRun:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
+      namespace: fin-strategy
+      localName: BacktestRun
+      label: Backtest Run
+      definition: >-
+        Run context whose immutable configuration applies one exact strategy version to a half-open historical interval
+        using locked capital, cost, slippage, fill, benchmark, seed, code, calendar, mapping, and PIT inputs; mutable
+        execution state is excluded and represented by status facts.
+      superTypes:
+        - https://axiolune.ai/ontology/finance/strategy-research/RunContext
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/simulationFrom
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/simulationTo
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/initialCapital
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/codeDefinitionDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/feeAssumptionRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/feeAssumptionDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/slippageAssumptionRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/slippageAssumptionDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/fillAssumptionRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/fillAssumptionDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/benchmarkRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/benchmarkDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/deterministicSeed
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    ResearchRun:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/ResearchRun
+      namespace: fin-strategy
+      localName: ResearchRun
+      label: Research Run
+      definition: >-
+        Run context that evaluates one exact signal-generator version against an immutable research question and dataset
+        snapshot under locked mappings, tools, parameters, seed, and three-axis PIT evidence.
+      superTypes:
+        - https://axiolune.ai/ontology/finance/strategy-research/RunContext
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/researchQuestionRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/researchQuestionDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/researchDatasetRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/researchDatasetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/researchOutputContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/deterministicSeed
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    MetricDefinition:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/MetricDefinition
+      namespace: fin-strategy
+      localName: MetricDefinition
+      label: Metric Definition
+      definition: >-
+        Versioned performance or attribution metric specification that fixes one value representation and one executable
+        formula, implementation, input and output contract, runtime, and tool lock.
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/metricDefinitionId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/metricName
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/metricValueKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/formulaDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/implementationDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/inputContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/outputContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/toolLockRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/toolLockDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/runtimeDigest
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    CalculationContext:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/CalculationContext
+      namespace: fin-strategy
+      localName: CalculationContext
+      label: Calculation Context
+      definition: >-
+        Versioned metric calculation context that fixes frequency, annualization, risk-free rate, window, confidence,
+        benchmark, result-affecting return/aggregation/missing-value/calendar/alignment policies, and exact calculation
+        implementation for reproducible performance comparison. The complete parameter policy is an immutable,
+        byte-verifiable snapshot rather than an implicit library default.
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/calculationContextId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/calculationFrequency
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/annualizationFactor
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/riskFreeRate
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/calculationWindow
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/confidenceLevel
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/calculationImplementationDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/calculationParameterSnapshotRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/calculationParameterSnapshotDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/calculationParameterSnapshotLocator
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/benchmarkRef
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/benchmarkDigest
+          minCount: 0
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+  associationTypes:
+    Signal:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/Signal
+      namespace: fin-strategy
+      localName: Signal
+      label: Signal Observation
+      definition: >-
+        Temporal and provenanced signal observation produced by exactly one signal-generator version for exactly one
+        instrument and run context, with an optional consistent listing, one reviewed direction, and a dimensionless
+        strength in the closed interval from zero to one.
+      participantRoles:
+        - id: signalGenerator
+          range: https://axiolune.ai/ontology/finance/strategy-research/SignalGenerator
+          minCount: 1
+          maxCount: 1
+          label: signal generator
+          definition: exact SignalGenerator version that produced the signal
+        - id: signalInstrument
+          range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+          minCount: 1
+          maxCount: 1
+          label: signal instrument
+          definition: exact FinancialInstrument version for which the signal was generated
+        - id: signalListing
+          range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+          minCount: 0
+          maxCount: 1
+          label: signal listing
+          definition: optional exact InstrumentListing version whose listed instrument equals signalInstrument
+        - id: signalRunContext
+          range: https://axiolune.ai/ontology/finance/strategy-research/RunContext
+          minCount: 1
+          maxCount: 1
+          label: signal run context
+          definition: exact RunContext version in which the signal was generated
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/sourceSignalId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/signalDirection
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/signalStrength
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/signalHorizon
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    FactorObservation:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
+      namespace: fin-strategy
+      localName: FactorObservation
+      label: Factor Observation
+      definition: >-
+        Temporal and provenanced observation of one factor version for one instrument, reporting period, and run context
+        whose revisions use the canonical logical identity plus knowledge-time closure and an optional semantic
+        supersedes link to the prior exact fact version; source storage offsets and linked-record pointers are excluded
+        from domain semantics.
+      participantRoles:
+        - id: observedFactor
+          range: https://axiolune.ai/ontology/finance/strategy-research/FactorDefinition
+          minCount: 1
+          maxCount: 1
+          label: observed factor
+          definition: exact FactorDefinition version whose value is observed
+        - id: factorInstrument
+          range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+          minCount: 1
+          maxCount: 1
+          label: factor instrument
+          definition: exact FinancialInstrument version to which the factor value applies
+        - id: factorListing
+          range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+          minCount: 0
+          maxCount: 1
+          label: factor listing
+          definition: optional exact InstrumentListing version consistent with factorInstrument
+        - id: factorRunContext
+          range: https://axiolune.ai/ontology/finance/strategy-research/RunContext
+          minCount: 1
+          maxCount: 1
+          label: factor run context
+          definition: >-
+            exact RunContext version under which this immutable factor version was materialized or consumed; it is
+            version content and not part of the stable factor-observation logical key
+        - id: supersedesFactorVersion
+          range: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
+          minCount: 0
+          maxCount: 1
+          label: supersedes factor version
+          definition: optional immediately prior exact FactorObservation version having the same logical key
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/sourceFactorId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/reportingPeriodKey
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/factorValue
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    BacktestStatusEvent:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/BacktestStatusEvent
+      namespace: fin-strategy
+      localName: BacktestStatusEvent
+      label: Backtest Status Event
+      definition: >-
+        Immutable temporal and provenanced event that records one reviewed backtest lifecycle state for one exact
+        BacktestRun without mutating the run configuration or replacing earlier state evidence.
+      participantRoles:
+        - id: statusForBacktest
+          range: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
+          minCount: 1
+          maxCount: 1
+          label: status for backtest
+          definition: exact BacktestRun version whose lifecycle state is reported
+        - id: previousStatusEvent
+          range: https://axiolune.ai/ontology/finance/strategy-research/BacktestStatusEvent
+          minCount: 0
+          maxCount: 1
+          label: previous status event
+          definition: optional immediate predecessor exact status-event version in occurrence order
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/sourceRunEventId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/statusSequence
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/backtestLifecycleState
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    PerformanceObservation:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
+      namespace: fin-strategy
+      localName: PerformanceObservation
+      label: Performance Observation
+      definition: >-
+        Temporal and provenanced metric observation that binds exactly one MetricDefinition, RunContext, and
+        CalculationContext and carries exactly one typed Money or Quantity value selected by the metric definition.
+        Knowledge-time corrections preserve the logical identity, point to the exact prior version, and close prior
+        knowledge and availability through separate immutable FactClosureAssertion evidence.
+      participantRoles:
+        - id: performanceMetric
+          range: https://axiolune.ai/ontology/finance/strategy-research/MetricDefinition
+          minCount: 1
+          maxCount: 1
+          label: performance metric
+          definition: exact MetricDefinition version governing the observed value
+        - id: performanceRunContext
+          range: https://axiolune.ai/ontology/finance/strategy-research/RunContext
+          minCount: 1
+          maxCount: 1
+          label: performance run context
+          definition: exact RunContext version whose performance is observed
+        - id: performanceCalculationContext
+          range: https://axiolune.ai/ontology/finance/strategy-research/CalculationContext
+          minCount: 1
+          maxCount: 1
+          label: performance calculation context
+          definition: exact CalculationContext version used to calculate the observation
+        - id: supersedesPerformanceVersion
+          range: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
+          minCount: 0
+          maxCount: 1
+          label: supersedes performance version
+          definition: optional immediately prior exact PerformanceObservation version having the same logical key
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/sourcePerformanceId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/performanceMoneyValue
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/performanceQuantityValue
+          minCount: 0
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    PositionAttribution:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution
+      namespace: fin-strategy
+      localName: PositionAttribution
+      label: Position Attribution
+      definition: >-
+        Temporal and provenanced attribution fact that assigns exactly one position snapshot or position lot to one
+        signal-generator and run context using one metric, one calculation context, and exactly one typed Money or
+        Quantity contribution without creating a Portfolio to Strategy dependency cycle.
+      participantRoles:
+        - id: attributedPositionSnapshot
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshot
+          minCount: 0
+          maxCount: 1
+          label: attributed position snapshot
+          definition: optional exact PositionSnapshot version receiving the attribution
+        - id: attributedPositionLot
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot
+          minCount: 0
+          maxCount: 1
+          label: attributed position lot
+          definition: optional exact PositionLot version receiving the attribution
+        - id: attributionGenerator
+          range: https://axiolune.ai/ontology/finance/strategy-research/SignalGenerator
+          minCount: 1
+          maxCount: 1
+          label: attribution generator
+          definition: exact SignalGenerator version to which the position contribution is attributed
+        - id: attributionRunContext
+          range: https://axiolune.ai/ontology/finance/strategy-research/RunContext
+          minCount: 1
+          maxCount: 1
+          label: attribution run context
+          definition: exact RunContext version in which the attribution was calculated
+        - id: attributionMetric
+          range: https://axiolune.ai/ontology/finance/strategy-research/MetricDefinition
+          minCount: 1
+          maxCount: 1
+          label: attribution metric
+          definition: exact MetricDefinition version governing the contribution value
+        - id: attributionCalculationContext
+          range: https://axiolune.ai/ontology/finance/strategy-research/CalculationContext
+          minCount: 1
+          maxCount: 1
+          label: attribution calculation context
+          definition: exact CalculationContext version used to calculate the contribution
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/sourceAttributionId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/attributionMoneyValue
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/strategy-research/attributionQuantityValue
+          minCount: 0
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+  relationTypes:
+    generatorAuthority:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/generatorAuthority
+      namespace: fin-strategy
+      localName: generatorAuthority
+      label: generator authority
+      definition: Relationship from a SignalGenerator to the Party authority that scopes its stable identifier.
+      domain: https://axiolune.ai/ontology/finance/strategy-research/SignalGenerator
+      range: https://axiolune.ai/ontology/finance/foundation/Party
+      characteristics:
+        - functional
+    runAuthority:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/runAuthority
+      namespace: fin-strategy
+      localName: runAuthority
+      label: run authority
+      definition: Relationship from a RunContext to the Party authority that scopes its stable run identifier.
+      domain: https://axiolune.ai/ontology/finance/strategy-research/RunContext
+      range: https://axiolune.ai/ontology/finance/foundation/Party
+      characteristics:
+        - functional
+    metricAuthority:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/metricAuthority
+      namespace: fin-strategy
+      localName: metricAuthority
+      label: metric authority
+      definition: Relationship from a MetricDefinition to the Party authority that scopes its stable identifier.
+      domain: https://axiolune.ai/ontology/finance/strategy-research/MetricDefinition
+      range: https://axiolune.ai/ontology/finance/foundation/Party
+      characteristics:
+        - functional
+    calculationAuthority:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/calculationAuthority
+      namespace: fin-strategy
+      localName: calculationAuthority
+      label: calculation authority
+      definition: Relationship from a CalculationContext to the Party authority that scopes its stable identifier.
+      domain: https://axiolune.ai/ontology/finance/strategy-research/CalculationContext
+      range: https://axiolune.ai/ontology/finance/foundation/Party
+      characteristics:
+        - functional
+    usesFactor:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/usesFactor
+      namespace: fin-strategy
+      localName: usesFactor
+      label: uses factor
+      definition: Relationship from a StrategyDefinition version to each exact FactorDefinition version on which it depends.
+      domain: https://axiolune.ai/ontology/finance/strategy-research/StrategyDefinition
+      range: https://axiolune.ai/ontology/finance/strategy-research/FactorDefinition
+    backtestStrategy:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/backtestStrategy
+      namespace: fin-strategy
+      localName: backtestStrategy
+      label: backtest strategy
+      definition: Relationship from a BacktestRun to the exact StrategyDefinition version under evaluation.
+      domain: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
+      range: https://axiolune.ai/ontology/finance/strategy-research/StrategyDefinition
+      characteristics:
+        - functional
+    backtestPortfolio:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/backtestPortfolio
+      namespace: fin-strategy
+      localName: backtestPortfolio
+      label: backtest portfolio
+      definition: Relationship from a BacktestRun to the optional exact Portfolio version used as its initial portfolio context.
+      domain: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
+      range: https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
+      characteristics:
+        - functional
+    backtestBenchmarkInstrument:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/backtestBenchmarkInstrument
+      namespace: fin-strategy
+      localName: backtestBenchmarkInstrument
+      label: backtest benchmark instrument
+      definition: Relationship from a BacktestRun to an optional exact FinancialInstrument version used as benchmark.
+      domain: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
+      range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+      characteristics:
+        - functional
+    researchGenerator:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/researchGenerator
+      namespace: fin-strategy
+      localName: researchGenerator
+      label: research generator
+      definition: Relationship from a ResearchRun to the exact SignalGenerator version evaluated by the research.
+      domain: https://axiolune.ai/ontology/finance/strategy-research/ResearchRun
+      range: https://axiolune.ai/ontology/finance/strategy-research/SignalGenerator
+      characteristics:
+        - functional
+    researchPortfolio:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/researchPortfolio
+      namespace: fin-strategy
+      localName: researchPortfolio
+      label: research portfolio
+      definition: Relationship from a ResearchRun to an optional exact Portfolio version in its research universe.
+      domain: https://axiolune.ai/ontology/finance/strategy-research/ResearchRun
+      range: https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
+      characteristics:
+        - functional
+    calculationBenchmarkInstrument:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/calculationBenchmarkInstrument
+      namespace: fin-strategy
+      localName: calculationBenchmarkInstrument
+      label: calculation benchmark instrument
+      definition: Relationship from a CalculationContext to an optional exact benchmark FinancialInstrument version.
+      domain: https://axiolune.ai/ontology/finance/strategy-research/CalculationContext
+      range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+      characteristics:
+        - functional
+  attributeTypes:
+    generatorId:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/generatorId
+      namespace: fin-strategy
+      localName: generatorId
+      label: generator identifier
+      definition: Authority-scoped stable identifier of a SignalGenerator logical identity.
+      valueType: string
+      defaultCardinality:
         minCount: 1
         maxCount: 1
-      - attribute: https://axiolune.ai/ontology/finance/strategy-research/hasFactorCategory
+    generatorName:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/generatorName
+      namespace: fin-strategy
+      localName: generatorName
+      label: generator name
+      definition: Human-readable name of a SignalGenerator version.
+      valueType: string
+      defaultCardinality:
         minCount: 1
         maxCount: 1
-      - attribute: https://axiolune.ai/ontology/finance/strategy-research/hasFactorFormula
+    implementationDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/implementationDigest
+      namespace: fin-strategy
+      localName: implementationDigest
+      label: implementation digest
+      definition: SHA-256 digest of the exact executable implementation bytes.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    inputContractDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/inputContractDigest
+      namespace: fin-strategy
+      localName: inputContractDigest
+      label: input contract digest
+      definition: SHA-256 digest of the exact canonical input contract.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    outputContractDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/outputContractDigest
+      namespace: fin-strategy
+      localName: outputContractDigest
+      label: output contract digest
+      definition: SHA-256 digest of the exact canonical output contract.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    toolLockRef:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/toolLockRef
+      namespace: fin-strategy
+      localName: toolLockRef
+      label: tool lock reference
+      definition: IRI of the immutable tool-lock record used by an executable definition.
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    toolLockDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/toolLockDigest
+      namespace: fin-strategy
+      localName: toolLockDigest
+      label: tool lock digest
+      definition: SHA-256 digest of the immutable tool-lock record.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    runtimeDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/runtimeDigest
+      namespace: fin-strategy
+      localName: runtimeDigest
+      label: runtime digest
+      definition: SHA-256 digest of the exact runtime environment lock.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    factorExpressionRef:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/factorExpressionRef
+      namespace: fin-strategy
+      localName: factorExpressionRef
+      label: factor expression reference
+      definition: IRI of the immutable executable factor-expression artifact.
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    factorExpressionDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/factorExpressionDigest
+      namespace: fin-strategy
+      localName: factorExpressionDigest
+      label: factor expression digest
+      definition: SHA-256 digest of the exact factor-expression artifact.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    factorCategory:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/factorCategory
+      namespace: fin-strategy
+      localName: factorCategory
+      label: factor category
+      definition: Reviewed category member assigned to a FactorDefinition.
+      valueType: https://axiolune.ai/ontology/finance/strategy-research/FactorCategory
+      defaultCardinality:
         minCount: 0
         maxCount: 1
-  StrategyDefinition:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/StrategyDefinition
-    namespace: fin-strategy
-    localName: StrategyDefinition
-    label: Strategy Definition
-    definition: specification of a trading strategy including its logic, parameters, universe, risk controls, and execution rules
-    note: >-
-      NautilusTrader Strategy (base class for trading strategies). Lean QCAlgorithm (user strategy definition). Qlib
-      Strategy (portfolio management strategy).
-    attributeUses:
-      - attribute: https://axiolune.ai/ontology/finance/strategy-research/hasStrategyName
-        minCount: 1
-        maxCount: 1
-      - attribute: https://axiolune.ai/ontology/finance/strategy-research/hasStrategyDescription
+    strategyDescription:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/strategyDescription
+      namespace: fin-strategy
+      localName: strategyDescription
+      label: strategy description
+      definition: Optional human-readable description of a StrategyDefinition objective.
+      valueType: string
+      defaultCardinality:
         minCount: 0
         maxCount: 1
-  Signal:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/Signal
-    namespace: fin-strategy
-    localName: Signal
-    label: Signal
-    definition: >-
-      point-in-time trading signal generated by a factor or strategy for a specific instrument with directional bias,
-      strength, and validity period
-    patternBindings:
-      - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
-      - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
-    note: >-
-      Qlib prediction scores → discretized signals. NautilusTrader does not have explicit Signal; strategies generate
-      orders directly. Signal as intermediate research artifact.
-    participantRoles:
-      - roleName: generatedByFactor
-        range: https://axiolune.ai/ontology/finance/strategy-research/FactorDefinition
+    runContextId:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/runContextId
+      namespace: fin-strategy
+      localName: runContextId
+      label: run context identifier
+      definition: Authority-scoped stable identifier of a RunContext logical identity.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    runContextKind:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/runContextKind
+      namespace: fin-strategy
+      localName: runContextKind
+      label: run context kind
+      definition: Reviewed member that distinguishes backtest research and live RunContext versions.
+      valueType: https://axiolune.ai/ontology/finance/strategy-research/RunContextKind
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    parameterSnapshotRef:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/parameterSnapshotRef
+      namespace: fin-strategy
+      localName: parameterSnapshotRef
+      label: parameter snapshot reference
+      definition: IRI of the immutable canonical parameter snapshot.
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    parameterSnapshotDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/parameterSnapshotDigest
+      namespace: fin-strategy
+      localName: parameterSnapshotDigest
+      label: parameter snapshot digest
+      definition: SHA-256 digest of the immutable canonical parameter snapshot.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    ontologyClosureDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/ontologyClosureDigest
+      namespace: fin-strategy
+      localName: ontologyClosureDigest
+      label: ontology closure digest
+      definition: SHA-256 digest of the exact ontology module closure consumed by a run.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    mappingClosureDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/mappingClosureDigest
+      namespace: fin-strategy
+      localName: mappingClosureDigest
+      label: mapping closure digest
+      definition: SHA-256 digest of the exact semantic-mapping closure consumed by a run.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    calendarSnapshotRef:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/calendarSnapshotRef
+      namespace: fin-strategy
+      localName: calendarSnapshotRef
+      label: calendar snapshot reference
+      definition: IRI of the immutable market-calendar snapshot consumed by a run.
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    calendarSnapshotDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/calendarSnapshotDigest
+      namespace: fin-strategy
+      localName: calendarSnapshotDigest
+      label: calendar snapshot digest
+      definition: SHA-256 digest of the immutable market-calendar snapshot.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    compilerDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/compilerDigest
+      namespace: fin-strategy
+      localName: compilerDigest
+      label: compiler digest
+      definition: SHA-256 digest of the exact ontology and mapping compiler lock.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    inputContextRef:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/inputContextRef
+      namespace: fin-strategy
+      localName: inputContextRef
+      label: input context reference
+      definition: IRI of the strictly prior completed materialization context authorized as run input.
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    inputContextRecordDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/inputContextRecordDigest
+      namespace: fin-strategy
+      localName: inputContextRecordDigest
+      label: input context record digest
+      definition: SHA-256 digest of the exact immutable input-context record.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    pitRequestRef:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/pitRequestRef
+      namespace: fin-strategy
+      localName: pitRequestRef
+      label: PIT request reference
+      definition: IRI of the immutable three-axis PITValidationRequest authorizing the run input.
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    pitRequestRecordDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/pitRequestRecordDigest
+      namespace: fin-strategy
+      localName: pitRequestRecordDigest
+      label: PIT request record digest
+      definition: SHA-256 digest of the exact immutable PITValidationRequest record.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    runStartedAt:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/runStartedAt
+      namespace: fin-strategy
+      localName: runStartedAt
+      label: run started at
+      definition: Immutable instant at which a research or backtest execution began.
+      valueType: instant
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    simulationFrom:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/simulationFrom
+      namespace: fin-strategy
+      localName: simulationFrom
+      label: simulation from
+      definition: Inclusive lower bound of a BacktestRun historical simulation interval.
+      valueType: instant
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    simulationTo:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/simulationTo
+      namespace: fin-strategy
+      localName: simulationTo
+      label: simulation to
+      definition: Exclusive upper bound of a BacktestRun historical simulation interval.
+      valueType: instant
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    initialCapital:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/initialCapital
+      namespace: fin-strategy
+      localName: initialCapital
+      label: initial capital
+      definition: Typed Money amount available at the start of a BacktestRun.
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    codeDefinitionDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/codeDefinitionDigest
+      namespace: fin-strategy
+      localName: codeDefinitionDigest
+      label: code definition digest
+      definition: SHA-256 digest of the exact combined strategy code and definition closure.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    feeAssumptionRef:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/feeAssumptionRef
+      namespace: fin-strategy
+      localName: feeAssumptionRef
+      label: fee assumption reference
+      definition: IRI of the immutable fee-assumption artifact used by a BacktestRun.
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    feeAssumptionDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/feeAssumptionDigest
+      namespace: fin-strategy
+      localName: feeAssumptionDigest
+      label: fee assumption digest
+      definition: SHA-256 digest of the immutable fee-assumption artifact.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    slippageAssumptionRef:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/slippageAssumptionRef
+      namespace: fin-strategy
+      localName: slippageAssumptionRef
+      label: slippage assumption reference
+      definition: IRI of the immutable slippage-assumption artifact used by a BacktestRun.
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    slippageAssumptionDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/slippageAssumptionDigest
+      namespace: fin-strategy
+      localName: slippageAssumptionDigest
+      label: slippage assumption digest
+      definition: SHA-256 digest of the immutable slippage-assumption artifact.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    fillAssumptionRef:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/fillAssumptionRef
+      namespace: fin-strategy
+      localName: fillAssumptionRef
+      label: fill assumption reference
+      definition: IRI of the immutable fill-assumption artifact used by a BacktestRun.
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    fillAssumptionDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/fillAssumptionDigest
+      namespace: fin-strategy
+      localName: fillAssumptionDigest
+      label: fill assumption digest
+      definition: SHA-256 digest of the immutable fill-assumption artifact.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    benchmarkRef:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/benchmarkRef
+      namespace: fin-strategy
+      localName: benchmarkRef
+      label: benchmark reference
+      definition: IRI of the immutable benchmark definition or dataset artifact.
+      valueType: uri
+      defaultCardinality:
         minCount: 0
         maxCount: 1
-        roleIri: https://axiolune.ai/ontology/finance/strategy-research/generatedByFactor
-      - roleName: generatedByStrategy
-        range: https://axiolune.ai/ontology/finance/strategy-research/StrategyDefinition
+    benchmarkDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/benchmarkDigest
+      namespace: fin-strategy
+      localName: benchmarkDigest
+      label: benchmark digest
+      definition: SHA-256 digest of the immutable benchmark definition or dataset artifact.
+      valueType: string
+      defaultCardinality:
         minCount: 0
         maxCount: 1
-        roleIri: https://axiolune.ai/ontology/finance/strategy-research/generatedByStrategy
-      - roleName: signalForInstrument
-        range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+      pattern: ^sha256:[0-9a-f]{64}$
+    deterministicSeed:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/deterministicSeed
+      namespace: fin-strategy
+      localName: deterministicSeed
+      label: deterministic seed
+      definition: Non-negative integer seed fixing every stochastic run component.
+      valueType: integer
+      defaultCardinality:
         minCount: 1
         maxCount: 1
-        roleIri: https://axiolune.ai/ontology/finance/strategy-research/signalForInstrument
-    attributeUses:
-      - attribute: https://axiolune.ai/ontology/finance/strategy-research/hasSignalDirection
+    researchQuestionRef:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/researchQuestionRef
+      namespace: fin-strategy
+      localName: researchQuestionRef
+      label: research question reference
+      definition: IRI of the immutable research-question artifact evaluated by a ResearchRun.
+      valueType: uri
+      defaultCardinality:
         minCount: 1
         maxCount: 1
-      - attribute: https://axiolune.ai/ontology/finance/strategy-research/hasSignalStrength
+    researchQuestionDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/researchQuestionDigest
+      namespace: fin-strategy
+      localName: researchQuestionDigest
+      label: research question digest
+      definition: SHA-256 digest of the immutable research-question artifact.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    researchDatasetRef:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/researchDatasetRef
+      namespace: fin-strategy
+      localName: researchDatasetRef
+      label: research dataset reference
+      definition: IRI of the immutable research input dataset snapshot.
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    researchDatasetDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/researchDatasetDigest
+      namespace: fin-strategy
+      localName: researchDatasetDigest
+      label: research dataset digest
+      definition: SHA-256 digest of the immutable research input dataset snapshot.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    researchOutputContractDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/researchOutputContractDigest
+      namespace: fin-strategy
+      localName: researchOutputContractDigest
+      label: research output contract digest
+      definition: SHA-256 digest of the exact ResearchRun output contract.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    metricDefinitionId:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/metricDefinitionId
+      namespace: fin-strategy
+      localName: metricDefinitionId
+      label: metric definition identifier
+      definition: Authority-scoped stable identifier of a MetricDefinition logical identity.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    metricName:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/metricName
+      namespace: fin-strategy
+      localName: metricName
+      label: metric name
+      definition: Human-readable name of a MetricDefinition version.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    metricValueKind:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/metricValueKind
+      namespace: fin-strategy
+      localName: metricValueKind
+      label: metric value kind
+      definition: Reviewed member that selects the sole Money or Quantity representation of a metric.
+      valueType: https://axiolune.ai/ontology/finance/strategy-research/MetricValueKind
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    formulaDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/formulaDigest
+      namespace: fin-strategy
+      localName: formulaDigest
+      label: formula digest
+      definition: SHA-256 digest of the exact canonical metric formula artifact.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    calculationContextId:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/calculationContextId
+      namespace: fin-strategy
+      localName: calculationContextId
+      label: calculation context identifier
+      definition: Authority-scoped stable identifier of a CalculationContext logical identity.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    calculationFrequency:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/calculationFrequency
+      namespace: fin-strategy
+      localName: calculationFrequency
+      label: calculation frequency
+      definition: Reviewed frequency member governing metric calculation and ordering.
+      valueType: https://axiolune.ai/ontology/finance/strategy-research/CalculationFrequency
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    annualizationFactor:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/annualizationFactor
+      namespace: fin-strategy
+      localName: annualizationFactor
+      label: annualization factor
+      definition: Dimensionless Quantity used to annualize a metric under the selected frequency.
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
         minCount: 0
         maxCount: 1
-  BacktestRun:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
-    namespace: fin-strategy
-    localName: BacktestRun
-    label: Backtest Run
-    definition: >-
-      execution of a strategy definition over historical data with specified parameters, date range, initial capital,
-      and resulting performance metrics
-    patternBindings:
-      - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
-    note: >-
-      Qlib Backtest executor. NautilusTrader BacktestEngine (backtesting engine with event replay). Lean Algorithm
-      backtesting mode. TemporalFact not applicable (BacktestRun itself is meta-level; performance observations have
-      temporal semantics).
-    participantRoles:
-      - roleName: backtestsStrategy
-        range: https://axiolune.ai/ontology/finance/strategy-research/StrategyDefinition
-        minCount: 1
-        maxCount: 1
-        roleIri: https://axiolune.ai/ontology/finance/strategy-research/backtestsStrategy
-      - roleName: usedPortfolio
-        range: https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
+    riskFreeRate:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/riskFreeRate
+      namespace: fin-strategy
+      localName: riskFreeRate
+      label: risk-free rate
+      definition: Dimensionless Quantity rate used by a risk-adjusted metric calculation.
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
         minCount: 0
         maxCount: 1
-        roleIri: https://axiolune.ai/ontology/finance/strategy-research/usedPortfolio
-    attributeUses:
-      - attribute: https://axiolune.ai/ontology/finance/strategy-research/hasBacktestStatus
-        minCount: 1
-        maxCount: 1
-      - attribute: https://axiolune.ai/ontology/finance/strategy-research/hasStartDate
-        minCount: 1
-        maxCount: 1
-      - attribute: https://axiolune.ai/ontology/finance/strategy-research/hasEndDate
-        minCount: 1
-        maxCount: 1
-      - attribute: https://axiolune.ai/ontology/finance/strategy-research/hasInitialCapital
+    calculationWindow:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/calculationWindow
+      namespace: fin-strategy
+      localName: calculationWindow
+      label: calculation window
+      definition: Positive Quantity duration or count defining the metric calculation window.
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
         minCount: 0
         maxCount: 1
-  PerformanceObservation:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
-    namespace: fin-strategy
-    localName: PerformanceObservation
-    label: Performance Observation
-    definition: >-
-      point-in-time or period-aggregate performance metrics for a backtest run or live strategy including returns,
-      drawdown, Sharpe ratio, and other statistics
-    patternBindings:
-      - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
-      - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
-    note: >-
-      Qlib analysis metrics (IC, Sharpe, max drawdown). NautilusTrader PerformanceAnalyzer. Lean Statistics. Temporal
-      semantics: validTime is the performance observation date; knowledgeTime is when calculated; availableFrom is when
-      made queryable.
-    participantRoles:
-      - roleName: observedInBacktest
-        range: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
-        minCount: 1
-        maxCount: 1
-        roleIri: https://axiolune.ai/ontology/finance/strategy-research/observedInBacktest
-      - roleName: observedForStrategy
-        range: https://axiolune.ai/ontology/finance/strategy-research/StrategyDefinition
+    confidenceLevel:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/confidenceLevel
+      namespace: fin-strategy
+      localName: confidenceLevel
+      label: confidence level
+      definition: Dimensionless Quantity in the closed interval from zero to one used by a statistical metric.
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
         minCount: 0
         maxCount: 1
-        roleIri: https://axiolune.ai/ontology/finance/strategy-research/observedForStrategy
-        label: observed for strategy
-        definition: optional strategy definition whose performance is being observed
-    attributeUses:
-      - attribute: https://axiolune.ai/ontology/finance/strategy-research/hasCumulativeReturn
-        minCount: 0
-        maxCount: 1
-      - attribute: https://axiolune.ai/ontology/finance/strategy-research/hasMaxDrawdown
-        minCount: 0
-        maxCount: 1
-      - attribute: https://axiolune.ai/ontology/finance/strategy-research/hasSharpeRatio
-        minCount: 0
-        maxCount: 1
-  hasFactorName:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/hasFactorName
-    namespace: fin-strategy
-    localName: hasFactorName
-    label: has factor name
-    definition: human-readable name of the factor
-    valueType: string
-  hasFactorCategory:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/hasFactorCategory
-    namespace: fin-strategy
-    localName: hasFactorCategory
-    label: has factor category
-    definition: category classification of the factor (fundamental, technical, etc.)
-    valueType: codelist
-    codeListReference: FactorCategory
-  hasFactorFormula:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/hasFactorFormula
-    namespace: fin-strategy
-    localName: hasFactorFormula
-    label: has factor formula
-    definition: textual or symbolic representation of the factor calculation logic
-    note: Not executable code; human-readable formula. Executable logic resides in runtime.
-    valueType: string
-  hasStrategyName:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/hasStrategyName
-    namespace: fin-strategy
-    localName: hasStrategyName
-    label: has strategy name
-    definition: human-readable name of the strategy
-    valueType: string
-  hasStrategyDescription:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/hasStrategyDescription
-    namespace: fin-strategy
-    localName: hasStrategyDescription
-    label: has strategy description
-    definition: textual description of the strategy logic and objectives
-    valueType: string
-  hasSignalDirection:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/hasSignalDirection
-    namespace: fin-strategy
-    localName: hasSignalDirection
-    label: has signal direction
-    definition: directional bias of the signal (long, short, neutral, exit)
-    valueType: codelist
-    codeListReference: SignalDirection
-  hasSignalStrength:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/hasSignalStrength
-    namespace: fin-strategy
-    localName: hasSignalStrength
-    label: has signal strength
-    definition: numerical measure of signal confidence or magnitude, typically normalized [-1, 1] or [0, 1]
-    valueType: https://axiolune.ai/ontology/finance/foundation/QuantityValue
-    note: ' Round-2: dimensionless/ratio metrics use QuantityValue (unit=ratio|1), not bare decimal.'
-  hasBacktestStatus:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/hasBacktestStatus
-    namespace: fin-strategy
-    localName: hasBacktestStatus
-    label: has backtest status
-    definition: execution state of the backtest run
-    valueType: codelist
-    codeListReference: BacktestStatus
-  hasStartDate:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/hasStartDate
-    namespace: fin-strategy
-    localName: hasStartDate
-    label: has start date
-    definition: start date of the backtest simulation period
-    valueType: instant
-  hasEndDate:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/hasEndDate
-    namespace: fin-strategy
-    localName: hasEndDate
-    label: has end date
-    definition: end date of the backtest simulation period
-    valueType: instant
-  hasInitialCapital:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/hasInitialCapital
-    namespace: fin-strategy
-    localName: hasInitialCapital
-    label: has initial capital
-    definition: starting capital amount for the backtest run
-    valueType: https://axiolune.ai/ontology/finance/foundation/MonetaryAmount
-  hasCumulativeReturn:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/hasCumulativeReturn
-    namespace: fin-strategy
-    localName: hasCumulativeReturn
-    label: has cumulative return
-    definition: cumulative return percentage at the observation point
-    note: >-
-      Expressed as decimal (0.15 = 15% return). Round-2: dimensionless/ratio metrics use QuantityValue (unit=ratio|1),
-      not bare decimal.
-    valueType: https://axiolune.ai/ontology/finance/foundation/QuantityValue
-  hasMaxDrawdown:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/hasMaxDrawdown
-    namespace: fin-strategy
-    localName: hasMaxDrawdown
-    label: has max drawdown
-    definition: maximum peak-to-trough decline as percentage
-    note: >-
-      Expressed as positive decimal (0.25 = 25% drawdown). Round-2: dimensionless/ratio metrics use QuantityValue
-      (unit=ratio|1), not bare decimal.
-    valueType: https://axiolune.ai/ontology/finance/foundation/QuantityValue
-  hasSharpeRatio:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/hasSharpeRatio
-    namespace: fin-strategy
-    localName: hasSharpeRatio
-    label: has Sharpe ratio
-    definition: risk-adjusted return metric (mean excess return divided by standard deviation of returns)
-    valueType: https://axiolune.ai/ontology/finance/foundation/QuantityValue
-    note: ' Round-2: dimensionless/ratio metrics use QuantityValue (unit=ratio|1), not bare decimal.'
-  hasFactorPeriod:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/hasFactorPeriod
-    namespace: fin-strategy
-    localName: hasFactorPeriod
-    label: Has Factor Period
-    definition: reporting period key for a factor observation (e.g. 200704), distinct from publication/knowledge time
-    valueType: string
-    defaultCardinality:
-      minCount: 1
-      maxCount: 1
-    note: Qlib PIT period column; not the same as market-data bar valid time
-  hasFactorValue:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/hasFactorValue
-    namespace: fin-strategy
-    localName: hasFactorValue
-    label: Has Factor Value
-    definition: observed factor numeric value for a (instrument, period) under a publication/knowledge/availability triple
-    valueType: https://axiolune.ai/ontology/finance/foundation/QuantityValue
-    defaultCardinality:
-      minCount: 1
-      maxCount: 1
-  FactorObservation:
-    iri: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
-    namespace: fin-strategy
-    localName: FactorObservation
-    label: Factor Observation
-    definition: >-
-      revision-aware observation of a factor value for an instrument and reporting period, with publication (knowledge)
-      time distinct from period and availability time (Qlib PIT model)
-    participantRoles:
-      - roleName: observesFactor
-        range: https://axiolune.ai/ontology/finance/strategy-research/FactorDefinition
+    calculationImplementationDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/calculationImplementationDigest
+      namespace: fin-strategy
+      localName: calculationImplementationDigest
+      label: calculation implementation digest
+      definition: SHA-256 digest of the exact calculation-context implementation.
+      valueType: string
+      defaultCardinality:
         minCount: 1
         maxCount: 1
-        roleIri: https://axiolune.ai/ontology/finance/strategy-research/observesFactor
-      - roleName: observedInstrument
-        range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+      pattern: ^sha256:[0-9a-f]{64}$
+    calculationParameterSnapshotRef:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/calculationParameterSnapshotRef
+      namespace: fin-strategy
+      localName: calculationParameterSnapshotRef
+      label: calculation parameter snapshot reference
+      definition: >-
+        Closed ArtifactRef for the immutable calculation-parameter snapshot that fixes every result-affecting return,
+        aggregation, missing-value, calendar/resample, benchmark-alignment, volatility-match, and scalar policy.
+      valueType: https://axiolune.ai/ontology/meta/data-binding/structures/ArtifactRef
+      defaultCardinality:
         minCount: 1
         maxCount: 1
-        roleIri: https://axiolune.ai/ontology/finance/strategy-research/observedInstrument
-      - roleName: nextRevision
-        range: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
+    calculationParameterSnapshotDigest:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/calculationParameterSnapshotDigest
+      namespace: fin-strategy
+      localName: calculationParameterSnapshotDigest
+      label: calculation parameter snapshot digest
+      definition: SHA-256 digest of the exact immutable calculation-parameter snapshot artifact bytes.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    calculationParameterSnapshotLocator:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/calculationParameterSnapshotLocator
+      namespace: fin-strategy
+      localName: calculationParameterSnapshotLocator
+      label: calculation parameter snapshot locator
+      definition: >-
+        Structured SourceLocator whose digest-locked extractor profile and selection digest authenticate the exact bytes
+        used as the CalculationContext parameter snapshot.
+      valueType: https://axiolune.ai/ontology/meta/data-binding/structures/SourceLocator
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    sourceSignalId:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/sourceSignalId
+      namespace: fin-strategy
+      localName: sourceSignalId
+      label: source signal identifier
+      definition: Non-empty source identifier unique within one generator and run logical scope.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    signalDirection:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/signalDirection
+      namespace: fin-strategy
+      localName: signalDirection
+      label: signal direction
+      definition: Reviewed directional member assigned to a Signal fact.
+      valueType: https://axiolune.ai/ontology/finance/strategy-research/SignalDirection
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    signalStrength:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/signalStrength
+      namespace: fin-strategy
+      localName: signalStrength
+      label: signal strength
+      definition: Dimensionless non-negative Quantity in the closed interval from zero to one.
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    signalHorizon:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/signalHorizon
+      namespace: fin-strategy
+      localName: signalHorizon
+      label: signal horizon
+      definition: Positive duration for which the Signal version is intended to apply.
+      valueType: duration
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    sourceFactorId:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/sourceFactorId
+      namespace: fin-strategy
+      localName: sourceFactorId
+      label: source factor identifier
+      definition: Non-empty source identifier stable across revisions in one factor instrument run and period scope.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    reportingPeriodKey:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/reportingPeriodKey
+      namespace: fin-strategy
+      localName: reportingPeriodKey
+      label: reporting period key
+      definition: Canonical business reporting-period key distinct from all three temporal-axis instants.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    factorValue:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/factorValue
+      namespace: fin-strategy
+      localName: factorValue
+      label: factor value
+      definition: Typed Quantity value observed for one factor instrument run and reporting period.
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    sourceRunEventId:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/sourceRunEventId
+      namespace: fin-strategy
+      localName: sourceRunEventId
+      label: source run event identifier
+      definition: Source-scoped stable identifier of one BacktestStatusEvent.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    statusSequence:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/statusSequence
+      namespace: fin-strategy
+      localName: statusSequence
+      label: status sequence
+      definition: Non-negative source ordering key for BacktestStatusEvent facts.
+      valueType: integer
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    backtestLifecycleState:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/backtestLifecycleState
+      namespace: fin-strategy
+      localName: backtestLifecycleState
+      label: backtest lifecycle state
+      definition: Reviewed lifecycle member asserted by one immutable BacktestStatusEvent.
+      valueType: https://axiolune.ai/ontology/finance/strategy-research/BacktestLifecycleState
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    sourcePerformanceId:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/sourcePerformanceId
+      namespace: fin-strategy
+      localName: sourcePerformanceId
+      label: source performance identifier
+      definition: Source-scoped stable identifier of one PerformanceObservation logical identity.
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    performanceMoneyValue:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/performanceMoneyValue
+      namespace: fin-strategy
+      localName: performanceMoneyValue
+      label: performance money value
+      definition: Optional Money representation selected exclusively for a monetary metric.
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
         minCount: 0
         maxCount: 1
-        roleIri: https://axiolune.ai/ontology/finance/strategy-research/nextRevision
-        note: >-
-          Qlib dump_pit `_next` linked-list pointer: successive revised value for the same (instrument, period).
-          Null/absent means terminal revision. Distinct from knowledgeTo interval closure.
-    attributeUses:
-      - attribute: https://axiolune.ai/ontology/finance/strategy-research/hasFactorPeriod
+    performanceQuantityValue:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/performanceQuantityValue
+      namespace: fin-strategy
+      localName: performanceQuantityValue
+      label: performance quantity value
+      definition: Optional Quantity representation selected exclusively for a non-monetary metric.
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    sourceAttributionId:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/sourceAttributionId
+      namespace: fin-strategy
+      localName: sourceAttributionId
+      label: source attribution identifier
+      definition: Source-scoped stable identifier of one PositionAttribution logical identity.
+      valueType: string
+      defaultCardinality:
         minCount: 1
         maxCount: 1
-      - attribute: https://axiolune.ai/ontology/finance/strategy-research/hasFactorValue
+    attributionMoneyValue:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/attributionMoneyValue
+      namespace: fin-strategy
+      localName: attributionMoneyValue
+      label: attribution money value
+      definition: Optional Money contribution selected exclusively for a monetary attribution metric.
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    attributionQuantityValue:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/attributionQuantityValue
+      namespace: fin-strategy
+      localName: attributionQuantityValue
+      label: attribution quantity value
+      definition: Optional Quantity contribution selected exclusively for a non-monetary attribution metric.
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+  identifierTypes: {}
+  codeLists:
+    SignalDirection:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/SignalDirection
+      namespace: fin-strategy
+      localName: SignalDirection
+      label: Signal Direction
+      definition: >-
+        Closed classification of the directional portfolio intent conveyed by a Signal under its locked generator
+        contract.
+      vocabulary: Signal Direction
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/SignalDirection/value/long
+          notation: long
+          label: long
+          definition: Signal favors positive exposure under its exact generator contract.
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/SignalDirection/value/short
+          notation: short
+          label: short
+          definition: Signal favors negative exposure under its exact generator contract.
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/SignalDirection/value/neutral
+          notation: neutral
+          label: neutral
+          definition: Signal favors no directional exposure under its exact generator contract.
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/SignalDirection/value/exit
+          notation: exit
+          label: exit
+          definition: Signal favors closing an existing exposure under its exact generator contract.
+    FactorCategory:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/FactorCategory
+      namespace: fin-strategy
+      localName: FactorCategory
+      label: Factor Category
+      definition: Closed classification of a Factor by the primary provenance of the inputs or transformation that defines it.
+      vocabulary: Factor Category
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/FactorCategory/value/fundamental
+          notation: fundamental
+          label: fundamental
+          definition: Factor derives from issuer or economic fundamentals under a locked input contract.
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/FactorCategory/value/technical
+          notation: technical
+          label: technical
+          definition: Factor derives from market-series transformations under a locked input contract.
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/FactorCategory/value/alternative
+          notation: alternative
+          label: alternative
+          definition: Factor derives from a reviewed non-traditional dataset under a locked input contract.
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/FactorCategory/value/macro
+          notation: macro
+          label: macro
+          definition: Factor derives from macroeconomic observations under a locked input contract.
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/FactorCategory/value/statistical
+          notation: statistical
+          label: statistical
+          definition: Factor derives from a reviewed statistical model under a locked implementation.
+    RunContextKind:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/RunContextKind
+      namespace: fin-strategy
+      localName: RunContextKind
+      label: Run Context Kind
+      definition: Closed classification of the execution purpose and input regime of a RunContext.
+      vocabulary: Run Context Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/RunContextKind/value/backtest
+          notation: backtest
+          label: backtest
+          definition: Run replays historical inputs through an immutable BacktestRun configuration.
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/RunContextKind/value/research
+          notation: research
+          label: research
+          definition: Run evaluates a research question and generator against an immutable dataset snapshot.
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/RunContextKind/value/live
+          notation: live
+          label: live
+          definition: Run consumes PIT-authorized live inputs under a locked execution context.
+    BacktestLifecycleState:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/BacktestLifecycleState
+      namespace: fin-strategy
+      localName: BacktestLifecycleState
+      label: Backtest Lifecycle State
+      definition: >-
+        Closed event-derived lifecycle classification of a BacktestRun reconstructed from its immutable lifecycle
+        events.
+      vocabulary: Backtest Lifecycle State
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/BacktestLifecycleState/value/planned
+          notation: planned
+          label: planned
+          definition: Run configuration exists but execution has not started.
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/BacktestLifecycleState/value/running
+          notation: running
+          label: running
+          definition: Run execution has started and has no terminal event.
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/BacktestLifecycleState/value/completed
+          notation: completed
+          label: completed
+          definition: Run execution completed and produced closed result evidence.
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/BacktestLifecycleState/value/failed
+          notation: failed
+          label: failed
+          definition: Run execution terminated with immutable failure evidence.
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/BacktestLifecycleState/value/cancelled
+          notation: cancelled
+          label: cancelled
+          definition: Run execution was cancelled by an authorized decision.
+    MetricValueKind:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/MetricValueKind
+      namespace: fin-strategy
+      localName: MetricValueKind
+      label: Metric Value Kind
+      definition: >-
+        Closed discriminator selecting whether a Metric value is represented by exactly one MonetaryAmount or exactly
+        one QuantityValue.
+      vocabulary: Metric Value Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/MetricValueKind/value/money
+          notation: money
+          label: money
+          definition: Metric value is represented by exactly one MonetaryAmount.
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/MetricValueKind/value/quantity
+          notation: quantity
+          label: quantity
+          definition: Metric value is represented by exactly one QuantityValue.
+    CalculationFrequency:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/CalculationFrequency
+      namespace: fin-strategy
+      localName: CalculationFrequency
+      label: Calculation Frequency
+      definition: >-
+        Closed classification of the observation or calendar interval over which a MetricDefinition requires
+        calculation.
+      vocabulary: Calculation Frequency
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/CalculationFrequency/value/perObservation
+          notation: perObservation
+          label: per observation
+          definition: Metric is calculated for every eligible observation.
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/CalculationFrequency/value/daily
+          notation: daily
+          label: daily
+          definition: Metric is calculated once for each reviewed trading day.
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/CalculationFrequency/value/weekly
+          notation: weekly
+          label: weekly
+          definition: Metric is calculated once for each reviewed week interval.
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/CalculationFrequency/value/monthly
+          notation: monthly
+          label: monthly
+          definition: Metric is calculated once for each reviewed month interval.
+        - iri: https://axiolune.ai/ontology/finance/strategy-research/CalculationFrequency/value/fullRun
+          notation: fullRun
+          label: full run
+          definition: Metric is calculated once over the complete RunContext interval.
+  constraints:
+    SignalGeneratorEvidenceContract:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/SignalGeneratorEvidenceContract
+      namespace: fin-strategy
+      localName: SignalGeneratorEvidenceContract
+      label: Signal Generator Evidence Contract
+      definition: Validation rule that closes SignalGenerator identity and all executable implementation evidence.
+      constraintType: Dependency
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          directType in {FactorDefinition,StrategyDefinition}; logicalKey(generatorAuthority.logicalIri,generatorId);
+          eachExactlyOne(implementationDigest,inputContractDigest,outputContractDigest,toolLockRef,toolLockDigest,runtimeDigest,sourceArtifactRef,sourceArtifactDigest,sourceLocator);
+          digestClosureVerified=true
+      severity: Error
+      message: SignalGenerator identity or executable evidence closure is incomplete.
+    RunInputClosureContract:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/RunInputClosureContract
+      namespace: fin-strategy
+      localName: RunInputClosureContract
+      label: Run Input Closure Contract
+      definition: >-
+        Validation rule that requires one strictly prior completed input context and matching passed three-axis PIT
+        request for every RunContext.
+      constraintType: Dependency
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(runAuthority.logicalIri,runContextId); pair(inputContextRef,inputContextRecordDigest);
+          pair(pitRequestRef,pitRequestRecordDigest); inputContext.completedAt < runStartedAt;
+          inputContext.status=completed; pitReport.status=passed; pitReport.requestRef=pitRequestRef;
+          pitReport.contextRef=inputContextRef
+      severity: Error
+      message: RunContext lacks a strictly prior completed materialization context or matching passed PIT request.
+    BacktestConfigurationContract:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/BacktestConfigurationContract
+      namespace: fin-strategy
+      localName: BacktestConfigurationContract
+      label: Backtest Configuration Contract
+      definition: >-
+        Validation rule that closes immutable BacktestRun inputs and keeps lifecycle status outside the run
+        configuration.
+      constraintType: Dependency
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          runContextKind=backtest; simulationFrom < simulationTo;
+          eachExactlyOne(initialCapital,codeDefinitionDigest,feeAssumptionRef,feeAssumptionDigest,slippageAssumptionRef,slippageAssumptionDigest,fillAssumptionRef,fillAssumptionDigest,benchmarkRef,benchmarkDigest,deterministicSeed);
+          forbidden(backtestLifecycleState); corporateActionInputResolvedOnlyThroughCompletedInputContext=true
+      severity: Error
+      message: BacktestRun configuration is incomplete mutable or not bound to closed historical input evidence.
+    ResearchRunContract:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/ResearchRunContract
+      namespace: fin-strategy
+      localName: ResearchRunContract
+      label: Research Run Contract
+      definition: >-
+        Validation rule that closes a ResearchRun question dataset output contract generator and deterministic execution
+        evidence.
+      constraintType: Dependency
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          runContextKind=research; pair(researchQuestionRef,researchQuestionDigest);
+          pair(researchDatasetRef,researchDatasetDigest);
+          eachExactlyOne(researchOutputContractDigest,deterministicSeed,researchGenerator)
+      severity: Error
+      message: ResearchRun lacks an exact question dataset generator output contract or deterministic seed.
+    MetricDefinitionContract:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/MetricDefinitionContract
+      namespace: fin-strategy
+      localName: MetricDefinitionContract
+      label: Metric Definition Contract
+      definition: >-
+        Validation rule that fixes one metric identity value representation formula implementation and executable
+        closure.
+      constraintType: Dependency
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(metricAuthority.logicalIri,metricDefinitionId); metricValueKind in {money,quantity};
+          eachExactlyOne(formulaDigest,implementationDigest,inputContractDigest,outputContractDigest,toolLockRef,toolLockDigest,runtimeDigest)
+      severity: Error
+      message: MetricDefinition identity value kind or executable evidence closure is incomplete.
+    CalculationContextContract:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/CalculationContextContract
+      namespace: fin-strategy
+      localName: CalculationContextContract
+      label: Calculation Context Contract
+      definition: >-
+        Validation rule that fixes one calculation-context identity, frequency, implementation, paired benchmark, and
+        byte-authenticated closed parameter-policy snapshot.
+      constraintType: Dependency
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(calculationAuthority.logicalIri,calculationContextId);
+          eachExactlyOne(calculationFrequency,calculationImplementationDigest,calculationParameterSnapshotRef,
+          calculationParameterSnapshotDigest,calculationParameterSnapshotLocator);
+          selectedBytes(calculationParameterSnapshotRef,calculationParameterSnapshotLocator)=
+          calculationParameterSnapshotDigest;
+          snapshotMatchesContext(calculationParameterSnapshotRef,calculationFrequency,annualizationFactor,
+          riskFreeRate,calculationWindow,confidenceLevel,benchmarkRef,benchmarkDigest);
+          closedCalculationPolicies(returnKind in {simple,log},aggregationMode in {compound,sum}, missingValuePolicy in
+          {dropPaired,zeroFill,reject},calendarTimeZone=UTC, resampleAnchorForFrequency in
+          {perObservation:observation,daily:sessionClose,weekly:weekMonday,
+          monthly:monthEnd,fullRun:fullRun},benchmarkAlignment in
+          {none,exactIndexIntersection,forwardFillPastObservationThenIntersect}, volatilityMatch in
+          {disabled,sampleStandardDeviationRatio}); forbidden(backfillFutureObservation,backwardFill,lookAheadFill);
+          pairOrAbsent(benchmarkRef,benchmarkDigest); ratioOrAbsent(annualizationFactor,riskFreeRate,confidenceLevel);
+          everyPresentQuantityUsesControlledUnitAndCanonicalDecimal(
+          annualizationFactor,riskFreeRate,calculationWindow,confidenceLevel)
+      severity: Error
+      message: >-
+        CalculationContext identity, executable parameter snapshot, frequency, implementation, or benchmark pair is
+        incomplete.
+    SignalContract:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/SignalContract
+      namespace: fin-strategy
+      localName: SignalContract
+      label: Signal Contract
+      definition: Validation rule that enforces Signal participants listing consistency bounded strength and exact identity.
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          eachExactlyOne(signalGenerator,signalInstrument,signalRunContext,sourceSignalId,signalDirection,signalStrength,signalHorizon);
+          controlledQuantityUnit(signalStrength,signalStrength); canonicalDecimal(signalStrength.value);
+          exactDecimal('0') <= signalStrength.value <= exactDecimal('1');
+          signalListing.listedInstrument.versionIri=signalInstrument.versionIri;
+          logicalKey(signalGenerator.logicalIri,signalRunContext.logicalIri,sourceSignalId);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: Signal generator context direction strength listing or identity contract is invalid.
+    FactorRevisionContract:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/FactorRevisionContract
+      namespace: fin-strategy
+      localName: FactorRevisionContract
+      label: Factor Revision Contract
+      definition: >-
+        Validation rule that preserves FactorObservation history through stable domain identity semantic supersession
+        and knowledge-time closure.
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(observedFactor.logicalIri,factorInstrument.logicalIri,sourceFactorId,reportingPeriodKey);
+          factorRunContext and factorListing are immutable version content;
+          factorListing.listedInstrument.versionIri=factorInstrument.versionIri;
+          controlledQuantityUnit(factorValue,factorValue); canonicalDecimal(factorValue.value);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision); if absent(supersedesFactorVersion) then revision=0
+          and absent(knowledgeClosure,availabilityClosure); if present(supersedesFactorVersion) then
+          supersedesFactorVersion.logicalKey=this.logicalKey and
+          knowledgeClosure(targetVersion=supersedesFactorVersion.versionIri,axis=knowledge,closedAt=knowledgeFrom,causeKind=successor,causeVersion=this.versionIri)
+          and
+          availabilityClosure(targetVersion=supersedesFactorVersion.versionIri,axis=availability,closedAt=availableFrom,causeKind=successor,causeVersion=this.versionIri);
+          forbidden(knowledgeTo,availableTo,sourceStoragePointer,sourceByteOffset)
+      severity: Error
+      message: FactorObservation revision identity time closure or supersession is invalid.
+    BacktestStatusContract:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/BacktestStatusContract
+      namespace: fin-strategy
+      localName: BacktestStatusContract
+      label: Backtest Status Contract
+      definition: Validation rule that requires immutable ordered BacktestStatusEvent facts and legal predecessor continuity.
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(statusForBacktest.logicalIri,sourceRunEventId);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision); if absent(previousStatusEvent) then
+          statusSequence=0 and backtestLifecycleState=planned; if present(previousStatusEvent) then
+          previousStatusEvent.statusSequence + 1 = statusSequence and
+          reviewedTransition(previousStatusEvent.backtestLifecycleState,backtestLifecycleState)
+      severity: Error
+      message: BacktestStatusEvent identity ordering or reviewed transition is invalid.
+    PerformanceValueContract:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/PerformanceValueContract
+      namespace: fin-strategy
+      localName: PerformanceValueContract
+      label: Performance Value Contract
+      definition: >-
+        Validation rule that implements exclusive Money-or-Quantity metric values with exact run and calculation
+        context.
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          xone(performanceMoneyValue,performanceQuantityValue); performanceMetric.metricValueKind selects present value;
+          if present(performanceQuantityValue) then
+          controlledQuantityUnit(performanceQuantityValue,performanceQuantityValue) and
+          canonicalDecimal(performanceQuantityValue.value); metricRequirements(performanceCalculationContext)=satisfied;
+          logicalKey(performanceRunContext.logicalIri,performanceMetric.logicalIri,performanceCalculationContext.logicalIri,sourcePerformanceId);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: PerformanceObservation must carry exactly one metric-compatible typed value and complete contexts.
+    PerformanceRevisionContract:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/PerformanceRevisionContract
+      namespace: fin-strategy
+      localName: PerformanceRevisionContract
+      label: Performance Revision Contract
+      definition: >-
+        Validation rule that returns knowledge-time PerformanceObservation versions and immutable closure evidence
+        without overwriting prior facts.
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          if absent(supersedesPerformanceVersion) then revision=0 and absent(knowledgeClosure,availabilityClosure); if
+          present(supersedesPerformanceVersion) then supersedesPerformanceVersion.logicalKey=this.logicalKey and
+          knowledgeClosure(targetVersion=supersedesPerformanceVersion.versionIri,axis=knowledge,closedAt=knowledgeFrom,causeKind=successor,causeVersion=this.versionIri)
+          and
+          availabilityClosure(targetVersion=supersedesPerformanceVersion.versionIri,axis=availability,closedAt=availableFrom,causeKind=successor,causeVersion=this.versionIri);
+          forbidden(knowledgeTo,availableTo,overwritePriorVersion)
+      severity: Error
+      message: PerformanceObservation revision supersession or immutable closure evidence is invalid.
+    PerformanceValueXone:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/PerformanceValueXone
+      namespace: fin-strategy
+      localName: PerformanceValueXone
+      label: Performance Value Exclusive Choice
+      definition: Executable SHACL rule that requires exactly one typed value branch on every PerformanceObservation.
+      constraintType: Cardinality
+      scope: Association
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
+      expression:
+        language: SHACL
+        expression: sh:xone(performanceMoneyValue,performanceQuantityValue)
+      severity: Error
+      message: PerformanceObservation requires exactly one of performanceMoneyValue and performanceQuantityValue.
+    PositionAttributionContract:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/PositionAttributionContract
+      namespace: fin-strategy
+      localName: PositionAttributionContract
+      label: Position Attribution Contract
+      definition: >-
+        Validation rule that selects one position subject and one metric-compatible attribution value with complete
+        contexts.
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          xone(attributedPositionSnapshot,attributedPositionLot); xone(attributionMoneyValue,attributionQuantityValue);
+          if present(attributionQuantityValue) then
+          controlledQuantityUnit(attributionQuantityValue,attributionQuantityValue) and
+          canonicalDecimal(attributionQuantityValue.value); attributionMetric.metricValueKind selects present value;
+          logicalKey(selectedPosition.logicalIri,attributionGenerator.logicalIri,attributionRunContext.logicalIri,attributionMetric.logicalIri,sourceAttributionId);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: PositionAttribution must select one position subject one typed value and complete exact contexts.
+    PositionAttributionSubjectXone:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/PositionAttributionSubjectXone
+      namespace: fin-strategy
+      localName: PositionAttributionSubjectXone
+      label: Position Attribution Subject Exclusive Choice
+      definition: Executable SHACL rule that requires exactly one position subject branch on every PositionAttribution.
+      constraintType: Cardinality
+      scope: Association
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution
+      expression:
+        language: SHACL
+        expression: sh:xone(attributedPositionSnapshot,attributedPositionLot)
+      severity: Error
+      message: PositionAttribution requires exactly one of attributedPositionSnapshot and attributedPositionLot.
+    PositionAttributionValueXone:
+      iri: https://axiolune.ai/ontology/finance/strategy-research/PositionAttributionValueXone
+      namespace: fin-strategy
+      localName: PositionAttributionValueXone
+      label: Position Attribution Value Exclusive Choice
+      definition: Executable SHACL rule that requires exactly one typed value branch on every PositionAttribution.
+      constraintType: Cardinality
+      scope: Association
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution
+      expression:
+        language: SHACL
+        expression: sh:xone(attributionMoneyValue,attributionQuantityValue)
+      severity: Error
+      message: PositionAttribution requires exactly one of attributionMoneyValue and attributionQuantityValue.
+  relationUses:
+    - relation: https://axiolune.ai/ontology/finance/strategy-research/generatorAuthority
+      subjectType: https://axiolune.ai/ontology/finance/strategy-research/SignalGenerator
+      objectType: https://axiolune.ai/ontology/finance/foundation/Party
+      outboundCardinality:
         minCount: 1
         maxCount: 1
-    patternBindings:
-      - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
-        rationale: valid≈period effectivity; knowledge≈publication/revision; available≈research availability
-      - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
-    note: >-
-      Round-3: Qlib (date, period, value, _next) — nextRevision models `_next`. Three-axis TemporalFact covers
-      publication/availability; revision chain is orthogonal to PriceObservation bar axes.
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/strategy-research/generatorAuthority
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/strategy-research/runAuthority
+      subjectType: https://axiolune.ai/ontology/finance/strategy-research/RunContext
+      objectType: https://axiolune.ai/ontology/finance/foundation/Party
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/strategy-research/runAuthority
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/strategy-research/metricAuthority
+      subjectType: https://axiolune.ai/ontology/finance/strategy-research/MetricDefinition
+      objectType: https://axiolune.ai/ontology/finance/foundation/Party
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/strategy-research/metricAuthority
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/strategy-research/calculationAuthority
+      subjectType: https://axiolune.ai/ontology/finance/strategy-research/CalculationContext
+      objectType: https://axiolune.ai/ontology/finance/foundation/Party
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/strategy-research/calculationAuthority
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/strategy-research/usesFactor
+      subjectType: https://axiolune.ai/ontology/finance/strategy-research/StrategyDefinition
+      objectType: https://axiolune.ai/ontology/finance/strategy-research/FactorDefinition
+      outboundCardinality:
+        minCount: 1
+        maxCount: null
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/strategy-research/usesFactor
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/strategy-research/backtestStrategy
+      subjectType: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
+      objectType: https://axiolune.ai/ontology/finance/strategy-research/StrategyDefinition
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/strategy-research/backtestStrategy
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/strategy-research/backtestPortfolio
+      subjectType: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
+      objectType: https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/strategy-research/backtestPortfolio
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/strategy-research/backtestBenchmarkInstrument
+      subjectType: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
+      objectType: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/strategy-research/backtestBenchmarkInstrument
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/strategy-research/researchGenerator
+      subjectType: https://axiolune.ai/ontology/finance/strategy-research/ResearchRun
+      objectType: https://axiolune.ai/ontology/finance/strategy-research/SignalGenerator
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/strategy-research/researchGenerator
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/strategy-research/researchPortfolio
+      subjectType: https://axiolune.ai/ontology/finance/strategy-research/ResearchRun
+      objectType: https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/strategy-research/researchPortfolio
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/strategy-research/calculationBenchmarkInstrument
+      subjectType: https://axiolune.ai/ontology/finance/strategy-research/CalculationContext
+      objectType: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/strategy-research/calculationBenchmarkInstrument
+          enforcementLevel: Mandatory
+  constraintBindings:
+    - constraintRef: https://axiolune.ai/ontology/finance/strategy-research/SignalGeneratorEvidenceContract
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/SignalGenerator
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/strategy-research/RunInputClosureContract
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/RunContext
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/strategy-research/BacktestConfigurationContract
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/strategy-research/ResearchRunContract
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/ResearchRun
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/strategy-research/MetricDefinitionContract
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/MetricDefinition
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/strategy-research/CalculationContextContract
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/CalculationContext
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/strategy-research/SignalContract
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/Signal
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/strategy-research/FactorRevisionContract
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/strategy-research/BacktestStatusContract
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/BacktestStatusEvent
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/strategy-research/PerformanceValueContract
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/strategy-research/PerformanceRevisionContract
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/strategy-research/PositionAttributionContract
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/strategy-research/PerformanceValueXone
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/strategy-research/PositionAttributionSubjectXone
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/strategy-research/PositionAttributionValueXone
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/Signal/role/signalGenerator
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/Signal/role/signalInstrument
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/Signal/role/signalListing
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/Signal/role/signalRunContext
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/observedFactor
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/factorInstrument
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/factorListing
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/factorRunContext
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/supersedesFactorVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/BacktestStatusEvent/role/statusForBacktest
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/BacktestStatusEvent/role/previousStatusEvent
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceMetric
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceRunContext
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceCalculationContext
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/supersedesPerformanceVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution/role/attributedPositionSnapshot
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution/role/attributedPositionLot
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution/role/attributionGenerator
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution/role/attributionRunContext
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution/role/attributionMetric
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution/role/attributionCalculationContext
+      enforcementLevel: Mandatory

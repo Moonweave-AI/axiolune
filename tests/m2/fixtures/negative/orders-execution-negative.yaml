@@ -1,172 +1,182 @@
-# fin-orders-execution — Negative Test Fixtures
-# Validates rejection of invalid state transitions, missing required fields, and constraint violations
+schemaVersion: "1.0"
 fixtures:
-  - id: orders-neg-001
-    description: Missing availableFrom (fail-closed per ADR-012)
-    type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-    instance:
-      iri: https://axiolune.ai/data/test/order-event-invalid-001
-      type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-      transitionsOrder: https://axiolune.ai/data/test/order-intent-invalid-001
-      hasLifecycleState: Accepted
-      hasPreviousState: Submitted
-      hasExternalOrderId: VENUE-ORD-BAD
-      validFrom: '2026-07-25T10:00:00Z'
-      knowledgeFrom: '2026-07-25T10:00:00Z'
+  - id: orders-v03-negative-missing-availability
+    description: TemporalFact fails closed when availableFrom is absent.
+    profile: orders-execution-v03-shacl
+    target: OrderIntent
+    context: listed
+    omit: [availableFrom]
     expectedResult: rejected
-    expectedViolation: missing availableFrom
-    note: 'ADR-012: availableFrom is required and must fail-closed when missing'
-  - id: orders-neg-002
-    description: 'Temporal constraint violation: validTo before validFrom'
-    type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-    instance:
-      iri: https://axiolune.ai/data/test/order-event-invalid-002
-      type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-      transitionsOrder: https://axiolune.ai/data/test/order-intent-001
-      hasLifecycleState: Accepted
-      hasPreviousState: Submitted
-      validFrom: '2026-07-25T18:00:10Z'
-      validTo: '2026-07-25T18:00:05Z'
-      knowledgeFrom: '2026-07-25T18:00:10Z'
-      availableFrom: '2026-07-25T18:00:11Z'
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/orders-v03-negative-missing-availability
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom
+
+  - id: orders-v03-negative-intent-both-contexts
+    description: OrderIntent cannot select both listing and OTC context branches.
+    profile: orders-execution-v03-shacl
+    target: OrderIntent
+    context: both
     expectedResult: rejected
-    expectedViolation: 'interval inversion: validTo < validFrom'
-    note: 'PIT validator: validFrom < validTo (half-open interval [from, to))'
-  - id: orders-neg-003
-    description: Future availableFrom relative to current time (look-ahead bias)
-    type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-    instance:
-      iri: https://axiolune.ai/data/test/order-event-invalid-003
-      type: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
-      transitionsOrder: https://axiolune.ai/data/test/order-intent-001
-      hasLifecycleState: Filled
-      hasPreviousState: Accepted
-      validFrom: '2026-07-25T19:00:00Z'
-      knowledgeFrom: '2026-07-25T19:00:01Z'
-      availableFrom: '2099-12-31T23:59:59Z'
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#XoneConstraintComponent
+      focus: https://axiolune.ai/data/test/orders-v03-negative-intent-both-contexts
+      severity: http://www.w3.org/ns/shacl#Violation
+
+  - id: orders-v03-negative-intent-missing-quantity
+    description: OrderIntent requires exactly one canonical QuantityValue.
+    profile: orders-execution-v03-shacl
+    target: OrderIntent
+    context: listed
+    omit: [orderQuantity]
     expectedResult: rejected
-    expectedViolation: availableFrom in far future
-    note: 'PIT validator: availableFrom should not be in far future relative to validFrom/knowledgeFrom.'
-  - id: orders-neg-004
-    description: 'Missing required field: OrderIntent without hasOrderSide'
-    type: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
-    instance:
-      iri: https://axiolune.ai/data/test/order-intent-invalid-004
-      type: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
-      hasOrderType: Limit
-      hasTimeInForce: GTC
-      hasOrderQuantity:
-        type: QuantityValue
-        hasNumericAmount: '100'
-        hasUnitCode: share
-      hasLimitPrice:
-        type: MonetaryAmount
-        hasNumericAmount: '50'
-        hasCurrencyCode: USD
-      validFrom: '2026-07-25T15:00:00Z'
-      knowledgeFrom: '2026-07-25T15:00:00Z'
-      availableFrom: '2026-07-25T15:00:01Z'
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/orders-v03-negative-intent-missing-quantity
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/orders-execution/orderQuantity
+
+  - id: orders-v03-negative-event-missing-order-key
+    description: Lifecycle event requires one normalized sourceOrderKey.
+    profile: orders-execution-v03-shacl
+    target: OrderLifecycleEvent
+    context: listed
+    omit: [sourceOrderKey]
     expectedResult: rejected
-    expectedViolation: 'missing required attribute: hasOrderSide (minCount=1)'
-    note: 'SHACL cardinality constraint: OrderIntent.hasOrderSide minCount=1'
-  - id: orders-neg-005
-    description: 'Missing required field: OrderIntent without hasOrderQuantity'
-    type: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
-    instance:
-      iri: https://axiolune.ai/data/test/order-intent-invalid-005
-      type: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
-      hasOrderSide: Buy
-      hasOrderType: Market
-      hasTimeInForce: IOC
-      validFrom: '2026-07-25T15:00:00Z'
-      knowledgeFrom: '2026-07-25T15:00:00Z'
-      availableFrom: '2026-07-25T15:00:01Z'
-      intentsInstrument: https://axiolune.ai/data/test/instrument-AAPL
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/orders-v03-negative-event-missing-order-key
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/orders-execution/sourceOrderKey
+
+  - id: orders-v03-negative-lineage-missing-result-intent
+    description: A lineage fact must bind at least one exact result OrderIntent version.
+    profile: orders-execution-v03-shacl
+    target: OrderIntentLineage
+    context: listed
+    omit: [resultOrderIntent]
     expectedResult: rejected
-    expectedViolation: 'missing required attribute: hasOrderQuantity (minCount=1)'
-    note: 'SHACL cardinality constraint: OrderIntent.hasOrderQuantity minCount=1'
-  - id: orders-neg-006
-    description: 'Missing required field: Execution without hasExecutionPrice'
-    type: https://axiolune.ai/ontology/finance/orders-execution/Execution
-    instance:
-      iri: https://axiolune.ai/data/test/execution-invalid-006
-      type: https://axiolune.ai/ontology/finance/orders-execution/Execution
-      executesOrder: https://axiolune.ai/data/test/order-intent-001
-      executedInstrument: https://axiolune.ai/data/test/instrument-AAPL
-      executedAtVenue: https://axiolune.ai/data/test/venue-XNAS
-      hasOrderSide: Buy
-      hasExecutionQuantity:
-        type: QuantityValue
-        hasNumericAmount: '100'
-        hasUnitCode: share
-      hasCommission:
-        type: MonetaryAmount
-        hasNumericAmount: '1.5'
-        hasCurrencyCode: USD
-      validFrom: '2026-07-25T16:00:00Z'
-      knowledgeFrom: '2026-07-25T16:00:00Z'
-      availableFrom: '2026-07-25T16:00:01Z'
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/orders-v03-negative-lineage-missing-result-intent
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLineage/role/resultOrderIntent
+
+  - id: orders-v03-negative-lineage-missing-key-digest
+    description: Closed endpoint roles cannot substitute for the immutable transformation key digest.
+    profile: orders-execution-v03-shacl
+    target: OrderIntentLineage
+    context: listed
+    omit: [orderLineageKeyDigest]
     expectedResult: rejected
-    expectedViolation: 'missing required attribute: hasExecutionPrice (minCount=1)'
-    note: 'SHACL cardinality constraint: Execution.hasExecutionPrice minCount=1'
-  - id: orders-neg-007
-    description: 'Missing required field: Execution without hasExecutionQuantity'
-    type: https://axiolune.ai/ontology/finance/orders-execution/Execution
-    instance:
-      iri: https://axiolune.ai/data/test/execution-invalid-007
-      type: https://axiolune.ai/ontology/finance/orders-execution/Execution
-      executesOrder: https://axiolune.ai/data/test/order-intent-001
-      executedInstrument: https://axiolune.ai/data/test/instrument-AAPL
-      executedAtVenue: https://axiolune.ai/data/test/venue-XNAS
-      hasOrderSide: Buy
-      hasExecutionPrice:
-        type: MonetaryAmount
-        hasNumericAmount: '149.95'
-        hasCurrencyCode: USD
-      hasCommission:
-        type: MonetaryAmount
-        hasNumericAmount: '1.5'
-        hasCurrencyCode: USD
-      validFrom: '2026-07-25T16:00:00Z'
-      knowledgeFrom: '2026-07-25T16:00:00Z'
-      availableFrom: '2026-07-25T16:00:01Z'
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/orders-v03-negative-lineage-missing-key-digest
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/orders-execution/orderLineageKeyDigest
+
+  - id: orders-v03-negative-execution-missing-price
+    description: Execution requires exactly one M3 MonetaryAmount price.
+    profile: orders-execution-v03-shacl
+    target: Execution
+    context: listed
+    omit: [executionPrice]
     expectedResult: rejected
-    expectedViolation: 'missing required attribute: hasExecutionQuantity (minCount=1)'
-    note: 'SHACL cardinality constraint: Execution.hasExecutionQuantity minCount=1'
-  - id: orders-neg-008
-    description: 'Missing required participant: Execution without executesOrder'
-    type: https://axiolune.ai/ontology/finance/orders-execution/Execution
-    instance:
-      iri: https://axiolune.ai/data/test/execution-invalid-008
-      type: https://axiolune.ai/ontology/finance/orders-execution/Execution
-      executedInstrument: https://axiolune.ai/data/test/instrument-AAPL
-      executedAtVenue: https://axiolune.ai/data/test/venue-XNAS
-      hasOrderSide: Buy
-      hasExecutionPrice:
-        type: MonetaryAmount
-        hasNumericAmount: '149.95'
-        hasCurrencyCode: USD
-      hasExecutionQuantity:
-        type: QuantityValue
-        hasNumericAmount: '100'
-        hasUnitCode: share
-      validFrom: '2026-07-25T17:00:00Z'
-      knowledgeFrom: '2026-07-25T17:00:00Z'
-      availableFrom: '2026-07-25T17:00:01Z'
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/orders-v03-negative-execution-missing-price
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/orders-execution/executionPrice
+
+  - id: orders-v03-negative-execution-missing-principal-party
+    description: Execution requires a principal execution Party even when an executing broker is present.
+    profile: orders-execution-v03-shacl
+    target: Execution
+    context: listed
+    omit: [executionParty]
     expectedResult: rejected
-    expectedViolation: 'missing required participant: executesOrder (minCount=1)'
-    note: 'CQ-OE4: Execution must be traceable to OrderIntent. Orphaned executions are rejected.'
-  - id: orders-neg-009
-    description: 'Missing required field: ExternalOrderStatusMapping without hasExternalStatus'
-    type: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMapping
-    instance:
-      iri: https://axiolune.ai/data/test/status-mapping-invalid-009
-      type: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMapping
-      appliesToVenue: https://axiolune.ai/data/test/venue-binance
-      hasCanonicalState: Accepted
-      validFrom: '2024-01-01T00:00:00Z'
-      knowledgeFrom: '2024-01-01T00:00:00Z'
-      availableFrom: '2024-01-01T00:00:00Z'
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/orders-v03-negative-execution-missing-principal-party
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/orders-execution/Execution/role/executionParty
+
+  - id: orders-v03-negative-execution-missing-contra-account
+    description: Execution requires an explicit contra FinancialAccount; executingBroker cannot substitute for it.
+    profile: orders-execution-v03-shacl
+    target: Execution
+    context: listed
+    omit: [contraAccount]
     expectedResult: rejected
-    expectedViolation: 'missing required attribute: hasExternalStatus (minCount=1)'
-    note: 'SHACL cardinality constraint: ExternalOrderStatusMapping.hasExternalStatus minCount=1'
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/orders-v03-negative-execution-missing-contra-account
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/orders-execution/Execution/role/contraAccount
+
+  - id: orders-v03-negative-execution-missing-contra-party
+    description: Execution requires an explicit contra Party; executingBroker cannot substitute for it.
+    profile: orders-execution-v03-shacl
+    target: Execution
+    context: listed
+    omit: [contraParty]
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/orders-v03-negative-execution-missing-contra-party
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/orders-execution/Execution/role/contraParty
+
+  - id: orders-v03-negative-execution-both-contexts
+    description: Execution cannot select both listing and OTC context branches.
+    profile: orders-execution-v03-shacl
+    target: Execution
+    context: both
+    expectedResult: rejected
+    expectedViolations:
+      - component: http://www.w3.org/ns/shacl#XoneConstraintComponent
+        focus: https://axiolune.ai/data/test/orders-v03-negative-execution-both-contexts
+        severity: http://www.w3.org/ns/shacl#Violation
+      - component: http://www.w3.org/ns/shacl#XoneConstraintComponent
+        focus: https://axiolune.ai/data/test/orders-v03-negative-execution-both-contexts/intent/version/v1
+        severity: http://www.w3.org/ns/shacl#Violation
+
+  - id: orders-v03-negative-fee-missing-effect
+    description: Fee magnitude cannot replace the separate charge-or-rebate effect truth.
+    profile: orders-execution-v03-shacl
+    target: Fee
+    context: listed
+    omit: [feeEffect]
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/orders-v03-negative-fee-missing-effect
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/orders-execution/feeEffect
+
+  - id: orders-v03-negative-status-mapping-missing-raw-code
+    description: Status mapping without its exact raw provider code is invalid.
+    profile: orders-execution-v03-shacl
+    target: ExternalOrderStatusMapping
+    context: none
+    omit: [rawStatusCode]
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/orders-v03-negative-status-mapping-missing-raw-code
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/orders-execution/rawStatusCode
+
+  - id: orders-v03-negative-mutable-knowledge-end
+    description: Canonical fact versions cannot store a mutable knowledgeTo value.
+    profile: orders-execution-v03-shacl
+    target: OrderIntent
+    context: listed
+    add: [knowledgeTo]
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MaxCountConstraintComponent
+      focus: https://axiolune.ai/data/test/orders-v03-negative-mutable-knowledge-end
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo

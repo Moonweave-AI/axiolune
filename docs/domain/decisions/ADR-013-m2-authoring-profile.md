@@ -51,7 +51,7 @@ domain:                    # element container — the M2 authoring root
 `module` is the M3 `OntologyModuleDefinition` instance (required fields per M3).  
 `domain` is the element container: a map from `localName` to an M3 type instance.
 
-No other top-level keys are allowed. Sidecar evidence (references.lock, terminology cards, alignments, CQ) lives in separate files, not injected into the YAML.
+No other top-level keys are allowed. Sidecar evidence (references.bibliography, terminology cards, alignments, CQ) lives in separate files, not injected into the YAML.
 
 ### 2. Element container: keyed by localName, type inferred from structure
 
@@ -96,7 +96,7 @@ This follows M3's own convention: type-classifiers and instances are keyed by na
 
 ### 4. Import / export lock
 
-- `imports` use M3 `ModuleImportDefinition` with required `moduleIri`, `version`, `artifactDigest`, `importMode`
+- `imports` use M3 `ModuleImportDefinition` with required `moduleIri`, `version`, `importMode` (no `artifactDigest` byte locks per ADR-015 / RFC-001)
 - Only `approved` modules may be imported
 - `importMode: Selective` requires `importedSymbols` listing exact symbol IRIs
 - `exports`: empty list = export all; non-empty = export only listed IRIs
@@ -114,13 +114,13 @@ The G0 validator checks:
 | Element identity | Every element has iri, namespace, localName, label, definition | Missing iri |
 | IRI uniqueness | No duplicate IRIs across the module | Two elements same iri |
 | IRI format | Absolute IRI or registered CURIE | Unregistered prefix |
-| Import lock | Every import has version + artifactDigest (sha256) + importMode | Missing digest |
+| Import lock | Every import has semver `version` + `importMode`; imported module must be `approved` when policy requires | Missing version; importing draft without exception ADR |
 | Dialect unity | Forbidden: `participants`, `attributes` (as uses), `patternIri`, `attributeIri` | E5 alternate dialect |
 | Pattern IRI | `patternBindings[].pattern` under `…/meta/patterns/` | `…/foundation/patterns/` |
 | Type inference | Element's fields match at least one M3 meta-type | Unknown required field combination |
 | Sidecar separation | No `kind:` field; no evidence fields in domain YAML | `kind: ObjectTypeDefinition` |
 
-`--strict` additionally rejects all-zero placeholder digests and bare `decimal` money/quantity attributes.
+`--strict` additionally rejects bare `decimal` money/quantity attributes. Digest/byte-lock checks are removed (ADR-015).
 
 
 ### 6. Generator contract

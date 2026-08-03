@@ -1,0 +1,178 @@
+schemaVersion: "1.0"
+contract: axiolune-position-lot-correction-matrix/v1
+
+baseLotV0: &lot-v0
+  logicalIri: https://axiolune.ai/portfolio/lots/L-matrix
+  versionIri: https://axiolune.ai/portfolio/lots/L-matrix/version/v0
+  account: https://axiolune.ai/accounts/ACC-1
+  instrument: https://axiolune.ai/instruments/AAPL
+  openingExecutionLogicalIri: https://axiolune.ai/orders/executions/E-matrix
+  openingExecutionVersionIri: https://axiolune.ai/orders/executions/E-matrix/version/v0
+  costBasisDefinitionLogicalIri: https://axiolune.ai/portfolio/cost-definitions/C-matrix
+  costBasisDefinitionVersionIri: https://axiolune.ai/portfolio/cost-definitions/C-matrix/version/v0
+  discriminator: openingRemainder
+  validFrom: "2026-01-01T00:00:00Z"
+  knowledgeFrom: "2026-01-01T00:00:01Z"
+  availableFrom: "2026-01-01T00:00:02Z"
+  revision: 0
+
+baseLotV1: &lot-v1
+  logicalIri: https://axiolune.ai/portfolio/lots/L-matrix
+  versionIri: https://axiolune.ai/portfolio/lots/L-matrix/version/v1
+  account: https://axiolune.ai/accounts/ACC-1
+  instrument: https://axiolune.ai/instruments/AAPL
+  openingExecutionLogicalIri: https://axiolune.ai/orders/executions/E-matrix
+  openingExecutionVersionIri: https://axiolune.ai/orders/executions/E-matrix/version/v1
+  costBasisDefinitionLogicalIri: https://axiolune.ai/portfolio/cost-definitions/C-matrix
+  costBasisDefinitionVersionIri: https://axiolune.ai/portfolio/cost-definitions/C-matrix/version/v0
+  discriminator: openingRemainder
+  validFrom: "2026-01-01T00:00:00Z"
+  knowledgeFrom: "2026-01-02T00:00:01Z"
+  availableFrom: "2026-01-02T00:00:02Z"
+  revision: 1
+  supersedesVersionIri: https://axiolune.ai/portfolio/lots/L-matrix/version/v0
+
+baseKnowledgeClosure: &knowledge-closure
+  targetVersionIri: https://axiolune.ai/portfolio/lots/L-matrix/version/v0
+  axis: knowledge
+  closedAt: "2026-01-02T00:00:01Z"
+  causeKind: successor
+  causeVersionIri: https://axiolune.ai/portfolio/lots/L-matrix/version/v1
+  evidenceRef: https://evidence.axiolune.ai/portfolio/lots/L-matrix/revision-1
+  generatingContextRef: https://axiolune.ai/runs/portfolio-lot-matrix-1
+
+fixtures:
+  - id: PP-MATRIX-POS-001-canonical-replay-is-idempotent
+    contract: PositionLotIdentity
+    expectedResult: accepted
+    instance:
+      lots:
+        - *lot-v0
+        - *lot-v0
+      knowledgeClosures: []
+
+  - id: PP-MATRIX-POS-002-linear-correction-has-exact-closure
+    contract: PositionLotIdentity
+    expectedResult: accepted
+    instance:
+      lots:
+        - *lot-v0
+        - *lot-v1
+      knowledgeClosures:
+        - *knowledge-closure
+
+  - id: PP-MATRIX-NEG-001-same-key-different-content
+    contract: PositionLotIdentity
+    expectedResult: rejected
+    expectedReason: PositionLot version-content conflict
+    instance:
+      lots:
+        - *lot-v0
+        - <<: *lot-v0
+          openingExecutionVersionIri: https://axiolune.ai/orders/executions/E-matrix/version/conflicting
+      knowledgeClosures: []
+
+  - id: PP-MATRIX-NEG-002-same-key-different-version-iri
+    contract: PositionLotIdentity
+    expectedResult: rejected
+    expectedReason: PositionLot version-key conflict
+    instance:
+      lots:
+        - *lot-v0
+        - <<: *lot-v0
+          versionIri: https://axiolune.ai/portfolio/lots/L-matrix/version/conflicting
+      knowledgeClosures: []
+
+  - id: PP-MATRIX-NEG-003-correction-branch
+    contract: PositionLotIdentity
+    expectedResult: rejected
+    expectedReason: PositionLot correction revision chain has a gap or branch
+    instance:
+      lots:
+        - *lot-v0
+        - *lot-v1
+        - <<: *lot-v1
+          versionIri: https://axiolune.ai/portfolio/lots/L-matrix/version/v1-branch
+          openingExecutionVersionIri: https://axiolune.ai/orders/executions/E-matrix/version/v1-branch
+          knowledgeFrom: "2026-01-02T01:00:01Z"
+          availableFrom: "2026-01-02T01:00:02Z"
+      knowledgeClosures: []
+
+  - id: PP-MATRIX-NEG-004-correction-revision-gap
+    contract: PositionLotIdentity
+    expectedResult: rejected
+    expectedReason: PositionLot correction revision chain has a gap or branch
+    instance:
+      lots:
+        - *lot-v0
+        - <<: *lot-v1
+          versionIri: https://axiolune.ai/portfolio/lots/L-matrix/version/v2
+          revision: 2
+      knowledgeClosures: []
+
+  - id: PP-MATRIX-NEG-005-nonmonotonic-knowledge-successor
+    contract: PositionLotIdentity
+    expectedResult: rejected
+    expectedReason: PositionLot successor knowledgeFrom must be strictly later than its predecessor
+    instance:
+      lots:
+        - *lot-v0
+        - <<: *lot-v1
+          knowledgeFrom: "2025-12-31T23:59:59Z"
+          availableFrom: "2026-01-02T00:00:02Z"
+      knowledgeClosures: []
+
+  - id: PP-MATRIX-NEG-006-wrong-direct-predecessor
+    contract: PositionLotIdentity
+    expectedResult: rejected
+    expectedReason: PositionLot successor does not supersede its unique direct predecessor
+    instance:
+      lots:
+        - *lot-v0
+        - <<: *lot-v1
+          supersedesVersionIri: https://axiolune.ai/portfolio/lots/L-matrix/version/not-the-predecessor
+      knowledgeClosures: []
+
+  - id: PP-MATRIX-NEG-007-missing-successor-closure
+    contract: PositionLotIdentity
+    expectedResult: rejected
+    expectedReason: PositionLot correction chain lacks its exact successor knowledge closures
+    instance:
+      lots:
+        - *lot-v0
+        - *lot-v1
+      knowledgeClosures: []
+
+  - id: PP-MATRIX-NEG-008-wrong-successor-closure-boundary
+    contract: PositionLotIdentity
+    expectedResult: rejected
+    expectedReason: PositionLot successor knowledge closure does not match the direct successor
+    instance:
+      lots:
+        - *lot-v0
+        - *lot-v1
+      knowledgeClosures:
+        - <<: *knowledge-closure
+          closedAt: "2026-01-02T00:00:02Z"
+
+  - id: PP-MATRIX-NEG-009-terminal-version-has-closure
+    contract: PositionLotIdentity
+    expectedResult: rejected
+    expectedReason: PositionLot knowledge closure targets a terminal or unknown version
+    instance:
+      lots:
+        - *lot-v0
+      knowledgeClosures:
+        - *knowledge-closure
+
+  - id: PP-MATRIX-NEG-010-duplicate-knowledge-closure
+    contract: PositionLotIdentity
+    expectedResult: rejected
+    expectedReason: duplicate PositionLot knowledge closure
+    instance:
+      lots:
+        - *lot-v0
+        - *lot-v1
+      knowledgeClosures:
+        - *knowledge-closure
+        - *knowledge-closure

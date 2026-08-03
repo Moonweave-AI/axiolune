@@ -1,82 +1,611 @@
-# Axiolune Ontology Meta-Model - Layer 4: Data Binding
-# Version: 0.5.0
-# Date: 2026-07-29
-# Governance: ADR-011 (Canonical Data Binding Truth Source), ADR-012 (Three-Axis Temporal Semantics)
-
 module:
-  moduleIri: "https://axiolune.ai/ontology/meta/data-binding"
-  baseIri: "https://axiolune.ai/ontology/meta/data-binding/"
-  preferredPrefix: "ax-binding"
-  version: "0.5.0"
+  moduleIri: https://axiolune.ai/ontology/meta/data-binding
+  baseIri: https://axiolune.ai/ontology/meta/data-binding/
+  preferredPrefix: ax-binding
+  version: 0.6.0
   imports:
-    - moduleIri: "https://axiolune.ai/ontology/meta/core#sha256:a8abfe0e96ab7f84f8ae322f8ffedfe2dda29bbdb6ba020d2a68aad11d67d01d"
-      version: "0.4.0"
-      artifactDigest: "sha256:a8abfe0e96ab7f84f8ae322f8ffedfe2dda29bbdb6ba020d2a68aad11d67d01d"
+    - moduleIri: https://axiolune.ai/ontology/meta/core
+      version: 0.6.0
       importMode: All
-    - moduleIri: "https://axiolune.ai/ontology/meta/patterns#sha256:1222a140204bf3eb035f4b19b1b5ef691d750209565155b85dd0079e9d39cb9b"
-      version: "0.4.0"
-      artifactDigest: "sha256:1222a140204bf3eb035f4b19b1b5ef691d750209565155b85dd0079e9d39cb9b"
+    - moduleIri: https://axiolune.ai/ontology/meta/patterns
+      version: 0.6.0
       importMode: All
-    - moduleIri: "https://axiolune.ai/ontology/meta/behavior#sha256:7ba324d2a616f78b388edf45c05037125ccd8d12a1b045dadfd05013c0f33a3e"
-      version: "0.4.0"
-      artifactDigest: "sha256:7ba324d2a616f78b388edf45c05037125ccd8d12a1b045dadfd05013c0f33a3e"
+    - moduleIri: https://axiolune.ai/ontology/meta/behavior
+      version: 0.6.0
       importMode: All
   exports: []
-
 DataBinding:
-  version: "0.5.0"
-  description: "Meta-model for mapping physical data sources to ontology concepts (ADR-011, ADR-012 compliant)"
+  version: 0.6.0
+  description: Meta-model for mapping physical data sources to ontology concepts
+    (ADR-011, ADR-012 compliant)
   layer: 4
   changes:
+    - "v0.6.0: RuntimeContextBinding can bind the immutable
+      MaterializationRun.iri so generatingContextRef is produced by the
+      canonical mapping rather than injected by an adapter"
+    - "v0.6.0: Added strict identity, source-locator, fact-version and batch
+      control contracts"
     - "v0.5.0: BREAKING - Implement ADR-011 single truth source architecture"
-    - "v0.5.0: REMOVED Field.semanticMapping and SemanticFieldMapping (violated single truth source)"
-    - "v0.5.0: SemanticMappingDefinition is now canonical truth source with complete mapping capabilities"
-    - "v0.5.0: Added SourceBinding, RowSetSpec, IdentitySpec for row-level semantics"
-    - "v0.5.0: Renamed fieldMappings to slotMappings (supports attributes, roles, relations, pattern fields)"
-    - "v0.5.0: Added MaterializationRun for immutable runtime state (separated from static definitions)"
-    - "v0.5.0: Implement ADR-012 three-axis temporal model (valid/knowledge/availability)"
-    - "v0.5.0: Added TemporalMappingSpec with explicit source bindings for all three time axes"
-    - "v0.5.0: REMOVED MaterializationPlanDefinition.watermark (moved to MaterializationRun)"
-    - "v0.5.0: All transformations require explicit named inputs, version, digest, test cases"
-    - "v0.4.0: Removed Dataset.semanticMappings (ADR-007), Field.semanticMapping now sole truth source"
+    - "v0.5.0: REMOVED Field.semanticMapping and SemanticFieldMapping (violated
+      single truth source)"
+    - "v0.5.0: SemanticMappingDefinition is now canonical truth source with
+      complete mapping capabilities"
+    - "v0.5.0: Added SourceBinding, RowSetSpec, IdentitySpec for row-level
+      semantics"
+    - "v0.5.0: Renamed fieldMappings to slotMappings (supports attributes,
+      roles, relations, pattern fields)"
+    - "v0.5.0: Added MaterializationRun for immutable runtime state (separated
+      from static definitions)"
+    - "v0.5.0: Implement ADR-012 three-axis temporal model
+      (valid/knowledge/availability)"
+    - "v0.5.0: Added TemporalMappingSpec with explicit source bindings for all
+      three time axes"
+    - "v0.5.0: REMOVED MaterializationPlanDefinition.watermark (moved to
+      MaterializationRun)"
+    - "v0.5.0: All transformations require explicit named inputs, version,
+      digest, test cases"
+    - "v0.4.0: Removed Dataset.semanticMappings (ADR-007), Field.semanticMapping
+      now sole truth source"
     - "v0.4.0: Added TransformationDefinition with typed references (ADR-007)"
     - "v0.4.0: Removed standalone FieldMappingDefinition (ADR-007)"
     - "v0.3.0: Global rename to *Definition suffix (ADR-004)"
     - "v0.3.0: Updated module system with version-locked imports"
-    - "v0.3.0: Introduced TargetSlot union type for Association mapping (ADR-003)"
-    - "v0.3.0: Created MaterializationPlanDefinition, deprecated IngestionPipelineDefinition"
-
-  note: |
+    - "v0.3.0: Introduced TargetSlot union type for Association mapping
+      (ADR-003)"
+    - "v0.3.0: Created MaterializationPlanDefinition, deprecated
+      IngestionPipelineDefinition"
+  note: >
     Layer 4 maps PHYSICAL data artifacts to SEMANTIC ontology concepts.
 
+
     ADR-011 COMPLIANCE:
+
     - SemanticMappingDefinition is the ONLY structure for semantic mappings
+
     - Physical structure (FieldDefinition) contains NO semantic annotations
-    - All row-level and dataset-level semantics expressible (joins, filters, identity, provenance, temporal)
+
+    - All row-level and dataset-level semantics expressible (joins, filters,
+    identity, provenance, temporal)
+
     - Static definitions (plans) separated from runtime state (runs)
 
+
     ADR-012 COMPLIANCE:
+
     - Three-axis temporal model: valid time, knowledge time, availability time
+
     - All time sources explicitly declared in TemporalMappingSpec
+
     - No CURRENT_TIMESTAMP or non-reproducible time functions
-    - MaterializationRun provides immutable runtime context for reproducible queries
 
-  # ==================== Data Source ====================
-  DataSource:
-    definition: "a meta-classifier for external or internal data providers with connection and authentication metadata"
-    purpose: "Defines where data originates and how to access it"
-
+    - MaterializationRun provides immutable runtime context for reproducible
+    queries
+  ArtifactRef:
+    definition: closed reference to either an absolute artifact IRI or one path
+      below an explicitly named build root
+    owlProjection:
+      kind: structuredValueClass
+      classIri: https://axiolune.ai/ontology/meta/data-binding/structures/ArtifactRef
+    discriminator: kind
+    variants:
+      iri:
+        requiredFields:
+          kind:
+            type: const
+            value: iri
+          iri:
+            type: uri
+      path:
+        requiredFields:
+          kind:
+            type: const
+            value: path
+          root:
+            type: enum
+            values:
+              - sourceTree
+              - buildEvidence
+              - payload
+              - adoptionEvidence
+          path:
+            type: posixRelativePath
+  SourceLocator:
+    definition: closed media-aware selector for one canonical non-empty byte
+      selection inside a locked source artifact
+    owlProjection:
+      kind: structuredValueClass
+      classIri: https://axiolune.ai/ontology/meta/data-binding/structures/SourceLocator
+    discriminator: kind
+    commonRequiredFields:
+      path:
+        type: posixRelativePath
+      mediaType:
+        type: ianaMediaType
+      extractorProfileRef:
+        type: ArtifactRef
+      extractorProfileDigest:
+        type: digest
+      selectionDigest:
+        type: digest
+    variants:
+      wholeFile:
+        requiredFields:
+          kind:
+            type: const
+            value: wholeFile
+      textLineRange:
+        requiredFields:
+          kind:
+            type: const
+            value: textLineRange
+          startLine:
+            type: positiveSafeInteger
+          endLine:
+            type: positiveSafeInteger
+      textHeading:
+        requiredFields:
+          kind:
+            type: const
+            value: textHeading
+          heading:
+            type: nfcString
+            minLength: 1
+          occurrence:
+            type: positiveSafeInteger
+        optionalFields:
+          headingLevel:
+            type: positiveSafeInteger
+      pdfPageRange:
+        requiredFields:
+          kind:
+            type: const
+            value: pdfPageRange
+          startPage:
+            type: positiveSafeInteger
+          endPage:
+            type: positiveSafeInteger
+      pdfNamedSection:
+        requiredFields:
+          kind:
+            type: const
+            value: pdfNamedSection
+          sectionTitle:
+            type: nfcString
+            minLength: 1
+          occurrence:
+            type: positiveSafeInteger
+        optionalFields:
+          startPage:
+            type: positiveSafeInteger
+          endPage:
+            type: positiveSafeInteger
+      jsonPointer:
+        requiredFields:
+          kind:
+            type: const
+            value: jsonPointer
+          pointer:
+            type: canonicalJsonPointer
+      rdfResource:
+        requiredFields:
+          kind:
+            type: const
+            value: rdfResource
+          resourceIri:
+            type: uri
+        optionalFields:
+          graphIri:
+            type: uri
+      xmlElement:
+        requiredFields:
+          kind:
+            type: const
+            value: xmlElement
+          elementId:
+            type: xmlId
+      htmlFragment:
+        requiredFields:
+          kind:
+            type: const
+            value: htmlFragment
+          fragmentId:
+            type: nfcString
+            minLength: 1
+    invariants:
+      - range starts are not greater than range ends
+      - pdfNamedSection startPage and endPage are both present or both absent
+      - mediaType and selector kind are accepted by the locked extractor profile
+      - selectionDigest is recomputed from the exact selected bytes
+  sourceArtifactRef:
+    iri: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+    namespace: ax-binding
+    localName: sourceArtifactRef
+    label: Source Artifact Reference
+    definition: closed artifact reference that identifies the immutable source
+      artifact supporting a materialized claim
+    valueType: ArtifactRef
+  sourceArtifactDigest:
+    iri: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+    namespace: ax-binding
+    localName: sourceArtifactDigest
+    label: Source Artifact Digest
+    definition: SHA-256 digest that authenticates the exact immutable source
+      artifact supporting a materialized claim
+    valueType: string
+    pattern: ^sha256:[0-9a-f]{64}$
+  sourceLocator:
+    iri: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+    namespace: ax-binding
+    localName: sourceLocator
+    label: Source Locator
+    definition: closed media-aware source selector whose locked extraction
+      identifies the exact supporting bytes
+    valueType: SourceLocator
+  SemanticValueDefinition:
+    definition: closed semantic locator for one visible ontology value used by an
+      identity component or derivation
+    discriminator: valueKind
+    variants:
+      attributeUse:
+        requiredFields:
+          valueKind:
+            type: const
+            value: attributeUse
+          containingType:
+            type: uri
+          attributeRef:
+            type: uri
+      participantRole:
+        requiredFields:
+          valueKind:
+            type: const
+            value: participantRole
+          containingAssociation:
+            type: uri
+          roleId:
+            type: asciiIdentifier
+          effectivePredicate:
+            type: uri
+      relationUse:
+        requiredFields:
+          valueKind:
+            type: const
+            value: relationUse
+          relationRef:
+            type: uri
+          subjectType:
+            type: uri
+          objectType:
+            type: uri
+      patternField:
+        requiredFields:
+          valueKind:
+            type: const
+            value: patternField
+          containingType:
+            type: uri
+          patternRef:
+            type: uri
+          fieldRef:
+            type: uri
+      derivation:
+        requiredFields:
+          valueKind:
+            type: const
+            value: derivation
+          derivationRef:
+            type: uri
+          derivationDigest:
+            type: digest
+          outputName:
+            type: asciiIdentifier
+  IdentityComponentDefinition:
+    definition: one ordered semantic component of a target logical or version identity
     requiredFields:
-      iri: {type: uri, unique: true}
-      namespace: {type: string, required: true}
-      localName: {type: string, required: true}
-      label: {type: string, required: true}
-
+      name:
+        type: asciiIdentifier
+      semanticValue:
+        type: SemanticValueDefinition
+      termContractRef:
+        type: uri
+      termContractDigest:
+        type: digest
+      normalizationRuleRef:
+        type: uri
+      normalizationRuleDigest:
+        type: digest
+  IdentityTermContractDefinition:
+    definition: versioned closed RDF-term contract used by identity components
+    requiredFields:
+      iri:
+        type: uri
+        unique: true
+      label:
+        type: string
+      definition:
+        type: string
+      termContract:
+        type: IdentityTermContract
+    structures:
+      IdentityTermContract:
+        discriminator: termKind
+        variants:
+          factReference:
+            requiredFields:
+              termKind:
+                type: const
+                value: iri
+              referenceMode:
+                type: enum
+                values:
+                  - logical
+                  - version
+              expectedTargetType:
+                type: uri
+          controlledIri:
+            requiredFields:
+              termKind:
+                type: const
+                value: iri
+              referenceMode:
+                type: const
+                value: controlledIri
+              controlledSetRef:
+                type: uri
+              controlledSetDigest:
+                type: digest
+          literal:
+            requiredFields:
+              termKind:
+                type: const
+                value: literal
+              datatypeIri:
+                type: uri
+            optionalFields:
+              languageTag:
+                type: canonicalBcp47
+  IdentityNormalizationRuleDefinition:
+    definition: versioned deterministic normalization rule applied before
+      identity-term framing
+    requiredFields:
+      iri:
+        type: uri
+        unique: true
+      label:
+        type: string
+      definition:
+        type: string
+      inputTermContractRef:
+        type: uri
+      inputTermContractDigest:
+        type: digest
+      outputTermContractRef:
+        type: uri
+      outputTermContractDigest:
+        type: digest
+      algorithmId:
+        type: asciiIdentifier
+      algorithmVersion:
+        type: semver
+      specificationRef:
+        type: ArtifactRef
+      specificationDigest:
+        type: digest
+      implementationRef:
+        type: ArtifactRef
+      implementationDigest:
+        type: digest
+      testVectorsRef:
+        type: ArtifactRef
+      testVectorsDigest:
+        type: digest
+  IdentityDerivationDefinition:
+    definition: versioned deterministic derivation from declared semantic inputs to
+      one or more named identity outputs
+    requiredFields:
+      iri:
+        type: uri
+        unique: true
+      label:
+        type: string
+      definition:
+        type: string
+      inputSemanticValues:
+        type: list[SemanticValueDefinition]
+        minCount: 1
+        ordered: true
+      outputs:
+        type: list[IdentityDerivationOutput]
+        minCount: 1
+        uniqueBy: outputName
+        order: outputName
+      expressionRef:
+        type: ArtifactRef
+      expressionDigest:
+        type: digest
+      implementationRef:
+        type: ArtifactRef
+      implementationDigest:
+        type: digest
+      testVectorsRef:
+        type: ArtifactRef
+      testVectorsDigest:
+        type: digest
+    structures:
+      IdentityDerivationOutput:
+        requiredFields:
+          outputName:
+            type: asciiIdentifier
+          termContractRef:
+            type: uri
+          termContractDigest:
+            type: digest
+  ControlledIriSetDefinition:
+    definition: versioned non-empty canonical set of IRIs authorized for controlled
+      identity components
+    requiredFields:
+      iri:
+        type: uri
+        unique: true
+      label:
+        type: string
+      definition:
+        type: string
+      setKind:
+        type: enum
+        values:
+          - codeList
+          - reviewedIriInventory
+      sourceDefinitionRef:
+        type: uri
+      sourceEvidenceRef:
+        type: uri
+      sourceEvidenceDigest:
+        type: digest
+      sourceLocator:
+        type: SourceLocator
+      members:
+        type: list[uri]
+        minCount: 1
+        unique: true
+        order: unsignedUtf8
+  TargetIdentityContractDefinition:
+    definition: static contract that determines stable logical and immutable version
+      identity for one materialized target type
+    requiredFields:
+      iri:
+        type: uri
+        unique: true
+      label:
+        type: string
+      definition:
+        type: string
+      targetType:
+        type: union[ObjectTypeDefinition,AssociationTypeDefinition]
+      identityBaseIri:
+        type: uri
+      logicalComponents:
+        type: list[IdentityComponentDefinition]
+        minCount: 1
+        ordered: true
+      versionComponents:
+        type: list[IdentityComponentDefinition]
+        ordered: true
+  ReferenceIdentityBinding:
+    definition: mapping binding that resolves a referenced target through its
+      accepted identity contract
+    requiredFields:
+      bindingType:
+        type: const
+        value: referenceIdentity
+      targetMappingRef:
+        type: uri
+      referenceMode:
+        type: enum
+        values:
+          - logical
+          - version
+      keyBindings:
+        type: map[string,ValueBinding]
+  FactIdentity:
+    definition: generic stable logical identity anchor for one versioned
+      materialized object or association
+    owlProjection:
+      kind: class
+      classIri: https://axiolune.ai/ontology/meta/data-binding/FactIdentity
+  FactVersion:
+    definition: generic marker class for one immutable materialized fact version
+    owlProjection:
+      kind: class
+      classIri: https://axiolune.ai/ontology/meta/data-binding/FactVersion
+  FactClosureAssertion:
+    definition: immutable evidence that closes one knowledge-time or
+      availability-time interval without mutating the older fact version
+    owlProjection:
+      kind: class
+      classIri: https://axiolune.ai/ontology/meta/data-binding/FactClosureAssertion
+  versionOf:
+    definition: functional relation from one immutable FactVersion to its stable
+      FactIdentity anchor
+    owlProjection:
+      kind: objectProperty
+      propertyIri: https://axiolune.ai/ontology/meta/data-binding/properties/versionOf
+      domain: https://axiolune.ai/ontology/meta/data-binding/FactVersion
+      range: https://axiolune.ai/ontology/meta/data-binding/FactIdentity
+      characteristics:
+        - functional
+  supersedes:
+    definition: relation from one immutable FactVersion to its direct previous
+      version with the same FactIdentity anchor
+    owlProjection:
+      kind: objectProperty
+      propertyIri: https://axiolune.ai/ontology/meta/data-binding/properties/supersedes
+      domain: https://axiolune.ai/ontology/meta/data-binding/FactVersion
+      range: https://axiolune.ai/ontology/meta/data-binding/FactVersion
+  generatingContextRef:
+    iri: https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef
+    namespace: ax-binding
+    localName: generatingContextRef
+    label: Generating Context Reference
+    definition: reference to the immutable MaterializationRun or
+      MaterializationBatchRun that generated this fact version
+    valueType: uri
+  inputContextRef:
+    iri: https://axiolune.ai/ontology/meta/data-binding/attributes/inputContextRef
+    namespace: ax-binding
+    localName: inputContextRef
+    label: Input Context Reference
+    definition: reference to the immutable resolved input-context record used to
+      generate this fact version
+    valueType: uri
+  inputContextRecordDigest:
+    iri: https://axiolune.ai/ontology/meta/data-binding/attributes/inputContextRecordDigest
+    namespace: ax-binding
+    localName: inputContextRecordDigest
+    label: Input Context Record Digest
+    definition: SHA-256 digest of the immutable resolved input-context record used
+      to generate this fact version
+    valueType: string
+    pattern: ^sha256:[0-9a-f]{64}$
+  pitRequestRef:
+    iri: https://axiolune.ai/ontology/meta/data-binding/attributes/pitRequestRef
+    namespace: ax-binding
+    localName: pitRequestRef
+    label: PIT Request Reference
+    definition: reference to the exact immutable PITValidationRequest authorizing
+      point-in-time consumption
+    valueType: uri
+  pitRequestRecordDigest:
+    iri: https://axiolune.ai/ontology/meta/data-binding/attributes/pitRequestRecordDigest
+    namespace: ax-binding
+    localName: pitRequestRecordDigest
+    label: PIT Request Record Digest
+    definition: SHA-256 digest of the exact immutable PITValidationRequest
+      authorizing point-in-time consumption
+    valueType: string
+    pattern: ^sha256:[0-9a-f]{64}$
+  DataSource:
+    definition: a meta-classifier for external or internal data providers with
+      connection and authentication metadata
+    purpose: Defines where data originates and how to access it
+    requiredFields:
+      iri:
+        type: uri
+        unique: true
+      namespace:
+        type: string
+        required: true
+      localName:
+        type: string
+        required: true
+      label:
+        type: string
+        required: true
       definition:
         type: string
         required: true
-        example: "Bloomberg market data feed providing real-time and historical price information"
-
+        example: Bloomberg market data feed providing real-time and historical price
+          information
       sourceType:
         type: enum
         required: true
@@ -92,1407 +621,2357 @@ DataBinding:
           - streamingKafka
           - streamingKinesis
           - dataWarehouse
-
       connection:
         type: ConnectionSpec
-        description: "connection parameters (sensitive fields should reference secrets manager)"
-
+        description: connection parameters (sensitive fields should reference secrets
+          manager)
     optionalFields:
       vendor:
         type: string
-        example: "Bloomberg L.P."
-
+        example: Bloomberg L.P.
       version:
         type: string
-        example: "BPIPE v3.14"
-
+        example: BPIPE v3.14
       updateFrequency:
         type: enum
-        values: [realtime, intraday, daily, weekly, monthly, onDemand, static]
-
+        values:
+          - realtime
+          - intraday
+          - daily
+          - weekly
+          - monthly
+          - onDemand
+          - static
       latency:
-        typical: {type: duration, example: "PT0.5S"}
-        maximum: {type: duration, example: "PT2S"}
-
+        typical:
+          type: duration
+          example: PT0.5S
+        maximum:
+          type: duration
+          example: PT2S
       reliability:
-        sla: {type: decimal, description: "uptime SLA as decimal", example: 0.999}
-        historicalUptime: {type: decimal}
-
+        sla:
+          type: decimal
+          description: uptime SLA as decimal
+          example: 0.999
+        historicalUptime:
+          type: decimal
       costModel:
         type: string
-        description: "pricing structure"
-        example: "per-query with 10k free tier"
-
+        description: pricing structure
+        example: per-query with 10k free tier
       dataGovernance:
-        owner: {type: string}
-        classification: {type: enum, values: [public, internal, confidential, restricted]}
-        retentionPolicy: {type: uri, description: "PolicyType reference"}
-        privacyRegime: {type: "list[enum]", values: [GDPR, CCPA, SOX, MiFID]}
-
+        owner:
+          type: string
+        classification:
+          type: enum
+          values:
+            - public
+            - internal
+            - confidential
+            - restricted
+        retentionPolicy:
+          type: uri
+          description: PolicyType reference
+        privacyRegime:
+          type: list[enum]
+          values:
+            - GDPR
+            - CCPA
+            - SOX
+            - MiFID
       provenance:
-        type: "Layer2:ProvenancedFact"
-        description: "source metadata binding"
-
+        type: Layer2:ProvenancedFact
+        description: source metadata binding
     structures:
       ConnectionSpec:
-        host: {type: string}
-        port: {type: integer}
-        database: {type: string}
-        schema: {type: string}
-        credentialsRef: {type: string, description: "reference to secrets manager entry"}
-        ssl: {type: boolean, default: true}
-        connectionPoolSize: {type: integer, default: 10}
-        timeout: {type: duration, default: "PT30S"}
-
-  # ==================== DatasetDefinition ====================
+        host:
+          type: string
+        port:
+          type: integer
+        database:
+          type: string
+        schema:
+          type: string
+        credentialsRef:
+          type: string
+          description: reference to secrets manager entry
+        ssl:
+          type: boolean
+          default: true
+        connectionPoolSize:
+          type: integer
+          default: 10
+        timeout:
+          type: duration
+          default: PT30S
   DatasetDefinition:
-    definition: "a meta-classifier for logical collections of data within a data source"
-    purpose: "Represents tables, collections, topics, or files that contain entity data"
-
+    definition: a meta-classifier for logical collections of data within a data source
+    purpose: Represents tables, collections, topics, or files that contain entity data
     requiredFields:
-      iri: {type: uri, unique: true}
-      namespace: {type: string, required: true}
-      localName: {type: string, required: true}
-      label: {type: string, required: true}
-
+      iri:
+        type: uri
+        unique: true
+      namespace:
+        type: string
+        required: true
+      localName:
+        type: string
+        required: true
+      label:
+        type: string
+        required: true
       definition:
         type: string
         required: true
-        example: "table containing daily end-of-day equity prices from all global exchanges"
-
+        example: table containing daily end-of-day equity prices from all global
+          exchanges
       dataSource:
         type: uri
         required: true
-        description: "reference to DataSource IRI"
-
+        description: reference to DataSource IRI
       physicalIdentifier:
         type: string
         required: true
-        description: "actual table name, file path, topic, or collection name"
-        example: "market_data.equity_prices_eod"
-
+        description: actual table name, file path, topic, or collection name
+        example: market_data.equity_prices_eod
     optionalFields:
       schema:
         type: DatasetSchema
-        description: "physical schema definition"
-
+        description: physical schema definition
       partitioning:
         type: PartitioningSpec
-        description: "how dataset is partitioned (for performance and temporal queries)"
-
+        description: how dataset is partitioned (for performance and temporal queries)
       updatePattern:
         type: enum
-        values: [append, upsert, snapshot, cdc, eventSourcing]
-        description: "how data is updated"
-
+        values:
+          - append
+          - upsert
+          - snapshot
+          - cdc
+          - eventSourcing
+        description: how data is updated
       temporalCoverage:
-        startDate: {type: instant, description: "earliest available data"}
-        endDate: {type: instant, description: "latest available data; null=ongoing"}
-
+        startDate:
+          type: instant
+          description: earliest available data
+        endDate:
+          type: instant
+          description: latest available data; null=ongoing
       volumetrics:
-        rowCount: {type: integer}
-        storageSize: {type: string, example: "1.2 TB"}
-        growthRate: {type: string, example: "50 GB/month"}
-
+        rowCount:
+          type: integer
+        storageSize:
+          type: string
+          example: 1.2 TB
+        growthRate:
+          type: string
+          example: 50 GB/month
       qualityMetrics:
-        completeness: {type: decimal, description: "fraction of non-null required fields"}
-        accuracy: {type: decimal, description: "measured accuracy vs reference data"}
-        timeliness: {type: duration, description: "typical lag from event to availability"}
-
+        completeness:
+          type: decimal
+          description: fraction of non-null required fields
+        accuracy:
+          type: decimal
+          description: measured accuracy vs reference data
+        timeliness:
+          type: duration
+          description: typical lag from event to availability
     structures:
       DatasetSchema:
-        fields: {type: "list[FieldDefinition]"}
-        primaryKey: {type: "list[string]"}
-        indexes: {type: "list[IndexDefinition]"}
-
+        fields:
+          type: list[FieldDefinition]
+        primaryKey:
+          type: list[string]
+        indexes:
+          type: list[IndexDefinition]
       PartitioningSpec:
-        strategy: {type: enum, values: [range, hash, list, composite]}
-        partitionKeys: {type: "list[string]"}
-        example: {strategy: range, partitionKeys: ["trade_date"]}
-
-  # ==================== Field Definition ====================
+        strategy:
+          type: enum
+          values:
+            - range
+            - hash
+            - list
+            - composite
+        partitionKeys:
+          type: list[string]
+        example:
+          strategy: range
+          partitionKeys:
+            - trade_date
   FieldDefinition:
-    definition: "a meta-classifier for physical field definitions in dataset schemas"
-    purpose: "Defines the structure of fields in physical datasets"
-
+    definition: a meta-classifier for physical field definitions in dataset schemas
+    purpose: Defines the structure of fields in physical datasets
     requiredFields:
       name:
         type: string
         required: true
-        description: "field name in the physical schema"
-
+        description: field name in the physical schema
       dataType:
         type: string
         required: true
-        description: "native data type in source system"
-        example: "VARCHAR(255), DECIMAL(18,4), TIMESTAMP"
-
+        description: native data type in source system
+        example: VARCHAR(255), DECIMAL(18,4), TIMESTAMP
     optionalFields:
       nullable:
         type: boolean
         default: true
-
       primaryKey:
         type: boolean
         default: false
-
       foreignKey:
         type: ForeignKeyReference
-
       defaultValue:
         type: any
-
       constraints:
-        type: "list[uri]"
-        description: "references to ConstraintDefinition IRIs"
-
+        type: list[uri]
+        description: references to ConstraintDefinition IRIs
       description:
         type: string
-
     structures:
       ForeignKeyReference:
-        targetDataset: {type: uri, required: true, description: "referenced DatasetDefinition IRI"}
-        targetField: {type: string, required: true}
-        onDelete: {type: enum, values: [cascade, setNull, restrict], default: restrict}
-        onUpdate: {type: enum, values: [cascade, setNull, restrict], default: restrict}
-
-  # ==================== Index Definition ====================
+        targetDataset:
+          type: uri
+          required: true
+          description: referenced DatasetDefinition IRI
+        targetField:
+          type: string
+          required: true
+        onDelete:
+          type: enum
+          values:
+            - cascade
+            - setNull
+            - restrict
+          default: restrict
+        onUpdate:
+          type: enum
+          values:
+            - cascade
+            - setNull
+            - restrict
+          default: restrict
   IndexDefinition:
-    definition: "a meta-classifier for physical index structures in datasets"
-    purpose: "Defines indexes for query performance optimization"
-
+    definition: a meta-classifier for physical index structures in datasets
+    purpose: Defines indexes for query performance optimization
     requiredFields:
       name:
         type: string
         required: true
-        description: "index name"
-
+        description: index name
       fields:
-        type: "list[string]"
+        type: list[string]
         required: true
         minCount: 1
-        description: "field names included in this index"
-
+        description: field names included in this index
     optionalFields:
       unique:
         type: boolean
         default: false
-        description: "whether this is a unique index"
-
+        description: whether this is a unique index
       indexType:
         type: enum
-        values: [BTree, Hash, GiST, GIN, BRIN]
+        values:
+          - BTree
+          - Hash
+          - GiST
+          - GIN
+          - BRIN
         default: BTree
-        description: "physical index structure type"
-
+        description: physical index structure type
       partial:
         type: string
-        description: "partial index predicate expression"
-
-  # ==================== Source Binding (ADR-011) ====================
+        description: partial index predicate expression
   SourceBinding:
-    definition: "specification of physical data sources and row-set operations for semantic mapping according to genus-differentia form"
-    purpose: "Enables multi-table joins, filtering, and aggregation before field mapping"
-
+    definition: specification of physical data sources and row-set operations for
+      semantic mapping according to genus-differentia form
+    purpose: Enables multi-table joins, filtering, and aggregation before field mapping
     requiredFields:
       datasets:
-        type: "list[DatasetReference]"
+        type: list[DatasetReference]
         required: true
         minCount: 1
-        description: "physical datasets to read from"
-
+        description: physical datasets to read from
     optionalFields:
       rowSet:
         type: RowSetSpec
-        description: "row-level operations applied before mapping to slots"
-
+        description: row-level operations applied before mapping to slots
     structures:
       DatasetReference:
         dataset:
           type: uri
           required: true
-          description: "DatasetDefinition IRI"
-
+          description: DatasetDefinition IRI
         alias:
           type: string
           required: true
-          description: "alias for use in field references and expressions"
-
-  # ==================== Row Set Spec (ADR-011) ====================
+          description: alias for use in field references and expressions
   RowSetSpec:
-    definition: "row-level operations applied to source datasets before slot mapping according to genus-differentia form"
-    purpose: "Expresses joins, filters, and aggregations that field-level mappings cannot express"
-
+    definition: row-level operations applied to source datasets before slot mapping
+      according to genus-differentia form
+    purpose: Expresses joins, filters, and aggregations that field-level mappings
+      cannot express
     optionalFields:
       filters:
-        type: "list[FilterExpression]"
-        description: "row filtering conditions"
-
+        type: list[FilterExpression]
+        description: row filtering conditions
       joins:
-        type: "list[JoinExpression]"
-        description: "multi-table join specifications"
-
+        type: list[JoinExpression]
+        description: multi-table join specifications
       grouping:
         type: GroupingSpec
-        description: "aggregation specification for derived entities"
-
+        description: aggregation specification for derived entities
     structures:
       FilterExpression:
         dataset:
           type: string
           required: true
-          description: "dataset alias from SourceBinding"
-
+          description: dataset alias from SourceBinding
         field:
           type: string
           required: true
-          description: "field name in dataset"
-
+          description: field name in dataset
         operator:
           type: enum
           required: true
-          values: ["=", "!=", ">", "<", ">=", "<=", "IN", "NOT IN", "LIKE", "IS NULL", "IS NOT NULL"]
-
+          values:
+            - =
+            - "!="
+            - ">"
+            - <
+            - ">="
+            - <=
+            - IN
+            - NOT IN
+            - LIKE
+            - IS NULL
+            - IS NOT NULL
         value:
           type: any
-          description: "comparison value (null for IS NULL / IS NOT NULL)"
-
+          description: comparison value (null for IS NULL / IS NOT NULL)
       JoinExpression:
         leftDataset:
           type: string
           required: true
-          description: "left dataset alias"
-
+          description: left dataset alias
         rightDataset:
           type: string
           required: true
-          description: "right dataset alias"
-
+          description: right dataset alias
         joinType:
           type: enum
           required: true
-          values: [inner, left, right, full]
+          values:
+            - inner
+            - left
+            - right
+            - full
           default: inner
-
         conditions:
-          type: "list[JoinCondition]"
+          type: list[JoinCondition]
           required: true
           minCount: 1
-
       JoinCondition:
         leftField:
           type: string
           required: true
-          description: "field name in left dataset"
-
+          description: field name in left dataset
         operator:
           type: string
           required: true
-          default: "="
-          description: "comparison operator"
-
+          default: =
+          description: comparison operator
         rightField:
           type: string
           required: true
-          description: "field name in right dataset"
-
+          description: field name in right dataset
       GroupingSpec:
         groupBy:
-          type: "list[FieldReference]"
+          type: list[FieldReference]
           required: true
           minCount: 1
-          description: "fields to group by"
-
+          description: fields to group by
         aggregations:
-          type: "list[AggregationSpec]"
+          type: list[AggregationSpec]
           required: true
           minCount: 1
-          description: "aggregation functions to apply"
-
+          description: aggregation functions to apply
       AggregationSpec:
         function:
           type: enum
           required: true
-          values: [count, sum, avg, min, max, first, last]
-
+          values:
+            - count
+            - sum
+            - avg
+            - min
+            - max
+            - first
+            - last
         sourceField:
           type: FieldReference
-          description: "source field (null for count)"
-
+          description: source field (null for count)
         targetField:
           type: string
           required: true
-          description: "name for aggregated result"
-
+          description: name for aggregated result
       FieldReference:
         dataset:
           type: string
           required: true
-          description: "dataset alias from SourceBinding"
-
+          description: dataset alias from SourceBinding
         field:
           type: string
           required: true
-          description: "field name in dataset"
-
-  # ==================== Identity Spec (ADR-011) ====================
+          description: field name in dataset
   IdentitySpec:
-    definition: "specification of entity identity determination and IRI construction according to genus-differentia form"
-    purpose: "Defines logical keys, version keys, and IRI generation strategy for stable entity references"
-
+    definition: contract-bound specification that maps physical values to the
+      ordered components of one accepted TargetIdentityContractDefinition
+    purpose: Prevents independent mappings from inventing incompatible logical keys,
+      version keys, or IRI templates
     requiredFields:
-      logicalKey:
-        type: "list[FieldReference]"
+      contractRef:
+        type: uri
         required: true
-        minCount: 1
-        description: "fields that uniquely identify entity across all versions"
-
-      iriTemplate:
-        type: string
+        description: TargetIdentityContractDefinition IRI registered for the mapping target
+      logicalKeyBindings:
+        type: map[string,ValueBinding]
         required: true
-        description: "template for constructing entity IRI with {field} placeholders"
-        example: "https://axiolune.ai/data/instruments/{isin}"
-
-    optionalFields:
-      versionKey:
-        type: "list[FieldReference]"
-        description: "fields that distinguish versions of same logical entity"
-
-      namespace:
-        type: string
-        description: "namespace prefix for generated IRIs"
-        example: "fin-inst"
-
-  # ==================== Value Binding (ADR-011) ====================
+        description: exact one-to-one bindings for all ordered logical components
+      versionKeyBindings:
+        type: map[string,ValueBinding]
+        required: true
+        description: exact one-to-one bindings for all ordered version components
   ValueBinding:
-    definition: "specification of value computation for slot population according to genus-differentia form"
-    purpose: "Union type supporting direct fields, transformations, literals, and runtime context"
-
+    definition: specification of value computation for slot population according to
+      genus-differentia form
+    purpose: Union type supporting direct fields, transformations, literals, and
+      runtime context
     discriminator: bindingType
-
     variants:
       DirectFieldBinding:
-        description: "value sourced directly from physical field"
+        description: value sourced directly from physical field
         fields:
           bindingType:
             type: literal
-            value: "directField"
-
+            value: directField
           source:
             type: FieldReference
             required: true
-            description: "source field reference"
-
+            description: source field reference
       TransformationBinding:
-        description: "value computed via versioned transformation"
+        description: value computed via versioned transformation
         fields:
           bindingType:
             type: literal
-            value: "transformation"
-
+            value: transformation
           transformationRef:
             type: uri
             required: true
-            description: "TransformationDefinition IRI with version"
-
+            description: TransformationDefinition IRI with version
           inputs:
-            type: "map[string, ValueBinding]"
+            type: map[string, ValueBinding]
             required: true
-            description: "named inputs to transformation (keys match transformation.inputs)"
-
+            description: named inputs to transformation (keys match transformation.inputs)
       LiteralBinding:
-        description: "static literal value"
+        description: static literal value
         fields:
           bindingType:
             type: literal
-            value: "literal"
-
+            value: literal
           value:
             type: any
             required: true
-            description: "literal value of any type"
-
+            description: literal value of any type
       RuntimeContextBinding:
-        description: "value from immutable MaterializationRun context"
+        description: value from immutable MaterializationRun context
         fields:
           bindingType:
             type: literal
-            value: "runtimeContext"
-
+            value: runtimeContext
           contextField:
-            type: string
+            type: enum
             required: true
-            description: "field from MaterializationRun (assertionTime, referenceTime, runId)"
-            example: "assertionTime"
-
-  # ==================== Slot Mapping (ADR-011) ====================
+            values:
+              - iri
+              - assertionTime
+              - referenceTime
+              - runId
+            description: closed field from MaterializationRun; iri is the exact
+              generating-context IRI and the other values are immutable runtime
+              scalars
+            example: assertionTime
+      ReferenceIdentityBinding:
+        description: reference resolved through one accepted target identity contract
+        fields:
+          bindingType:
+            type: literal
+            value: referenceIdentity
+          targetMappingRef:
+            type: uri
+            required: true
+          referenceMode:
+            type: enum
+            required: true
+            values:
+              - logical
+              - version
+          keyBindings:
+            type: map[string,ValueBinding]
+            required: true
   SlotMapping:
-    definition: "specification of target slot population according to genus-differentia form"
-    purpose: "Maps source data to ontology slots (attributes, participant roles, relations, pattern fields)"
-
+    definition: specification of target slot population according to genus-differentia form
+    purpose: Maps source data to ontology slots (attributes, participant roles,
+      relations, pattern fields)
     requiredFields:
       target:
         type: TargetSlot
         required: true
-        description: "slot to populate"
-
+        description: slot to populate
       value:
         type: ValueBinding
         required: true
-        description: "value computation specification"
-
-  # ==================== Transformation Definition (Enhanced for ADR-011) ====================
+        description: value computation specification
   TransformationDefinition:
-    definition: "versioned reusable transformation logic for data mapping according to genus-differentia form"
-    purpose: "Defines reproducible transformations with explicit inputs, outputs, version, digest, and test cases"
-
+    definition: versioned reusable transformation logic for data mapping according
+      to genus-differentia form
+    purpose: Defines reproducible transformations with explicit inputs, outputs,
+      version, digest, and test cases
     requiredFields:
-      iri: {type: uri, unique: true, required: true}
-
+      iri:
+        type: uri
+        unique: true
+        required: true
       definition:
         type: string
         required: true
-        description: "clear definition of transformation purpose and behavior"
-
+        description: clear definition of transformation purpose and behavior
       kind:
         type: enum
         required: true
-        values: [LookupTransformation, MappingTransformation, ExpressionTransformation, ScriptTransformation]
-        description: "type of transformation"
-
+        values:
+          - LookupTransformation
+          - MappingTransformation
+          - ExpressionTransformation
+          - ScriptTransformation
+        description: type of transformation
       inputs:
-        type: "map[string, TypeReference]"
+        type: map[string, TypeReference]
         required: true
-        description: "named input parameters with explicit types"
-        example: {isin: "string", sourceSystem: "string"}
-
+        description: named input parameters with explicit types
+        example:
+          isin: string
+          sourceSystem: string
       outputs:
         type: TypeReference
         required: true
-        description: "output type specification"
-
+        description: output type specification
       version:
         type: string
         required: true
-        description: "semantic version (MAJOR.MINOR.PATCH)"
-        example: "1.2.0"
-
+        description: semantic version (MAJOR.MINOR.PATCH)
+        example: 1.2.0
       implementationDigest:
         type: string
         required: true
-        description: "SHA-256 digest of implementation artifact for reproducibility"
-        example: "sha256:a3b2c1d4e5f6..."
-
+        description: SHA-256 digest of implementation artifact for reproducibility
+        example: sha256:a3b2c1d4e5f6...
       testCases:
-        type: "list[TransformationTestCase]"
+        type: list[TransformationTestCase]
         required: true
         minCount: 1
-        description: "test cases demonstrating correct behavior"
-
+        description: test cases demonstrating correct behavior
     optionalFields:
       implementation:
         type: TransformationImplementation
-        description: "implementation details specific to transformation kind"
-
+        description: implementation details specific to transformation kind
     structures:
       TypeReference:
-        definition: "type specification for transformation inputs and outputs"
-
+        definition: type specification for transformation inputs and outputs
         discriminator: typeKind
-
         variants:
           PrimitiveType:
             fields:
-              typeKind: {type: literal, value: "primitive"}
+              typeKind:
+                type: literal
+                value: primitive
               primitiveType:
                 type: enum
                 required: true
-                values: [string, integer, decimal, boolean, instant, duration, uri]
-
+                values:
+                  - string
+                  - integer
+                  - decimal
+                  - boolean
+                  - instant
+                  - duration
+                  - uri
           StructuredType:
             fields:
-              typeKind: {type: literal, value: "structured"}
+              typeKind:
+                type: literal
+                value: structured
               typeRef:
                 type: uri
                 required: true
-                description: "ObjectTypeDefinition or ValueTypeDefinition IRI"
-
+                description: ObjectTypeDefinition or ValueTypeDefinition IRI
           ListType:
             fields:
-              typeKind: {type: literal, value: "list"}
+              typeKind:
+                type: literal
+                value: list
               elementType:
                 type: TypeReference
                 required: true
-                description: "type of list elements"
-
+                description: type of list elements
       TransformationImplementation:
-        # For LookupTransformation
         lookupTable:
           type: uri
-          description: "reference to lookup table dataset"
-        lookupKeyField: {type: string}
-        lookupValueField: {type: string}
-        cacheSeconds: {type: integer}
-        onMissingKey: {type: enum, values: [error, null, default]}
-        defaultValue: {type: string}
-
-        # For MappingTransformation
+          description: reference to lookup table dataset
+        lookupKeyField:
+          type: string
+        lookupValueField:
+          type: string
+        cacheSeconds:
+          type: integer
+        onMissingKey:
+          type: enum
+          values:
+            - error
+            - null
+            - default
+        defaultValue:
+          type: string
         mapping:
-          type: "map[string,string]"
-          description: "static key-value mappings"
-
-        # For ExpressionTransformation
+          type: map[string,string]
+          description: static key-value mappings
         expression:
           type: string
-          description: "transformation expression"
-        language: {type: enum, values: [sql, jsonPath, jq, python]}
-
-        # For ScriptTransformation
-        scriptPath: {type: string}
-        entrypoint: {type: string}
-        runtime: {type: enum, values: [python, javascript, wasm]}
-
+          description: transformation expression
+        language:
+          type: enum
+          values:
+            - sql
+            - jsonPath
+            - jq
+            - python
+        scriptPath:
+          type: string
+        entrypoint:
+          type: string
+        runtime:
+          type: enum
+          values:
+            - python
+            - javascript
+            - wasm
       TransformationTestCase:
-        input: {type: any}
-        expectedOutput: {type: any}
-        description: {type: string}
-
-  # ==================== Target Slot ====================
+        input:
+          type: any
+        expectedOutput:
+          type: any
+        description:
+          type: string
   TargetSlot:
-    definition: "a union type representing different kinds of mapping targets (attributes, participant roles, relations, or pattern fields)"
-    purpose: "Allows SemanticMappingDefinition to target not just attributes but also Association participant roles, relations, and pattern-injected fields"
-    note: "Replaces simple targetAttribute: IRI with a discriminated union to support all mapping target types"
-
+    definition: a union type representing different kinds of mapping targets
+      (attributes, participant roles, relations, or pattern fields)
+    purpose: Allows SemanticMappingDefinition to target not just attributes but also
+      Association participant roles, relations, and pattern-injected fields
+    note: "Replaces simple targetAttribute: IRI with a discriminated union to
+      support all mapping target types"
     discriminator: slotType
-
     variants:
       AttributeSlot:
-        description: "maps to an AttributeTypeDefinition"
+        description: maps to an AttributeTypeDefinition
         fields:
-          slotType: {type: literal, value: "attribute"}
-          targetAttribute: {type: uri, required: true, description: "AttributeTypeDefinition IRI"}
-
+          slotType:
+            type: literal
+            value: attribute
+          targetAttribute:
+            type: uri
+            required: true
+            description: AttributeTypeDefinition IRI
       ParticipantRoleSlot:
-        description: "maps to a participant role in an AssociationTypeDefinition"
+        description: maps to a participant role in an AssociationTypeDefinition
         fields:
-          slotType: {type: literal, value: "participantRole"}
-          targetAssociation: {type: uri, required: true, description: "AssociationTypeDefinition IRI"}
-          targetRole: {type: string, required: true, description: "ParticipantRole.id"}
-
+          slotType:
+            type: literal
+            value: participantRole
+          targetAssociation:
+            type: uri
+            required: true
+            description: AssociationTypeDefinition IRI
+          targetRole:
+            type: string
+            required: true
+            description: ParticipantRole.id
       RelationSlot:
-        description: "maps to a RelationTypeDefinition"
+        description: maps to a RelationTypeDefinition
         fields:
-          slotType: {type: literal, value: "relation"}
-          targetRelation: {type: uri, required: true, description: "RelationTypeDefinition IRI"}
-          targetObjectType: {type: uri, required: false, description: "range ObjectTypeDefinition IRI (for disambiguation)"}
-
+          slotType:
+            type: literal
+            value: relation
+          targetRelation:
+            type: uri
+            required: true
+            description: RelationTypeDefinition IRI
+          targetObjectType:
+            type: uri
+            required: false
+            description: range ObjectTypeDefinition IRI (for disambiguation)
       PatternFieldSlot:
-        description: "maps to a field injected by a Layer 2 pattern"
+        description: maps to a field injected by a Layer 2 pattern
         fields:
-          slotType: {type: literal, value: "patternField"}
-          targetPattern: {type: uri, required: true, description: "PatternDefinition IRI"}
-          targetField: {type: string, required: true, description: "injected attribute local name"}
-
-  # ==================== Time Axis Binding (ADR-012) ====================
+          slotType:
+            type: literal
+            value: patternField
+          targetPattern:
+            type: uri
+            required: true
+            description: PatternDefinition IRI
+          targetField:
+            type: string
+            required: true
+            description: injected attribute local name
   TimeAxisBinding:
-    definition: "binding specification for one temporal axis (from/to intervals) according to genus-differentia form"
-    purpose: "Expresses how to populate one of three time axes per ADR-012"
-
+    definition: binding specification for one temporal axis (from/to intervals)
+      according to genus-differentia form
+    purpose: Expresses how to populate one of three time axes per ADR-012
     requiredFields:
       from:
         type: ValueBinding
         required: true
-        description: "start of time interval (inclusive)"
-
+        description: start of time interval (inclusive)
     optionalFields:
       to:
         type: ValueBinding
-        description: "end of time interval (exclusive); null means unbounded"
-
+        description: end of time interval (exclusive); null means unbounded
       closePolicy:
         type: enum
-        values: [closePreviousVersion, explicitOnly]
-        description: "how to set knowledgeTo for superseded versions (knowledgeTime axis only)"
+        values:
+          - closePreviousVersion
+          - explicitOnly
+        description: how to set knowledgeTo for superseded versions (knowledgeTime axis
+          only)
         default: closePreviousVersion
-
-  # ==================== Provenance Binding (ADR-011) ====================
   ProvenanceBinding:
-    definition: "specification of data provenance metadata capture according to genus-differentia form"
-    purpose: "Maps physical fields to Layer 2 provenance pattern fields"
-
+    definition: specification of data provenance metadata capture according to
+      genus-differentia form
+    purpose: Maps physical fields to Layer 2 provenance pattern fields
     optionalFields:
       sourceSystem:
         type: ValueBinding
-        description: "identifier of originating system"
-
+        description: identifier of originating system
       acquisitionTime:
         type: ValueBinding
-        description: "when data was acquired from source"
-
+        description: when data was acquired from source
       responsibleAgent:
         type: ValueBinding
-        description: "agent responsible for data acquisition"
-
+        description: agent responsible for data acquisition
       confidence:
         type: ValueBinding
-        description: "confidence score or quality metric"
-
-  # ==================== Temporal Mapping Spec (ADR-012) ====================
+        description: confidence score or quality metric
   TemporalMappingSpec:
-    definition: "specification of three-axis temporal semantics mapping according to genus-differentia form and ADR-012"
-    purpose: "Maps physical time fields to valid time, knowledge time, and availability time axes"
-    note: |
-      This spec is the three-axis (TemporalFact) temporal mapping. All three axes
-      (validTime, knowledgeTime, availabilityTime) are REQUIRED so a TemporalFact
-      mapping cannot silently omit an axis (ADR-012). Single-axis temporal patterns
-      (e.g., TemporalObservation) bind their fields (observedAt/recordedAt) via
-      slotMappings with slotType: patternField, NOT via this spec.
+    definition: specification of three-axis temporal semantics mapping according to
+      genus-differentia form and ADR-012
+    purpose: Maps physical time fields to valid time, knowledge time, and
+      availability time axes
+    note: >
+      This spec is the three-axis (TemporalFact) temporal mapping. All three
+      axes
 
+      (validTime, knowledgeTime, availabilityTime) are REQUIRED so a
+      TemporalFact
+
+      mapping cannot silently omit an axis (ADR-012). Single-axis temporal
+      patterns
+
+      (e.g., TemporalObservation) bind their fields (observedAt/recordedAt) via
+
+      slotMappings with slotType: patternField, NOT via this spec.
     requiredFields:
       patternRef:
         type: uri
         required: true
-        description: "temporal pattern IRI (e.g., ax-pattern:TemporalFact)"
-
+        description: temporal pattern IRI (e.g., ax-pattern:TemporalFact)
       validTime:
         type: TimeAxisBinding
         required: true
-        description: "when fact holds true in reality (business time) — required for three-axis completeness"
-
+        description: when fact holds true in reality (business time) — required for
+          three-axis completeness
       knowledgeTime:
         type: TimeAxisBinding
         required: true
-        description: "when platform knows/retracts this version (transaction time) — required; SHOULD bind assertionTime from runtime context"
-
+        description: when platform knows/retracts this version (transaction time) —
+          required; SHOULD bind assertionTime from runtime context
       availabilityTime:
         type: TimeAxisBinding
         required: true
-        description: "when consumers can use this data (regulatory/access control time) — required; prevents look-ahead bias"
-
-  # ==================== Semantic Mapping (ADR-011 Compliant) ====================
+        description: when consumers can use this data (regulatory/access control time) —
+          required; prevents look-ahead bias
   SemanticMappingDefinition:
-    definition: "canonical specification of mapping between physical data and ontology concepts according to genus-differentia form"
-    purpose: "Single truth source for all semantic mappings per ADR-011"
-    note: "Replaces all field-level, dataset-level, and inline mappings with unified structure"
-
+    definition: canonical specification of mapping between physical data and
+      ontology concepts according to genus-differentia form
+    purpose: Single truth source for all semantic mappings per ADR-011
+    note: Replaces all field-level, dataset-level, and inline mappings with unified
+      structure
     requiredFields:
-      iri: {type: uri, unique: true, required: true}
-      label: {type: string, required: true}
-
+      iri:
+        type: uri
+        unique: true
+        required: true
+      label:
+        type: string
+        required: true
       source:
         type: SourceBinding
         required: true
-        description: "physical data sources with row-set operations"
-
+        description: physical data sources with row-set operations
       targetType:
         type: uri
         required: true
-        description: "ObjectTypeDefinition or AssociationTypeDefinition IRI"
-        example: "fin:Equity"
-
+        description: ObjectTypeDefinition or AssociationTypeDefinition IRI
+        example: fin:Equity
       mappingType:
         type: enum
         required: true
         values:
-          - directTable        # one table row = one entity instance
-          - joinedTables       # entity requires joining multiple tables
-          - aggregation        # entity derived from aggregating rows
-          - transformation     # entity requires complex transformation
-          - view               # entity sourced from database view
-          - denormalized       # one table contains multiple related entity types
-
-    optionalFields:
-      slotMappings:
-        type: "list[SlotMapping]"
-        description: "mappings to attributes, participant roles, relations, and pattern fields"
-
+          - directTable
+          - joinedTables
+          - aggregation
+          - transformation
+          - view
+          - denormalized
       identity:
         type: IdentitySpec
-        description: "entity identity and IRI construction specification"
-
+        required: true
+        description: contract-bound logical and version identity; mandatory for every
+          concrete materialized domain target
+    optionalFields:
+      slotMappings:
+        type: list[SlotMapping]
+        description: mappings to attributes, participant roles, relations, and pattern
+          fields
       temporal:
         type: TemporalMappingSpec
-        description: "three-axis temporal semantics per ADR-012"
-
+        description: three-axis temporal semantics per ADR-012
       provenance:
         type: ProvenanceBinding
-        description: "provenance metadata capture specification"
-
+        description: provenance metadata capture specification
       validationRules:
-        type: "list[ValidationRule]"
-        description: "data quality checks applied during materialization"
-
+        type: list[ValidationRule]
+        description: data quality checks applied during materialization
       priority:
         type: integer
         default: 0
-        description: "when multiple mappings provide same attribute, higher priority wins"
-
+        description: when multiple mappings provide same attribute, higher priority wins
       effectiveDate:
         type: instant
-        description: "when this mapping became active"
-
+        description: when this mapping became active
       expirationDate:
         type: instant
-        description: "when this mapping should no longer be used"
-
+        description: when this mapping should no longer be used
     structures:
       ValidationRule:
-        id: {type: string, required: true}
-        type: {type: enum, values: [required, format, range, uniqueness, referentialIntegrity, custom], required: true}
-        expression: {type: string, required: true}
-        failureAction: {type: enum, values: [reject, quarantine, accept-with-warning], required: true}
-        severity: {type: enum, values: [error, warning, info], default: error}
-
-  # ==================== Materialization Run (ADR-011, ADR-012) ====================
-  MaterializationRun:
-    definition: "immutable record of one materialization execution according to genus-differentia form"
-    purpose: "Separates runtime state from static definitions (ADR-011); provides immutable time context (ADR-012)"
-
-    requiredFields:
-      iri: {type: uri, unique: true, required: true}
-
-      runId:
-        type: string
-        required: true
-        unique: true
-        description: "unique identifier for this run"
-        example: "mr_2026-07-29_093000_abc123"
-
-      planRef:
-        type: uri
-        required: true
-        description: "MaterializationPlanDefinition IRI"
-
-      assertionTime:
-        type: instant
-        required: true
-        description: "when this run asserted knowledge (immutable, used for knowledgeFrom in ADR-012)"
-
-      referenceTime:
-        type: instant
-        required: true
-        description: "reference point for time-based queries (immutable, replaces CURRENT_TIMESTAMP)"
-
-      inputSnapshotDigest:
-        type: string
-        required: true
-        description: "SHA-256 digest of input dataset versions for reproducibility"
-
-      inputDatasets:
-        type: "list[InputDatasetSnapshot]"
-        required: true
-        minCount: 1
-        description: "snapshot of input datasets at run time"
-
-    optionalFields:
-      status:
-        type: enum
-        values: [pending, running, completed, failed, partial]
-        description: "execution status"
-
-      startedAt: {type: instant, description: "when execution started"}
-      completedAt: {type: instant, description: "when execution completed"}
-      outputRowCount: {type: integer, description: "number of entity instances materialized"}
-
-      watermark:
-        type: any
-        description: "watermark value for next incremental run (moved from plan per ADR-011)"
-
-      errors:
-        type: "list[ExecutionError]"
-        description: "errors encountered during execution"
-
-      metrics:
-        type: ExecutionMetrics
-        description: "performance and quality metrics"
-
-    structures:
-      InputDatasetSnapshot:
-        dataset:
-          type: uri
-          required: true
-          description: "DatasetDefinition IRI"
-
-        versionDigest:
+        id:
           type: string
           required: true
-          description: "SHA-256 digest of dataset version"
-
-        rowCount:
-          type: integer
-          description: "number of rows in snapshot"
-
-        snapshotTime:
-          type: instant
+        type:
+          type: enum
+          values:
+            - required
+            - format
+            - range
+            - uniqueness
+            - referentialIntegrity
+            - custom
           required: true
-          description: "when snapshot was taken"
-
-      ExecutionError:
+        expression:
+          type: string
+          required: true
+        failureAction:
+          type: enum
+          values:
+            - reject
+            - quarantine
+            - accept-with-warning
+          required: true
         severity:
           type: enum
-          required: true
-          values: [error, warning, info]
-
-        code: {type: string}
-
-        message:
-          type: string
-          required: true
-          description: "error message"
-
-        sourceRow:
-          type: integer
-          description: "row number that caused error"
-
-        context:
-          type: "map[string,any]"
-          description: "additional error context"
-
-      ExecutionMetrics:
-        rowsRead: {type: integer}
-        rowsProcessed: {type: integer}
-        rowsSkipped: {type: integer}
-        rowsFailed: {type: integer}
-        duration: {type: duration}
-        throughput: {type: decimal, description: "rows per second"}
-
-  # ==================== Materialization Plan (ADR-011 Compliant) ====================
-  MaterializationPlanDefinition:
-    definition: "declarative specification of ontology instance materialization from physical data sources according to genus-differentia form"
-    purpose: "Defines WHAT should be materialized and HOW data maps to ontology (static configuration only per ADR-011)"
-    note: "Runtime state moved to MaterializationRun per ADR-011; orchestration moved to external layer"
-
+          values:
+            - error
+            - warning
+            - info
+          default: error
+  MaterializationBatchDefinition:
+    definition: static atomic composition of multiple module-scoped
+      MaterializationPlanDefinitions over one source snapshot and one temporal
+      context
     requiredFields:
-      iri: {type: uri, unique: true, required: true}
-      label: {type: string, required: true}
-
+      iri:
+        type: uri
+        unique: true
+      label:
+        type: string
+      definition:
+        type: string
+      plans:
+        type: list[uri]
+        minCount: 1
+        unique: true
+        order: unsignedUtf8
+      targetDataset:
+        type: uri
+      consistencyRequirement:
+        type: const
+        value: Transactional
+  MaterializationRun:
+    definition: immutable standalone control record for one completed or failed
+      module-scoped materialization
+    requiredFields:
+      schemaVersion:
+        type: const
+        value: "1.0"
+      iri:
+        type: uri
+        unique: true
+      recordType:
+        type: const
+        value: materializationRun
+      slotId:
+        type: recordId
+      runId:
+        type: recordId
+      attemptId:
+        type: recordId
+      plannedInputDigest:
+        type: digest
+      resolvedInputDigest:
+        type: digest
+      planRef:
+        type: uri
+      planSourceDigest:
+        type: digest
+      sourceSchemaClosureDigest:
+        type: digest
+      sourceSnapshotRootDigest:
+        type: digest
+      inputDatasets:
+        type: list[InputDatasetSnapshot]
+        minCount: 1
+        uniqueBy: dataset
+        order: dataset
+      mappingClosure:
+        type: list[MappingClosureEntry]
+        minCount: 1
+        uniqueBy: mappingRef
+        order: mappingRef
+      mappingClosureDigest:
+        type: digest
+      ontologyClosureRef:
+        type: ArtifactRef
+      ontologyClosureDigest:
+        type: digest
+      referenceLockRef:
+        type: ArtifactRef
+      referenceLockDigest:
+        type: digest
+      build:
+        type: BuildEvidenceBinding
+      compilerDigest:
+        type: digest
+      validatorDigest:
+        type: digest
+      executorDigest:
+        type: digest
+      outputRdfCanonicalization:
+        type: const
+        value: RDFC-1.0
+      assertionTime:
+        type: instant
+      referenceTime:
+        type: instant
+      result:
+        type: MaterializationResult
+  MaterializationPlanDefinition:
+    definition: declarative specification of ontology instance materialization from
+      physical data sources according to genus-differentia form
+    purpose: Defines WHAT should be materialized and HOW data maps to ontology
+      (static configuration only per ADR-011)
+    note: Runtime state moved to MaterializationRun per ADR-011; orchestration moved
+      to external layer
+    requiredFields:
+      iri:
+        type: uri
+        unique: true
+        required: true
+      label:
+        type: string
+        required: true
       definition:
         type: string
         required: true
-        description: "purpose and scope of this materialization plan"
-
+        description: purpose and scope of this materialization plan
       sourceDatasets:
-        type: "list[uri]"
+        type: list[uri]
         required: true
         minCount: 1
-        description: "DatasetDefinition IRIs to be materialized"
-
+        description: DatasetDefinition IRIs to be materialized
       targetOntologyModule:
         type: uri
         required: true
-        description: "OntologyModuleDefinition IRI where instances will be created"
-
+        description: OntologyModuleDefinition IRI where instances will be created
       semanticMappings:
-        type: "list[uri]"
+        type: list[uri]
         required: true
         minCount: 1
-        description: "SemanticMappingDefinition IRIs that define how data maps to ontology"
-
+        description: SemanticMappingDefinition IRIs that define how data maps to ontology
       materializationMode:
         type: enum
         required: true
-        values: [Incremental, Full, CDC, EventSourcing]
-        description: "how materialization handles updates"
-
+        values:
+          - Incremental
+          - Full
+          - CDC
+          - EventSourcing
+        description: how materialization handles updates
     optionalFields:
       consistencyRequirement:
         type: enum
-        values: [Eventual, Snapshot, Transactional]
+        values:
+          - Eventual
+          - Snapshot
+          - Transactional
         default: Eventual
-        description: "consistency level required for materialized instances"
-
+        description: consistency level required for materialized instances
       validationRules:
-        type: "list[ConstraintBinding]"
-        description: "validation rules applied during materialization"
-
+        type: list[ConstraintBinding]
+        description: validation rules applied during materialization
       conflictResolution:
         type: ConflictResolutionStrategy
-        description: "how to handle conflicts when multiple sources provide same data"
-
+        description: how to handle conflicts when multiple sources provide same data
       incrementalKey:
         type: string
-        description: "field name for incremental updates (e.g., updated_at timestamp)"
-
+        description: field name for incremental updates (e.g., updated_at timestamp)
       targetGraphUri:
         type: uri
-        description: "named graph URI where RDF triples will be stored"
-
+        description: named graph URI where RDF triples will be stored
       owner:
         type: string
-        description: "team or role responsible for this plan"
-
+        description: team or role responsible for this plan
     structures:
       ConflictResolutionStrategy:
         strategy:
           type: enum
           required: true
-          values: [AuthoritySource, TimestampPriority, ManualReview, Merge, RejectConflict]
-          description: "how to resolve conflicts when multiple mappings provide same attribute"
-
+          values:
+            - AuthoritySource
+            - TimestampPriority
+            - ManualReview
+            - Merge
+            - RejectConflict
+          description: how to resolve conflicts when multiple mappings provide same
+            attribute
         authoritySourcePriority:
-          type: "list[uri]"
-          description: "ordered list of DataSource IRIs by authority (highest first)"
-
+          type: list[uri]
+          description: ordered list of DataSource IRIs by authority (highest first)
         timestampField:
           type: string
-          description: "field name for timestamp comparison (when strategy=TimestampPriority)"
+          description: field name for timestamp comparison (when strategy=TimestampPriority)
+    deprecated_note: >
+      IngestionPipelineDefinition with schedule, retry, monitoring has been
+      deprecated.
 
-    deprecated_note: |
-      IngestionPipelineDefinition with schedule, retry, monitoring has been deprecated.
       Use MaterializationPlanDefinition for declarative mapping specifications.
-      For runtime orchestration, use dedicated workflow/orchestration tools (Airflow, Prefect, etc.)
+
+      For runtime orchestration, use dedicated workflow/orchestration tools
+      (Airflow, Prefect, etc.)
+
       or the platform's runtime execution layer.
-
-  # ==================== Data Lineage ====================
   DataLineage:
-    definition: "a meta-classifier for tracking data flow and transformation chains"
-    purpose: "Documents how data moves from sources through transformations to ontology instances"
-
+    definition: a meta-classifier for tracking data flow and transformation chains
+    purpose: Documents how data moves from sources through transformations to
+      ontology instances
     requiredFields:
-      iri: {type: uri, unique: true}
-
+      iri:
+        type: uri
+        unique: true
       sourceDatasets:
-        type: "list[uri]"
-        description: "upstream DatasetDefinition IRIs"
-
+        type: list[uri]
+        description: upstream DatasetDefinition IRIs
       targetDatasets:
-        type: "list[uri]"
-        description: "downstream DatasetDefinition IRIs or ontology instances"
-
+        type: list[uri]
+        description: downstream DatasetDefinition IRIs or ontology instances
       transformations:
-        type: "list[uri]"
-        description: "Transformation IRIs applied"
-
+        type: list[uri]
+        description: Transformation IRIs applied
     optionalFields:
       lineageGraph:
         type: string
-        description: "serialized graph representation (e.g., DOT, JSON-LD)"
-
+        description: serialized graph representation (e.g., DOT, JSON-LD)
       updateFrequency:
         type: duration
-        example: "P1D"
-
+        example: P1D
       lastRun:
-        timestamp: {type: instant}
-        status: {type: enum, values: [success, failure, partial]}
-        recordsProcessed: {type: integer}
-        recordsFailed: {type: integer}
-
-  # ==================== PIT Validation Request (ADR-012) ====================
+        timestamp:
+          type: instant
+        status:
+          type: enum
+          values:
+            - success
+            - failure
+            - partial
+        recordsProcessed:
+          type: integer
+        recordsFailed:
+          type: integer
   PITValidationRequest:
-    definition: "invocation contract for the dynamic Point-in-Time validator that enforces runtime-parameterized constraints"
-    purpose: "Binds MaterializationRun context + three-axis as-of parameters + target data graph, enabling NoFutureKnowledge and AvailabilityBeforeUse enforcement outside static SHACL"
-    note: |
-      The SHACL sh:ConstraintComponent definitions for NoFutureKnowledge and
-      AvailabilityBeforeUse are declarative specifications (Tier-2, parse-verified).
-      This request is the formal invocation contract: the PIT validator reads
-      $referenceTime from materializationRun, $queryTime from asOfAvailable,
-      and validates the target graph. This is approach B per the v7 review:
-      runtime validation with explicit MaterializationRun input.
-
+    definition: immutable standalone request that binds exact materialization
+      evidence, RDF bytes, explicit three-axis pivots, and a locked PIT
+      validator
     requiredFields:
-      materializationRun:
+      schemaVersion:
+        type: const
+        value: "1.0"
+      iri:
         type: uri
-        required: true
-        description: "MaterializationRun IRI providing immutable referenceTime (binds $referenceTime)"
-
-      asOfKnowledge:
-        type: instant
-        required: true
-        description: "knowledge-time pivot (binds NoFutureKnowledge: knowledgeFrom <= $referenceTime)"
-
+        unique: true
+      slotId:
+        type: recordId
+      requestId:
+        type: recordId
+      attemptId:
+        type: recordId
+      plannedInputDigest:
+        type: digest
+      resolvedInputDigest:
+        type: digest
+      recordType:
+        type: const
+        value: pitRequest
+      targetRdfCanonicalization:
+        type: const
+        value: RDFC-1.0
       asOfValid:
         type: instant
-        required: true
-        description: "valid-time pivot"
-
+      asOfKnowledge:
+        type: instant
       asOfAvailable:
         type: instant
-        required: true
-        description: "availability-time pivot (binds AvailabilityBeforeUse: $queryTime >= availableFrom)"
-
-      targetGraph:
-        type: uri
-        required: true
-        description: "named graph or dataset IRI to validate"
-
-    optionalFields:
-      targetShapes:
-        type: "list[uri]"
-        description: "specific NodeShape IRIs to apply (default: all pattern shapes targeting the data)"
-
-      constraintFilter:
-        type: "list[uri]"
-        description: "specific ConstraintComponent IRIs to evaluate (default: NoFutureKnowledge + AvailabilityBeforeUse + AvailabilityIntervalConsistency)"
-
-    structures:
-      ValidationResult:
-        conforms:
-          type: boolean
-          required: true
-          description: "true if all constraints satisfied"
-
-        violations:
-          type: "list[ConstraintViolation]"
-          description: "detailed violations if !conforms"
-
-      ConstraintViolation:
-        constraintRef:
-          type: uri
-          required: true
-          description: "ConstraintDefinition IRI that was violated"
-
-        focusNode:
-          type: uri
-          required: true
-          description: "IRI of the data node that violated the constraint"
-
-        value:
-          type: any
-          description: "the offending value"
-
-        message:
-          type: string
-          required: true
-          description: "human-readable violation message"
-
-  # ==================== Ingestion Pipeline (DEPRECATED) ====================
-  IngestionPipelineDefinition:
-    definition: "a meta-classifier for ETL/ELT workflows that materialize ontology instances from data sources"
-    purpose: "Orchestrates data extraction, transformation, validation, and loading"
-    deprecated: true
-    deprecationReason: "Mixed declarative mapping with runtime orchestration, violating Layer 4 boundaries. Use MaterializationPlanDefinition for mapping specifications and external orchestration tools for runtime execution."
-    deprecatedSince: "0.3.0"
-    removalVersion: "0.4.0"
-    migrationPath: "Convert to MaterializationPlanDefinition for mapping logic; move schedule/retry/monitoring to external orchestration layer (Airflow, Prefect, etc.)"
-
+      build:
+        type: BuildEvidenceBinding
+      validatorRef:
+        type: ArtifactRef
+      validatorDigest:
+        type: digest
+      materializationContext:
+        type: MaterializationContext
+  MaterializationBatchRun:
+    definition: immutable standalone control record for one completed or failed
+      atomic materialization batch
     requiredFields:
-      iri: {type: uri, unique: true}
-      label: {type: string, required: true}
-
+      schemaVersion:
+        type: const
+        value: "1.0"
+      iri:
+        type: uri
+        unique: true
+      recordType:
+        type: const
+        value: materializationBatchRun
+      slotId:
+        type: recordId
+      runId:
+        type: recordId
+      attemptId:
+        type: recordId
+      plannedInputDigest:
+        type: digest
+      resolvedInputDigest:
+        type: digest
+      batchRef:
+        type: uri
+      batchSourceDigest:
+        type: digest
+      sourceSnapshotRootDigest:
+        type: digest
+      ontologyClosureRef:
+        type: ArtifactRef
+      ontologyClosureDigest:
+        type: digest
+      referenceLockRef:
+        type: ArtifactRef
+      referenceLockDigest:
+        type: digest
+      build:
+        type: BuildEvidenceBinding
+      compilerDigest:
+        type: digest
+      validatorDigest:
+        type: digest
+      executorDigest:
+        type: digest
+      outputRdfCanonicalization:
+        type: const
+        value: RDFC-1.0
+      assertionTime:
+        type: instant
+      referenceTime:
+        type: instant
+      targetDataset:
+        type: uri
+      result:
+        type: MaterializationBatchResult
+    structures:
+      MaterializationBatchResult:
+        discriminator: outcome
+        variants:
+          completed:
+            requiredFields:
+              outcome:
+                type: const
+                value: completed
+              members:
+                type: list[CompletedBatchMember]
+                minCount: 1
+                uniqueBy: planRef
+                order: planRef
+              outputDatasetDigest:
+                type: digest
+              validationReportRef:
+                type: uri
+              validationReportDigest:
+                type: digest
+          failed:
+            requiredFields:
+              outcome:
+                type: const
+                value: failed
+              attemptedMembers:
+                type: list[AttemptedBatchMember]
+                uniqueBy: planRef
+                order: planRef
+              failureStage:
+                type: asciiIdentifier
+              failureReportRef:
+                type: uri
+              failureReportDigest:
+                type: digest
+              errors:
+                type: list[ExecutionError]
+                minCount: 1
+  ValidationReport:
+    definition: immutable common machine-evidence envelope for one actually executed
+      validation gate
+    requiredFields:
+      schemaVersion:
+        type: const
+        value: "1.0"
+      iri:
+        type: uri
+        unique: true
+      slotId:
+        type: recordId
+      reportId:
+        type: recordId
+      attemptId:
+        type: recordId
+      plannedInputDigest:
+        type: digest
+      resolvedInputDigest:
+        type: digest
+      recordType:
+        type: const
+        value: validationReport
+      profileRef:
+        type: uri
+      gateId:
+        type: asciiIdentifier
+      reportKind:
+        type: asciiIdentifier
+      criterionRefs:
+        type: list[uri]
+        minCount: 1
+        unique: true
+        order: unsignedUtf8
+      subjectRef:
+        type: ArtifactRef
+      build:
+        type: BuildEvidenceBinding
+      inputs:
+        type: list[ArtifactBinding]
+        minCount: 1
+        uniqueBy: name
+        order: name
+      toolId:
+        type: asciiIdentifier
+      capabilityId:
+        type: asciiIdentifier
+      capabilityRef:
+        type: ArtifactRef
+      capabilityDigest:
+        type: digest
+      entrypointRef:
+        type: ArtifactRef
+      entrypointDigest:
+        type: digest
+      discoveryContractRef:
+        type: ArtifactRef
+      discoveryContractDigest:
+        type: digest
+      subjectInventoryRef:
+        type: ArtifactRef
+      subjectInventoryDigest:
+        type: digest
+      kindEvidence:
+        type: KindEvidenceBinding
+      counts:
+        type: GateCounts
+      result:
+        type: GateResult
+    optionalFields:
+      requestRef:
+        type: uri
+      requestRecordDigest:
+        type: digest
+      contextRef:
+        type: uri
+      contextRecordDigest:
+        type: digest
+      recomputedTargetDigest:
+        type: digest
+      asOfValid:
+        type: instant
+      asOfKnowledge:
+        type: instant
+      asOfAvailable:
+        type: instant
+      memberRunRecordDigests:
+        type: list[digest]
+        unique: true
+        order: unsignedUtf8
+      outputDatasetDigest:
+        type: digest
+    invariants:
+      - PIT reports require exactly requestRef, requestRecordDigest, contextRef,
+        contextRecordDigest, recomputedTargetDigest, asOfValid, asOfKnowledge,
+        and asOfAvailable
+      - Batch reports require exactly memberRunRecordDigests and
+        outputDatasetDigest
+      - all other report kinds forbid PIT- and batch-specific optional fields
+  FailureReport:
+    definition: immutable standalone evidence record for a failed execution stage
+    requiredFields:
+      schemaVersion:
+        type: const
+        value: "1.0"
+      iri:
+        type: uri
+        unique: true
+      slotId:
+        type: recordId
+      reportId:
+        type: recordId
+      attemptId:
+        type: recordId
+      plannedInputDigest:
+        type: digest
+      resolvedInputDigest:
+        type: digest
+      recordType:
+        type: const
+        value: failureReport
+      subjectRef:
+        type: ArtifactRef
+      build:
+        type: BuildEvidenceBinding
+      failureStage:
+        type: asciiIdentifier
+      inputs:
+        type: list[ArtifactBinding]
+        minCount: 1
+        uniqueBy: name
+        order: name
+      errors:
+        type: list[ExecutionError]
+        minCount: 1
+  ReplayReport:
+    definition: immutable standalone comparison of original and replayed semantic artifacts
+    requiredFields:
+      schemaVersion:
+        type: const
+        value: "1.0"
+      iri:
+        type: uri
+        unique: true
+      slotId:
+        type: recordId
+      reportId:
+        type: recordId
+      attemptId:
+        type: recordId
+      plannedInputDigest:
+        type: digest
+      resolvedInputDigest:
+        type: digest
+      recordType:
+        type: const
+        value: replayReport
+      build:
+        type: BuildEvidenceBinding
+      originalContextRef:
+        type: uri
+      originalContextRecordDigest:
+        type: digest
+      originalTargetRef:
+        type: ArtifactRef
+      originalTargetDigest:
+        type: digest
+      replaySourceSnapshotRootDigest:
+        type: digest
+      replayMappingClosureDigest:
+        type: digest
+      replayOntologyClosureDigest:
+        type: digest
+      replayReferenceLockDigest:
+        type: digest
+      replayToolLockDigest:
+        type: digest
+      result:
+        type: ReplayResult
+  EvidenceLedger:
+    definition: detached immutable root that indexes every finalized standalone
+      control record except itself
+    requiredFields:
+      schemaVersion:
+        type: const
+        value: "1.0"
+      slotId:
+        type: recordId
+      ledgerId:
+        type: recordId
+      attemptId:
+        type: recordId
+      plannedInputDigest:
+        type: digest
+      resolvedInputDigest:
+        type: digest
+      iri:
+        type: uri
+        unique: true
+      build:
+        type: BuildEvidenceBinding
+      slotSelections:
+        type: list[EvidenceSlotSelection]
+        minCount: 1
+        uniqueBy: slotId
+        order: slotId
+      entries:
+        type: list[EvidenceLedgerEntry]
+        minCount: 1
+        uniqueBy: slotId
+        order: slotId
+  BuildEvidenceBinding:
+    definition: exact build identity and immutable control-plan bindings shared by
+      every control record
+    requiredFields:
+      buildId:
+        type: digest
+      sourceTreeDigest:
+        type: digest
+      toolLockRef:
+        type: ArtifactRef
+      toolLockDigest:
+        type: digest
+      buildInputsRef:
+        type: ArtifactRef
+      buildInputsDigest:
+        type: digest
+      controlRecordSchemaManifestRef:
+        type: ArtifactRef
+      controlRecordSchemaManifestDigest:
+        type: digest
+      controlRecordPlanRef:
+        type: ArtifactRef
+      controlRecordPlanDigest:
+        type: digest
+  ArtifactBinding:
+    definition: named immutable artifact input with explicit media type and digest
+    requiredFields:
+      name:
+        type: asciiIdentifier
+      artifactRef:
+        type: ArtifactRef
+      mediaType:
+        type: ianaMediaType
+      artifactDigest:
+        type: digest
+  MappingClosureEntry:
+    definition: one semantic mapping and its complete transformation closure inside
+      a materialization run
+    requiredFields:
+      mappingRef:
+        type: uri
+      mappingSourceDigest:
+        type: digest
+      transformationClosureRef:
+        type: ArtifactRef
+      transformationClosureDigest:
+        type: digest
+  MaterializationResult:
+    definition: closed final outcome of one immutable MaterializationRun;
+      orchestration states are not evidence
+    discriminator: outcome
+    variants:
+      completed:
+        requiredFields:
+          outcome:
+            type: const
+            value: completed
+          outputGraph:
+            type: uri
+          outputGraphDigest:
+            type: digest
+          validationReportRef:
+            type: uri
+          validationReportDigest:
+            type: digest
+          outputFactVersionCount:
+            type: nonNegativeSafeInteger
+      failed:
+        requiredFields:
+          outcome:
+            type: const
+            value: failed
+          failureStage:
+            type: asciiIdentifier
+          failureReportRef:
+            type: uri
+          failureReportDigest:
+            type: digest
+          errors:
+            type: list[ExecutionError]
+            minCount: 1
+            order: executionErrorCanonicalTuple
+  CompletedBatchMember:
+    definition: one completed plan/run/graph member of an atomic materialization batch
+    requiredFields:
+      planRef:
+        type: uri
+      runRef:
+        type: uri
+      runRecordDigest:
+        type: digest
+      outputGraph:
+        type: uri
+      outputGraphDigest:
+        type: digest
+  AttemptedBatchMember:
+    definition: one attempted plan member recorded by a failed materialization batch
+    requiredFields:
+      planRef:
+        type: uri
+    optionalFields:
+      runRef:
+        type: uri
+      runRecordDigest:
+        type: digest
+    invariants:
+      - runRef and runRecordDigest are both present or both absent
+  MaterializationContext:
+    definition: closed PIT binding to either one completed materialization graph or
+      one completed batch dataset
+    discriminator: contextKind
+    variants:
+      materializationRun:
+        requiredFields:
+          contextKind:
+            type: const
+            value: materializationRun
+          recordRef:
+            type: uri
+          recordDigest:
+            type: digest
+          targetGraph:
+            type: uri
+          targetGraphDigest:
+            type: digest
+      materializationBatchRun:
+        requiredFields:
+          contextKind:
+            type: const
+            value: materializationBatchRun
+          recordRef:
+            type: uri
+          recordDigest:
+            type: digest
+          targetDataset:
+            type: uri
+          targetDatasetDigest:
+            type: digest
+  KindEvidenceBinding:
+    definition: gate-kind-specific strict schema and machine result artifact
+    requiredFields:
+      schemaRef:
+        type: ArtifactRef
+      schemaDigest:
+        type: digest
+      artifactRef:
+        type: ArtifactRef
+      artifactDigest:
+        type: digest
+  GateCounts:
+    definition: recomputed non-negative counts over the complete gate subject
+      inventory and result
+    requiredFields:
+      discovered:
+        type: nonNegativeSafeInteger
+      executed:
+        type: nonNegativeSafeInteger
+      passed:
+        type: nonNegativeSafeInteger
+      failed:
+        type: nonNegativeSafeInteger
+      skipped:
+        type: nonNegativeSafeInteger
+      pending:
+        type: nonNegativeSafeInteger
+      warnings:
+        type: nonNegativeSafeInteger
+  GateCheck:
+    definition: one actually executed capability check for one independently
+      discovered semantic subject
+    requiredFields:
+      checkId:
+        type: asciiIdentifier
+      subjectId:
+        type: digest
+      subjectRef:
+        type: ArtifactRef
+      subjectDigest:
+        type: digest
+      toolId:
+        type: asciiIdentifier
+      capabilityId:
+        type: asciiIdentifier
+      capabilityRef:
+        type: ArtifactRef
+      capabilityDigest:
+        type: digest
+      entrypointRef:
+        type: ArtifactRef
+      entrypointDigest:
+        type: digest
+      inputDigests:
+        type: list[digest]
+        unique: true
+        order: unsignedUtf8
+      outputDigests:
+        type: list[digest]
+        unique: true
+        order: unsignedUtf8
+      evidenceRef:
+        type: ArtifactRef
+      evidenceDigest:
+        type: digest
+      status:
+        type: enum
+        values:
+          - passed
+          - failed
+    optionalFields:
+      diagnosticCode:
+        type: asciiIdentifier
+  GateViolation:
+    definition: one deterministically sortable semantic violation produced by a
+      failed gate check
+    requiredFields:
+      checkId:
+        type: asciiIdentifier
+      subjectId:
+        type: digest
+      diagnosticCode:
+        type: asciiIdentifier
+      subjectRef:
+        type: ArtifactRef
+      severity:
+        type: enum
+        values:
+          - error
+          - warning
+          - info
+      message:
+        type: nfcString
+        minLength: 1
+    optionalFields:
+      path:
+        type: union[posixRelativePath,uri]
+      constraintRef:
+        type: uri
+      focusNode:
+        type: canonicalNTriplesTerm
+      component:
+        type: union[uri,asciiIdentifier]
+  GateResult:
+    definition: closed final result of one machine-executed validation gate
+    discriminator: outcome
+    variants:
+      passed:
+        requiredFields:
+          outcome:
+            type: const
+            value: passed
+          checks:
+            type: list[GateCheck]
+            minCount: 1
+            uniqueBy: tuple[checkId,subjectId]
+            order: tuple[checkId,subjectId]
+          violations:
+            type: list[GateViolation]
+            exactCount: 0
+          errors:
+            type: list[ExecutionError]
+            exactCount: 0
+      failed:
+        requiredFields:
+          outcome:
+            type: const
+            value: failed
+          checks:
+            type: list[GateCheck]
+            minCount: 1
+            uniqueBy: tuple[checkId,subjectId]
+            order: tuple[checkId,subjectId]
+          violations:
+            type: list[GateViolation]
+            minCount: 1
+            order: gateViolationCanonicalTuple
+          errors:
+            type: list[ExecutionError]
+            exactCount: 0
+      engineFailure:
+        requiredFields:
+          outcome:
+            type: const
+            value: engineFailure
+          checks:
+            type: list[GateCheck]
+            uniqueBy: tuple[checkId,subjectId]
+            order: tuple[checkId,subjectId]
+          violations:
+            type: list[GateViolation]
+            exactCount: 0
+          errors:
+            type: list[ExecutionError]
+            minCount: 1
+            order: executionErrorCanonicalTuple
+  ReplayComparison:
+    definition: one named original-versus-replay artifact digest comparison
+    requiredFields:
+      name:
+        type: asciiIdentifier
+      artifactRef:
+        type: ArtifactRef
+      originalDigest:
+        type: digest
+      replayDigest:
+        type: digest
+      equal:
+        type: boolean
+  ReplayResult:
+    definition: closed final result of deterministic replay comparison
+    discriminator: outcome
+    variants:
+      identical:
+        requiredFields:
+          outcome:
+            type: const
+            value: identical
+          comparisons:
+            type: list[ReplayComparison]
+            minCount: 1
+            uniqueBy: name
+            order: name
+          errors:
+            type: list[ExecutionError]
+            exactCount: 0
+      mismatch:
+        requiredFields:
+          outcome:
+            type: const
+            value: mismatch
+          comparisons:
+            type: list[ReplayComparison]
+            minCount: 1
+            uniqueBy: name
+            order: name
+          errors:
+            type: list[ExecutionError]
+            exactCount: 0
+      engineFailure:
+        requiredFields:
+          outcome:
+            type: const
+            value: engineFailure
+          comparisons:
+            type: list[ReplayComparison]
+            uniqueBy: name
+            order: name
+          errors:
+            type: list[ExecutionError]
+            minCount: 1
+            order: executionErrorCanonicalTuple
+  EvidenceSlotSelection:
+    definition: the one active control-record alternative selected for an
+      evidence-ledger slot
+    requiredFields:
+      slotId:
+        type: recordId
+      recordType:
+        type: enum
+        values:
+          - materializationRun
+          - materializationBatchRun
+          - pitRequest
+          - validationReport
+          - failureReport
+          - replayReport
+      recordId:
+        type: recordId
+      attemptId:
+        type: recordId
+      recordIri:
+        type: uri
+  EvidenceLedgerEntry:
+    definition: content-addressed index entry for one finalized standalone control record
+    requiredFields:
+      slotId:
+        type: recordId
+      recordIri:
+        type: uri
+      recordType:
+        type: enum
+        values:
+          - materializationRun
+          - materializationBatchRun
+          - pitRequest
+          - validationReport
+          - failureReport
+          - replayReport
+      mediaType:
+        type: const
+        value: application/json
+      canonicalization:
+        type: const
+        value: RFC8785-JCS
+      byteLength:
+        type: nonNegativeSafeInteger
+      recordDigest:
+        type: digest
+  ExecutionError:
+    definition: deterministically sortable execution failure diagnostic embedded in
+      a failed control record
+    requiredFields:
+      code:
+        type: asciiIdentifier
+      stage:
+        type: asciiIdentifier
+      message:
+        type: nfcString
+        minLength: 1
+    optionalFields:
+      sourcePath:
+        type: posixRelativePath
+      constraintRef:
+        type: uri
+      causeDigest:
+        type: digest
+  InputDatasetSnapshot:
+    definition: immutable embedded binding of one input dataset to exact snapshot bytes
+    requiredFields:
+      dataset:
+        type: uri
+      snapshotRef:
+        type: ArtifactRef
+      artifactDigest:
+        type: digest
+      schemaDigest:
+        type: digest
+      snapshotTime:
+        type: instant
+    optionalFields:
+      rowCount:
+        type: nonNegativeSafeInteger
+  IngestionPipelineDefinition:
+    definition: a meta-classifier for ETL/ELT workflows that materialize ontology
+      instances from data sources
+    purpose: Orchestrates data extraction, transformation, validation, and loading
+    deprecated: true
+    deprecationReason: Mixed declarative mapping with runtime orchestration,
+      violating Layer 4 boundaries. Use MaterializationPlanDefinition for
+      mapping specifications and external orchestration tools for runtime
+      execution.
+    deprecatedSince: 0.3.0
+    removalVersion: 0.4.0
+    migrationPath: Convert to MaterializationPlanDefinition for mapping logic; move
+      schedule/retry/monitoring to external orchestration layer (Airflow,
+      Prefect, etc.)
+    requiredFields:
+      iri:
+        type: uri
+        unique: true
+      label:
+        type: string
+        required: true
       stages:
-        type: "list[PipelineStage]"
+        type: list[PipelineStage]
         minSize: 1
-        description: "ordered stages in the pipeline"
-
+        description: ordered stages in the pipeline
       schedule:
         type: ScheduleSpec
-        description: "when and how often to run"
-
+        description: when and how often to run
     optionalFields:
       errorHandling:
-        strategy: {type: enum, values: [failFast, continueOnError, quarantine]}
-        notificationChannels: {type: "list[string]"}
-
+        strategy:
+          type: enum
+          values:
+            - failFast
+            - continueOnError
+            - quarantine
+        notificationChannels:
+          type: list[string]
       monitoring:
         type: MonitoringSpec
-
       owner:
         type: string
-
     structures:
       PipelineStage:
-        id: {type: string, required: true}
-        type: {type: enum, values: [extract, transform, validate, load, notify], required: true}
-        description: {type: string}
-        implementation: {type: string, description: "code or tool reference"}
-        dependencies: {type: "list[string]", description: "stage IDs that must complete first"}
-        timeout: {type: duration}
-        retryPolicy: {type: "Layer3:RetryPolicy"}
-
+        id:
+          type: string
+          required: true
+        type:
+          type: enum
+          values:
+            - extract
+            - transform
+            - validate
+            - load
+            - notify
+          required: true
+        description:
+          type: string
+        implementation:
+          type: string
+          description: code or tool reference
+        dependencies:
+          type: list[string]
+          description: stage IDs that must complete first
+        timeout:
+          type: duration
+        retryPolicy:
+          type: Layer3:RetryPolicy
       ScheduleSpec:
-        type: {type: enum, values: [cron, interval, eventDriven, manual], required: true}
-        cronExpression: {type: string, example: "0 2 * * *"}
-        interval: {type: duration, example: "PT1H"}
-        triggerEvent: {type: string, description: "event type for eventDriven"}
-
+        type:
+          type: enum
+          values:
+            - cron
+            - interval
+            - eventDriven
+            - manual
+          required: true
+        cronExpression:
+          type: string
+          example: 0 2 * * *
+        interval:
+          type: duration
+          example: PT1H
+        triggerEvent:
+          type: string
+          description: event type for eventDriven
       MonitoringSpec:
-        metricsEndpoint: {type: uri}
+        metricsEndpoint:
+          type: uri
         alertThresholds:
-          errorRate: {type: decimal, example: 0.01}
-          latency: {type: duration, example: "PT10M"}
-          recordsProcessed: {type: integer, example: 1000}
-
-  # ==================== Examples (Updated for ADR-011/012) ====================
+          errorRate:
+            type: decimal
+            example: 0.01
+          latency:
+            type: duration
+            example: PT10M
+          recordsProcessed:
+            type: integer
+            example: 1000
   Examples:
-
     EquityPriceMapping:
       semanticMapping:
-        iri: "fin:mapping:EquityEODPrice"
-        label: "Equity End-of-Day Price Observation Mapping"
-
+        iri: fin:mapping:EquityEODPrice
+        label: Equity End-of-Day Price Observation Mapping
         source:
           datasets:
-            - {dataset: "datasource:bloomberg/equity_prices_eod", alias: "prices"}
+            - dataset: datasource:bloomberg/equity_prices_eod
+              alias: prices
           rowSet:
             filters:
-              - {dataset: "prices", field: "security_type", operator: "=", value: "EQUITY"}
-
-        targetType: "fin:PriceObservation"
+              - dataset: prices
+                field: security_type
+                operator: =
+                value: EQUITY
+        targetType: fin:PriceObservation
         mappingType: directTable
-
         slotMappings:
           - target:
               slotType: participantRole
-              targetAssociation: "fin:PriceObservation"
-              targetRole: "observedInstrument"
+              targetAssociation: fin:PriceObservation
+              targetRole: observedInstrument
             value:
               bindingType: transformation
-              transformationRef: "data:LookupInstrumentByISIN#v1.0.0"
+              transformationRef: data:LookupInstrumentByISIN#v1.0.0
               inputs:
                 isin:
                   bindingType: directField
-                  source: {dataset: "prices", field: "isin"}
-
+                  source:
+                    dataset: prices
+                    field: isin
           - target:
               slotType: participantRole
-              targetAssociation: "fin:PriceObservation"
-              targetRole: "venue"
+              targetAssociation: fin:PriceObservation
+              targetRole: venue
             value:
               bindingType: transformation
-              transformationRef: "data:LookupMarketByMIC#v1.0.0"
+              transformationRef: data:LookupMarketByMIC#v1.0.0
               inputs:
                 mic:
                   bindingType: directField
-                  source: {dataset: "prices", field: "exchange_code"}
-
+                  source:
+                    dataset: prices
+                    field: exchange_code
           - target:
               slotType: attribute
-              targetAttribute: "fin:quotedPrice"
+              targetAttribute: fin:quotedPrice
             value:
               bindingType: transformation
-              transformationRef: "data:CreateMoney#v2.1.0"
+              transformationRef: data:CreateMoney#v2.1.0
               inputs:
                 amount:
                   bindingType: directField
-                  source: {dataset: "prices", field: "close_price"}
+                  source:
+                    dataset: prices
+                    field: close_price
                 currency:
                   bindingType: directField
-                  source: {dataset: "prices", field: "currency_code"}
-
+                  source:
+                    dataset: prices
+                    field: currency_code
           - target:
               slotType: attribute
-              targetAttribute: "fin:tradedVolume"
+              targetAttribute: fin:tradedVolume
             value:
               bindingType: transformation
-              transformationRef: "data:CreateQuantity#v1.0.0"
+              transformationRef: data:CreateQuantity#v1.0.0
               inputs:
                 value:
                   bindingType: directField
-                  source: {dataset: "prices", field: "volume"}
+                  source:
+                    dataset: prices
+                    field: volume
                 unit:
                   bindingType: literal
-                  value: "shares"
-
+                  value: shares
         identity:
-          logicalKey:
-            - {dataset: "prices", field: "isin"}
-            - {dataset: "prices", field: "exchange_code"}
-            - {dataset: "prices", field: "trade_date"}
-          iriTemplate: "https://moonweave.ai/observation/price/{isin}/{exchange_code}/{trade_date}"
-          namespace: "fin-obs"
-
+          contractRef: data:PriceObservationIdentityContract
+          logicalKeyBindings:
+            instrument:
+              bindingType: directField
+              source:
+                dataset: prices
+                field: isin
+            venue:
+              bindingType: directField
+              source:
+                dataset: prices
+                field: exchange_code
+          versionKeyBindings:
+            observationDate:
+              bindingType: directField
+              source:
+                dataset: prices
+                field: trade_date
+          namespace: fin-obs
         temporal:
-          patternRef: "ax-pattern:TemporalFact"
+          patternRef: ax-pattern:TemporalFact
           validTime:
             from:
               bindingType: directField
-              source: {dataset: "prices", field: "trade_date_close"}
+              source:
+                dataset: prices
+                field: trade_date_close
             to:
               bindingType: literal
               value: null
           knowledgeTime:
             from:
               bindingType: runtimeContext
-              contextField: "assertionTime"
+              contextField: assertionTime
             closePolicy: closePreviousVersion
           availabilityTime:
             from:
               bindingType: directField
-              source: {dataset: "prices", field: "publish_timestamp"}
-            note: "price is consumable once the source publishes; no embargo for this feed"
-
+              source:
+                dataset: prices
+                field: publish_timestamp
+            note: price is consumable once the source publishes; no embargo for this feed
         provenance:
           sourceSystem:
             bindingType: literal
-            value: "Bloomberg BPIPE"
+            value: Bloomberg BPIPE
           acquisitionTime:
             bindingType: runtimeContext
-            contextField: "referenceTime"
-
+            contextField: referenceTime
         validationRules:
           - id: isinRequired
             type: required
-            expression: "isin IS NOT NULL"
+            expression: isin IS NOT NULL
             failureAction: reject
             severity: error
-
           - id: pricePositive
             type: range
-            expression: "close_price > 0"
+            expression: close_price > 0
             failureAction: reject
             severity: error
-
     HoldingMappingWithJoin:
       semanticMapping:
-        iri: "fin:mapping:PortfolioHoldingJoined"
-        label: "Portfolio Holding with Account Details (Multi-Table Join)"
-
+        iri: fin:mapping:PortfolioHoldingJoined
+        label: Portfolio Holding with Account Details (Multi-Table Join)
         source:
           datasets:
-            - {dataset: "datasource:internal/portfolio_positions", alias: "pos"}
-            - {dataset: "datasource:internal/accounts", alias: "acc"}
+            - dataset: datasource:internal/portfolio_positions
+              alias: pos
+            - dataset: datasource:internal/accounts
+              alias: acc
           rowSet:
             joins:
-              - leftDataset: "pos"
-                rightDataset: "acc"
+              - leftDataset: pos
+                rightDataset: acc
                 joinType: inner
                 conditions:
-                  - {leftField: "account_id", operator: "=", rightField: "account_id"}
-
-        targetType: "fin:Holding"
+                  - leftField: account_id
+                    operator: =
+                    rightField: account_id
+        targetType: fin:Holding
         mappingType: joinedTables
-
         slotMappings:
           - target:
               slotType: participantRole
-              targetAssociation: "fin:Holding"
-              targetRole: "account"
+              targetAssociation: fin:Holding
+              targetRole: account
             value:
               bindingType: transformation
-              transformationRef: "data:LookupAccountByID#v1.0.0"
+              transformationRef: data:LookupAccountByID#v1.0.0
               inputs:
                 accountId:
                   bindingType: directField
-                  source: {dataset: "pos", field: "account_id"}
-
+                  source:
+                    dataset: pos
+                    field: account_id
           - target:
               slotType: participantRole
-              targetAssociation: "fin:Holding"
-              targetRole: "instrument"
+              targetAssociation: fin:Holding
+              targetRole: instrument
             value:
               bindingType: transformation
-              transformationRef: "data:LookupInstrumentByISIN#v1.0.0"
+              transformationRef: data:LookupInstrumentByISIN#v1.0.0
               inputs:
                 isin:
                   bindingType: directField
-                  source: {dataset: "pos", field: "isin"}
-
+                  source:
+                    dataset: pos
+                    field: isin
           - target:
               slotType: attribute
-              targetAttribute: "fin:quantity"
+              targetAttribute: fin:quantity
             value:
               bindingType: directField
-              source: {dataset: "pos", field: "quantity"}
-
+              source:
+                dataset: pos
+                field: quantity
           - target:
               slotType: attribute
-              targetAttribute: "fin:costBasis"
+              targetAttribute: fin:costBasis
             value:
               bindingType: transformation
-              transformationRef: "data:CreateMoney#v2.1.0"
+              transformationRef: data:CreateMoney#v2.1.0
               inputs:
                 amount:
                   bindingType: directField
-                  source: {dataset: "pos", field: "avg_cost"}
+                  source:
+                    dataset: pos
+                    field: avg_cost
                 currency:
                   bindingType: directField
-                  source: {dataset: "acc", field: "base_currency"}
-
+                  source:
+                    dataset: acc
+                    field: base_currency
         identity:
-          logicalKey:
-            - {dataset: "pos", field: "account_id"}
-            - {dataset: "pos", field: "isin"}
-          versionKey:
-            - {dataset: "pos", field: "effective_date"}
-          iriTemplate: "https://moonweave.ai/holding/{account_id}/{isin}"
-
+          contractRef: data:HoldingIdentityContract
+          logicalKeyBindings:
+            account:
+              bindingType: directField
+              source:
+                dataset: pos
+                field: account_id
+            instrument:
+              bindingType: directField
+              source:
+                dataset: pos
+                field: isin
+          versionKeyBindings:
+            effectiveDate:
+              bindingType: directField
+              source:
+                dataset: pos
+                field: effective_date
         temporal:
-          patternRef: "ax-pattern:TemporalFact"
+          patternRef: ax-pattern:TemporalFact
           validTime:
             from:
               bindingType: directField
-              source: {dataset: "pos", field: "effective_date"}
+              source:
+                dataset: pos
+                field: effective_date
             to:
               bindingType: directField
-              source: {dataset: "pos", field: "expiration_date"}
+              source:
+                dataset: pos
+                field: expiration_date
           knowledgeTime:
             from:
               bindingType: runtimeContext
-              contextField: "assertionTime"
+              contextField: assertionTime
             closePolicy: explicitOnly
-            note: "knowledge time is the platform assertion time (MaterializationRun.assertionTime), NOT the source updated_at field (ADR-012)"
+            note: knowledge time is the platform assertion time
+              (MaterializationRun.assertionTime), NOT the source updated_at
+              field (ADR-012)
           availabilityTime:
             from:
               bindingType: directField
-              source: {dataset: "pos", field: "updated_at"}
-            note: "internal position snapshot; available to consumers once the source row is updated (no embargo)"
-
-  # ==================== Validation Rules (ADR-011/012 Compliant) ====================
+              source:
+                dataset: pos
+                field: updated_at
+            note: internal position snapshot; available to consumers once the source row is
+              updated (no embargo)
   ValidationRules:
-    - "SemanticMappingDefinition.source must be SourceBinding (not sourceDataset uri)"
-    - "SemanticMappingDefinition.slotMappings (not fieldMappings) required for attribute mapping"
-    - "SemanticMappingDefinition must reference valid DatasetDefinition and ObjectTypeDefinition/AssociationTypeDefinition"
-    - "SlotMapping.target must be valid TargetSlot variant (attribute, participantRole, relation, patternField)"
-    - "SlotMapping.value must be valid ValueBinding variant (directField, transformation, literal, runtimeContext)"
-    - "TargetSlot.targetAttribute must reference valid AttributeTypeDefinition from Layer 1"
-    - "TargetSlot.targetAssociation must reference valid AssociationTypeDefinition from Layer 1"
-    - "TargetSlot.targetRole must match ParticipantRole.id in referenced AssociationTypeDefinition"
-    - "TargetSlot.targetRelation must reference valid RelationTypeDefinition from Layer 1"
-    - "TargetSlot.targetPattern must reference valid PatternDefinition from Layer 2"
-    - "IdentitySpec.logicalKey must use FieldReference with dataset alias from SourceBinding"
-    - "IdentitySpec.iriTemplate must produce stable, reproducible IRIs"
-    - "TemporalMappingSpec must use TimeAxisBinding (not recordedAtSource: currentTimestamp)"
-    - "When temporal.patternRef = TemporalFact, validTime, knowledgeTime, AND availabilityTime MUST all be present (ADR-012 three-axis completeness; text rules are a contract — enforced by the domain-ontology validator)"
-    - "knowledgeTime.from SHOULD use bindingType: runtimeContext (assertionTime); using a source field as knowledgeTime is discouraged unless it provably equals the platform assertion time (ADR-012)"
-    - "TemporalMappingSpec.patternRef must reference valid temporal pattern from Layer 2"
-    - "TimeAxisBinding.from and TimeAxisBinding.to must use ValueBinding (no CURRENT_TIMESTAMP)"
-    - "RuntimeContextBinding.contextField must reference valid MaterializationRun field (assertionTime, referenceTime, runId)"
-    - "TransformationDefinition.version required (semantic versioning)"
-    - "TransformationDefinition.implementationDigest required (SHA-256)"
-    - "TransformationDefinition.inputs required (map[string, TypeReference])"
-    - "TransformationDefinition.outputs required (TypeReference)"
-    - "TransformationDefinition.testCases required with minCount >= 1"
-    - "TransformationBinding.inputs keys must match TransformationDefinition.inputs keys"
-    - "MaterializationPlanDefinition.semanticMappings must all target same OntologyModuleDefinition"
-    - "MaterializationPlanDefinition must NOT contain watermark field (moved to MaterializationRun)"
-    - "MaterializationRun.assertionTime and referenceTime required for reproducible queries"
-    - "MaterializationRun.inputSnapshotDigest required for reproducibility"
-    - "Field.semanticMapping PROHIBITED (deleted in v0.5)"
-    - "SemanticFieldMapping type PROHIBITED (deleted in v0.5)"
-    - "TransformationReference type PROHIBITED (deleted in v0.5)"
-    - "FieldMapping type PROHIBITED (replaced by SlotMapping in v0.5)"
-    - "SemanticMappingDefinition.sourceDataset PROHIBITED (replaced by source: SourceBinding in v0.5)"
-    - "SemanticMappingDefinition.fieldMappings PROHIBITED (renamed to slotMappings in v0.5)"
-    - "TemporalMappingSpec.recordedAtSource: currentTimestamp PROHIBITED per ADR-012"
-    - "Multiple SlotMappings targeting same attribute must have conflict resolution strategy in plan"
-    - "IngestionPipelineDefinition is deprecated; use MaterializationPlanDefinition + external orchestration"
-    - "TemporalMapping field references must exist in source dataset schema"
-    - "Multiple SemanticMappings for same targetType must have non-overlapping filters or priority"
-    - "Transformation artifacts must be version-controlled and reproducible"
-    - "DataSource credentials must never be stored in mapping definitions (use credentialsRef)"
-    - "Materialization must emit audit events for Layer 2 Provenance tracking"
-    - "PITValidationRequest.materializationRun binds $referenceTime for NoFutureKnowledge (ADR-012)"
-    - "PITValidationRequest.asOfAvailable binds $queryTime for AvailabilityBeforeUse (ADR-012)"
-    - "PITValidationRequest.targetGraph is the data to validate; constraintFilter defaults to all runtime-parameterized constraints"
-
-  # ==================== Implementation Notes ====================
+    - SemanticMappingDefinition.source must be SourceBinding (not sourceDataset
+      uri)
+    - SemanticMappingDefinition.slotMappings (not fieldMappings) required for
+      attribute mapping
+    - SemanticMappingDefinition must reference valid DatasetDefinition and
+      ObjectTypeDefinition/AssociationTypeDefinition
+    - SlotMapping.target must be valid TargetSlot variant (attribute,
+      participantRole, relation, patternField)
+    - SlotMapping.value must be valid ValueBinding variant (directField,
+      transformation, literal, runtimeContext)
+    - TargetSlot.targetAttribute must reference valid AttributeTypeDefinition
+      from Layer 1
+    - TargetSlot.targetAssociation must reference valid
+      AssociationTypeDefinition from Layer 1
+    - TargetSlot.targetRole must match ParticipantRole.id in referenced
+      AssociationTypeDefinition
+    - TargetSlot.targetRelation must reference valid RelationTypeDefinition from
+      Layer 1
+    - TargetSlot.targetPattern must reference valid PatternDefinition from Layer
+      2
+    - IdentitySpec.contractRef must resolve the unique
+      TargetIdentityContractDefinition registered for the mapping target
+    - IdentitySpec.logicalKeyBindings and versionKeyBindings keys must exactly
+      equal the selected contract component names
+    - ReferenceIdentityBinding.targetMappingRef and nested keyBindings must
+      resolve an acyclic visible target mapping
+    - "TemporalMappingSpec must use TimeAxisBinding (not recordedAtSource:
+      currentTimestamp)"
+    - When temporal.patternRef = TemporalFact, validTime, knowledgeTime, AND
+      availabilityTime MUST all be present (ADR-012 three-axis completeness;
+      text rules are a contract — enforced by the domain-ontology validator)
+    - "knowledgeTime.from SHOULD use bindingType: runtimeContext
+      (assertionTime); using a source field as knowledgeTime is discouraged
+      unless it provably equals the platform assertion time (ADR-012)"
+    - TemporalMappingSpec.patternRef must reference valid temporal pattern from
+      Layer 2
+    - TimeAxisBinding.from and TimeAxisBinding.to must use ValueBinding (no
+      CURRENT_TIMESTAMP)
+    - RuntimeContextBinding.contextField must be exactly one of
+      MaterializationRun.iri, assertionTime, referenceTime, or runId;
+      generatingContextRef must bind iri rather than an adapter-supplied literal
+    - TransformationDefinition.version required (semantic versioning)
+    - TransformationDefinition.implementationDigest required (SHA-256)
+    - TransformationDefinition.inputs required (map[string, TypeReference])
+    - TransformationDefinition.outputs required (TypeReference)
+    - TransformationDefinition.testCases required with minCount >= 1
+    - TransformationBinding.inputs keys must match
+      TransformationDefinition.inputs keys
+    - MaterializationPlanDefinition.semanticMappings must all target same
+      OntologyModuleDefinition
+    - MaterializationPlanDefinition and MaterializationRun must NOT contain
+      watermark or operational telemetry
+    - MaterializationRun.assertionTime and referenceTime are immutable explicit
+      build inputs
+    - MaterializationRun source, mapping, ontology, reference, tool, and
+      snapshot closure digests must recompute
+    - MaterializationRun.result is exactly completed or failed;
+      pending/running/partial are orchestration-only
+    - Field.semanticMapping PROHIBITED (deleted in v0.5)
+    - SemanticFieldMapping type PROHIBITED (deleted in v0.5)
+    - TransformationReference type PROHIBITED (deleted in v0.5)
+    - FieldMapping type PROHIBITED (replaced by SlotMapping in v0.5)
+    - "SemanticMappingDefinition.sourceDataset PROHIBITED (replaced by source:
+      SourceBinding in v0.5)"
+    - SemanticMappingDefinition.fieldMappings PROHIBITED (renamed to
+      slotMappings in v0.5)
+    - "TemporalMappingSpec.recordedAtSource: currentTimestamp PROHIBITED per
+      ADR-012"
+    - Multiple SlotMappings targeting same attribute must have conflict
+      resolution strategy in plan
+    - IngestionPipelineDefinition is deprecated; use
+      MaterializationPlanDefinition + external orchestration
+    - TemporalMapping field references must exist in source dataset schema
+    - Multiple SemanticMappings for same targetType must have non-overlapping
+      filters or priority
+    - Transformation artifacts must be version-controlled and reproducible
+    - DataSource credentials must never be stored in mapping definitions (use
+      credentialsRef)
+    - Materialization must emit audit events for Layer 2 Provenance tracking
+    - PITValidationRequest.materializationContext binds a completed Run graph or
+      completed Batch dataset and its recomputed digest
+    - PITValidationRequest.asOfAvailable binds $queryTime for
+      AvailabilityBeforeUse (ADR-012)
+    - PITValidationRequest rejects failed, stale, substituted, or
+      canonicalization-mismatched materialization context
   ImplementationNotes:
-    - "ADR-011: SemanticMappingDefinition is the ONLY truth source for semantic mappings"
-    - "ADR-011: Field-level mappings (Field.semanticMapping) deleted - violated single truth source"
+    - "ADR-011: SemanticMappingDefinition is the ONLY truth source for semantic
+      mappings"
+    - "ADR-011: Field-level mappings (Field.semanticMapping) deleted - violated
+      single truth source"
     - "ADR-011: SourceBinding enables multi-table joins, filters, aggregations"
     - "ADR-011: Static definitions (plans) separated from runtime state (runs)"
-    - "ADR-012: Three-axis temporal model (valid/knowledge/availability) with explicit bindings"
-    - "ADR-012: No CURRENT_TIMESTAMP - use MaterializationRun.assertionTime or referenceTime"
-    - "ADR-012: MaterializationRun provides immutable time context for reproducible queries"
-    - "Layer 4 is the ONLY layer that references physical data structures"
-    - "Layers 1-3 remain independent of data storage choices"
-    - "SemanticMappingDefinition enables multiple physical representations of same concept"
-    - "IdentitySpec ensures stable IRIs across materialization runs"
-    - "TemporalMappingSpec ensures Point-in-Time query correctness"
-    - "ValidationRules enforce data quality before materializing ontology instances"
-    - "DataLineage enables impact analysis and debugging"
-    - "Transformation code must be testable, version-controlled, with rollback capability"
-    - "All transformations require explicit version, digest, inputs, outputs, and test cases"
-    - "ValueBinding union type supports direct fields, transformations, literals, and runtime context"
-    - "SlotMapping replaces FieldMapping to support attributes, roles, relations, and pattern fields"
+    - "ADR-012: Three-axis temporal model (valid/knowledge/availability) with
+      explicit bindings"
+    - "ADR-012: No CURRENT_TIMESTAMP - use MaterializationRun.assertionTime or
+      referenceTime"
+    - "ADR-012: MaterializationRun provides immutable time context for
+      reproducible queries"
+    - Layer 4 is the ONLY layer that references physical data structures
+    - Layers 1-3 remain independent of data storage choices
+    - SemanticMappingDefinition enables multiple physical representations of
+      same concept
+    - IdentitySpec ensures stable IRIs across materialization runs
+    - TemporalMappingSpec ensures Point-in-Time query correctness
+    - ValidationRules enforce data quality before materializing ontology
+      instances
+    - DataLineage enables impact analysis and debugging
+    - Transformation code must be testable, version-controlled, with rollback
+      capability
+    - All transformations require explicit version, digest, inputs, outputs, and
+      test cases
+    - ValueBinding union type supports direct fields, transformations, literals,
+      and runtime context
+    - SlotMapping replaces FieldMapping to support attributes, roles, relations,
+      and pattern fields

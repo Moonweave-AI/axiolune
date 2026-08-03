@@ -1,30 +1,58 @@
-# fin-foundation â€” Competency Questions (CQ)
-# M2-PLAN Â§2.1: CQ drives scope and verifiability. Each CQ must be convertible to a query/probe.
+# fin-foundation â€?Competency Questions
+# Module: fin-foundation | Version: 0.3.0
 
 cqs:
-  - id: "CQ-F1"
-    question: "Given an ISIN and a LEI, do they identify the same financial instrument and the same issuer?"
-    scope: "identity resolution across identifier types"
-    expectedResult: "returns the matching Instrument and LegalEntity, or an explicit 'no match' with conflict reason"
-    negativeExample: "invalid ISIN checksum or mismatched LEI-instrument pair rejected"
-    dependsOn: ["ISIN", "LEI", "FinancialInstrument", "LegalEntity"]
-    riskLevel: "high"
-    status: "draft"
+  - id: CQ-F1
+    question: Given an ISIN and a LEI, do they identify the same financial instrument and the same issuer?
+    businessContext: Identity resolution across identifier types at a point in time
+    scopeConstraints:
+      - ISIN checksum and scheme binding must validate
+      - LEI must identify LegalEntity, not conflated with instrument
+    expectedResult: matching Instrument and LegalEntity IRIs, or explicit no-match with reason
+    negativeExample: invalid ISIN checksum or LEI-instrument mismatch rejected
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/foundation/IdentifierScheme
+      - https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+      - https://axiolune.ai/ontology/finance/foundation/Party
+    riskLevel: high
+    status: active
 
-  - id: "CQ-F2"
-    question: "What currencies are valid for a given jurisdiction?"
-    scope: "currency-jurisdiction mapping"
-    expectedResult: "returns a list of valid ISO 4217 currency codes for the jurisdiction"
-    negativeExample: "invalid or expired currency code rejected"
-    dependsOn: ["Currency", "Jurisdiction"]
-    riskLevel: "medium"
-    status: "draft"
+  - id: CQ-F2
+    question: What currencies are valid for a given jurisdiction at a given valid time?
+    businessContext: Currency eligibility for accounts, listings, and valuations
+    expectedResult: list of ISO 4217 currency codes valid for jurisdiction interval
+    negativeExample: expired or unknown currency code rejected
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/foundation/Currency
+      - https://axiolune.ai/ontology/finance/foundation/Jurisdiction
+    riskLevel: medium
+    status: active
 
-  - id: "CQ-F3"
-    question: "Is a given MIC code active, and which trading venue does it identify?"
-    scope: "market identification"
-    expectedResult: "returns the TradingVenue identified by the MIC, with its market status"
-    negativeExample: "expired or unknown MIC code rejected"
-    dependsOn: ["MIC", "TradingVenue"]
-    riskLevel: "medium"
-    status: "draft"
+  - id: CQ-F3
+    question: Is a given MIC code active, and which trading venue does it identify?
+    businessContext: Venue identification for routing and rule applicability
+    expectedResult: TradingVenue IRI with market status for MIC at as-of
+    negativeExample: expired or malformed MIC rejected (ISO 10383 pattern)
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/foundation/IdentifierScheme
+      - https://axiolune.ai/ontology/finance/market-structure/TradingVenue
+    riskLevel: medium
+    status: active
+
+  - id: CQ-F4
+    question: >-
+      Can two identifier assignments for the same scheme and subject coexist without violating
+      uniqueness scope?
+    businessContext: Flights-style identity integrity â€?one canonical identifier per scheme scope
+    expectedResult: conflict report or confirmed single active assignment
+    negativeExample: duplicate active ISIN assignment for different instruments rejected
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/foundation/IdentifierAssignment
+      - https://axiolune.ai/ontology/finance/foundation/IdentifierScheme
+    testFixtures:
+      - fixture: foundation-account-identity-positive
+        expectedOutcome: single assignment
+      - fixture: foundation-duplicate-isin-negative
+        expectedOutcome: rejected
+    riskLevel: high
+    status: active

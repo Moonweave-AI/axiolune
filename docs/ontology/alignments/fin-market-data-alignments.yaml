@@ -1,83 +1,27 @@
-# fin-market-data — FIBO Alignments
-# M2-PLAN §2.6: Market data has no direct FIBO equivalent (gap in FIBO).
-# FIBO has MD (Market Data) but only abstract concepts, no observation/quote/trade/bar classes.
+module: fin-market-data
+version: 0.3.0
 alignments:
-  - localIri: https://axiolune.ai/ontology/finance/market-data/PriceObservation
-    targetIri: https://spec.edmcouncil.org/fibo/ontology/MD/TemporalCore/MarketDataSet
-    relation: skos:relatedMatch
-    sourceRelease:
-      vocabulary: FIBO
-      release: local-evidence-bundle
-      artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
-      maturity: Provisional
-      lockRef: fibo-local-evidence
-      claimedReleaseLabel: 2026Q1
-      releaseNote: >-
-        Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
-        maturity.
-    rationale: >-
-      FIBO MD/TemporalCore/MarketDataSet is an abstract temporal data set concept; Axiolune PriceObservation is a
-      concrete observation with instrument/venue/price/kind/three-axis-time. Related but not subclass (FIBO has no
-      concrete observation class).
-    verification:
-      status: proposed
-    note: >-
-      FIBO MD ontology is Provisional maturity and lacks concrete quote/trade/bar classes. Axiolune fills this gap with
-      nautilus_trader-informed design.
-  - localIri: https://axiolune.ai/ontology/finance/market-data/QuoteObservation
-    targetIri: https://spec.edmcouncil.org/fibo/ontology/MD/TemporalCore/MarketDataSet
-    relation: skos:relatedMatch
-    sourceRelease:
-      vocabulary: FIBO
-      release: local-evidence-bundle
-      artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
-      maturity: Provisional
-      lockRef: fibo-local-evidence
-      claimedReleaseLabel: 2026Q1
-      releaseNote: >-
-        Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
-        maturity.
-    rationale: 'Same as PriceObservation: FIBO has no concrete QuoteObservation class.'
-    verification:
-      status: proposed
-  - localIri: https://axiolune.ai/ontology/finance/market-data/TradeObservation
-    targetIri: https://spec.edmcouncil.org/fibo/ontology/MD/TemporalCore/MarketDataSet
-    relation: skos:relatedMatch
-    sourceRelease:
-      vocabulary: FIBO
-      release: local-evidence-bundle
-      artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
-      maturity: Provisional
-      lockRef: fibo-local-evidence
-      claimedReleaseLabel: 2026Q1
-      releaseNote: >-
-        Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
-        maturity.
-    rationale: 'Same as PriceObservation: FIBO has no concrete TradeObservation class.'
-    verification:
-      status: proposed
-  - localIri: https://axiolune.ai/ontology/finance/market-data/Bar
-    targetIri: https://spec.edmcouncil.org/fibo/ontology/MD/TemporalCore/MarketDataSet
-    relation: skos:relatedMatch
-    sourceRelease:
-      vocabulary: FIBO
-      release: local-evidence-bundle
-      artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
-      maturity: Provisional
-      lockRef: fibo-local-evidence
-      claimedReleaseLabel: 2026Q1
-      releaseNote: >-
-        Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
-        maturity.
-    rationale: 'Same as PriceObservation: FIBO has no concrete Bar (OHLCV) class.'
-    verification:
-      status: proposed
-notes: |
-  FIBO MD (Market Data) ontology status (2026Q1):
-  - Maturity: Provisional (not Release)
-  - Coverage: Abstract temporal data set concepts, no concrete observation classes
-  - Gap: No Quote/Trade/Bar/Tick classes; no bid/ask structure; no OHLCV bar
-  - Axiolune strategy: Model market-data natively based on nautilus_trader/Lean evidence,
-    use skos:relatedMatch to FIBO MD abstract concepts, document gap in rationale.
-  - When FIBO MD reaches Release maturity with concrete classes, reevaluate alignment
-    and consider rdfs:subClassOf if definitions converge.
+  - targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/InstrumentPricing/SecurityPrice
+    relation: skos:closeMatch
+    sourceRelease: FIBO 2026Q1
+    rationale: PriceObservation extends FIBO SecurityPrice with ADR-012 three-axis temporal and provenance patterns.
+    reviewStatus: accepted
+    bibliographyRef: fibo-local
+  - targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/InstrumentPricing/CollectionOfSecurityPrices
+    relation: skos:closeMatch
+    sourceRelease: FIBO 2026Q1
+    rationale: Bar aggregates map to FIBO price collections while preserving OHLCV interval semantics.
+    reviewStatus: accepted
+    bibliographyRef: fibo-local
+  - targetIri: FIX::Quote
+    relation: skos:closeMatch
+    sourceRelease: internal
+    rationale: QuoteObservation bid/ask structure aligns with FIX quote message fields for market data interop.
+    reviewStatus: accepted
+    bibliographyRef: nautilus-trader
+  - targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/Trade
+    relation: skos:closeMatch
+    sourceRelease: FIBO 2026Q1
+    rationale: TradeObservation records executed market trades distinct from platform Execution in orders-execution.
+    reviewStatus: accepted
+    bibliographyRef: fibo-local

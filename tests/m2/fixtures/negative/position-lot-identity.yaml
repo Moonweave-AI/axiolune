@@ -1,0 +1,481 @@
+schemaVersion: "1.0"
+contract: https://axiolune.ai/tests/m2/contracts/position-lot-identity
+
+costBasisPrecisionArtifact: &costBasisPrecisionArtifact
+  ref: https://axiolune.ai/policies/cost-basis-precision/1
+  digest: sha256:c3d4177149a5c5dd823176ebba5294a2580e60944f24599053c863856e73c6e4
+  payload:
+    amountScale: 6
+    arithmetic: exact-rational
+    intermediate: unbounded-integer
+    policyId: axiolune-cost-basis-precision-v1
+    quantityScale: 6
+    rateScale: 6
+    schemaVersion: "1.0"
+costBasisRoundingArtifact: &costBasisRoundingArtifact
+  ref: https://axiolune.ai/policies/cost-basis-rounding/1
+  digest: sha256:ff25c303a20c66d54664a4b7a2a36d97f323bee4964750419ea4c9ed1735a60d
+  payload:
+    mode: half-even
+    outputScale: 6
+    policyId: axiolune-cost-basis-rounding-v1
+    schemaVersion: "1.0"
+    stages: [opening-direct-unit-product, fee-allocation, remaining-basis-proration, fx-conversion]
+calculationContextPayload: &calculationContextPayload
+  completedAt: "2025-01-01T00:00:00Z"
+  contextId: position-lot-opening-v1
+  schemaVersion: "1.0"
+  status: completed
+closedListing: &closedListing
+  versionIri: https://axiolune.ai/data/listing/XNAS-AAPL/version/sha256-closed-listing
+  instrument: https://axiolune.ai/data/instrument/AAPL
+  quoteCurrency: USD
+  validFrom: "2025-01-01T00:00:00Z"
+  knowledgeFrom: "2025-01-01T00:00:01Z"
+  availableFrom: "2025-01-01T00:00:02Z"
+closedQuotation: &closedQuotation
+  versionIri: https://axiolune.ai/data/quotation/XNAS-AAPL/version/sha256-closed-quotation
+  instrument: https://axiolune.ai/data/instrument/AAPL
+  listingVersionIri: https://axiolune.ai/data/listing/XNAS-AAPL/version/sha256-closed-listing
+  quoteCurrency: USD
+  denominatorUnit: share
+  contractMultiplier: "1"
+  validFrom: "2025-01-01T00:00:00Z"
+  knowledgeFrom: "2025-01-01T00:00:01Z"
+  availableFrom: "2025-01-01T00:00:02Z"
+closedExecution: &closedExecution
+  logicalIri: https://axiolune.ai/data/execution/CLOSED
+  versionIri: https://axiolune.ai/data/execution/CLOSED/version/sha256-closed-execution
+  account: https://axiolune.ai/data/account/ACC-CLOSED
+  instrument: https://axiolune.ai/data/instrument/AAPL
+  listingVersionIri: https://axiolune.ai/data/listing/XNAS-AAPL/version/sha256-closed-listing
+  quotationContractVersionIri: https://axiolune.ai/data/quotation/XNAS-AAPL/version/sha256-closed-quotation
+  side: Buy
+  quantity: {amount: "1", unit: share, precision: 6}
+  price: {amount: "100", currency: USD, scale: 6}
+  validFrom: "2026-04-01T00:00:00Z"
+  knowledgeFrom: "2026-04-01T00:00:00Z"
+  availableFrom: "2026-04-01T00:00:00Z"
+closedDefinition: &closedDefinition
+  logicalIri: https://axiolune.ai/data/cost-basis/CLOSED
+  versionIri: https://axiolune.ai/data/cost-basis/CLOSED/version/sha256-closed-definition
+  quotationContractVersionIri: https://axiolune.ai/data/quotation/XNAS-AAPL/version/sha256-closed-quotation
+  basisCurrency: USD
+  method: executionAllocatedDirectUnitCost
+  precisionPolicy: *costBasisPrecisionArtifact
+  roundingPolicy: *costBasisRoundingArtifact
+  validFrom: "2025-01-01T00:00:00Z"
+  knowledgeFrom: "2025-01-01T00:00:01Z"
+  availableFrom: "2025-01-01T00:00:02Z"
+closedLot: &closedLot
+  logicalIri: https://axiolune.ai/data/position-lot/closed
+  versionIri: https://axiolune.ai/data/position-lot/closed/version/sha256-closed-lot
+  lotInAccount: https://axiolune.ai/data/account/ACC-CLOSED
+  lotForInstrument: https://axiolune.ai/data/instrument/AAPL
+  openingExecutionLogicalIri: https://axiolune.ai/data/execution/CLOSED
+  openingExecution: https://axiolune.ai/data/execution/CLOSED/version/sha256-closed-execution
+  costBasisDefinitionLogicalIri: https://axiolune.ai/data/cost-basis/CLOSED
+  costBasisDefinition: https://axiolune.ai/data/cost-basis/CLOSED/version/sha256-closed-definition
+  lotAtListing: https://axiolune.ai/data/listing/XNAS-AAPL/version/sha256-closed-listing
+  lotQuotationContract: https://axiolune.ai/data/quotation/XNAS-AAPL/version/sha256-closed-quotation
+  lotDiscriminator: openingRemainder
+  originalQuantity: {amount: "1", unit: share, precision: 6}
+  openingGross: {amount: "100", currency: USD, scale: 6}
+  openingCostBasis: {amount: "101", currency: USD, scale: 6}
+  openingExecutionRecord: *closedExecution
+  listingRecord: *closedListing
+  quotationRecord: *closedQuotation
+  costBasisDefinitionRecord: *closedDefinition
+  calculationContextRef: https://axiolune.ai/run/cost-basis/CLOSED
+  calculationContext:
+    ref: https://axiolune.ai/run/cost-basis/CLOSED
+    digest: sha256:64f5bf1c3296c959a18d4bac03ada2bb121dcf6edf35ce3a21a09fb38466d986
+    payload: *calculationContextPayload
+  source:
+    artifactRef: https://axiolune.ai/evidence/execution/CLOSED
+    artifactDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    locator:
+      kind: jsonPointer
+      path: executions.json
+      mediaType: application/json
+      extractorProfileRef: https://axiolune.ai/tool/source-extractor/json-pointer-v1
+      extractorProfileDigest: sha256:1212121212121212121212121212121212121212121212121212121212121212
+      selectionDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+      pointer: /executions/closed
+  validFrom: "2026-04-01T00:00:00Z"
+  knowledgeFrom: "2026-04-01T00:00:01Z"
+  availableFrom: "2026-04-01T00:00:02Z"
+  revision: 0
+closedFxListing: &closedFxListing
+  <<: *closedListing
+  versionIri: https://axiolune.ai/data/listing/XLON-VOD/version/sha256-closed-fx-listing
+  instrument: https://axiolune.ai/data/instrument/VOD
+  quoteCurrency: EUR
+closedFxQuotation: &closedFxQuotation
+  <<: *closedQuotation
+  versionIri: https://axiolune.ai/data/quotation/XLON-VOD/version/sha256-closed-fx-quotation
+  instrument: https://axiolune.ai/data/instrument/VOD
+  listingVersionIri: https://axiolune.ai/data/listing/XLON-VOD/version/sha256-closed-fx-listing
+  quoteCurrency: EUR
+closedFxExecution: &closedFxExecution
+  <<: *closedExecution
+  logicalIri: https://axiolune.ai/data/execution/CLOSED-FX
+  versionIri: https://axiolune.ai/data/execution/CLOSED-FX/version/sha256-closed-fx-execution
+  account: https://axiolune.ai/data/account/ACC-CLOSED-FX
+  instrument: https://axiolune.ai/data/instrument/VOD
+  listingVersionIri: https://axiolune.ai/data/listing/XLON-VOD/version/sha256-closed-fx-listing
+  quotationContractVersionIri: https://axiolune.ai/data/quotation/XLON-VOD/version/sha256-closed-fx-quotation
+  quantity: {amount: "2", unit: share, precision: 6}
+  price: {amount: "50", currency: EUR, scale: 6}
+closedFxDefinition: &closedFxDefinition
+  <<: *closedDefinition
+  logicalIri: https://axiolune.ai/data/cost-basis/CLOSED-FX
+  versionIri: https://axiolune.ai/data/cost-basis/CLOSED-FX/version/sha256-closed-fx-definition
+  quotationContractVersionIri: https://axiolune.ai/data/quotation/XLON-VOD/version/sha256-closed-fx-quotation
+closedFxRate: &closedFxRate
+  versionIri: https://axiolune.ai/data/fx-rate/EUR-USD/version/sha256-closed-fx-rate
+  baseCurrency: EUR
+  quoteCurrency: USD
+  rate: {amount: "1.1", unit: urn:unit:USD-per-EUR, precision: 6}
+  validFrom: "2026-04-01T00:00:00Z"
+  knowledgeFrom: "2026-04-01T00:00:00Z"
+  availableFrom: "2026-04-01T00:00:00Z"
+closedFxConversion: &closedFxConversion
+  versionIri: https://axiolune.ai/data/fx-conversion/EUR-USD/version/sha256-closed-fx-conversion
+  rateVersionIri: https://axiolune.ai/data/fx-rate/EUR-USD/version/sha256-closed-fx-rate
+  baseCurrency: EUR
+  quoteCurrency: USD
+  direction: baseToQuote
+  consumerKind: openingLot
+  consumerVersionIri: https://axiolune.ai/data/position-lot/closed-fx/version/sha256-closed-fx-lot
+  validFrom: "2026-04-01T00:00:00Z"
+  knowledgeFrom: "2026-04-01T00:00:01Z"
+  availableFrom: "2026-04-01T00:00:01Z"
+  generatingContextRef: https://axiolune.ai/run/cost-basis/CLOSED-FX
+  roundingPolicy: *costBasisRoundingArtifact
+  inputContext:
+    ref: https://axiolune.ai/run/cost-basis/CLOSED-FX
+    digest: sha256:64f5bf1c3296c959a18d4bac03ada2bb121dcf6edf35ce3a21a09fb38466d986
+    payload: *calculationContextPayload
+  rateObservation: *closedFxRate
+  inputMoney: {amount: "100", currency: EUR, scale: 6}
+  outputMoney: {amount: "110", currency: USD, scale: 6}
+closedFxLot: &closedFxLot
+  <<: *closedLot
+  logicalIri: https://axiolune.ai/data/position-lot/closed-fx
+  versionIri: https://axiolune.ai/data/position-lot/closed-fx/version/sha256-closed-fx-lot
+  lotInAccount: https://axiolune.ai/data/account/ACC-CLOSED-FX
+  lotForInstrument: https://axiolune.ai/data/instrument/VOD
+  openingExecutionLogicalIri: https://axiolune.ai/data/execution/CLOSED-FX
+  openingExecution: https://axiolune.ai/data/execution/CLOSED-FX/version/sha256-closed-fx-execution
+  costBasisDefinitionLogicalIri: https://axiolune.ai/data/cost-basis/CLOSED-FX
+  costBasisDefinition: https://axiolune.ai/data/cost-basis/CLOSED-FX/version/sha256-closed-fx-definition
+  lotAtListing: https://axiolune.ai/data/listing/XLON-VOD/version/sha256-closed-fx-listing
+  lotQuotationContract: https://axiolune.ai/data/quotation/XLON-VOD/version/sha256-closed-fx-quotation
+  originalQuantity: {amount: "2", unit: share, precision: 6}
+  openingGross: {amount: "110", currency: USD, scale: 6}
+  openingCostBasis: {amount: "111", currency: USD, scale: 6}
+  openingExecutionRecord: *closedFxExecution
+  listingRecord: *closedFxListing
+  quotationRecord: *closedFxQuotation
+  costBasisDefinitionRecord: *closedFxDefinition
+  calculationContextRef: https://axiolune.ai/run/cost-basis/CLOSED-FX
+  calculationContext:
+    ref: https://axiolune.ai/run/cost-basis/CLOSED-FX
+    digest: sha256:64f5bf1c3296c959a18d4bac03ada2bb121dcf6edf35ce3a21a09fb38466d986
+    payload: *calculationContextPayload
+  openingGrossFxConversionVersionIri: https://axiolune.ai/data/fx-conversion/EUR-USD/version/sha256-closed-fx-conversion
+  openingGrossFxConversion: *closedFxConversion
+cases:
+  - id: position-lot-wrong-discriminator
+    expectedResult: rejected
+    expectedViolation: lotDiscriminator-openingRemainder
+    lots:
+      - &baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-a
+        versionIri: https://axiolune.ai/data/position-lot/negative-a/version/sha256-1
+        lotInAccount: https://axiolune.ai/data/account/ACC-1
+        lotForInstrument: https://axiolune.ai/data/instrument/AAPL
+        openingExecutionLogicalIri: https://axiolune.ai/data/execution/EXEC-9
+        openingExecution: https://axiolune.ai/data/execution/EXEC-9/version/sha256-a
+        costBasisDefinitionLogicalIri: https://axiolune.ai/data/cost-basis/FIFO
+        costBasisDefinition: https://axiolune.ai/data/cost-basis/FIFO/version/sha256-b
+        lotDiscriminator: callerRow-17
+        originalQuantity: {amount: "10", unit: share}
+        openingGross: {amount: "1000.00", currency: USD}
+        openingCostBasis: {amount: "1001.00", currency: USD}
+        calculationContextRef: https://axiolune.ai/run/cost-basis/negative-a
+        source:
+          artifactRef: https://axiolune.ai/evidence/execution/negative-a
+          artifactDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          locator:
+            kind: jsonPointer
+            path: executions.json
+            mediaType: application/json
+            extractorProfileRef: https://axiolune.ai/tool/source-extractor/json-pointer-v1
+            extractorProfileDigest: sha256:1212121212121212121212121212121212121212121212121212121212121212
+            selectionDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+            pointer: /executions/negative-a
+        validFrom: "2026-01-01T00:00:00Z"
+        knowledgeFrom: "2026-01-01T00:00:01Z"
+        availableFrom: "2026-01-01T00:00:02Z"
+        revision: 0
+
+  - id: position-lot-duplicate-opening-tuple
+    expectedResult: rejected
+    expectedViolation: openingRemainder-tuple-unique
+    lots:
+      - <<: *baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-b1
+        versionIri: https://axiolune.ai/data/position-lot/negative-b1/version/sha256-1
+        lotDiscriminator: openingRemainder
+      - <<: *baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-b2
+        versionIri: https://axiolune.ai/data/position-lot/negative-b2/version/sha256-1
+        lotDiscriminator: openingRemainder
+
+  - id: position-lot-missing-exact-opening-version
+    expectedResult: rejected
+    expectedViolation: openingExecution-exact-version
+    lots:
+      - <<: *baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-c
+        versionIri: https://axiolune.ai/data/position-lot/negative-c/version/sha256-1
+        lotDiscriminator: openingRemainder
+        openingExecution: https://axiolune.ai/data/execution/EXEC-9
+
+  - id: position-lot-missing-exact-definition-version
+    expectedResult: rejected
+    expectedViolation: costBasisDefinition-exact-version
+    lots:
+      - <<: *baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-c2
+        versionIri: https://axiolune.ai/data/position-lot/negative-c2/version/sha256-1
+        lotDiscriminator: openingRemainder
+        costBasisDefinition: https://axiolune.ai/data/cost-basis/FIFO
+
+  - id: position-lot-forbidden-duplicate-truths
+    expectedResult: rejected
+    expectedViolation: positionLot-forbidden-stored-truth
+    lots:
+      - <<: *baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-d
+        versionIri: https://axiolune.ai/data/position-lot/negative-d/version/sha256-1
+        lotDiscriminator: openingRemainder
+        hasQuantity: {amount: "10", unit: share}
+        hasCostBasis: {amount: "1001.00", currency: USD}
+        hasPositionSide: Long
+
+  - id: position-lot-ambiguous-cost-field
+    expectedResult: rejected
+    expectedViolation: positionLot-forbidden-stored-truth
+    lots:
+      - <<: *baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-d2
+        versionIri: https://axiolune.ai/data/position-lot/negative-d2/version/sha256-1
+        lotDiscriminator: openingRemainder
+        cost: "1001.00"
+
+  - id: position-lot-caller-row-identity
+    expectedResult: rejected
+    expectedViolation: positionLot-forbidden-stored-truth
+    lots:
+      - <<: *baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-d3
+        versionIri: https://axiolune.ai/data/position-lot/negative-d3/version/sha256-1
+        lotDiscriminator: openingRemainder
+        rowNumber: 17
+
+  - id: position-lot-cost-basis-sign-mismatch
+    expectedResult: rejected
+    expectedViolation: openingCostBasis-sign
+    lots:
+      - <<: *baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-e
+        versionIri: https://axiolune.ai/data/position-lot/negative-e/version/sha256-1
+        lotDiscriminator: openingRemainder
+        originalQuantity: {amount: "-10", unit: share}
+        openingCostBasis: {amount: "1001.00", currency: USD}
+
+  - id: position-lot-plain-source-selector
+    expectedResult: rejected
+    expectedViolation: positionLot-source-closure
+    lots:
+      - <<: *baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-f
+        versionIri: https://axiolune.ai/data/position-lot/negative-f/version/sha256-1
+        lotDiscriminator: openingRemainder
+        source:
+          artifactRef: https://axiolune.ai/evidence/execution/negative-f
+          artifactDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          locator: executions.json#/executions/negative-f
+
+  - id: position-lot-version-key-conflict
+    expectedResult: rejected
+    expectedViolation: positionLot-version-key-conflict
+    lots:
+      - <<: *baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-g
+        versionIri: https://axiolune.ai/data/position-lot/negative-g/version/sha256-1
+        lotDiscriminator: openingRemainder
+      - <<: *baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-g
+        versionIri: https://axiolune.ai/data/position-lot/negative-g/version/sha256-2
+        lotDiscriminator: openingRemainder
+
+  - id: position-lot-logical-key-drift
+    expectedResult: rejected
+    expectedViolation: positionLot-logical-key-drift
+    lots:
+      - <<: *baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-h
+        versionIri: https://axiolune.ai/data/position-lot/negative-h/version/sha256-1
+        lotDiscriminator: openingRemainder
+      - <<: *baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-h
+        versionIri: https://axiolune.ai/data/position-lot/negative-h/version/sha256-2
+        openingExecutionLogicalIri: https://axiolune.ai/data/execution/EXEC-10
+        openingExecution: https://axiolune.ai/data/execution/EXEC-10/version/sha256-a
+        lotDiscriminator: openingRemainder
+
+  - id: position-lot-revision-gap
+    expectedResult: rejected
+    expectedViolation: positionLot-revision-chain
+    lots:
+      - <<: *baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-i
+        versionIri: https://axiolune.ai/data/position-lot/negative-i/version/sha256-1
+        lotDiscriminator: openingRemainder
+        knowledgeTo: "2026-01-02T00:00:01Z"
+      - <<: *baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-i
+        versionIri: https://axiolune.ai/data/position-lot/negative-i/version/sha256-2
+        lotDiscriminator: openingRemainder
+        knowledgeFrom: "2026-01-02T00:00:01Z"
+        availableFrom: "2026-01-02T00:00:02Z"
+        revision: 2
+
+  - id: position-lot-zero-original-quantity
+    expectedResult: rejected
+    expectedViolation: originalQuantity-nonzero-signed
+    lots:
+      - <<: *baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-j
+        versionIri: https://axiolune.ai/data/position-lot/negative-j/version/sha256-1
+        lotDiscriminator: openingRemainder
+        originalQuantity: {amount: "0", unit: share}
+
+  - id: position-lot-nonpositive-opening-gross
+    expectedResult: rejected
+    expectedViolation: openingGross-positive
+    lots:
+      - <<: *baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-k
+        versionIri: https://axiolune.ai/data/position-lot/negative-k/version/sha256-1
+        lotDiscriminator: openingRemainder
+        openingGross: {amount: "0", currency: USD}
+
+  - id: position-lot-basis-currency-mismatch
+    expectedResult: rejected
+    expectedViolation: opening-basis-currency-equality
+    lots:
+      - <<: *baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-l
+        versionIri: https://axiolune.ai/data/position-lot/negative-l/version/sha256-1
+        lotDiscriminator: openingRemainder
+        openingCostBasis: {amount: "1001.00", currency: CAD}
+
+  - id: position-lot-non-iri-calculation-context
+    expectedResult: rejected
+    expectedViolation: calculationContextRef-iri
+    lots:
+      - <<: *baseLot
+        logicalIri: https://axiolune.ai/data/position-lot/negative-m
+        versionIri: https://axiolune.ai/data/position-lot/negative-m/version/sha256-1
+        lotDiscriminator: openingRemainder
+        calculationContextRef: run-42
+
+  - id: position-lot-opening-execution-record-mismatch
+    expectedResult: rejected
+    expectedViolation: openingExecution-record-closure
+    lots:
+      - <<: *closedLot
+        openingExecutionRecord:
+          <<: *closedExecution
+          account: https://axiolune.ai/data/account/OTHER
+
+  - id: position-lot-quotation-listing-mismatch
+    expectedResult: rejected
+    expectedViolation: positionLot-listing-quotation-closure
+    lots:
+      - <<: *closedLot
+        quotationRecord:
+          <<: *closedQuotation
+          listingVersionIri: https://axiolune.ai/data/listing/OTHER/version/sha256-other
+
+  - id: position-lot-policy-digest-tamper
+    expectedResult: rejected
+    expectedViolation: costBasisDefinition-policy-closure
+    lots:
+      - <<: *closedLot
+        costBasisDefinitionRecord:
+          <<: *closedDefinition
+          roundingPolicy:
+            <<: *costBasisRoundingArtifact
+            digest: sha256:0000000000000000000000000000000000000000000000000000000000000000
+
+  - id: position-lot-opening-gross-large-integer-exact-replay
+    expectedResult: rejected
+    expectedViolation: openingGross-replay
+    lots:
+      - <<: *closedLot
+        originalQuantity: {amount: "1", unit: share, precision: 6}
+        openingGross: {amount: "9007199254740992", currency: USD, scale: 6}
+        openingCostBasis: {amount: "9007199254740992", currency: USD, scale: 6}
+        openingExecutionRecord:
+          <<: *closedExecution
+          quantity: {amount: "1", unit: share, precision: 6}
+          price: {amount: "9007199254740993", currency: USD, scale: 6}
+
+  - id: position-lot-cross-currency-opening-missing-fx
+    expectedResult: rejected
+    expectedViolation: openingGrossFxConversion-required
+    lots:
+      - <<: *closedFxLot
+        openingGrossFxConversion: null
+
+  - id: position-lot-fx-consumer-mismatch
+    expectedResult: rejected
+    expectedViolation: openingGrossFxConversion-consumer-closure
+    lots:
+      - <<: *closedFxLot
+        openingGrossFxConversion:
+          <<: *closedFxConversion
+          consumerVersionIri: https://axiolune.ai/data/position-lot/other/version/sha256-other
+
+  - id: position-lot-fx-rate-not-pit-eligible
+    expectedResult: rejected
+    expectedViolation: openingGrossFxConversion-pit
+    lots:
+      - <<: *closedFxLot
+        openingGrossFxConversion:
+          <<: *closedFxConversion
+          rateObservation:
+            <<: *closedFxRate
+            availableFrom: "2026-04-02T00:00:00Z"
+
+  - id: position-lot-fx-context-digest-tamper
+    expectedResult: rejected
+    expectedViolation: openingGrossFxConversion-context-closure
+    lots:
+      - <<: *closedFxLot
+        openingGrossFxConversion:
+          <<: *closedFxConversion
+          inputContext:
+            ref: https://axiolune.ai/run/cost-basis/CLOSED-FX
+            digest: sha256:64f5bf1c3296c959a18d4bac03ada2bb121dcf6edf35ce3a21a09fb38466d986
+            payload:
+              completedAt: "2025-01-01T00:00:00Z"
+              contextId: tampered
+              schemaVersion: "1.0"
+              status: completed

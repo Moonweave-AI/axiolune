@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axiolune.ai/schemas/m2/0.3.0/custom-capability-bindings",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "profileRef", "entries"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "profileRef": { "const": "https://axiolune.ai/conformance/m2/0.3.0" },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/entry" }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "root", "path"],
+      "properties": {
+        "kind": { "const": "path" },
+        "root": { "const": "sourceTree" },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*\\\\)[\\x20-\\x7E]+$"
+        }
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "constraintIri", "toolId", "toolVersion", "toolArtifactRef",
+        "toolArtifactDigest", "runtimeRef", "runtimeDigest", "capabilityRef",
+        "capabilityDigest", "entrypointRef", "entrypointDigest",
+        "inputContractRef", "inputContractDigest", "outputContractRef",
+        "outputContractDigest", "discoveryContractRef",
+        "discoveryContractDigest", "evidenceSchemaRef",
+        "evidenceSchemaDigest", "testVectorsRef", "testVectorsDigest"
+      ],
+      "properties": {
+        "constraintIri": { "type": "string", "format": "uri" },
+        "toolId": { "type": "string", "pattern": "^[A-Za-z0-9._-]+$" },
+        "toolVersion": { "const": "0.3.0" },
+        "toolArtifactRef": { "$ref": "#/$defs/artifactRef" },
+        "toolArtifactDigest": { "$ref": "#/$defs/digest" },
+        "runtimeRef": { "$ref": "#/$defs/artifactRef" },
+        "runtimeDigest": { "$ref": "#/$defs/digest" },
+        "capabilityRef": { "$ref": "#/$defs/artifactRef" },
+        "capabilityDigest": { "$ref": "#/$defs/digest" },
+        "entrypointRef": { "$ref": "#/$defs/artifactRef" },
+        "entrypointDigest": { "$ref": "#/$defs/digest" },
+        "inputContractRef": { "$ref": "#/$defs/artifactRef" },
+        "inputContractDigest": { "$ref": "#/$defs/digest" },
+        "outputContractRef": { "$ref": "#/$defs/artifactRef" },
+        "outputContractDigest": { "$ref": "#/$defs/digest" },
+        "discoveryContractRef": { "$ref": "#/$defs/artifactRef" },
+        "discoveryContractDigest": { "$ref": "#/$defs/digest" },
+        "evidenceSchemaRef": { "$ref": "#/$defs/artifactRef" },
+        "evidenceSchemaDigest": { "$ref": "#/$defs/digest" },
+        "testVectorsRef": { "$ref": "#/$defs/artifactRef" },
+        "testVectorsDigest": { "$ref": "#/$defs/digest" }
+      }
+    }
+  }
+}

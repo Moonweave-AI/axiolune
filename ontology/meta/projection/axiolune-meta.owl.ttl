@@ -6,7 +6,11 @@
 @prefix ax: <https://axiolune.ai/ontology/meta/>.
 
 <https://axiolune.ai/ontology/meta> a owl:Ontology;
-    owl:versionIRI <https://axiolune.ai/ontology/meta/0.4.0>.
+    owl:versionIRI <https://axiolune.ai/ontology/meta/0.6.0>.
+<https://axiolune.ai/ontology/meta/core/annotations/sourceEvidenceRef> a owl:AnnotationProperty;
+    rdfs:label "Source Evidence Reference";
+    rdfs:comment "annotation property that links an ontology resource to the immutable evidence resource supporting its authored meaning or controlled-vocabulary membership";
+    rdfs:range xsd:anyURI.
 <https://axiolune.ai/ontology/meta/patterns/attributes/validFrom> a owl:DatatypeProperty;
     rdfs:label "Valid From";
     rdfs:comment "instant in time that marks the beginning of the business validity period during which a fact is considered true in the real world";
@@ -35,11 +39,6 @@
     rdfs:label "Available To";
     rdfs:comment "instant in time that marks the end of the availability period during which data may be consumed by a specific downstream subject, or null if the data remains available indefinitely";
     rdfs:range xsd:dateTime.
-<https://axiolune.ai/ontology/meta/patterns/attributes/availableAt> a owl:DatatypeProperty;
-    rdfs:label "Available At (Deprecated)";
-    rdfs:comment "single instant in time when data became available for consumption; superseded by the availableFrom/availableTo interval per ADR-012";
-    rdfs:range xsd:dateTime;
-    owl:deprecated true.
 <https://axiolune.ai/ontology/meta/patterns/attributes/publishedAt> a owl:DatatypeProperty;
     rdfs:label "Published At";
     rdfs:comment "instant in time when the data provider or source system officially published or released the information";
@@ -128,6 +127,27 @@
     rdfs:label "Incompatible With";
     rdfs:comment "IRI reference to a version that this version is known to be incompatible with";
     rdfs:range xsd:anyURI.
+<https://axiolune.ai/ontology/meta/patterns/PublicationTiming> a owl:Class;
+    rdfs:label "Publication Timing Pattern";
+    rdfs:comment "foundational pattern for tracking when information was published by its source and received by the platform".
+<https://axiolune.ai/ontology/meta/patterns/TemporalFact> a owl:Class;
+    rdfs:label "Bi-Temporal Fact Pattern";
+    rdfs:comment "pattern for bi-temporal semantics distinguishing business validity time (when the fact was true in the world) from system knowledge time (when the platform learned about it)".
+<https://axiolune.ai/ontology/meta/patterns/TemporalObservation> a owl:Class;
+    rdfs:label "Temporal Observation Pattern";
+    rdfs:comment "pattern for single-timestamp observations without explicit validity periods (e.g., sensor readings, event timestamps)".
+<https://axiolune.ai/ontology/meta/patterns/ProvenancedFact> a owl:Class;
+    rdfs:label "Provenance Tracking Pattern";
+    rdfs:comment "pattern for tracking the origin, authority, lineage, and confidence of information".
+<https://axiolune.ai/ontology/meta/patterns/Evidence> a owl:Class;
+    rdfs:label "Evidence Tracking Pattern";
+    rdfs:comment "pattern for linking facts to supporting evidence, documents, and data artifacts for audit and reproducibility".
+<https://axiolune.ai/ontology/meta/patterns/Lifecycle> a owl:Class;
+    rdfs:label "Lifecycle State Management Pattern";
+    rdfs:comment "pattern for managing entity lifecycle states, transitions, and history".
+<https://axiolune.ai/ontology/meta/patterns/Versioning> a owl:Class;
+    rdfs:label "Semantic Versioning Pattern";
+    rdfs:comment "pattern for tracking semantic versions of ontology artifacts (not business fact revisions)".
 <https://axiolune.ai/ontology/meta/core/values/MonetaryAmount> a owl:Class;
     rdfs:comment "a meta-classifier for monetary amounts with currency and scale".
 <https://axiolune.ai/ontology/meta/core/properties/hasAmount> a owl:DatatypeProperty;
@@ -151,3 +171,57 @@
 <https://axiolune.ai/ontology/meta/core/properties/hasPrecision> a owl:DatatypeProperty;
     rdfs:domain <https://axiolune.ai/ontology/meta/core/values/QuantityValue>;
     rdfs:range xsd:integer.
+<https://axiolune.ai/ontology/meta/core/properties/hasRounding> a owl:DatatypeProperty;
+    rdfs:domain <https://axiolune.ai/ontology/meta/core/values/QuantityValue>;
+    rdfs:range xsd:string;
+    rdfs:comment "allowed values: floor, ceiling, half-up, half-even".
+<https://axiolune.ai/ontology/meta/data-binding/structures/ArtifactRef> a owl:Class;
+    rdfs:comment "closed reference to either an absolute artifact IRI or one path below an explicitly named build root".
+<https://axiolune.ai/ontology/meta/data-binding/structures/SourceLocator> a owl:Class;
+    rdfs:comment "closed media-aware selector for one canonical non-empty byte selection inside a locked source artifact".
+<https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef> a owl:ObjectProperty;
+    rdfs:range <https://axiolune.ai/ontology/meta/data-binding/structures/ArtifactRef>;
+    rdfs:label "Source Artifact Reference";
+    rdfs:comment "closed artifact reference that identifies the immutable source artifact supporting a materialized claim".
+<https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest> a owl:DatatypeProperty;
+    rdfs:range xsd:string;
+    rdfs:label "Source Artifact Digest";
+    rdfs:comment "SHA-256 digest that authenticates the exact immutable source artifact supporting a materialized claim".
+<https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator> a owl:ObjectProperty;
+    rdfs:range <https://axiolune.ai/ontology/meta/data-binding/structures/SourceLocator>;
+    rdfs:label "Source Locator";
+    rdfs:comment "closed media-aware source selector whose locked extraction identifies the exact supporting bytes".
+<https://axiolune.ai/ontology/meta/data-binding/FactIdentity> a owl:Class;
+    rdfs:comment "generic stable logical identity anchor for one versioned materialized object or association".
+<https://axiolune.ai/ontology/meta/data-binding/FactVersion> a owl:Class;
+    rdfs:comment "generic marker class for one immutable materialized fact version".
+<https://axiolune.ai/ontology/meta/data-binding/FactClosureAssertion> a owl:Class;
+    rdfs:comment "immutable evidence that closes one knowledge-time or availability-time interval without mutating the older fact version".
+<https://axiolune.ai/ontology/meta/data-binding/properties/versionOf> a owl:ObjectProperty, owl:FunctionalProperty;
+    rdfs:domain <https://axiolune.ai/ontology/meta/data-binding/FactVersion>;
+    rdfs:range <https://axiolune.ai/ontology/meta/data-binding/FactIdentity>;
+    rdfs:comment "functional relation from one immutable FactVersion to its stable FactIdentity anchor".
+<https://axiolune.ai/ontology/meta/data-binding/properties/supersedes> a owl:ObjectProperty;
+    rdfs:domain <https://axiolune.ai/ontology/meta/data-binding/FactVersion>;
+    rdfs:range <https://axiolune.ai/ontology/meta/data-binding/FactVersion>;
+    rdfs:comment "relation from one immutable FactVersion to its direct previous version with the same FactIdentity anchor".
+<https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef> a owl:DatatypeProperty;
+    rdfs:range xsd:anyURI;
+    rdfs:label "Generating Context Reference";
+    rdfs:comment "reference to the immutable MaterializationRun or MaterializationBatchRun that generated this fact version".
+<https://axiolune.ai/ontology/meta/data-binding/attributes/inputContextRef> a owl:DatatypeProperty;
+    rdfs:range xsd:anyURI;
+    rdfs:label "Input Context Reference";
+    rdfs:comment "reference to the immutable resolved input-context record used to generate this fact version".
+<https://axiolune.ai/ontology/meta/data-binding/attributes/inputContextRecordDigest> a owl:DatatypeProperty;
+    rdfs:range xsd:string;
+    rdfs:label "Input Context Record Digest";
+    rdfs:comment "SHA-256 digest of the immutable resolved input-context record used to generate this fact version".
+<https://axiolune.ai/ontology/meta/data-binding/attributes/pitRequestRef> a owl:DatatypeProperty;
+    rdfs:range xsd:anyURI;
+    rdfs:label "PIT Request Reference";
+    rdfs:comment "reference to the exact immutable PITValidationRequest authorizing point-in-time consumption".
+<https://axiolune.ai/ontology/meta/data-binding/attributes/pitRequestRecordDigest> a owl:DatatypeProperty;
+    rdfs:range xsd:string;
+    rdfs:label "PIT Request Record Digest";
+    rdfs:comment "SHA-256 digest of the exact immutable PITValidationRequest authorizing point-in-time consumption".

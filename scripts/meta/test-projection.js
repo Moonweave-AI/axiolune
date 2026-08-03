@@ -14,13 +14,22 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { Parser, Store } = require('n3');
+const { Parser, Store, DataFactory } = require('n3');
+const { namedNode } = DataFactory;
+const yaml = require('js-yaml');
 const SHACLValidator = require('rdf-validate-shacl').default;
 
-const META = path.join(__dirname, '..', '..', 'ontology', 'meta');
+const META = process.env.META_DIR
+  ? path.resolve(process.env.META_DIR)
+  : path.join(__dirname, '..', '..', 'ontology', 'meta');
+const PROJECTION = process.env.META_PROJECTION_DIR
+  ? path.resolve(process.env.META_PROJECTION_DIR)
+  : path.join(META, 'projection');
 const AX = 'https://axiolune.ai/ontology/meta/';
 const XSD = 'http://www.w3.org/2001/XMLSchema#';
 const ATTR = AX + 'patterns/attributes/';
+const RDF_TYPE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
+const OWL = 'http://www.w3.org/2002/07/owl#';
 
 let pass = 0, fail = 0;
 const ok = (m) => { console.log('  ✓ ' + m); pass++; };
@@ -38,10 +47,37 @@ function parse(file, label) {
   }
 }
 
-const owlStore = parse(path.join(META, 'projection', 'axiolune-meta.owl.ttl'), 'OWL turtle');
-const shaclStore = parse(path.join(META, 'projection', 'axiolune-meta.shacl.ttl'), 'SHACL turtle (Tier1)');
-const sparqlStore = parse(path.join(META, 'projection', 'axiolune-meta.shacl-sparql.ttl'), 'SHACL turtle (Tier2 SPARQL, parse-only)');
+const owlStore = parse(path.join(PROJECTION, 'axiolune-meta.owl.ttl'), 'OWL turtle');
+const shaclStore = parse(path.join(PROJECTION, 'axiolune-meta.shacl.ttl'), 'SHACL turtle (Tier1)');
+const sparqlStore = parse(path.join(PROJECTION, 'axiolune-meta.shacl-sparql.ttl'), 'SHACL turtle (Tier2 SPARQL, parse-only)');
 if (!owlStore || !shaclStore || !sparqlStore) { console.log('\n❌ parse failed'); process.exit(1); }
+
+function hasOwlType(iri, typeLocalName) {
+  return owlStore.countQuads(
+    namedNode(iri), namedNode(RDF_TYPE), namedNode(OWL + typeLocalName), null,
+  ) > 0;
+}
+
+console.log('\n=== Canonical OWL signature closure ===');
+const sourceEvidenceRef = AX + 'core/annotations/sourceEvidenceRef';
+if (hasOwlType(sourceEvidenceRef, 'AnnotationProperty') &&
+    !hasOwlType(sourceEvidenceRef, 'DatatypeProperty') &&
+    !hasOwlType(sourceEvidenceRef, 'ObjectProperty')) {
+  ok('sourceEvidenceRef has the exclusive owl:AnnotationProperty signature');
+} else {
+  bad('sourceEvidenceRef must be exclusively owl:AnnotationProperty');
+}
+
+const sourcePatterns = yaml.load(
+  fs.readFileSync(path.join(META, 'cross-domain-patterns.yaml'), 'utf8'),
+).CrossDomainPatterns.patterns || [];
+if (sourcePatterns.length !== 7) {
+  bad(`expected 7 concrete PatternDefinition instances, found ${sourcePatterns.length}`);
+}
+for (const pattern of sourcePatterns) {
+  if (hasOwlType(pattern.iri, 'Class')) ok(`${pattern.pattern} has explicit owl:Class signature`);
+  else bad(`${pattern.pattern} is missing its explicit owl:Class signature`);
+}
 
 // Build a data graph (M1 instance) as a Store.
 function dataGraph(props, type) {
@@ -56,6 +92,20 @@ function dataGraph(props, type) {
     return `<${ATTR}${k}> ${obj}`;
   });
   lines.push(`<${inst}> a ${cls} ; ${pps.join(' ; ')} .`);
+  return new Store(new Parser().parse(lines.join('\n')));
+}
+
+function structuredDataGraph(typeLocalName, props) {
+  const typeIri = `${AX}core/values/${typeLocalName}`;
+  const base = `${AX}core/properties/`;
+  const lines = [
+    '@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .',
+    `<http://test/structured> a <${typeIri}> ;`,
+  ];
+  const values = Object.entries(props).map(([name, [value, datatype]]) =>
+    `  <${base}${name}> "${value}"^^xsd:${datatype}`
+  );
+  lines.push(values.join(' ;\n') + ' .');
   return new Store(new Parser().parse(lines.join('\n')));
 }
 
@@ -117,15 +167,59 @@ async function validate(data, label) {
   if (!rtba.conforms && rtba.paths.some(p => p.includes('availableFrom'))) ok('TemporalFact missing availableFrom correctly rejected (fail-closed PIT)');
   else bad(`TemporalFact missing availableFrom should be rejected (fail-closed); conforms=${rtba.conforms} paths=${rtba.paths.join(',')}`);
 
+  // ---- Canonical structured-value enforcement (Tier 1) ----
+  console.log('\n=== Structured-value shape enforcement ===');
+  const quantityGood = structuredDataGraph('QuantityValue', {
+    hasNumericValue: ['12.5', 'decimal'],
+    hasUnit: ['https://qudt.org/vocab/unit/Share', 'string'],
+    hasRounding: ['half-even', 'string'],
+  });
+  const quantityGoodResult = await validate(quantityGood, 'quantity-good');
+  if (quantityGoodResult.conforms) ok('QuantityValue with value, absolute unit IRI lexical form, and rounding conforms');
+  else bad(`QuantityValue good should conform; violations on: ${quantityGoodResult.paths.join(', ')}`);
+
+  const quantityMissingRounding = structuredDataGraph('QuantityValue', {
+    hasNumericValue: ['12.5', 'decimal'],
+    hasUnit: ['https://qudt.org/vocab/unit/Share', 'string'],
+  });
+  const quantityMissingResult = await validate(quantityMissingRounding, 'quantity-missing-rounding');
+  if (!quantityMissingResult.conforms && quantityMissingResult.paths.some(p => p.includes('hasRounding'))) {
+    ok('QuantityValue missing hasRounding correctly rejected');
+  } else {
+    bad(`QuantityValue missing hasRounding should be rejected; conforms=${quantityMissingResult.conforms} paths=${quantityMissingResult.paths.join(',')}`);
+  }
+
+  const quantityBadRounding = structuredDataGraph('QuantityValue', {
+    hasNumericValue: ['12.5', 'decimal'],
+    hasUnit: ['https://qudt.org/vocab/unit/Share', 'string'],
+    hasRounding: ['bankers-ish', 'string'],
+  });
+  const quantityBadResult = await validate(quantityBadRounding, 'quantity-bad-rounding');
+  if (!quantityBadResult.conforms && quantityBadResult.paths.some(p => p.includes('hasRounding'))) {
+    ok('QuantityValue unsupported rounding lexical value correctly rejected');
+  } else {
+    bad(`QuantityValue bad rounding should be rejected; conforms=${quantityBadResult.conforms} paths=${quantityBadResult.paths.join(',')}`);
+  }
+
+  const moneyMissingCurrency = structuredDataGraph('MonetaryAmount', {
+    hasAmount: ['10.00', 'decimal'],
+    hasScale: ['2', 'integer'],
+  });
+  const moneyMissingResult = await validate(moneyMissingCurrency, 'money-missing-currency');
+  if (!moneyMissingResult.conforms && moneyMissingResult.paths.some(p => p.includes('hasCurrency'))) {
+    ok('MonetaryAmount missing hasCurrency correctly rejected');
+  } else {
+    bad(`MonetaryAmount missing currency should be rejected; conforms=${moneyMissingResult.conforms} paths=${moneyMissingResult.paths.join(',')}`);
+  }
+
   // ---- Constraint coverage: every source constraint must have a SHACL projection ----
   console.log('\n=== Constraint coverage (source -> SHACL product) ===');
-  const yaml = require('js-yaml');
   const fs2 = require('fs');
   const patterns = yaml.load(fs2.readFileSync(path.join(META, 'cross-domain-patterns.yaml'), 'utf8'));
   const sourceConstraints = Object.keys(patterns.CrossDomainPatterns.constraints || {});
   // Collect all string literals from both SHACL files (messages carry constraint identity)
-  const shaclText = fs2.readFileSync(path.join(META, 'projection', 'axiolune-meta.shacl.ttl'), 'utf8');
-  const sparqlText = fs2.readFileSync(path.join(META, 'projection', 'axiolune-meta.shacl-sparql.ttl'), 'utf8');
+  const shaclText = fs2.readFileSync(path.join(PROJECTION, 'axiolune-meta.shacl.ttl'), 'utf8');
+  const sparqlText = fs2.readFileSync(path.join(PROJECTION, 'axiolune-meta.shacl-sparql.ttl'), 'utf8');
   let covered = 0;
   for (const name of sourceConstraints) {
     const c = patterns.CrossDomainPatterns.constraints[name];

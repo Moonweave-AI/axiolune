@@ -1,0 +1,1797 @@
+fixtureProfile: axiolune-post-trade-v0.3
+status: executable-contract-fixture
+fixtures:
+  - id: corporate-action-three-kind-closed-matrix
+    contract: CorporateActionMatrix
+    instance:
+      events:
+        - sourceAuthorityVersionIri: https://example.test/fact/party/authority/version/1
+          affectedSecurityIri: https://example.test/fact/security/issuer-common
+          kind: cashDividend
+          dates:
+            announcement: 2026-05-01
+            ex: 2026-05-08
+            record: 2026-05-09
+            payment: 2026-05-20
+          cashPerUnit: {amount: '1.25', currency: USD}
+        - sourceAuthorityVersionIri: https://example.test/fact/party/authority/version/1
+          affectedSecurityIri: https://example.test/fact/security/issuer-common
+          successorSecurityIri: https://example.test/fact/security/issuer-common-post-split
+          kind: stockSplit
+          dates:
+            announcement: 2026-06-01
+            ex: 2026-06-08
+            record: 2026-06-09
+            effective: 2026-06-10
+          splitRatio: '2'
+        - sourceAuthorityVersionIri: https://example.test/fact/party/authority/version/1
+          affectedSecurityIri: https://example.test/fact/security/issuer-common
+          successorSecurityIri: https://example.test/fact/security/issuer-rights-successor
+          kind: rightsIssue
+          dates:
+            announcement: 2026-07-01
+            ex: 2026-07-03
+            record: 2026-07-04
+            electionDeadline: 2026-07-08
+            effective: 2026-07-12
+            payment: 2026-07-10
+          entitlementRatio: '0.2'
+          subscriptionPrice: {amount: '2', currency: USD}
+          nonTransferableDirectSubscription: true
+
+  - id: distribution-assessment-price-kind-and-input-identity
+    contract: DistributionAssessmentIdentity
+    instance:
+      event:
+        versionIri: https://example.test/fact/assessment/event/v1
+        kind: cashDividend
+        affectedSecurityLogicalIri: https://example.test/security/assessment-target
+        listingVersionIri: https://example.test/fact/listing/assessment-target/v1
+        cashPerUnit: {amount: '2', currency: USD}
+      evaluationInput:
+        versionIri: https://example.test/fact/assessment/input/v1
+        eventVersionIri: https://example.test/fact/assessment/event/v1
+        requestVersionIri: https://example.test/fact/assessment/request/v1
+        eventKind: cashDividend
+        affectedSecurityLogicalIri: https://example.test/security/assessment-target
+        listingVersionIri: https://example.test/fact/listing/assessment-target/v1
+      applicability:
+        versionIri: https://example.test/fact/assessment/applicability/v1
+        scheduleRuleVersionIri: https://example.test/fact/assessment/rule/v1
+        hasDistributionPercentageBoundary: true
+      scheduleRule:
+        versionIri: https://example.test/fact/assessment/rule/v1
+        assessmentMethodVersionIri: https://example.test/fact/assessment/method/v1
+      method:
+        versionIri: https://example.test/fact/assessment/method/v1
+        inputKind: cashCalculated
+        requiresMarketPrice: true
+        priceSelection: latestStrictlyBefore
+        requiredPriceKind: close
+        precision: 6
+        roundingMode: halfEven
+        formulaDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+        roundingPolicyDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+        implementationDigest: sha256:3333333333333333333333333333333333333333333333333333333333333333
+      assessment:
+        evaluationInputVersionIri: https://example.test/fact/assessment/input/v1
+        eventVersionIri: https://example.test/fact/assessment/event/v1
+        applicabilityVersionIri: https://example.test/fact/assessment/applicability/v1
+        scheduleRuleVersionIri: https://example.test/fact/assessment/rule/v1
+        methodVersionIri: https://example.test/fact/assessment/method/v1
+        inputKind: cashCalculated
+        cashCalculatedInput: true
+        assessmentPercentage: '0.02'
+        priceKind: close
+        valuationPivot: '2026-05-08T12:00:00Z'
+        formulaDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+        roundingPolicyDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+        implementationDigest: sha256:3333333333333333333333333333333333333333333333333333333333333333
+        pitContext:
+          versionIri: https://example.test/fact/assessment/pit-context/v1
+          asOfValid: '2026-05-08T12:00:00Z'
+          asOfKnowledge: '2026-05-08T12:04:00Z'
+          asOfAvailable: '2026-05-08T12:05:00Z'
+          queryTime: '2026-05-08T12:05:00Z'
+        priceObservation:
+          versionIri: https://example.test/fact/assessment/price/v1
+          priceKind: close
+          observedSecurityLogicalIri: https://example.test/security/assessment-target
+          listingVersionIri: https://example.test/fact/listing/assessment-target/v1
+          price: {amount: '100', currency: USD}
+          observedAt: '2026-05-08T11:59:00Z'
+          validFrom: '2026-05-08T11:59:00Z'
+          validTo: '2026-05-08T12:30:00Z'
+          knowledgeFrom: '2026-05-08T12:00:30Z'
+          knowledgeTo: '2026-05-08T12:30:00Z'
+          availableFrom: '2026-05-08T12:01:00Z'
+          availableTo: '2026-05-08T12:30:00Z'
+          sourceArtifactRef: https://example.test/artifact/assessment-price/1
+          sourceArtifactDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          sourceLocator: $.prices[0]
+        inputVersionIris:
+          - https://example.test/fact/assessment/applicability/v1
+          - https://example.test/fact/assessment/event/v1
+          - https://example.test/fact/assessment/input/v1
+          - https://example.test/fact/assessment/method/v1
+          - https://example.test/fact/assessment/pit-context/v1
+          - https://example.test/fact/assessment/price/v1
+          - https://example.test/fact/assessment/rule/v1
+        inputVersionCount: 7
+        inputVersionSetDigest: sha256:ed5c2170ca750b168ae96995ad704f2c5e4cee8c20d2b9882d488a3ad02cfd86
+
+  - id: due-bill-bilateral-empty-correction-partial-full
+    contract: DueBillEntitlementAndTransferClosure
+    instance:
+      mode: dueBillAdjusted
+      eventVersionIri: https://example.test/fact/corporate-action/event/version/1
+      resolutionVersionIri: https://example.test/fact/corporate-action/resolution/version/1
+      event:
+        versionIri: https://example.test/fact/corporate-action/event/version/1
+        kind: stockSplit
+        affectedSecurityIri: https://example.test/security/s1
+      resolution:
+        versionIri: https://example.test/fact/corporate-action/resolution/version/1
+        eventVersionIri: https://example.test/fact/corporate-action/event/version/1
+        dueBillRequired: true
+        dtcServiceProfile: interimAccounting
+        failTrackingEligible: false
+        qualificationMode: settlementEvidence
+        cumEntitlementTradeFrom: '2026-05-01T00:00:00Z'
+        cumEntitlementTradeTo: '2026-05-10T00:00:00Z'
+        settlementEvidenceCutoff: '2026-05-10T23:59:59Z'
+        splitDeltaRatio: '1'
+        distributionInstrumentIri: https://example.test/security/s1
+        distributionUnit: share
+      transferPitRequest:
+        ref: https://example.test/control/pit-request/due-bill/1
+        recordDigest: sha256:6161616161616161616161616161616161616161616161616161616161616161
+        inputContextRef: https://example.test/control/input-context/due-bill/1
+        inputContextRecordDigest: sha256:6262626262626262626262626262626262626262626262626262626262626262
+        asOfValid: '2026-05-11T00:00:00Z'
+        asOfKnowledge: '2026-05-11T00:00:00Z'
+        asOfAvailable: '2026-05-11T00:00:00Z'
+      qualifications:
+        - versionIri: https://example.test/fact/due-bill-qualification/1/v1
+          eventVersionIri: https://example.test/fact/corporate-action/event/version/1
+          resolutionVersionIri: https://example.test/fact/corporate-action/resolution/version/1
+          result: eligible
+          qualifiedQuantity: '10'
+          liableAccount: https://example.test/account/a
+          beneficiaryAccount: https://example.test/account/b
+          liableParty: https://example.test/party/a
+          beneficiaryParty: https://example.test/party/b
+          liableAccountPartyRoles:
+            - {versionIri: https://example.test/fact/account-party-role/a/v1, pitEligible: true, account: https://example.test/account/a, party: https://example.test/party/a, kind: accountHolder}
+          beneficiaryAccountPartyRoles:
+            - {versionIri: https://example.test/fact/account-party-role/b/v1, pitEligible: true, account: https://example.test/account/b, party: https://example.test/party/b, kind: beneficialOwner}
+          execution:
+            versionIri: https://example.test/fact/execution/due-bill/1/v1
+            side: buy
+            account: https://example.test/account/b
+            instrumentIri: https://example.test/security/s1
+            quantity: '10'
+            occurrenceTime: '2026-05-09T15:00:00Z'
+          instruction:
+            versionIri: https://example.test/fact/instruction/due-bill/1/v1
+            method: deliveryVersusPayment
+            securitiesDeliverer: https://example.test/settlement-party/a
+            securitiesReceiver: https://example.test/settlement-party/b
+            atomicGroupId: due-bill-dvp-1
+            system: DTC
+            location: US
+            legs:
+              - versionIri: https://example.test/fact/leg/due-bill/1/v1
+                instructionVersionIri: https://example.test/fact/instruction/due-bill/1/v1
+                atomicGroupId: due-bill-dvp-1
+                fromAccount: https://example.test/account/a
+                toAccount: https://example.test/account/b
+                fromParty: https://example.test/settlement-party/a
+                toParty: https://example.test/settlement-party/b
+                asset: {kind: security, amount: '10', instrumentIri: https://example.test/security/s1, unit: share}
+              - versionIri: https://example.test/fact/leg/due-bill/1-cash/v1
+                instructionVersionIri: https://example.test/fact/instruction/due-bill/1/v1
+                atomicGroupId: due-bill-dvp-1
+                fromAccount: https://example.test/account/b-cash
+                toAccount: https://example.test/account/a-cash
+                fromParty: https://example.test/settlement-party/b
+                toParty: https://example.test/settlement-party/a
+                asset: {kind: money, amount: '1000', currency: USD}
+          securityLeg:
+            versionIri: https://example.test/fact/leg/due-bill/1/v1
+            instructionVersionIri: https://example.test/fact/instruction/due-bill/1/v1
+            fromAccount: https://example.test/account/a
+            toAccount: https://example.test/account/b
+            fromParty: https://example.test/settlement-party/a
+            toParty: https://example.test/settlement-party/b
+            asset: {kind: security, amount: '10', instrumentIri: https://example.test/security/s1, unit: share}
+          allocation:
+            versionIri: https://example.test/fact/allocation/due-bill/1/v1
+            executionVersionIri: https://example.test/fact/execution/due-bill/1/v1
+            instructionVersionIri: https://example.test/fact/instruction/due-bill/1/v1
+            securityLegVersionIri: https://example.test/fact/leg/due-bill/1/v1
+            quantity: {amount: '10', unit: share}
+            fromEconomicAccount: https://example.test/account/a
+            toEconomicAccount: https://example.test/account/b
+            fromMode: directAccount
+            toMode: directAccount
+          settlementEvidence: true
+          settlementStatusEvent:
+            versionIri: https://example.test/fact/settlement-status/due-bill/1/v1
+            instructionVersionIri: https://example.test/fact/instruction/due-bill/1/v1
+            subject: group
+            atomicGroupId: due-bill-dvp-1
+            state: settled
+            atomicCompletionEvidenceRef: https://example.test/evidence/atomic-completion/due-bill/1
+            atomicCompletionEvidenceDigest: sha256:d7eb3f483498a2b5d5e061ded38157d424e1526d63421a121b808a87d8cfb26d
+            observedAt: '2026-05-10T16:00:00Z'
+            sourceArtifactRef: https://example.test/artifact/settlement-status/due-bill/1
+            sourceArtifactDigest: sha256:6767676767676767676767676767676767676767676767676767676767676767
+            sourceLocator: $.statusEvents[0]
+            validFrom: '2026-05-10T16:00:00Z'
+            knowledgeFrom: '2026-05-10T16:01:00Z'
+            availableFrom: '2026-05-10T16:02:00Z'
+          generatingContextRef: https://example.test/control/run/due-bill-qualification/1
+          validFrom: '2026-05-09T15:00:00Z'
+          knowledgeFrom: '2026-05-10T16:01:00Z'
+          availableFrom: '2026-05-10T16:02:00Z'
+      obligations:
+        - versionIri: https://example.test/fact/obligation/1/v1
+          eventVersionIri: https://example.test/fact/corporate-action/event/version/1
+          resolutionVersionIri: https://example.test/fact/corporate-action/resolution/version/1
+          liableAccount: https://example.test/account/a
+          beneficiaryAccount: https://example.test/account/b
+          liableParty: https://example.test/party/a
+          beneficiaryParty: https://example.test/party/b
+          liableAccountPartyRoles:
+            - {versionIri: https://example.test/fact/account-party-role/a/v1, pitEligible: true, account: https://example.test/account/a, party: https://example.test/party/a, kind: accountHolder}
+          beneficiaryAccountPartyRoles:
+            - {versionIri: https://example.test/fact/account-party-role/b/v1, pitEligible: true, account: https://example.test/account/b, party: https://example.test/party/b, kind: beneficialOwner}
+          obligationSecurityIri: https://example.test/security/s1
+          sourceKind: tradeDerived
+          tradeQualificationVersionIri: https://example.test/fact/due-bill-qualification/1/v1
+          quantity: '10'
+          benefit: {kind: quantity, amount: '10', unit: share, instrumentIri: https://example.test/security/s1}
+        - versionIri: https://example.test/fact/obligation/2/v1
+          eventVersionIri: https://example.test/fact/corporate-action/event/version/1
+          resolutionVersionIri: https://example.test/fact/corporate-action/resolution/version/1
+          liableAccount: https://example.test/account/c
+          beneficiaryAccount: https://example.test/account/d
+          liableParty: https://example.test/party/c
+          beneficiaryParty: https://example.test/party/d
+          liableAccountPartyRoles:
+            - {versionIri: https://example.test/fact/account-party-role/c/v1, pitEligible: true, account: https://example.test/account/c, party: https://example.test/party/c, kind: beneficialOwner}
+          beneficiaryAccountPartyRoles:
+            - {versionIri: https://example.test/fact/account-party-role/d/v1, pitEligible: true, account: https://example.test/account/d, party: https://example.test/party/d, kind: accountHolder}
+          obligationSecurityIri: https://example.test/security/s1
+          sourceKind: externalClaim
+          claimAuthorityVersionIri: https://example.test/fact/party/claim-authority/v1
+          externalClaimId: claim-2
+          sourceArtifactRef: https://example.test/artifact/due-bill-claim/2
+          sourceArtifactDigest: sha256:6868686868686868686868686868686868686868686868686868686868686868
+          sourceLocator: $.claims[1]
+          quantity: '8'
+          benefit: {kind: quantity, amount: '8', unit: share, instrumentIri: https://example.test/security/s1}
+        - versionIri: https://example.test/fact/obligation/3/v1
+          eventVersionIri: https://example.test/fact/corporate-action/event/version/1
+          resolutionVersionIri: https://example.test/fact/corporate-action/resolution/version/1
+          liableAccount: https://example.test/account/e
+          beneficiaryAccount: https://example.test/account/f
+          liableParty: https://example.test/party/e
+          beneficiaryParty: https://example.test/party/f
+          liableAccountPartyRoles:
+            - {versionIri: https://example.test/fact/account-party-role/e/v1, pitEligible: true, account: https://example.test/account/e, party: https://example.test/party/e, kind: accountHolder}
+          beneficiaryAccountPartyRoles:
+            - {versionIri: https://example.test/fact/account-party-role/f/v1, pitEligible: true, account: https://example.test/account/f, party: https://example.test/party/f, kind: beneficialOwner}
+          obligationSecurityIri: https://example.test/security/s1
+          sourceKind: externalClaim
+          claimAuthorityVersionIri: https://example.test/fact/party/claim-authority/v1
+          externalClaimId: claim-3
+          sourceArtifactRef: https://example.test/artifact/due-bill-claim/3
+          sourceArtifactDigest: sha256:6969696969696969696969696969696969696969696969696969696969696969
+          sourceLocator: $.claims[2]
+          quantity: '5'
+          benefit: {kind: quantity, amount: '5', unit: share, instrumentIri: https://example.test/security/s1}
+      entitlements:
+        - account: https://example.test/account/a
+          recordPosition: {kind: snapshot, quantity: '100', snapshotVersionIri: https://example.test/fact/snapshot/a/v1}
+          obligationVersionIris: [https://example.test/fact/obligation/1/v1]
+          obligationCount: 1
+          obligationSetDigest: sha256:9d750fb9dddf00847d7bd2ec3766b6ae952e192b5308c8b442dce36cd190bb40
+          closureProbe: {status: completed, result: true, ref: https://example.test/probe/entitlement/a, subjectSetDigest: sha256:9d750fb9dddf00847d7bd2ec3766b6ae952e192b5308c8b442dce36cd190bb40, digest: sha256:08000af67862ddc87bcc2de3e5e40fc242db2de3520070b496ed5645bc1fa840}
+          eligibleQuantity: '90'
+        - account: https://example.test/account/b
+          recordPosition: {kind: provenZero, quantity: '0', absenceAssertionVersionIri: https://example.test/fact/absence/b/v1}
+          obligationVersionIris: [https://example.test/fact/obligation/1/v1]
+          obligationCount: 1
+          obligationSetDigest: sha256:9d750fb9dddf00847d7bd2ec3766b6ae952e192b5308c8b442dce36cd190bb40
+          closureProbe: {status: completed, result: true, ref: https://example.test/probe/entitlement/b, subjectSetDigest: sha256:9d750fb9dddf00847d7bd2ec3766b6ae952e192b5308c8b442dce36cd190bb40, digest: sha256:be03633d0dc668f6b94f02896d19bb7dda664c8d60b69c9dab739c256751afe7}
+          eligibleQuantity: '10'
+        - account: https://example.test/account/c
+          recordPosition: {kind: snapshot, quantity: '20', snapshotVersionIri: https://example.test/fact/snapshot/c/v1}
+          obligationVersionIris: [https://example.test/fact/obligation/2/v1]
+          obligationCount: 1
+          obligationSetDigest: sha256:a8ea198d854f0b845da56548e43a464988c079874ef8e823bf05f1a57791396f
+          closureProbe: {status: completed, result: true, ref: https://example.test/probe/entitlement/c, subjectSetDigest: sha256:a8ea198d854f0b845da56548e43a464988c079874ef8e823bf05f1a57791396f, digest: sha256:e45e3a86af5527ce2204ba3c2363586402b8a5b3424e9e2e4c994dc7c5744da6}
+          eligibleQuantity: '12'
+        - account: https://example.test/account/d
+          recordPosition: {kind: provenZero, quantity: '0', absenceAssertionVersionIri: https://example.test/fact/absence/d/v1}
+          obligationVersionIris: [https://example.test/fact/obligation/2/v1]
+          obligationCount: 1
+          obligationSetDigest: sha256:a8ea198d854f0b845da56548e43a464988c079874ef8e823bf05f1a57791396f
+          closureProbe: {status: completed, result: true, ref: https://example.test/probe/entitlement/d, subjectSetDigest: sha256:a8ea198d854f0b845da56548e43a464988c079874ef8e823bf05f1a57791396f, digest: sha256:dc9a30f3e7302ff3fdf9ebafc971d58f475af37a519dac3e804153389d1b0e6a}
+          eligibleQuantity: '8'
+        - account: https://example.test/account/e
+          recordPosition: {kind: snapshot, quantity: '9', snapshotVersionIri: https://example.test/fact/snapshot/e/v1}
+          obligationVersionIris: [https://example.test/fact/obligation/3/v1]
+          obligationCount: 1
+          obligationSetDigest: sha256:4d6192077a685691ba9546c5f0b1be53fb7a795480d711b83c66aabd778a915a
+          closureProbe: {status: completed, result: true, ref: https://example.test/probe/entitlement/e, subjectSetDigest: sha256:4d6192077a685691ba9546c5f0b1be53fb7a795480d711b83c66aabd778a915a, digest: sha256:b0010c36cc24f9b0f5e6a382d4c4cd4c2b72de2e9fbfc48fa529eb1feb1b1f02}
+          eligibleQuantity: '4'
+        - account: https://example.test/account/f
+          recordPosition: {kind: provenZero, quantity: '0', absenceAssertionVersionIri: https://example.test/fact/absence/f/v1}
+          obligationVersionIris: [https://example.test/fact/obligation/3/v1]
+          obligationCount: 1
+          obligationSetDigest: sha256:4d6192077a685691ba9546c5f0b1be53fb7a795480d711b83c66aabd778a915a
+          closureProbe: {status: completed, result: true, ref: https://example.test/probe/entitlement/f, subjectSetDigest: sha256:4d6192077a685691ba9546c5f0b1be53fb7a795480d711b83c66aabd778a915a, digest: sha256:1e800ade6eb9ac12a2ac9172e59e1b7cb60755121bd0c23e5391c1e9dddbeb4f}
+          eligibleQuantity: '5'
+        - account: https://example.test/account/g
+          recordPosition: {kind: snapshot, quantity: '7', snapshotVersionIri: https://example.test/fact/snapshot/g/v1}
+          obligationVersionIris: []
+          obligationCount: 0
+          obligationSetDigest: sha256:719c6702560132c7c314018468acd925ae83063b73747a542080c843b6b905e1
+          closureProbe: {status: completed, result: true, ref: https://example.test/probe/entitlement/g, subjectSetDigest: sha256:719c6702560132c7c314018468acd925ae83063b73747a542080c843b6b905e1, digest: sha256:06e15211ade4397450924ad59974ae09fe6b690ba3cd0d83087373968c3b61d5}
+          eligibleQuantity: '7'
+      transfers:
+        - logicalIri: https://example.test/fact/transfer/1
+          versionIri: https://example.test/fact/transfer/1/v1
+          transferAuthorityVersionIri: https://example.test/fact/party/transfer-authority/v1
+          authorityScopedId: transfer-1
+          transferTime: '2026-05-10T10:00:00Z'
+          obligationVersionIri: https://example.test/fact/obligation/1/v1
+          fromAccount: https://example.test/account/a
+          toAccount: https://example.test/account/b
+          fromParty: https://example.test/party/a
+          toParty: https://example.test/party/b
+          state: completed
+          asset: {kind: quantity, amount: '4', unit: share, instrumentIri: https://example.test/security/s1}
+          movementEvidenceIri: https://example.test/evidence/transfer/1-old
+          movementEvidenceDigest: sha256:1010101010101010101010101010101010101010101010101010101010101010
+          sourceArtifactRef: https://example.test/artifact/transfer/1-old
+          sourceArtifactDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+          sourceLocator: $.transfers[0]
+          validFrom: '2026-05-10T10:00:00Z'
+          knowledgeFrom: '2026-05-10T10:00:00Z'
+          availableFrom: '2026-05-10T10:00:00Z'
+        - logicalIri: https://example.test/fact/transfer/1
+          versionIri: https://example.test/fact/transfer/1/v2
+          supersedesVersionIri: https://example.test/fact/transfer/1/v1
+          transferAuthorityVersionIri: https://example.test/fact/party/transfer-authority/v1
+          authorityScopedId: transfer-1
+          transferTime: '2026-05-10T10:01:00Z'
+          obligationVersionIri: https://example.test/fact/obligation/1/v1
+          fromAccount: https://example.test/account/a
+          toAccount: https://example.test/account/b
+          fromParty: https://example.test/party/a
+          toParty: https://example.test/party/b
+          state: completed
+          asset: {kind: quantity, amount: '6', unit: share, instrumentIri: https://example.test/security/s1}
+          movementEvidenceIri: https://example.test/evidence/transfer/1-corrected
+          movementEvidenceDigest: sha256:2020202020202020202020202020202020202020202020202020202020202020
+          sourceArtifactRef: https://example.test/artifact/transfer/1-corrected
+          sourceArtifactDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+          sourceLocator: $.transfers[1]
+          validFrom: '2026-05-10T10:00:00Z'
+          knowledgeFrom: '2026-05-10T10:01:00Z'
+          availableFrom: '2026-05-10T10:01:00Z'
+        - logicalIri: https://example.test/fact/transfer/2
+          versionIri: https://example.test/fact/transfer/2/v1
+          transferAuthorityVersionIri: https://example.test/fact/party/transfer-authority/v1
+          authorityScopedId: transfer-2
+          transferTime: '2026-05-10T10:02:00Z'
+          obligationVersionIri: https://example.test/fact/obligation/1/v1
+          fromAccount: https://example.test/account/a
+          toAccount: https://example.test/account/b
+          fromParty: https://example.test/party/a
+          toParty: https://example.test/party/b
+          state: completed
+          asset: {kind: quantity, amount: '4', unit: share, instrumentIri: https://example.test/security/s1}
+          movementEvidenceIri: https://example.test/evidence/transfer/2
+          movementEvidenceDigest: sha256:3030303030303030303030303030303030303030303030303030303030303030
+          sourceArtifactRef: https://example.test/artifact/transfer/2
+          sourceArtifactDigest: sha256:3333333333333333333333333333333333333333333333333333333333333333
+          sourceLocator: $.transfers[2]
+          validFrom: '2026-05-10T10:02:00Z'
+          knowledgeFrom: '2026-05-10T10:02:00Z'
+          availableFrom: '2026-05-10T10:02:00Z'
+        - logicalIri: https://example.test/fact/transfer/3
+          versionIri: https://example.test/fact/transfer/3/v1
+          transferAuthorityVersionIri: https://example.test/fact/party/transfer-authority/v1
+          authorityScopedId: transfer-3
+          transferTime: '2026-05-10T10:03:00Z'
+          obligationVersionIri: https://example.test/fact/obligation/2/v1
+          fromAccount: https://example.test/account/c
+          toAccount: https://example.test/account/d
+          fromParty: https://example.test/party/c
+          toParty: https://example.test/party/d
+          state: completed
+          asset: {kind: quantity, amount: '3', unit: share, instrumentIri: https://example.test/security/s1}
+          movementEvidenceIri: https://example.test/evidence/transfer/3
+          movementEvidenceDigest: sha256:4040404040404040404040404040404040404040404040404040404040404040
+          sourceArtifactRef: https://example.test/artifact/transfer/3
+          sourceArtifactDigest: sha256:4444444444444444444444444444444444444444444444444444444444444444
+          sourceLocator: $.transfers[3]
+          validFrom: '2026-05-10T10:03:00Z'
+          knowledgeFrom: '2026-05-10T10:03:00Z'
+          availableFrom: '2026-05-10T10:03:00Z'
+        - logicalIri: https://example.test/fact/transfer/4
+          versionIri: https://example.test/fact/transfer/4/v1
+          transferAuthorityVersionIri: https://example.test/fact/party/transfer-authority/v1
+          authorityScopedId: transfer-4
+          transferTime: '2026-05-10T10:04:00Z'
+          obligationVersionIri: https://example.test/fact/obligation/2/v1
+          fromAccount: https://example.test/account/c
+          toAccount: https://example.test/account/d
+          fromParty: https://example.test/party/c
+          toParty: https://example.test/party/d
+          state: pending
+          asset: {kind: quantity, amount: '5', unit: share, instrumentIri: https://example.test/security/s1}
+          movementEvidenceIri: https://example.test/evidence/transfer/4-attempt
+          movementEvidenceDigest: sha256:5050505050505050505050505050505050505050505050505050505050505050
+          sourceArtifactRef: https://example.test/artifact/transfer/4
+          sourceArtifactDigest: sha256:5555555555555555555555555555555555555555555555555555555555555555
+          sourceLocator: $.transfers[4]
+          validFrom: '2026-05-10T10:04:00Z'
+          knowledgeFrom: '2026-05-10T10:04:00Z'
+          availableFrom: '2026-05-10T10:04:00Z'
+      transferClosures:
+        - obligationVersionIri: https://example.test/fact/obligation/1/v1
+          versionIri: https://example.test/fact/transfer-closure/1/v1
+          pitRequestRef: https://example.test/control/pit-request/due-bill/1
+          pitRequestRecordDigest: sha256:6161616161616161616161616161616161616161616161616161616161616161
+          inputContextRef: https://example.test/control/input-context/due-bill/1
+          inputContextRecordDigest: sha256:6262626262626262626262626262626262626262626262626262626262626262
+          generatingContextRef: https://example.test/control/run/due-bill/1
+          transferVersionIris: [https://example.test/fact/transfer/1/v2, https://example.test/fact/transfer/2/v1]
+          transferCount: 2
+          transferSetDigest: sha256:ac49e4e9927153a08af61c56be031d3421054246552636c2c55f18807629450f
+          closureProbe: {status: completed, result: true, ref: https://example.test/probe/transfer/1, subjectSetDigest: sha256:ac49e4e9927153a08af61c56be031d3421054246552636c2c55f18807629450f, digest: sha256:a649b2699f7894471218ced2120f87a366f7eb19fa371538d575f909495e0511}
+          fulfilledAmount: '10'
+          remainingAmount: '0'
+          result: fullyFulfilled
+        - obligationVersionIri: https://example.test/fact/obligation/2/v1
+          versionIri: https://example.test/fact/transfer-closure/2/v1
+          pitRequestRef: https://example.test/control/pit-request/due-bill/1
+          pitRequestRecordDigest: sha256:6161616161616161616161616161616161616161616161616161616161616161
+          inputContextRef: https://example.test/control/input-context/due-bill/1
+          inputContextRecordDigest: sha256:6262626262626262626262626262626262626262626262626262626262626262
+          generatingContextRef: https://example.test/control/run/due-bill/1
+          transferVersionIris: [https://example.test/fact/transfer/3/v1, https://example.test/fact/transfer/4/v1]
+          transferCount: 2
+          transferSetDigest: sha256:0a95c1c34f5440aa2451baacffe57c23955c1e2b00578fffddf6d6c0cdfc6bd4
+          closureProbe: {status: completed, result: true, ref: https://example.test/probe/transfer/2, subjectSetDigest: sha256:0a95c1c34f5440aa2451baacffe57c23955c1e2b00578fffddf6d6c0cdfc6bd4, digest: sha256:ba9906f502d33d055af0d899b64865cd88001fee8794fd8ff22d7b5992a1f545}
+          fulfilledAmount: '3'
+          remainingAmount: '5'
+          result: partiallyFulfilled
+        - obligationVersionIri: https://example.test/fact/obligation/3/v1
+          versionIri: https://example.test/fact/transfer-closure/3/v1
+          pitRequestRef: https://example.test/control/pit-request/due-bill/1
+          pitRequestRecordDigest: sha256:6161616161616161616161616161616161616161616161616161616161616161
+          inputContextRef: https://example.test/control/input-context/due-bill/1
+          inputContextRecordDigest: sha256:6262626262626262626262626262626262626262626262626262626262626262
+          generatingContextRef: https://example.test/control/run/due-bill/1
+          transferVersionIris: []
+          transferCount: 0
+          transferSetDigest: sha256:719c6702560132c7c314018468acd925ae83063b73747a542080c843b6b905e1
+          closureProbe: {status: completed, result: true, ref: https://example.test/probe/transfer/3, subjectSetDigest: sha256:719c6702560132c7c314018468acd925ae83063b73747a542080c843b6b905e1, digest: sha256:5f6e3c76571e2329c40f85b0ea2ec3c5913d6ca50da936476eb21161f6b56a92}
+          fulfilledAmount: '0'
+          remainingAmount: '5'
+          result: unfulfilled
+
+  - id: rights-election-subscription-adjustment-chain
+    contract: RightsExerciseChain
+    instance:
+      event: &rights_event
+        versionIri: https://example.test/fact/corporate-action/rights-event/1/v1
+        sourceAuthorityVersionIri: https://example.test/fact/party/authority/version/1
+        sourceAuthorityLogicalIri: https://example.test/party/event-authority
+        affectedSecurityIri: https://example.test/security/old
+        successorSecurityIri: https://example.test/security/new
+        kind: rightsIssue
+        dates: {announcement: 2026-07-01, ex: 2026-07-03, record: 2026-07-04, electionDeadline: 2026-07-08, effective: 2026-07-12, payment: 2026-07-10}
+        entitlementRatio: '0.2'
+        subscriptionPrice: {amount: '2', currency: USD}
+        nonTransferableDirectSubscription: true
+      maximumRightsQuantity: '12.5'
+      entitlement: &rights_entitlement
+        versionIri: https://example.test/fact/entitlement/rights-1/v1
+        eventVersionIri: https://example.test/fact/corporate-action/rights-event/1/v1
+        accountLogicalIri: https://example.test/account/subscriber-securities
+        entitledPartyVersionIri: https://example.test/fact/party/investor/v1
+        maximumRightsQuantity: '12.5'
+      subscriptionCashDueDate: 2026-07-10
+      successorDeliveryDate: 2026-07-12
+      scheduleResolutionVersionIri: https://example.test/fact/corporate-action/schedule-resolution/rights-1/v1
+      electionPitRequest: &rights_pit_request
+        ref: https://example.test/control/pit-request/election/1
+        recordDigest: sha256:6868686868686868686868686868686868686868686868686868686868686868
+        inputContextRef: https://example.test/control/input-context/election/1
+        inputContextRecordDigest: sha256:6969696969696969696969696969696969696969696969696969696969696969
+        asOfValid: '2026-07-08T23:59:59Z'
+        asOfKnowledge: '2026-07-09T00:00:00Z'
+        asOfAvailable: '2026-07-09T00:00:00Z'
+      providerPolicy: &rights_policy
+        versionIri: https://example.test/fact/election-policy/1/v1
+        policyAuthorityVersionIri: https://example.test/fact/party/policy-authority/v1
+        authorityScopedId: election-policy-1
+        implementationDigest: sha256:5555555555555555555555555555555555555555555555555555555555555555
+        runtimeDigest: sha256:6666666666666666666666666666666666666666666666666666666666666666
+        sourceArtifactRef: https://example.test/artifact/election-policy/1
+        sourceArtifactDigest: sha256:7777777777777777777777777777777777777777777777777777777777777777
+        sourceLocator: $.electionPolicies[0]
+        validFrom: &election_valid_from '2026-07-01T00:00:00Z'
+        knowledgeFrom: &election_knowledge_from '2026-07-01T00:00:00Z'
+        availableFrom: &election_available_from '2026-07-01T00:00:00Z'
+        eventAuthorityLogicalIri: https://example.test/party/event-authority
+        eventScopeDigest: sha256:1642d30953fb7d3c843200e17dc1a12492e55d953154948ab518ae0a32c42c51
+        providerMembers:
+          - versionIri: https://example.test/fact/election-policy/1/member/provider-a/v1
+            policyVersionIri: https://example.test/fact/election-policy/1/v1
+            providerLogicalIri: https://example.test/party/election-provider-a
+            normalizedProviderKey: provider-a
+            generatingContextRef: &election_policy_context https://example.test/control/run/election-policy/1
+            validFrom: *election_valid_from
+            knowledgeFrom: *election_knowledge_from
+            availableFrom: *election_available_from
+          - versionIri: https://example.test/fact/election-policy/1/member/provider-b/v1
+            policyVersionIri: https://example.test/fact/election-policy/1/v1
+            providerLogicalIri: https://example.test/party/election-provider-b
+            normalizedProviderKey: provider-b
+            generatingContextRef: *election_policy_context
+            validFrom: *election_valid_from
+            knowledgeFrom: *election_knowledge_from
+            availableFrom: *election_available_from
+        eligibleProviderCount: 2
+        eligibleProviderSetDigest: sha256:cf89ee337d46b9893389eaee54183bba842d029bd901636575b552513f2d5a19
+        providerMemberVersionSetDigest: sha256:926129690373901f8b8c6635509c7cddb0ef3bf2d6cc8b68371a59d4050f5b4a
+        normalizationMappings:
+          - versionIri: https://example.test/fact/election-policy/1/normalization/src-a/v1
+            policyVersionIri: https://example.test/fact/election-policy/1/v1
+            sourceProviderKey: SRC-A
+            normalizedProviderLogicalIri: https://example.test/party/election-provider-a
+            normalizedProviderKey: provider-a
+            generatingContextRef: *election_policy_context
+            validFrom: *election_valid_from
+            knowledgeFrom: *election_knowledge_from
+            availableFrom: *election_available_from
+          - versionIri: https://example.test/fact/election-policy/1/normalization/src-b/v1
+            policyVersionIri: https://example.test/fact/election-policy/1/v1
+            sourceProviderKey: SRC-B
+            normalizedProviderLogicalIri: https://example.test/party/election-provider-b
+            normalizedProviderKey: provider-b
+            generatingContextRef: *election_policy_context
+            validFrom: *election_valid_from
+            knowledgeFrom: *election_knowledge_from
+            availableFrom: *election_available_from
+        providerNormalizationCount: 2
+        providerNormalizationDigest: sha256:58367b55dae51516fb8a5fac2a976c09aa3c764d1eb2759c993ac81221b24df3
+        precedenceEdges:
+          - versionIri: https://example.test/fact/election-policy/1/precedence/a-over-b/v1
+            policyVersionIri: https://example.test/fact/election-policy/1/v1
+            higherProviderLogicalIri: https://example.test/party/election-provider-a
+            lowerProviderLogicalIri: https://example.test/party/election-provider-b
+            generatingContextRef: *election_policy_context
+            validFrom: *election_valid_from
+            knowledgeFrom: *election_knowledge_from
+            availableFrom: *election_available_from
+        precedenceEdgeCount: 1
+        precedenceGraphDigest: sha256:09063c0eb2211dac1d21b08f9e870b4d6aa7ec6a44944b1a3331858e7958fa7d
+        electionEquivalenceFieldIris:
+          - https://axiolune.ai/ontology/finance/post-trade-operations/electionDecision
+          - https://axiolune.ai/ontology/finance/post-trade-operations/electedQuantity
+        equivalenceFieldsDigest: sha256:faef782652501112fe2ddf5bb340f0916d90312744a4a72bb71d463474b5b8e4
+        electionDeadlineCutoff: '2026-07-08T23:59:59Z'
+        deadlineInclusive: true
+        deadlineCutoffContractDigest: sha256:8a018405b97e0ae2e03baf7727cdeff43daed794702014ed63cf1818c9005517
+      electionCandidates:
+        - logicalIri: https://example.test/fact/election/1
+          versionIri: https://example.test/fact/election/1/v1
+          authorityScopedId: provider-a-election-1
+          sourceRecordRef: https://example.test/source-record/election/1
+          sourceRecordDigest: sha256:7070707070707070707070707070707070707070707070707070707070707070
+          fieldMappingDigest: sha256:7171717171717171717171717171717171717171717171717171717171717171
+          sourceArtifactRef: https://example.test/artifact/election/1
+          sourceArtifactDigest: sha256:7272727272727272727272727272727272727272727272727272727272727272
+          sourceLocator: $.elections[0]
+          providerPolicyVersionIri: https://example.test/fact/election-policy/1/v1
+          providerLogicalIri: https://example.test/party/election-provider-a
+          providerVersionIri: https://example.test/fact/party/election-provider-a/v3
+          providerVersionLogicalIri: https://example.test/party/election-provider-a
+          sourceProviderKey: SRC-A
+          entitlementVersionIri: https://example.test/fact/entitlement/rights-1/v1
+          eventVersionIri: https://example.test/fact/corporate-action/rights-event/1/v1
+          receivedAt: '2026-07-08T12:00:00Z'
+          electingPartyVersionIri: https://example.test/fact/party/investor/v1
+          selfElection: true
+          decision: exercise
+          electedQuantity: '10'
+          validFrom: '2026-07-08T12:00:00Z'
+          knowledgeFrom: '2026-07-08T12:00:00Z'
+          availableFrom: '2026-07-08T12:00:00Z'
+        - logicalIri: https://example.test/fact/election/2
+          versionIri: https://example.test/fact/election/2/v1
+          authorityScopedId: provider-b-election-1
+          sourceRecordRef: https://example.test/source-record/election/2
+          sourceRecordDigest: sha256:7373737373737373737373737373737373737373737373737373737373737373
+          fieldMappingDigest: sha256:7474747474747474747474747474747474747474747474747474747474747474
+          sourceArtifactRef: https://example.test/artifact/election/2
+          sourceArtifactDigest: sha256:7575757575757575757575757575757575757575757575757575757575757575
+          sourceLocator: $.elections[1]
+          providerPolicyVersionIri: https://example.test/fact/election-policy/1/v1
+          providerLogicalIri: https://example.test/party/election-provider-b
+          providerVersionIri: https://example.test/fact/party/election-provider-b/v2
+          providerVersionLogicalIri: https://example.test/party/election-provider-b
+          sourceProviderKey: SRC-B
+          entitlementVersionIri: https://example.test/fact/entitlement/rights-1/v1
+          eventVersionIri: https://example.test/fact/corporate-action/rights-event/1/v1
+          receivedAt: '2026-07-08T12:05:00Z'
+          electingPartyVersionIri: https://example.test/fact/party/operator/v1
+          authorizationAccountPartyRole:
+            versionIri: https://example.test/fact/account-party-role/operator/v1
+            account: https://example.test/account/subscriber-securities
+            party: https://example.test/fact/party/operator/v1
+            kind: authorizedOperator
+            validFrom: '2026-07-01T00:00:00Z'
+            knowledgeFrom: '2026-07-01T00:00:00Z'
+            availableFrom: '2026-07-01T00:00:00Z'
+          decision: decline
+          validFrom: '2026-07-08T12:05:00Z'
+          knowledgeFrom: '2026-07-08T12:05:00Z'
+          availableFrom: '2026-07-08T12:05:00Z'
+      candidateVersionIris: [https://example.test/fact/election/1/v1, https://example.test/fact/election/2/v1]
+      candidateCount: 2
+      candidateSetDigest: sha256:ce26dca7548fe740fe53e890a3bf7268aceb216dfcc3d10d715e62efcbb56cf5
+      candidateClosureProbe:
+        status: completed
+        result: true
+        ref: https://example.test/probe/election-candidates/1
+        subjectSetDigest: sha256:ce26dca7548fe740fe53e890a3bf7268aceb216dfcc3d10d715e62efcbb56cf5
+        digest: sha256:a3a3d859fdaf05dbfd139595e55322c00fc010ab2d81f1bbd48dcb17d0199484
+      resolution:
+        versionIri: https://example.test/fact/election-resolution/1/v1
+        entitlementVersionIri: https://example.test/fact/entitlement/rights-1/v1
+        providerPolicyVersionIri: https://example.test/fact/election-policy/1/v1
+        pitRequestRef: https://example.test/control/pit-request/election/1
+        pitRequestRecordDigest: sha256:6868686868686868686868686868686868686868686868686868686868686868
+        inputContextRef: https://example.test/control/input-context/election/1
+        inputContextRecordDigest: sha256:6969696969696969696969696969696969696969696969696969696969696969
+        generatingContextRef: https://example.test/control/run/election-resolution/1
+        result: selectedExercise
+        selectedExercise: true
+        selectedElectionVersionIri: https://example.test/fact/election/1/v1
+        electedQuantity: '10'
+        precedenceProof:
+          selectedProviderLogicalIri: https://example.test/party/election-provider-a
+          defeatedCandidateVersionIris: [https://example.test/fact/election/2/v1]
+          candidateSetDigest: sha256:ce26dca7548fe740fe53e890a3bf7268aceb216dfcc3d10d715e62efcbb56cf5
+          normalizationMappingVersionIris: [https://example.test/fact/election-policy/1/normalization/src-a/v1, https://example.test/fact/election-policy/1/normalization/src-b/v1]
+          precedenceEdgeVersionIris: [https://example.test/fact/election-policy/1/precedence/a-over-b/v1]
+      subscriptionObligation:
+        versionIri: https://example.test/fact/subscription-obligation/1/v1
+        electionResolutionVersionIri: https://example.test/fact/election-resolution/1/v1
+        selectedElectionVersionIri: https://example.test/fact/election/1/v1
+        entitlementVersionIri: https://example.test/fact/entitlement/rights-1/v1
+        eventVersionIri: https://example.test/fact/corporate-action/rights-event/1/v1
+        scheduleResolutionVersionIri: https://example.test/fact/corporate-action/schedule-resolution/rights-1/v1
+        successorSecurityIri: https://example.test/security/new
+        subscriberCashAccount: https://example.test/account/subscriber-cash
+        subscriberSecuritiesAccount: https://example.test/account/subscriber-securities
+        agentCashAccount: https://example.test/account/agent-cash
+        agentSecuritiesAccount: https://example.test/account/agent-securities
+        subscriberPartyVersionIri: https://example.test/fact/party/investor/v1
+        agentPartyVersionIri: https://example.test/fact/party/subscription-agent/v1
+        cashAmount: '20'
+        currency: USD
+        securityQuantity: '10'
+        securityUnit: https://example.test/unit/share
+        subscriptionCashDueDate: 2026-07-10
+        successorDeliveryDate: 2026-07-12
+        generatingContextRef: https://example.test/control/run/subscription-obligation/1
+      fulfillmentPitRequest:
+        ref: https://example.test/control/pit-request/subscription-fulfillment/1
+        recordDigest: sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+        inputContextRef: https://example.test/control/input-context/subscription-fulfillment/1
+        inputContextRecordDigest: sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+        asOfValid: '2026-07-12T23:59:59Z'
+        asOfKnowledge: '2026-07-13T00:00:00Z'
+        asOfAvailable: '2026-07-13T00:00:00Z'
+      fulfillments:
+        - logicalIri: https://example.test/fact/subscription-fulfillment/cash
+          versionIri: https://example.test/fact/subscription-fulfillment/cash/v1
+          authorityVersionIri: https://example.test/fact/party/fulfillment-authority/v1
+          authorityScopedId: subscription-cash-1
+          subscriptionObligationVersionIri: https://example.test/fact/subscription-obligation/1/v1
+          state: completed
+          assetKind: cashPayment
+          amount: '20'
+          currency: USD
+          fromAccount: https://example.test/account/subscriber-cash
+          toAccount: https://example.test/account/agent-cash
+          fromParty: https://example.test/fact/party/investor/v1
+          toParty: https://example.test/fact/party/subscription-agent/v1
+          effectiveDate: 2026-07-10
+          occurrenceTime: '2026-07-10T15:00:00Z'
+          movementEvidenceIri: https://example.test/evidence/subscription/cash
+          movementEvidenceDigest: sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+          sourceArtifactRef: https://example.test/artifact/subscription-fulfillment/cash
+          sourceArtifactDigest: sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+          sourceLocator: $.subscriptionFulfillments[0]
+          validFrom: '2026-07-10T15:00:00Z'
+          knowledgeFrom: '2026-07-10T15:00:00Z'
+          availableFrom: '2026-07-10T15:00:00Z'
+        - logicalIri: https://example.test/fact/subscription-fulfillment/security
+          versionIri: https://example.test/fact/subscription-fulfillment/security/v1
+          authorityVersionIri: https://example.test/fact/party/fulfillment-authority/v1
+          authorityScopedId: subscription-security-1
+          subscriptionObligationVersionIri: https://example.test/fact/subscription-obligation/1/v1
+          state: completed
+          assetKind: securityDelivery
+          amount: '10'
+          instrumentIri: https://example.test/security/new
+          unit: https://example.test/unit/share
+          fromAccount: https://example.test/account/agent-securities
+          toAccount: https://example.test/account/subscriber-securities
+          fromParty: https://example.test/fact/party/subscription-agent/v1
+          toParty: https://example.test/fact/party/investor/v1
+          effectiveDate: 2026-07-12
+          occurrenceTime: '2026-07-12T15:00:00Z'
+          movementEvidenceIri: https://example.test/evidence/subscription/security
+          movementEvidenceDigest: sha256:9090909090909090909090909090909090909090909090909090909090909090
+          sourceArtifactRef: https://example.test/artifact/subscription-fulfillment/security
+          sourceArtifactDigest: sha256:9191919191919191919191919191919191919191919191919191919191919191
+          sourceLocator: $.subscriptionFulfillments[1]
+          validFrom: '2026-07-12T15:00:00Z'
+          knowledgeFrom: '2026-07-12T15:00:00Z'
+          availableFrom: '2026-07-12T15:00:00Z'
+      fulfillmentClosure:
+        versionIri: https://example.test/fact/subscription-closure/1/v1
+        obligationVersionIri: https://example.test/fact/subscription-obligation/1/v1
+        pitRequestRef: https://example.test/control/pit-request/subscription-fulfillment/1
+        pitRequestRecordDigest: sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+        inputContextRef: https://example.test/control/input-context/subscription-fulfillment/1
+        inputContextRecordDigest: sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+        generatingContextRef: https://example.test/control/run/subscription-fulfillment-closure/1
+        fulfillmentVersionIris: [https://example.test/fact/subscription-fulfillment/cash/v1, https://example.test/fact/subscription-fulfillment/security/v1]
+        fulfillmentCount: 2
+        fulfillmentSetDigest: sha256:566c80b246e726bead247b5c6b5b5a98e7927fe0934d82c23b4004ad78495eb6
+        closureProbe: {status: completed, result: true, ref: https://example.test/probe/subscription/1, subjectSetDigest: sha256:566c80b246e726bead247b5c6b5b5a98e7927fe0934d82c23b4004ad78495eb6, digest: sha256:1ba055078dd7386a93c1555ea818b78b6cd5f7f73cc59347ac74e387d6a59332}
+        result: fullyFulfilled
+        fulfilledCashAmount: '20'
+        fulfilledSecurityQuantity: '10'
+      adjustment:
+        versionIri: https://example.test/fact/corporate-action/adjustment/rights-1/v1
+        eventVersionIri: https://example.test/fact/corporate-action/rights-event/1/v1
+        scheduleResolutionVersionIri: https://example.test/fact/corporate-action/schedule-resolution/rights-1/v1
+        entitlementVersionIri: https://example.test/fact/entitlement/rights-1/v1
+        electionResolutionVersionIri: https://example.test/fact/election-resolution/1/v1
+        selectedElectionVersionIri: https://example.test/fact/election/1/v1
+        subscriptionObligationVersionIri: https://example.test/fact/subscription-obligation/1/v1
+        fulfillmentClosureVersionIri: https://example.test/fact/subscription-closure/1/v1
+        generatingContextRef: https://example.test/control/run/corporate-action-adjustment/rights-1
+        movementEvidenceIris: [https://example.test/evidence/subscription/cash, https://example.test/evidence/subscription/security]
+        movementEvidenceCount: 2
+        movementEvidenceSetDigest: sha256:d2547fe79c4199f7fdb2d80936dc92599df2dfe14722c60b461f88c61956ada1
+        cashAccount: https://example.test/account/subscriber-cash
+        securitiesAccount: https://example.test/account/subscriber-securities
+        cashEffectiveDate: 2026-07-10
+        quantityEffectiveDate: 2026-07-12
+        cashDelta: '-20'
+        quantityDelta: '10'
+        validFrom: '2026-07-12T15:00:00Z'
+
+  - id: settlement-dvp-fop-direct-omnibus-allocation
+    contract: SettlementAndAllocation
+    instance:
+      bridges:
+        - versionIri: https://example.test/fact/bridge/buyer/v1
+          pitEligible: true
+          economicAccount: https://example.test/account/buyer-beneficial
+          settlementAccount: https://example.test/account/buyer-omnibus-securities
+          system: DTC
+          location: US
+      instructions:
+        - versionIri: https://example.test/fact/instruction/dvp/v1
+          method: deliveryVersusPayment
+          securitiesDeliverer: https://example.test/party/seller
+          securitiesReceiver: https://example.test/party/buyer-custodian
+          atomicGroupId: atomic-dvp-1
+          system: DTC
+          location: US
+          legs:
+            - versionIri: https://example.test/fact/leg/dvp-security/v1
+              atomicGroupId: atomic-dvp-1
+              fromParty: https://example.test/party/seller
+              toParty: https://example.test/party/buyer-custodian
+              fromAccount: https://example.test/account/seller-securities
+              toAccount: https://example.test/account/buyer-omnibus-securities
+              asset: {kind: security, amount: '100', unit: https://example.test/unit/share, instrumentIri: https://example.test/security/s1}
+            - versionIri: https://example.test/fact/leg/dvp-cash/v1
+              atomicGroupId: atomic-dvp-1
+              fromParty: https://example.test/party/buyer-custodian
+              toParty: https://example.test/party/seller
+              fromAccount: https://example.test/account/buyer-cash
+              toAccount: https://example.test/account/seller-cash
+              asset: {kind: money, amount: '1000', currency: USD}
+          statusEvents:
+            - {order: 1, subject: group, atomicGroupId: atomic-dvp-1, state: instructed}
+            - {order: 2, subject: group, atomicGroupId: atomic-dvp-1, state: settled, atomicCompletionEvidenceRef: https://example.test/evidence/atomic-completion/dvp-1, atomicCompletionEvidenceDigest: sha256:3615f653de98072821d645c8f39fbde5a7796a02f5c378539979662872a729cf}
+        - versionIri: https://example.test/fact/instruction/fop/v1
+          method: freeOfPayment
+          securitiesDeliverer: https://example.test/party/fop-seller
+          securitiesReceiver: https://example.test/party/fop-buyer
+          atomicGroupId: atomic-fop-1
+          system: DTC
+          location: US
+          legs:
+            - versionIri: https://example.test/fact/leg/fop-security/v1
+              atomicGroupId: atomic-fop-1
+              fromParty: https://example.test/party/fop-seller
+              toParty: https://example.test/party/fop-buyer
+              fromAccount: https://example.test/account/fop-seller-securities
+              toAccount: https://example.test/account/fop-buyer-securities
+              asset: {kind: security, amount: '25', unit: https://example.test/unit/share, instrumentIri: https://example.test/security/s2}
+          statusEvents:
+            - {order: 1, subject: leg, legVersionIri: https://example.test/fact/leg/fop-security/v1, state: settled}
+      allocations:
+        - versionIri: https://example.test/fact/allocation/dvp/v1
+          instructionVersionIri: https://example.test/fact/instruction/dvp/v1
+          securityLegVersionIri: https://example.test/fact/leg/dvp-security/v1
+          execution: {versionIri: https://example.test/fact/execution/dvp/v1, side: buy, account: https://example.test/account/buyer-beneficial, instrumentIri: https://example.test/security/s1, quantity: '40'}
+          quantity: {amount: '40', unit: https://example.test/unit/share}
+          fromEconomicAccount: https://example.test/account/seller-securities
+          toEconomicAccount: https://example.test/account/buyer-beneficial
+          fromMode: directAccount
+          toMode: custodyOrOmnibus
+          toBridgeVersionIri: https://example.test/fact/bridge/buyer/v1
+        - versionIri: https://example.test/fact/allocation/fop/v1
+          instructionVersionIri: https://example.test/fact/instruction/fop/v1
+          securityLegVersionIri: https://example.test/fact/leg/fop-security/v1
+          execution: {versionIri: https://example.test/fact/execution/fop/v1, side: sell, account: https://example.test/account/fop-seller-securities, instrumentIri: https://example.test/security/s2, quantity: '25'}
+          quantity: {amount: '25', unit: https://example.test/unit/share}
+          fromEconomicAccount: https://example.test/account/fop-seller-securities
+          toEconomicAccount: https://example.test/account/fop-buyer-securities
+          fromMode: directAccount
+          toMode: directAccount
+
+  - id: missing-side-strict-cash-security-key
+    contract: MissingSideStrictKey
+    instance:
+      assertions:
+        - expectedSide: external
+          focalAccountLogicalIri: https://example.test/account/focal-beneficial
+          normalizedSettlementReference: DTC-REF-CASH-1
+          settlementDate: '2026-07-15'
+          settlementSystem: DTC
+          settlementLocation: US
+          entryDirection: debit
+          assetKind: cash
+          comparisonCurrencyAlphaCode: USD
+          comparisonCurrencyScale: 2
+          comparisonKeyDigest: sha256:0b62f9f15ca92371a70bfd3d33c1323c1415fe4a141de51c27a56085632aeea4
+        - expectedSide: internal
+          focalAccountLogicalIri: https://example.test/account/focal-beneficial
+          normalizedSettlementReference: DTC-REF-SEC-1
+          settlementDate: '2026-07-15'
+          settlementSystem: DTC
+          settlementLocation: US
+          entryDirection: credit
+          assetKind: security
+          comparisonInstrumentIri: https://example.test/security/s1
+          comparisonQuantityUnit: https://example.test/unit/share
+          comparisonKeyDigest: sha256:54803dc5f8f5d3fb2d15f94316abe992cf59f9ecab6eabb004dec7c8749a4558
+
+  - id: economic-allocation-projection-and-closed-finding-matrix
+    contract: ReconciliationProjectionAndMatrix
+    instance:
+      case:
+        logicalIri: https://example.test/fact/reconciliation/case/1
+        versionIri: &rec_case https://example.test/fact/reconciliation/case/1/v1
+        authorityScopedId: reconciliation-case-2026-07-15-001
+        reconciliationScope: accountDateSystem
+        caseOwnerVersionIri: https://example.test/fact/party/reconciliation-operations/v1
+        internalSourceAuthorityVersionIri: &rec_internal_authority_version https://example.test/fact/party/internal-settlement-authority/v1
+        externalStatementVersionIri: &rec_statement https://example.test/fact/reconciliation/statement/1/v1
+        internalProjectionMode: &rec_mode economicAccountAllocation
+        economicAccountAllocationMode: true
+        focalAccount: &rec_focal https://example.test/account/focal-beneficial
+        comparatorVersionIri: &rec_comparator https://example.test/fact/reconciliation/comparator/1/v1
+        internalSourceAuthorityLogicalIri: https://example.test/party/internal-settlement-authority
+        externalProviderLogicalIri: https://example.test/party/external-statement-provider
+        reconciliationDate: '2026-07-15'
+        reconciliationAsOfValid: &rec_asof_valid '2026-07-15T23:59:59Z'
+        reconciliationAsOfKnowledge: &rec_asof_knowledge '2026-07-16T00:00:00Z'
+        reconciliationAsOfAvailable: &rec_asof_available '2026-07-16T00:01:00Z'
+        inputContextRef: &rec_input_context https://example.test/control/input-context/reconciliation/1
+        inputContextRecordDigest: sha256:82f77279160987491c4bcffc1581fa151771a90648a330b259500f1f847bb1c5
+        generatingContextRef: https://example.test/control/run/reconciliation/case/1
+        validFrom: *rec_asof_valid
+        knowledgeFrom: *rec_asof_knowledge
+        availableFrom: *rec_asof_available
+        allocationVersionIris:
+          - https://example.test/fact/allocation/rec-1/v2
+          - https://example.test/fact/allocation/rec-2/v1
+          - https://example.test/fact/allocation/rec-k2/v1
+          - https://example.test/fact/allocation/rec-k3/v1
+          - https://example.test/fact/allocation/rec-k5a/v1
+          - https://example.test/fact/allocation/rec-k5b/v1
+          - https://example.test/fact/allocation/rec-k7a/v1
+          - https://example.test/fact/allocation/rec-k7b/v1
+          - https://example.test/fact/allocation/rec-k8/v1
+          - https://example.test/fact/allocation/rec-k9a/v1
+          - https://example.test/fact/allocation/rec-k9b/v1
+        allocationCount: 11
+        allocationVersionSetDigest: sha256:11a02ec80809222ea1c700ae692755dbd7d40364f577400d55ff97aa02662f73
+        allocationClosureProbeRef: https://example.test/probe/reconciliation/allocations
+        allocationClosureProbeDigest: sha256:b7ae6fadf1932e2b27fe5a61dec141d21c526e6902e788daea0e73222073010c
+        allocationClosureProbe: {status: completed, result: true, ref: https://example.test/probe/reconciliation/allocations, subjectSetDigest: sha256:11a02ec80809222ea1c700ae692755dbd7d40364f577400d55ff97aa02662f73, digest: sha256:b7ae6fadf1932e2b27fe5a61dec141d21c526e6902e788daea0e73222073010c}
+        currentStatus: resolved
+      externalStatementVersionIri: *rec_statement
+      comparator:
+        versionIri: https://example.test/fact/reconciliation/comparator/1/v1
+        implementationDigest: sha256:8282828282828282828282828282828282828282828282828282828282828282
+        runtimeDigest: sha256:8383838383838383838383838383838383838383838383838383838383838383
+        inputContractDigest: sha256:8484848484848484848484848484848484848484848484848484848484848484
+        outputContractDigest: sha256:8585858585858585858585858585858585858585858585858585858585858585
+        referenceNormalizationDigest: sha256:8686868686868686868686868686868686868686868686868686868686868686
+        canonicalizationDigest: sha256:8787878787878787878787878787878787878787878787878787878787878787
+        numericTolerance: '0'
+        sourceArtifactRef: https://example.test/artifact/reconciliation-comparator/1
+        sourceArtifactDigest: sha256:8888888888888888888888888888888888888888888888888888888888888888
+        sourceLocator: $.comparators[0]
+        validFrom: &rec_valid_from '2026-07-01T00:00:00Z'
+        knowledgeFrom: &rec_knowledge_from '2026-07-01T00:00:00Z'
+        availableFrom: &rec_available_from '2026-07-01T00:00:00Z'
+      externalStatement:
+        versionIri: *rec_statement
+        providerVersionIri: https://example.test/fact/party/external-statement-provider/v1
+        providerLogicalIri: https://example.test/party/external-statement-provider
+        authorityScopedId: statement-2026-07-15-001
+        focalAccount: https://example.test/account/focal-beneficial
+        statementDate: '2026-07-15'
+        sourceSnapshotRef: https://example.test/snapshot/external-statement/2026-07-15
+        sourceSnapshotDigest: sha256:8989898989898989898989898989898989898989898989898989898989898989
+        sourceSchemaDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        sourceArtifactRef: https://example.test/artifact/external-statement/2026-07-15
+        sourceArtifactDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        sourceLocator: $.statements[0]
+        validFrom: *rec_valid_from
+        knowledgeFrom: *rec_knowledge_from
+        availableFrom: *rec_available_from
+      bridges:
+        - versionIri: https://example.test/fact/bridge/rec-focal/v1
+          economicAccount: https://example.test/account/focal-beneficial
+          settlementAccount: https://example.test/account/omnibus-target
+          system: DTC
+          location: US
+          validFrom: *rec_valid_from
+          knowledgeFrom: *rec_knowledge_from
+          availableFrom: *rec_available_from
+        - versionIri: https://example.test/fact/bridge/rec-other/v1
+          economicAccount: https://example.test/account/other-beneficial
+          settlementAccount: https://example.test/account/omnibus-target
+          system: DTC
+          location: US
+          validFrom: *rec_valid_from
+          knowledgeFrom: *rec_knowledge_from
+          availableFrom: *rec_available_from
+      legs:
+        - {versionIri: https://example.test/fact/leg/rec-k1/v1, normalizedSettlementReference: DTC-MATRIX-01, settlementDate: '2026-07-15', system: DTC, location: US, fromAccount: https://example.test/account/omnibus-source, toAccount: https://example.test/account/omnibus-target, asset: {kind: security, amount: '100', unit: https://example.test/unit/share, instrumentIri: https://example.test/security/s1, precision: 0}, validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from}
+        - {versionIri: https://example.test/fact/leg/rec-k2/v1, normalizedSettlementReference: DTC-MATRIX-02, settlementDate: '2026-07-15', system: DTC, location: US, fromAccount: https://example.test/account/source-k2, toAccount: https://example.test/account/focal-beneficial, asset: {kind: security, amount: '10', unit: https://example.test/unit/share, instrumentIri: https://example.test/security/s1, precision: 0}, validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from}
+        - {versionIri: https://example.test/fact/leg/rec-k3/v1, normalizedSettlementReference: DTC-MATRIX-03, settlementDate: '2026-07-15', system: DTC, location: US, fromAccount: https://example.test/account/source-k3, toAccount: https://example.test/account/focal-beneficial, asset: {kind: security, amount: '10', unit: https://example.test/unit/share, instrumentIri: https://example.test/security/s1, precision: 0}, validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from}
+        - {versionIri: https://example.test/fact/leg/rec-k5a/v1, normalizedSettlementReference: DTC-MATRIX-05, settlementDate: '2026-07-15', system: DTC, location: US, fromAccount: https://example.test/account/source-k5a, toAccount: https://example.test/account/focal-beneficial, asset: {kind: security, amount: '10', unit: https://example.test/unit/share, instrumentIri: https://example.test/security/s1, precision: 0}, validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from}
+        - {versionIri: https://example.test/fact/leg/rec-k5b/v1, normalizedSettlementReference: DTC-MATRIX-05, settlementDate: '2026-07-15', system: DTC, location: US, fromAccount: https://example.test/account/source-k5b, toAccount: https://example.test/account/focal-beneficial, asset: {kind: security, amount: '11', unit: https://example.test/unit/share, instrumentIri: https://example.test/security/s1, precision: 0}, validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from}
+        - {versionIri: https://example.test/fact/leg/rec-k7a/v1, normalizedSettlementReference: DTC-MATRIX-07, settlementDate: '2026-07-15', system: DTC, location: US, fromAccount: https://example.test/account/source-k7a, toAccount: https://example.test/account/focal-beneficial, asset: {kind: security, amount: '10', unit: https://example.test/unit/share, instrumentIri: https://example.test/security/s1, precision: 0}, validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from}
+        - {versionIri: https://example.test/fact/leg/rec-k7b/v1, normalizedSettlementReference: DTC-MATRIX-07, settlementDate: '2026-07-15', system: DTC, location: US, fromAccount: https://example.test/account/source-k7b, toAccount: https://example.test/account/focal-beneficial, asset: {kind: security, amount: '10', unit: https://example.test/unit/share, instrumentIri: https://example.test/security/s1, precision: 0}, validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from}
+        - {versionIri: https://example.test/fact/leg/rec-k8/v1, normalizedSettlementReference: DTC-MATRIX-08, settlementDate: '2026-07-15', system: DTC, location: US, fromAccount: https://example.test/account/source-k8, toAccount: https://example.test/account/focal-beneficial, asset: {kind: security, amount: '10', unit: https://example.test/unit/share, instrumentIri: https://example.test/security/s1, precision: 0}, validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from}
+        - {versionIri: https://example.test/fact/leg/rec-k9a/v1, normalizedSettlementReference: DTC-MATRIX-09, settlementDate: '2026-07-15', system: DTC, location: US, fromAccount: https://example.test/account/source-k9a, toAccount: https://example.test/account/focal-beneficial, asset: {kind: security, amount: '10', unit: https://example.test/unit/share, instrumentIri: https://example.test/security/s1, precision: 0}, validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from}
+        - {versionIri: https://example.test/fact/leg/rec-k9b/v1, normalizedSettlementReference: DTC-MATRIX-09, settlementDate: '2026-07-15', system: DTC, location: US, fromAccount: https://example.test/account/source-k9b, toAccount: https://example.test/account/focal-beneficial, asset: {kind: security, amount: '10', unit: https://example.test/unit/share, instrumentIri: https://example.test/security/s1, precision: 0}, validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from}
+      allocations:
+        - logicalIri: https://example.test/fact/allocation/rec-1
+          versionIri: https://example.test/fact/allocation/rec-1/v1
+          securityLegVersionIri: https://example.test/fact/leg/rec-k1/v1
+          fromEconomicAccount: https://example.test/account/omnibus-source
+          toEconomicAccount: https://example.test/account/focal-beneficial
+          fromMode: directAccount
+          toMode: custodyOrOmnibus
+          toBridgeVersionIri: https://example.test/fact/bridge/rec-focal/v1
+          quantity: {amount: '20', unit: https://example.test/unit/share}
+          validFrom: *rec_valid_from
+          knowledgeFrom: *rec_knowledge_from
+          availableFrom: *rec_available_from
+        - logicalIri: https://example.test/fact/allocation/rec-1
+          versionIri: https://example.test/fact/allocation/rec-1/v2
+          supersedesVersionIri: https://example.test/fact/allocation/rec-1/v1
+          securityLegVersionIri: https://example.test/fact/leg/rec-k1/v1
+          fromEconomicAccount: https://example.test/account/omnibus-source
+          toEconomicAccount: https://example.test/account/focal-beneficial
+          fromMode: directAccount
+          toMode: custodyOrOmnibus
+          toBridgeVersionIri: https://example.test/fact/bridge/rec-focal/v1
+          quantity: {amount: '30', unit: https://example.test/unit/share}
+          validFrom: *rec_valid_from
+          knowledgeFrom: *rec_knowledge_from
+          availableFrom: *rec_available_from
+        - logicalIri: https://example.test/fact/allocation/rec-2
+          versionIri: https://example.test/fact/allocation/rec-2/v1
+          securityLegVersionIri: https://example.test/fact/leg/rec-k1/v1
+          fromEconomicAccount: https://example.test/account/omnibus-source
+          toEconomicAccount: https://example.test/account/focal-beneficial
+          fromMode: directAccount
+          toMode: custodyOrOmnibus
+          toBridgeVersionIri: https://example.test/fact/bridge/rec-focal/v1
+          quantity: {amount: '20', unit: https://example.test/unit/share}
+          validFrom: *rec_valid_from
+          knowledgeFrom: *rec_knowledge_from
+          availableFrom: *rec_available_from
+        - logicalIri: https://example.test/fact/allocation/rec-3
+          versionIri: https://example.test/fact/allocation/rec-3/v1
+          securityLegVersionIri: https://example.test/fact/leg/rec-k1/v1
+          fromEconomicAccount: https://example.test/account/omnibus-source
+          toEconomicAccount: https://example.test/account/other-beneficial
+          fromMode: directAccount
+          toMode: custodyOrOmnibus
+          toBridgeVersionIri: https://example.test/fact/bridge/rec-other/v1
+          quantity: {amount: '50', unit: https://example.test/unit/share}
+          validFrom: *rec_valid_from
+          knowledgeFrom: *rec_knowledge_from
+          availableFrom: *rec_available_from
+        - {logicalIri: https://example.test/fact/allocation/rec-k2, versionIri: https://example.test/fact/allocation/rec-k2/v1, securityLegVersionIri: https://example.test/fact/leg/rec-k2/v1, fromEconomicAccount: https://example.test/account/source-k2, toEconomicAccount: https://example.test/account/focal-beneficial, fromMode: directAccount, toMode: directAccount, quantity: {amount: '10', unit: https://example.test/unit/share}, validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from}
+        - {logicalIri: https://example.test/fact/allocation/rec-k3, versionIri: https://example.test/fact/allocation/rec-k3/v1, securityLegVersionIri: https://example.test/fact/leg/rec-k3/v1, fromEconomicAccount: https://example.test/account/source-k3, toEconomicAccount: https://example.test/account/focal-beneficial, fromMode: directAccount, toMode: directAccount, quantity: {amount: '10', unit: https://example.test/unit/share}, validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from}
+        - {logicalIri: https://example.test/fact/allocation/rec-k5a, versionIri: https://example.test/fact/allocation/rec-k5a/v1, securityLegVersionIri: https://example.test/fact/leg/rec-k5a/v1, fromEconomicAccount: https://example.test/account/source-k5a, toEconomicAccount: https://example.test/account/focal-beneficial, fromMode: directAccount, toMode: directAccount, quantity: {amount: '10', unit: https://example.test/unit/share}, validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from}
+        - {logicalIri: https://example.test/fact/allocation/rec-k5b, versionIri: https://example.test/fact/allocation/rec-k5b/v1, securityLegVersionIri: https://example.test/fact/leg/rec-k5b/v1, fromEconomicAccount: https://example.test/account/source-k5b, toEconomicAccount: https://example.test/account/focal-beneficial, fromMode: directAccount, toMode: directAccount, quantity: {amount: '11', unit: https://example.test/unit/share}, validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from}
+        - {logicalIri: https://example.test/fact/allocation/rec-k7a, versionIri: https://example.test/fact/allocation/rec-k7a/v1, securityLegVersionIri: https://example.test/fact/leg/rec-k7a/v1, fromEconomicAccount: https://example.test/account/source-k7a, toEconomicAccount: https://example.test/account/focal-beneficial, fromMode: directAccount, toMode: directAccount, quantity: {amount: '10', unit: https://example.test/unit/share}, validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from}
+        - {logicalIri: https://example.test/fact/allocation/rec-k7b, versionIri: https://example.test/fact/allocation/rec-k7b/v1, securityLegVersionIri: https://example.test/fact/leg/rec-k7b/v1, fromEconomicAccount: https://example.test/account/source-k7b, toEconomicAccount: https://example.test/account/focal-beneficial, fromMode: directAccount, toMode: directAccount, quantity: {amount: '10', unit: https://example.test/unit/share}, validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from}
+        - {logicalIri: https://example.test/fact/allocation/rec-k8, versionIri: https://example.test/fact/allocation/rec-k8/v1, securityLegVersionIri: https://example.test/fact/leg/rec-k8/v1, fromEconomicAccount: https://example.test/account/source-k8, toEconomicAccount: https://example.test/account/focal-beneficial, fromMode: directAccount, toMode: directAccount, quantity: {amount: '10', unit: https://example.test/unit/share}, validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from}
+        - {logicalIri: https://example.test/fact/allocation/rec-k9a, versionIri: https://example.test/fact/allocation/rec-k9a/v1, securityLegVersionIri: https://example.test/fact/leg/rec-k9a/v1, fromEconomicAccount: https://example.test/account/source-k9a, toEconomicAccount: https://example.test/account/focal-beneficial, fromMode: directAccount, toMode: directAccount, quantity: {amount: '10', unit: https://example.test/unit/share}, validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from}
+        - {logicalIri: https://example.test/fact/allocation/rec-k9b, versionIri: https://example.test/fact/allocation/rec-k9b/v1, securityLegVersionIri: https://example.test/fact/leg/rec-k9b/v1, fromEconomicAccount: https://example.test/account/source-k9b, toEconomicAccount: https://example.test/account/focal-beneficial, fromMode: directAccount, toMode: directAccount, quantity: {amount: '10', unit: https://example.test/unit/share}, validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from}
+      expectedProjections:
+        - {legVersionIri: https://example.test/fact/leg/rec-k1/v1, direction: credit, keyId: k1, comparisonKeyDigest: sha256:ccc47ce870c6841c6f122ee7fa42f84ee6a876732362802113d5596dd9da819b, amount: '50', allocationVersionIris: [https://example.test/fact/allocation/rec-1/v2, https://example.test/fact/allocation/rec-2/v1], bridgeVersionIris: [https://example.test/fact/bridge/rec-focal/v1]}
+        - {legVersionIri: https://example.test/fact/leg/rec-k2/v1, direction: credit, keyId: k2, comparisonKeyDigest: sha256:a8162bf5d306e4418901e4877bbe6f5c9cfe5ac12d205e80826672a0c7424b9d, amount: '10', allocationVersionIris: [https://example.test/fact/allocation/rec-k2/v1], bridgeVersionIris: []}
+        - {legVersionIri: https://example.test/fact/leg/rec-k3/v1, direction: credit, keyId: k3, comparisonKeyDigest: sha256:801e6aadcff8a009827da81b52c30bf2690099ae15722f8fb97622782423224a, amount: '10', allocationVersionIris: [https://example.test/fact/allocation/rec-k3/v1], bridgeVersionIris: []}
+        - {legVersionIri: https://example.test/fact/leg/rec-k5a/v1, direction: credit, keyId: k5, comparisonKeyDigest: sha256:4a8f1dae1fd152b85468d93d1ae47780781dbe9502be7f9df525a563baac9a65, amount: '10', allocationVersionIris: [https://example.test/fact/allocation/rec-k5a/v1], bridgeVersionIris: []}
+        - {legVersionIri: https://example.test/fact/leg/rec-k5b/v1, direction: credit, keyId: k5, comparisonKeyDigest: sha256:4a8f1dae1fd152b85468d93d1ae47780781dbe9502be7f9df525a563baac9a65, amount: '11', allocationVersionIris: [https://example.test/fact/allocation/rec-k5b/v1], bridgeVersionIris: []}
+        - {legVersionIri: https://example.test/fact/leg/rec-k7a/v1, direction: credit, keyId: k7, comparisonKeyDigest: sha256:80816bc432ce0dd69f03a674e63ff2f73f72d5d29fa77e85763fc8139501e089, amount: '10', allocationVersionIris: [https://example.test/fact/allocation/rec-k7a/v1], bridgeVersionIris: []}
+        - {legVersionIri: https://example.test/fact/leg/rec-k7b/v1, direction: credit, keyId: k7, comparisonKeyDigest: sha256:80816bc432ce0dd69f03a674e63ff2f73f72d5d29fa77e85763fc8139501e089, amount: '10', allocationVersionIris: [https://example.test/fact/allocation/rec-k7b/v1], bridgeVersionIris: []}
+        - {legVersionIri: https://example.test/fact/leg/rec-k8/v1, direction: credit, keyId: k8, comparisonKeyDigest: sha256:e2b32f3004f3fc62928b058e65fb582b3e4e2bc9d1b57c225d74b86c5a83e186, amount: '10', allocationVersionIris: [https://example.test/fact/allocation/rec-k8/v1], bridgeVersionIris: []}
+        - {legVersionIri: https://example.test/fact/leg/rec-k9a/v1, direction: credit, keyId: k9, comparisonKeyDigest: sha256:dde67351dcbc44e9804d4f70e854aba113f40c512bff2f076dbfc00ea16971f5, amount: '10', allocationVersionIris: [https://example.test/fact/allocation/rec-k9a/v1], bridgeVersionIris: []}
+        - {legVersionIri: https://example.test/fact/leg/rec-k9b/v1, direction: credit, keyId: k9, comparisonKeyDigest: sha256:dde67351dcbc44e9804d4f70e854aba113f40c512bff2f076dbfc00ea16971f5, amount: '10', allocationVersionIris: [https://example.test/fact/allocation/rec-k9b/v1], bridgeVersionIris: []}
+      comparisonKeys:
+        - {keyId: k1, focalAccountLogicalIri: https://example.test/account/focal-beneficial, normalizedSettlementReference: DTC-MATRIX-01, settlementDate: 2026-07-15, settlementSystem: DTC, settlementLocation: US, entryDirection: credit, assetKind: security, assetIdentity: https://example.test/security/s1, unitIdentity: https://example.test/unit/share, comparisonKeyDigest: &k1 sha256:ccc47ce870c6841c6f122ee7fa42f84ee6a876732362802113d5596dd9da819b}
+        - {keyId: k2, focalAccountLogicalIri: https://example.test/account/focal-beneficial, normalizedSettlementReference: DTC-MATRIX-02, settlementDate: 2026-07-15, settlementSystem: DTC, settlementLocation: US, entryDirection: credit, assetKind: security, assetIdentity: https://example.test/security/s1, unitIdentity: https://example.test/unit/share, comparisonKeyDigest: &k2 sha256:a8162bf5d306e4418901e4877bbe6f5c9cfe5ac12d205e80826672a0c7424b9d}
+        - {keyId: k3, focalAccountLogicalIri: https://example.test/account/focal-beneficial, normalizedSettlementReference: DTC-MATRIX-03, settlementDate: 2026-07-15, settlementSystem: DTC, settlementLocation: US, entryDirection: credit, assetKind: security, assetIdentity: https://example.test/security/s1, unitIdentity: https://example.test/unit/share, comparisonKeyDigest: &k3 sha256:801e6aadcff8a009827da81b52c30bf2690099ae15722f8fb97622782423224a}
+        - {keyId: k4, focalAccountLogicalIri: https://example.test/account/focal-beneficial, normalizedSettlementReference: DTC-MATRIX-04, settlementDate: 2026-07-15, settlementSystem: DTC, settlementLocation: US, entryDirection: credit, assetKind: security, assetIdentity: https://example.test/security/s1, unitIdentity: https://example.test/unit/share, comparisonKeyDigest: &k4 sha256:08784ce08735355bb3e039fcf1b0b315698634d57621617059bb013ddc2be0e2}
+        - {keyId: k5, focalAccountLogicalIri: https://example.test/account/focal-beneficial, normalizedSettlementReference: DTC-MATRIX-05, settlementDate: 2026-07-15, settlementSystem: DTC, settlementLocation: US, entryDirection: credit, assetKind: security, assetIdentity: https://example.test/security/s1, unitIdentity: https://example.test/unit/share, comparisonKeyDigest: &k5 sha256:4a8f1dae1fd152b85468d93d1ae47780781dbe9502be7f9df525a563baac9a65}
+        - {keyId: k6, focalAccountLogicalIri: https://example.test/account/focal-beneficial, normalizedSettlementReference: DTC-MATRIX-06, settlementDate: 2026-07-15, settlementSystem: DTC, settlementLocation: US, entryDirection: credit, assetKind: security, assetIdentity: https://example.test/security/s1, unitIdentity: https://example.test/unit/share, comparisonKeyDigest: &k6 sha256:84cf4d729e5cc881ac0139b44ead4d7bbf239df491c74e3dbad5a1832a5d4603}
+        - {keyId: k7, focalAccountLogicalIri: https://example.test/account/focal-beneficial, normalizedSettlementReference: DTC-MATRIX-07, settlementDate: 2026-07-15, settlementSystem: DTC, settlementLocation: US, entryDirection: credit, assetKind: security, assetIdentity: https://example.test/security/s1, unitIdentity: https://example.test/unit/share, comparisonKeyDigest: &k7 sha256:80816bc432ce0dd69f03a674e63ff2f73f72d5d29fa77e85763fc8139501e089}
+        - {keyId: k8, focalAccountLogicalIri: https://example.test/account/focal-beneficial, normalizedSettlementReference: DTC-MATRIX-08, settlementDate: 2026-07-15, settlementSystem: DTC, settlementLocation: US, entryDirection: credit, assetKind: security, assetIdentity: https://example.test/security/s1, unitIdentity: https://example.test/unit/share, comparisonKeyDigest: &k8 sha256:e2b32f3004f3fc62928b058e65fb582b3e4e2bc9d1b57c225d74b86c5a83e186}
+        - {keyId: k9, focalAccountLogicalIri: https://example.test/account/focal-beneficial, normalizedSettlementReference: DTC-MATRIX-09, settlementDate: 2026-07-15, settlementSystem: DTC, settlementLocation: US, entryDirection: credit, assetKind: security, assetIdentity: https://example.test/security/s1, unitIdentity: https://example.test/unit/share, comparisonKeyDigest: &k9 sha256:dde67351dcbc44e9804d4f70e854aba113f40c512bff2f076dbfc00ea16971f5}
+      internalProjections:
+        - versionIri: https://example.test/fact/reconciliation/internal/k1/1/v1
+          caseVersionIri: *rec_case
+          comparatorVersionIri: *rec_comparator
+          focalAccount: *rec_focal
+          mode: *rec_mode
+          projectionEconomicAllocationMode: true
+          keyId: k1
+          comparisonKeyDigest: *k1
+          legVersionIri: https://example.test/fact/leg/rec-k1/v1
+          direction: credit
+          normalizedSettlementReference: DTC-MATRIX-01
+          settlementDate: '2026-07-15'
+          settlementSystem: DTC
+          settlementLocation: US
+          entryDirection: credit
+          settlementAssetKind: security
+          projectionInstrumentIri: https://example.test/security/s1
+          allocationVersionIris: [https://example.test/fact/allocation/rec-1/v2, https://example.test/fact/allocation/rec-2/v1]
+          bridgeVersionIris: [https://example.test/fact/bridge/rec-focal/v1]
+          internalSourceVersionSetDigest: sha256:b0c23f6b14be8a589f4a12f983b97b1cb9956d1615236a84386144a2b4f9d8f6
+          reconciliationAsOfValid: *rec_asof_valid
+          reconciliationAsOfKnowledge: *rec_asof_knowledge
+          reconciliationAsOfAvailable: *rec_asof_available
+          inputContextRef: *rec_input_context
+          generatingContextRef: &rec_projection_context https://example.test/control/run/reconciliation/projections
+          validFrom: *rec_asof_valid
+          knowledgeFrom: *rec_asof_knowledge
+          availableFrom: *rec_asof_available
+          value: {kind: quantity, amount: '50', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}
+        - {versionIri: https://example.test/fact/reconciliation/internal/k2/1/v1, caseVersionIri: *rec_case, comparatorVersionIri: *rec_comparator, focalAccount: *rec_focal, mode: *rec_mode, projectionEconomicAllocationMode: true, keyId: k2, comparisonKeyDigest: *k2, legVersionIri: https://example.test/fact/leg/rec-k2/v1, direction: credit, normalizedSettlementReference: DTC-MATRIX-02, settlementDate: '2026-07-15', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, settlementAssetKind: security, projectionInstrumentIri: https://example.test/security/s1, allocationVersionIris: [https://example.test/fact/allocation/rec-k2/v1], bridgeVersionIris: [], internalSourceVersionSetDigest: sha256:7d1e8e222e5df6204c4cb609cf9754b3ae057763c707a9cfa431e915880175be, reconciliationAsOfValid: *rec_asof_valid, reconciliationAsOfKnowledge: *rec_asof_knowledge, reconciliationAsOfAvailable: *rec_asof_available, inputContextRef: *rec_input_context, generatingContextRef: *rec_projection_context, validFrom: *rec_asof_valid, knowledgeFrom: *rec_asof_knowledge, availableFrom: *rec_asof_available, value: {kind: quantity, amount: '10', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}}
+        - {versionIri: https://example.test/fact/reconciliation/internal/k3/1/v1, caseVersionIri: *rec_case, comparatorVersionIri: *rec_comparator, focalAccount: *rec_focal, mode: *rec_mode, projectionEconomicAllocationMode: true, keyId: k3, comparisonKeyDigest: *k3, legVersionIri: https://example.test/fact/leg/rec-k3/v1, direction: credit, normalizedSettlementReference: DTC-MATRIX-03, settlementDate: '2026-07-15', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, settlementAssetKind: security, projectionInstrumentIri: https://example.test/security/s1, allocationVersionIris: [https://example.test/fact/allocation/rec-k3/v1], bridgeVersionIris: [], internalSourceVersionSetDigest: sha256:2cde2dc49ee693007d35807628ffbe7b2ac3825dae459ec98d0007ff472516de, reconciliationAsOfValid: *rec_asof_valid, reconciliationAsOfKnowledge: *rec_asof_knowledge, reconciliationAsOfAvailable: *rec_asof_available, inputContextRef: *rec_input_context, generatingContextRef: *rec_projection_context, validFrom: *rec_asof_valid, knowledgeFrom: *rec_asof_knowledge, availableFrom: *rec_asof_available, value: {kind: quantity, amount: '10', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}}
+        - {versionIri: https://example.test/fact/reconciliation/internal/k5/1/v1, caseVersionIri: *rec_case, comparatorVersionIri: *rec_comparator, focalAccount: *rec_focal, mode: *rec_mode, projectionEconomicAllocationMode: true, keyId: k5, comparisonKeyDigest: *k5, legVersionIri: https://example.test/fact/leg/rec-k5a/v1, direction: credit, normalizedSettlementReference: DTC-MATRIX-05, settlementDate: '2026-07-15', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, settlementAssetKind: security, projectionInstrumentIri: https://example.test/security/s1, allocationVersionIris: [https://example.test/fact/allocation/rec-k5a/v1], bridgeVersionIris: [], internalSourceVersionSetDigest: sha256:82876af65a363580c478050fdbbf6e194f6c95d55bd3fefcbb7cfb97a3384ee8, reconciliationAsOfValid: *rec_asof_valid, reconciliationAsOfKnowledge: *rec_asof_knowledge, reconciliationAsOfAvailable: *rec_asof_available, inputContextRef: *rec_input_context, generatingContextRef: *rec_projection_context, validFrom: *rec_asof_valid, knowledgeFrom: *rec_asof_knowledge, availableFrom: *rec_asof_available, value: {kind: quantity, amount: '10', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}}
+        - {versionIri: https://example.test/fact/reconciliation/internal/k5/2/v1, caseVersionIri: *rec_case, comparatorVersionIri: *rec_comparator, focalAccount: *rec_focal, mode: *rec_mode, projectionEconomicAllocationMode: true, keyId: k5, comparisonKeyDigest: *k5, legVersionIri: https://example.test/fact/leg/rec-k5b/v1, direction: credit, normalizedSettlementReference: DTC-MATRIX-05, settlementDate: '2026-07-15', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, settlementAssetKind: security, projectionInstrumentIri: https://example.test/security/s1, allocationVersionIris: [https://example.test/fact/allocation/rec-k5b/v1], bridgeVersionIris: [], internalSourceVersionSetDigest: sha256:50bb53b2711db81fb48234ac94d7a249aa6c022c2b88b2a674b439efa3d51cdb, reconciliationAsOfValid: *rec_asof_valid, reconciliationAsOfKnowledge: *rec_asof_knowledge, reconciliationAsOfAvailable: *rec_asof_available, inputContextRef: *rec_input_context, generatingContextRef: *rec_projection_context, validFrom: *rec_asof_valid, knowledgeFrom: *rec_asof_knowledge, availableFrom: *rec_asof_available, value: {kind: quantity, amount: '11', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}}
+        - {versionIri: https://example.test/fact/reconciliation/internal/k7/1/v1, caseVersionIri: *rec_case, comparatorVersionIri: *rec_comparator, focalAccount: *rec_focal, mode: *rec_mode, projectionEconomicAllocationMode: true, keyId: k7, comparisonKeyDigest: *k7, legVersionIri: https://example.test/fact/leg/rec-k7a/v1, direction: credit, normalizedSettlementReference: DTC-MATRIX-07, settlementDate: '2026-07-15', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, settlementAssetKind: security, projectionInstrumentIri: https://example.test/security/s1, allocationVersionIris: [https://example.test/fact/allocation/rec-k7a/v1], bridgeVersionIris: [], internalSourceVersionSetDigest: sha256:c88321aac9ce200df4ca063e531772b389587c2e1f7f3595a3e1c862e22cae2b, reconciliationAsOfValid: *rec_asof_valid, reconciliationAsOfKnowledge: *rec_asof_knowledge, reconciliationAsOfAvailable: *rec_asof_available, inputContextRef: *rec_input_context, generatingContextRef: *rec_projection_context, validFrom: *rec_asof_valid, knowledgeFrom: *rec_asof_knowledge, availableFrom: *rec_asof_available, value: {kind: quantity, amount: '10', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}}
+        - {versionIri: https://example.test/fact/reconciliation/internal/k7/2/v1, caseVersionIri: *rec_case, comparatorVersionIri: *rec_comparator, focalAccount: *rec_focal, mode: *rec_mode, projectionEconomicAllocationMode: true, keyId: k7, comparisonKeyDigest: *k7, legVersionIri: https://example.test/fact/leg/rec-k7b/v1, direction: credit, normalizedSettlementReference: DTC-MATRIX-07, settlementDate: '2026-07-15', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, settlementAssetKind: security, projectionInstrumentIri: https://example.test/security/s1, allocationVersionIris: [https://example.test/fact/allocation/rec-k7b/v1], bridgeVersionIris: [], internalSourceVersionSetDigest: sha256:4bc16225d9af59755f946b16821173ef57e66d4b4d040753b17a4a5299f7338f, reconciliationAsOfValid: *rec_asof_valid, reconciliationAsOfKnowledge: *rec_asof_knowledge, reconciliationAsOfAvailable: *rec_asof_available, inputContextRef: *rec_input_context, generatingContextRef: *rec_projection_context, validFrom: *rec_asof_valid, knowledgeFrom: *rec_asof_knowledge, availableFrom: *rec_asof_available, value: {kind: quantity, amount: '10.0', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}}
+        - {versionIri: https://example.test/fact/reconciliation/internal/k8/1/v1, caseVersionIri: *rec_case, comparatorVersionIri: *rec_comparator, focalAccount: *rec_focal, mode: *rec_mode, projectionEconomicAllocationMode: true, keyId: k8, comparisonKeyDigest: *k8, legVersionIri: https://example.test/fact/leg/rec-k8/v1, direction: credit, normalizedSettlementReference: DTC-MATRIX-08, settlementDate: '2026-07-15', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, settlementAssetKind: security, projectionInstrumentIri: https://example.test/security/s1, allocationVersionIris: [https://example.test/fact/allocation/rec-k8/v1], bridgeVersionIris: [], internalSourceVersionSetDigest: sha256:072bfc5a0a0012e00fb2c91a129f96227a18cb1e10254c5fd8c7e3430676d9f6, reconciliationAsOfValid: *rec_asof_valid, reconciliationAsOfKnowledge: *rec_asof_knowledge, reconciliationAsOfAvailable: *rec_asof_available, inputContextRef: *rec_input_context, generatingContextRef: *rec_projection_context, validFrom: *rec_asof_valid, knowledgeFrom: *rec_asof_knowledge, availableFrom: *rec_asof_available, value: {kind: quantity, amount: '10', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}}
+        - {versionIri: https://example.test/fact/reconciliation/internal/k9/1/v1, caseVersionIri: *rec_case, comparatorVersionIri: *rec_comparator, focalAccount: *rec_focal, mode: *rec_mode, projectionEconomicAllocationMode: true, keyId: k9, comparisonKeyDigest: *k9, legVersionIri: https://example.test/fact/leg/rec-k9a/v1, direction: credit, normalizedSettlementReference: DTC-MATRIX-09, settlementDate: '2026-07-15', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, settlementAssetKind: security, projectionInstrumentIri: https://example.test/security/s1, allocationVersionIris: [https://example.test/fact/allocation/rec-k9a/v1], bridgeVersionIris: [], internalSourceVersionSetDigest: sha256:58b11ae2a84f4e8b47029ddcf07dbaea22d83e9dcd30545ea66cf0565ebd3971, reconciliationAsOfValid: *rec_asof_valid, reconciliationAsOfKnowledge: *rec_asof_knowledge, reconciliationAsOfAvailable: *rec_asof_available, inputContextRef: *rec_input_context, generatingContextRef: *rec_projection_context, validFrom: *rec_asof_valid, knowledgeFrom: *rec_asof_knowledge, availableFrom: *rec_asof_available, value: {kind: quantity, amount: '10', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}}
+        - {versionIri: https://example.test/fact/reconciliation/internal/k9/2/v1, caseVersionIri: *rec_case, comparatorVersionIri: *rec_comparator, focalAccount: *rec_focal, mode: *rec_mode, projectionEconomicAllocationMode: true, keyId: k9, comparisonKeyDigest: *k9, legVersionIri: https://example.test/fact/leg/rec-k9b/v1, direction: credit, normalizedSettlementReference: DTC-MATRIX-09, settlementDate: '2026-07-15', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, settlementAssetKind: security, projectionInstrumentIri: https://example.test/security/s1, allocationVersionIris: [https://example.test/fact/allocation/rec-k9b/v1], bridgeVersionIris: [], internalSourceVersionSetDigest: sha256:9647efbcd49d081724b3dd6620a24e488b75a4fea21969335c4babc76e9c55d9, reconciliationAsOfValid: *rec_asof_valid, reconciliationAsOfKnowledge: *rec_asof_knowledge, reconciliationAsOfAvailable: *rec_asof_available, inputContextRef: *rec_input_context, generatingContextRef: *rec_projection_context, validFrom: *rec_asof_valid, knowledgeFrom: *rec_asof_knowledge, availableFrom: *rec_asof_available, value: {kind: quantity, amount: '10.0', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}}
+      externalStatementLines:
+        - {versionIri: https://example.test/fact/reconciliation/external/k1/1/v1, statementVersionIri: *rec_statement, authorityScopedId: line-k1-1, focalAccount: *rec_focal, normalizedSettlementReference: DTC-MATRIX-01, settlementDate: '2026-07-15', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, lineInstrumentIri: https://example.test/security/s1, sourceArtifactRef: https://example.test/artifact/external-statement/2026-07-15, sourceArtifactDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, sourceLocator: '$.statements[0].lines[0]', validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from, keyId: k1, comparisonKeyDigest: *k1, value: {kind: quantity, amount: '50.0', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}}
+        - {versionIri: https://example.test/fact/reconciliation/external/k2/1/v1, statementVersionIri: *rec_statement, authorityScopedId: line-k2-1, focalAccount: *rec_focal, normalizedSettlementReference: DTC-MATRIX-02, settlementDate: '2026-07-15', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, lineInstrumentIri: https://example.test/security/s1, sourceArtifactRef: https://example.test/artifact/external-statement/2026-07-15, sourceArtifactDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, sourceLocator: '$.statements[0].lines[1]', validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from, keyId: k2, comparisonKeyDigest: *k2, value: {kind: quantity, amount: '11', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}}
+        - {versionIri: https://example.test/fact/reconciliation/external/k4/1/v1, statementVersionIri: *rec_statement, authorityScopedId: line-k4-1, focalAccount: *rec_focal, normalizedSettlementReference: DTC-MATRIX-04, settlementDate: '2026-07-15', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, lineInstrumentIri: https://example.test/security/s1, sourceArtifactRef: https://example.test/artifact/external-statement/2026-07-15, sourceArtifactDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, sourceLocator: '$.statements[0].lines[2]', validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from, keyId: k4, comparisonKeyDigest: *k4, value: {kind: quantity, amount: '10', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}}
+        - {versionIri: https://example.test/fact/reconciliation/external/k6/1/v1, statementVersionIri: *rec_statement, authorityScopedId: line-k6-1, focalAccount: *rec_focal, normalizedSettlementReference: DTC-MATRIX-06, settlementDate: '2026-07-15', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, lineInstrumentIri: https://example.test/security/s1, sourceArtifactRef: https://example.test/artifact/external-statement/2026-07-15, sourceArtifactDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, sourceLocator: '$.statements[0].lines[3]', validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from, keyId: k6, comparisonKeyDigest: *k6, value: {kind: quantity, amount: '10', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}}
+        - {versionIri: https://example.test/fact/reconciliation/external/k6/2/v1, statementVersionIri: *rec_statement, authorityScopedId: line-k6-2, focalAccount: *rec_focal, normalizedSettlementReference: DTC-MATRIX-06, settlementDate: '2026-07-15', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, lineInstrumentIri: https://example.test/security/s1, sourceArtifactRef: https://example.test/artifact/external-statement/2026-07-15, sourceArtifactDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, sourceLocator: '$.statements[0].lines[4]', validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from, keyId: k6, comparisonKeyDigest: *k6, value: {kind: quantity, amount: '11', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}}
+        - {versionIri: https://example.test/fact/reconciliation/external/k7/1/v1, statementVersionIri: *rec_statement, authorityScopedId: line-k7-1, focalAccount: *rec_focal, normalizedSettlementReference: DTC-MATRIX-07, settlementDate: '2026-07-15', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, lineInstrumentIri: https://example.test/security/s1, sourceArtifactRef: https://example.test/artifact/external-statement/2026-07-15, sourceArtifactDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, sourceLocator: '$.statements[0].lines[5]', validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from, keyId: k7, comparisonKeyDigest: *k7, value: {kind: quantity, amount: '10', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}}
+        - {versionIri: https://example.test/fact/reconciliation/external/k8/1/v1, statementVersionIri: *rec_statement, authorityScopedId: line-k8-1, focalAccount: *rec_focal, normalizedSettlementReference: DTC-MATRIX-08, settlementDate: '2026-07-15', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, lineInstrumentIri: https://example.test/security/s1, sourceArtifactRef: https://example.test/artifact/external-statement/2026-07-15, sourceArtifactDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, sourceLocator: '$.statements[0].lines[6]', validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from, keyId: k8, comparisonKeyDigest: *k8, value: {kind: quantity, amount: '10', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}}
+        - {versionIri: https://example.test/fact/reconciliation/external/k8/2/v1, statementVersionIri: *rec_statement, authorityScopedId: line-k8-2, focalAccount: *rec_focal, normalizedSettlementReference: DTC-MATRIX-08, settlementDate: '2026-07-15', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, lineInstrumentIri: https://example.test/security/s1, sourceArtifactRef: https://example.test/artifact/external-statement/2026-07-15, sourceArtifactDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, sourceLocator: '$.statements[0].lines[7]', validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from, keyId: k8, comparisonKeyDigest: *k8, value: {kind: quantity, amount: '10.0', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}}
+        - {versionIri: https://example.test/fact/reconciliation/external/k9/1/v1, statementVersionIri: *rec_statement, authorityScopedId: line-k9-1, focalAccount: *rec_focal, normalizedSettlementReference: DTC-MATRIX-09, settlementDate: '2026-07-15', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, lineInstrumentIri: https://example.test/security/s1, sourceArtifactRef: https://example.test/artifact/external-statement/2026-07-15, sourceArtifactDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, sourceLocator: '$.statements[0].lines[8]', validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from, keyId: k9, comparisonKeyDigest: *k9, value: {kind: quantity, amount: '10', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}}
+        - {versionIri: https://example.test/fact/reconciliation/external/k9/2/v1, statementVersionIri: *rec_statement, authorityScopedId: line-k9-2, focalAccount: *rec_focal, normalizedSettlementReference: DTC-MATRIX-09, settlementDate: '2026-07-15', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, lineInstrumentIri: https://example.test/security/s1, sourceArtifactRef: https://example.test/artifact/external-statement/2026-07-15, sourceArtifactDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, sourceLocator: '$.statements[0].lines[9]', validFrom: *rec_valid_from, knowledgeFrom: *rec_knowledge_from, availableFrom: *rec_available_from, keyId: k9, comparisonKeyDigest: *k9, value: {kind: quantity, amount: '10.0', instrumentIri: https://example.test/security/s1, unit: https://example.test/unit/share, precision: 0}}
+      missingSideProbeArtifacts:
+        inputRunBytes: '{"completedAt":"2026-07-16T00:00:30Z","iri":"https://example.test/control/input-context/reconciliation/1","recordType":"MaterializationRun","referenceTime":"2026-07-16T00:01:00Z","schemaVersion":"1.0","status":"completed","universes":{"external":{"members":[{"recordDigest":"sha256:12b5afea3439c1df404803e84a5898aba4359dcdf9e8f7b7f771621c4e72d650","versionIri":"https://example.test/fact/reconciliation/external/k7/1/v1"},{"recordDigest":"sha256:4a45e8cce5ac8135c862445e271f0559bb27aaf260c5813cc543d3b2ea21a614","versionIri":"https://example.test/fact/reconciliation/external/k8/2/v1"},{"recordDigest":"sha256:4bb9b5997c00e670327ad241d925ca72552329886a728b24ca524803340841a0","versionIri":"https://example.test/fact/reconciliation/external/k6/1/v1"},{"recordDigest":"sha256:6ce4b01805b9f263129c0837550a17bded04ff619b9e701820b878ce44e372a1","versionIri":"https://example.test/fact/reconciliation/external/k6/2/v1"},{"recordDigest":"sha256:85d11183651e750251af917b4ab5b02df02080880474995a212e100d5b067dc2","versionIri":"https://example.test/fact/reconciliation/external/k9/1/v1"},{"recordDigest":"sha256:97303440b45b6365e08c76e8d95b9ec877cff11ea84520c210c0d1604c7490fd","versionIri":"https://example.test/fact/reconciliation/external/k4/1/v1"},{"recordDigest":"sha256:bab9d2040a8b1a1c06a1652f580f65da0e1056ff2e163347c457af9546a330ac","versionIri":"https://example.test/fact/reconciliation/external/k9/2/v1"},{"recordDigest":"sha256:c52f3dbe784f8275b1a9c465f62382b379bbec675f139ea773471804d55916c1","versionIri":"https://example.test/fact/reconciliation/external/k2/1/v1"},{"recordDigest":"sha256:c677f11f69e42215a2a470639c365bb459887a0c15ded4b9b6f03b195bb4f925","versionIri":"https://example.test/fact/reconciliation/external/k8/1/v1"},{"recordDigest":"sha256:df258401d8ed68ee4777e960b4b5875f2ebd41a25774f76cd47dcca8d7404fb4","versionIri":"https://example.test/fact/reconciliation/external/k1/1/v1"}],"recordCount":10,"recordSetDigest":"sha256:68da4276d7899ce363261cd50a8b44ba7b21335c51d88678a539b84590bec909"},"internal":{"members":[{"recordDigest":"sha256:095fe9b2e0519b5f74eaa01aaf3cf12a351a8b7407d0f45febf41b2896f71f6d","versionIri":"https://example.test/fact/reconciliation/internal/k7/2/v1"},{"recordDigest":"sha256:7abddbfc78e2af87166867141f4795c1ce5ebfac5d217a0e7f96976c3be7d555","versionIri":"https://example.test/fact/reconciliation/internal/k7/1/v1"},{"recordDigest":"sha256:943449d147ea513c76c27f235e6f917798a4d14f05cd25119f3b606e5453214b","versionIri":"https://example.test/fact/reconciliation/internal/k3/1/v1"},{"recordDigest":"sha256:949623db343800800be24aa9d1a14a1430819c19680b965ee5b19ebf63dd5329","versionIri":"https://example.test/fact/reconciliation/internal/k9/2/v1"},{"recordDigest":"sha256:9888cb0c023dcd540e99430bb955ec2f144901cad244bae9679de3be61c18503","versionIri":"https://example.test/fact/reconciliation/internal/k5/2/v1"},{"recordDigest":"sha256:9f37911e72bc1c8b94d6f856e5e709a9e44f703e6e753764683f4cbd4fd78e72","versionIri":"https://example.test/fact/reconciliation/internal/k2/1/v1"},{"recordDigest":"sha256:b7f25cb1892a23b5976fb8d91200494b8debd4e79b35b51bd294e32167d1f483","versionIri":"https://example.test/fact/reconciliation/internal/k9/1/v1"},{"recordDigest":"sha256:c5dc00929d33e9f78bd379fca9f1cc6536f04c688a580e3ac970dec23cb157b1","versionIri":"https://example.test/fact/reconciliation/internal/k1/1/v1"},{"recordDigest":"sha256:d31521c685e64cfda5b3dd5dd8ec5421343d2a93c2ab49f107ca22e8de352a03","versionIri":"https://example.test/fact/reconciliation/internal/k5/1/v1"},{"recordDigest":"sha256:f1516bda3c3b929f68c8ae4020ef728cf2963f5ea0cc4e63c88083a6d16ca792","versionIri":"https://example.test/fact/reconciliation/internal/k8/1/v1"}],"recordCount":10,"recordSetDigest":"sha256:ebd77a29498435d9c2da1ea5db1d2cfcd32dc5b20f7774f2dbe022da2ea2c06b"}}}'
+        pitRequestBytes: '{"asOfAvailable":"2026-07-16T00:01:00Z","asOfKnowledge":"2026-07-16T00:00:00Z","asOfValid":"2026-07-15T23:59:59Z","caseVersionIri":"https://example.test/fact/reconciliation/case/1/v1","inputRunRecordDigest":"sha256:82f77279160987491c4bcffc1581fa151771a90648a330b259500f1f847bb1c5","inputRunRef":"https://example.test/control/input-context/reconciliation/1","iri":"https://example.test/control/pit-request/reconciliation/1","recordType":"PointInTimeRequest","schemaVersion":"1.0"}'
+        queryFunctionBytes: '{"algorithm":"filter-exact-input-run-universe-by-three-axis-and-comparison-key-v1","functionIri":"https://axiolune.ai/ontology/finance/post-trade-operations/functions/missing-side-candidate-set/v1","inputKinds":{"external":"ExternalSettlementStatementLine","internal":"SettlementReconciliationInternalProjection"},"parameters":["asOfAvailable","asOfKnowledge","asOfValid","caseVersionIri","comparatorVersionIri","comparisonKeyDigest","expectedSide","inputRunRecordDigest","inputRunRef","keyId","pitRequestRecordDigest","pitRequestRef"],"resultKind":"sortedExactVersionIriSet","schemaVersion":"1.0"}'
+      missingSideAssertions:
+        - versionIri: https://example.test/fact/reconciliation/missing/k3/external/v1
+          caseVersionIri: https://example.test/fact/reconciliation/case/1/v1
+          comparatorVersionIri: https://example.test/fact/reconciliation/comparator/1/v1
+          keyId: k3
+          expectedSide: external
+          focalAccountLogicalIri: https://example.test/account/focal-beneficial
+          normalizedSettlementReference: DTC-MATRIX-03
+          settlementDate: '2026-07-15'
+          settlementSystem: DTC
+          settlementLocation: US
+          entryDirection: credit
+          assetKind: security
+          comparisonInstrumentIri: https://example.test/security/s1
+          comparisonQuantityUnit: https://example.test/unit/share
+          comparisonKeyDigest: sha256:801e6aadcff8a009827da81b52c30bf2690099ae15722f8fb97622782423224a
+          reconciliationAsOfValid: '2026-07-15T23:59:59Z'
+          reconciliationAsOfKnowledge: '2026-07-16T00:00:00Z'
+          reconciliationAsOfAvailable: '2026-07-16T00:01:00Z'
+          generatingContextRef: https://example.test/control/run/reconciliation/missing-k3
+          validFrom: '2026-07-15T23:59:59Z'
+          knowledgeFrom: '2026-07-16T00:00:00Z'
+          availableFrom: '2026-07-16T00:01:00Z'
+          absenceProbeRef: https://example.test/probe/reconciliation/missing/k3-external
+          pitRequestRef: https://example.test/control/pit-request/reconciliation/1
+          pitRequestRecordDigest: sha256:39bfebb6807e84091082726c966cabb1701191f7d2ada51734a8db3e44f527c9
+          inputContextRef: https://example.test/control/input-context/reconciliation/1
+          inputContextRecordDigest: sha256:82f77279160987491c4bcffc1581fa151771a90648a330b259500f1f847bb1c5
+          absenceProbeDigest: sha256:17a7229da527d26c81b88ce375f6f37a2c5cf522d0ec9f5e30d9d3687282f93d
+          absenceProbe:
+            expectedSide: external
+            inputRunRecordDigest: sha256:82f77279160987491c4bcffc1581fa151771a90648a330b259500f1f847bb1c5
+            inputRunRef: https://example.test/control/input-context/reconciliation/1
+            pitRequestRecordDigest: sha256:39bfebb6807e84091082726c966cabb1701191f7d2ada51734a8db3e44f527c9
+            pitRequestRef: https://example.test/control/pit-request/reconciliation/1
+            queryFunctionDigest: sha256:b23225dcfa48c75ccf2fe323b6c8fd25d0fbdf8e9fbed2a4bd26569b7d9700a2
+            queryFunctionRef: https://axiolune.ai/ontology/finance/post-trade-operations/functions/missing-side-candidate-set/v1
+            queryParametersBytes: '{"asOfAvailable":"2026-07-16T00:01:00Z","asOfKnowledge":"2026-07-16T00:00:00Z","asOfValid":"2026-07-15T23:59:59Z","caseVersionIri":"https://example.test/fact/reconciliation/case/1/v1","comparatorVersionIri":"https://example.test/fact/reconciliation/comparator/1/v1","comparisonKeyDigest":"sha256:801e6aadcff8a009827da81b52c30bf2690099ae15722f8fb97622782423224a","expectedSide":"external","inputRunRecordDigest":"sha256:82f77279160987491c4bcffc1581fa151771a90648a330b259500f1f847bb1c5","inputRunRef":"https://example.test/control/input-context/reconciliation/1","keyId":"k3","pitRequestRecordDigest":"sha256:39bfebb6807e84091082726c966cabb1701191f7d2ada51734a8db3e44f527c9","pitRequestRef":"https://example.test/control/pit-request/reconciliation/1"}'
+            queryParametersDigest: sha256:12fa9865a9c9d4e7ec0d84ac9c6c69982b15ac443d6e887cd48eecd923986189
+            ref: https://example.test/probe/reconciliation/missing/k3-external
+            result: true
+            schemaVersion: '1.0'
+            status: completed
+            subjectSetDigest: sha256:719c6702560132c7c314018468acd925ae83063b73747a542080c843b6b905e1
+            subjectVersionIris: []
+            universeDigest: sha256:68da4276d7899ce363261cd50a8b44ba7b21335c51d88678a539b84590bec909
+            digest: sha256:17a7229da527d26c81b88ce375f6f37a2c5cf522d0ec9f5e30d9d3687282f93d
+        - versionIri: https://example.test/fact/reconciliation/missing/k4/internal/v1
+          caseVersionIri: https://example.test/fact/reconciliation/case/1/v1
+          comparatorVersionIri: https://example.test/fact/reconciliation/comparator/1/v1
+          keyId: k4
+          expectedSide: internal
+          focalAccountLogicalIri: https://example.test/account/focal-beneficial
+          normalizedSettlementReference: DTC-MATRIX-04
+          settlementDate: '2026-07-15'
+          settlementSystem: DTC
+          settlementLocation: US
+          entryDirection: credit
+          assetKind: security
+          comparisonInstrumentIri: https://example.test/security/s1
+          comparisonQuantityUnit: https://example.test/unit/share
+          comparisonKeyDigest: sha256:08784ce08735355bb3e039fcf1b0b315698634d57621617059bb013ddc2be0e2
+          reconciliationAsOfValid: '2026-07-15T23:59:59Z'
+          reconciliationAsOfKnowledge: '2026-07-16T00:00:00Z'
+          reconciliationAsOfAvailable: '2026-07-16T00:01:00Z'
+          generatingContextRef: https://example.test/control/run/reconciliation/missing-k4
+          validFrom: '2026-07-15T23:59:59Z'
+          knowledgeFrom: '2026-07-16T00:00:00Z'
+          availableFrom: '2026-07-16T00:01:00Z'
+          absenceProbeRef: https://example.test/probe/reconciliation/missing/k4-internal
+          pitRequestRef: https://example.test/control/pit-request/reconciliation/1
+          pitRequestRecordDigest: sha256:39bfebb6807e84091082726c966cabb1701191f7d2ada51734a8db3e44f527c9
+          inputContextRef: https://example.test/control/input-context/reconciliation/1
+          inputContextRecordDigest: sha256:82f77279160987491c4bcffc1581fa151771a90648a330b259500f1f847bb1c5
+          absenceProbeDigest: sha256:310bb29b6a8b33aa1c5c24e1b847c3d1566a1f6b60e0f2101cb00f4fc85f9b7f
+          absenceProbe:
+            expectedSide: internal
+            inputRunRecordDigest: sha256:82f77279160987491c4bcffc1581fa151771a90648a330b259500f1f847bb1c5
+            inputRunRef: https://example.test/control/input-context/reconciliation/1
+            pitRequestRecordDigest: sha256:39bfebb6807e84091082726c966cabb1701191f7d2ada51734a8db3e44f527c9
+            pitRequestRef: https://example.test/control/pit-request/reconciliation/1
+            queryFunctionDigest: sha256:b23225dcfa48c75ccf2fe323b6c8fd25d0fbdf8e9fbed2a4bd26569b7d9700a2
+            queryFunctionRef: https://axiolune.ai/ontology/finance/post-trade-operations/functions/missing-side-candidate-set/v1
+            queryParametersBytes: '{"asOfAvailable":"2026-07-16T00:01:00Z","asOfKnowledge":"2026-07-16T00:00:00Z","asOfValid":"2026-07-15T23:59:59Z","caseVersionIri":"https://example.test/fact/reconciliation/case/1/v1","comparatorVersionIri":"https://example.test/fact/reconciliation/comparator/1/v1","comparisonKeyDigest":"sha256:08784ce08735355bb3e039fcf1b0b315698634d57621617059bb013ddc2be0e2","expectedSide":"internal","inputRunRecordDigest":"sha256:82f77279160987491c4bcffc1581fa151771a90648a330b259500f1f847bb1c5","inputRunRef":"https://example.test/control/input-context/reconciliation/1","keyId":"k4","pitRequestRecordDigest":"sha256:39bfebb6807e84091082726c966cabb1701191f7d2ada51734a8db3e44f527c9","pitRequestRef":"https://example.test/control/pit-request/reconciliation/1"}'
+            queryParametersDigest: sha256:2b3d7d1124c8e19b1c1c98cfa0955b14f37b4754667b5e3667ae7d0932c093e4
+            ref: https://example.test/probe/reconciliation/missing/k4-internal
+            result: true
+            schemaVersion: '1.0'
+            status: completed
+            subjectSetDigest: sha256:719c6702560132c7c314018468acd925ae83063b73747a542080c843b6b905e1
+            subjectVersionIris: []
+            universeDigest: sha256:ebd77a29498435d9c2da1ea5db1d2cfcd32dc5b20f7774f2dbe022da2ea2c06b
+            digest: sha256:310bb29b6a8b33aa1c5c24e1b847c3d1566a1f6b60e0f2101cb00f4fc85f9b7f
+        - versionIri: https://example.test/fact/reconciliation/missing/k5/external/v1
+          caseVersionIri: https://example.test/fact/reconciliation/case/1/v1
+          comparatorVersionIri: https://example.test/fact/reconciliation/comparator/1/v1
+          keyId: k5
+          expectedSide: external
+          focalAccountLogicalIri: https://example.test/account/focal-beneficial
+          normalizedSettlementReference: DTC-MATRIX-05
+          settlementDate: '2026-07-15'
+          settlementSystem: DTC
+          settlementLocation: US
+          entryDirection: credit
+          assetKind: security
+          comparisonInstrumentIri: https://example.test/security/s1
+          comparisonQuantityUnit: https://example.test/unit/share
+          comparisonKeyDigest: sha256:4a8f1dae1fd152b85468d93d1ae47780781dbe9502be7f9df525a563baac9a65
+          reconciliationAsOfValid: '2026-07-15T23:59:59Z'
+          reconciliationAsOfKnowledge: '2026-07-16T00:00:00Z'
+          reconciliationAsOfAvailable: '2026-07-16T00:01:00Z'
+          generatingContextRef: https://example.test/control/run/reconciliation/missing-k5
+          validFrom: '2026-07-15T23:59:59Z'
+          knowledgeFrom: '2026-07-16T00:00:00Z'
+          availableFrom: '2026-07-16T00:01:00Z'
+          absenceProbeRef: https://example.test/probe/reconciliation/missing/k5-external
+          pitRequestRef: https://example.test/control/pit-request/reconciliation/1
+          pitRequestRecordDigest: sha256:39bfebb6807e84091082726c966cabb1701191f7d2ada51734a8db3e44f527c9
+          inputContextRef: https://example.test/control/input-context/reconciliation/1
+          inputContextRecordDigest: sha256:82f77279160987491c4bcffc1581fa151771a90648a330b259500f1f847bb1c5
+          absenceProbeDigest: sha256:b6bc1b495b9752b621342f1ceab4c42f931acd16ad360fce2138e629a9de7b7f
+          absenceProbe:
+            expectedSide: external
+            inputRunRecordDigest: sha256:82f77279160987491c4bcffc1581fa151771a90648a330b259500f1f847bb1c5
+            inputRunRef: https://example.test/control/input-context/reconciliation/1
+            pitRequestRecordDigest: sha256:39bfebb6807e84091082726c966cabb1701191f7d2ada51734a8db3e44f527c9
+            pitRequestRef: https://example.test/control/pit-request/reconciliation/1
+            queryFunctionDigest: sha256:b23225dcfa48c75ccf2fe323b6c8fd25d0fbdf8e9fbed2a4bd26569b7d9700a2
+            queryFunctionRef: https://axiolune.ai/ontology/finance/post-trade-operations/functions/missing-side-candidate-set/v1
+            queryParametersBytes: '{"asOfAvailable":"2026-07-16T00:01:00Z","asOfKnowledge":"2026-07-16T00:00:00Z","asOfValid":"2026-07-15T23:59:59Z","caseVersionIri":"https://example.test/fact/reconciliation/case/1/v1","comparatorVersionIri":"https://example.test/fact/reconciliation/comparator/1/v1","comparisonKeyDigest":"sha256:4a8f1dae1fd152b85468d93d1ae47780781dbe9502be7f9df525a563baac9a65","expectedSide":"external","inputRunRecordDigest":"sha256:82f77279160987491c4bcffc1581fa151771a90648a330b259500f1f847bb1c5","inputRunRef":"https://example.test/control/input-context/reconciliation/1","keyId":"k5","pitRequestRecordDigest":"sha256:39bfebb6807e84091082726c966cabb1701191f7d2ada51734a8db3e44f527c9","pitRequestRef":"https://example.test/control/pit-request/reconciliation/1"}'
+            queryParametersDigest: sha256:863a61c5679b88259879e77ec094c79f45742e8648f54890e5e8c355f7009457
+            ref: https://example.test/probe/reconciliation/missing/k5-external
+            result: true
+            schemaVersion: '1.0'
+            status: completed
+            subjectSetDigest: sha256:719c6702560132c7c314018468acd925ae83063b73747a542080c843b6b905e1
+            subjectVersionIris: []
+            universeDigest: sha256:68da4276d7899ce363261cd50a8b44ba7b21335c51d88678a539b84590bec909
+            digest: sha256:b6bc1b495b9752b621342f1ceab4c42f931acd16ad360fce2138e629a9de7b7f
+        - versionIri: https://example.test/fact/reconciliation/missing/k6/internal/v1
+          caseVersionIri: https://example.test/fact/reconciliation/case/1/v1
+          comparatorVersionIri: https://example.test/fact/reconciliation/comparator/1/v1
+          keyId: k6
+          expectedSide: internal
+          focalAccountLogicalIri: https://example.test/account/focal-beneficial
+          normalizedSettlementReference: DTC-MATRIX-06
+          settlementDate: '2026-07-15'
+          settlementSystem: DTC
+          settlementLocation: US
+          entryDirection: credit
+          assetKind: security
+          comparisonInstrumentIri: https://example.test/security/s1
+          comparisonQuantityUnit: https://example.test/unit/share
+          comparisonKeyDigest: sha256:84cf4d729e5cc881ac0139b44ead4d7bbf239df491c74e3dbad5a1832a5d4603
+          reconciliationAsOfValid: '2026-07-15T23:59:59Z'
+          reconciliationAsOfKnowledge: '2026-07-16T00:00:00Z'
+          reconciliationAsOfAvailable: '2026-07-16T00:01:00Z'
+          generatingContextRef: https://example.test/control/run/reconciliation/missing-k6
+          validFrom: '2026-07-15T23:59:59Z'
+          knowledgeFrom: '2026-07-16T00:00:00Z'
+          availableFrom: '2026-07-16T00:01:00Z'
+          absenceProbeRef: https://example.test/probe/reconciliation/missing/k6-internal
+          pitRequestRef: https://example.test/control/pit-request/reconciliation/1
+          pitRequestRecordDigest: sha256:39bfebb6807e84091082726c966cabb1701191f7d2ada51734a8db3e44f527c9
+          inputContextRef: https://example.test/control/input-context/reconciliation/1
+          inputContextRecordDigest: sha256:82f77279160987491c4bcffc1581fa151771a90648a330b259500f1f847bb1c5
+          absenceProbeDigest: sha256:3340fbc63f6574a0a9f411deabdda6d79aa6fd8c8003a7039e5386730921ccac
+          absenceProbe:
+            expectedSide: internal
+            inputRunRecordDigest: sha256:82f77279160987491c4bcffc1581fa151771a90648a330b259500f1f847bb1c5
+            inputRunRef: https://example.test/control/input-context/reconciliation/1
+            pitRequestRecordDigest: sha256:39bfebb6807e84091082726c966cabb1701191f7d2ada51734a8db3e44f527c9
+            pitRequestRef: https://example.test/control/pit-request/reconciliation/1
+            queryFunctionDigest: sha256:b23225dcfa48c75ccf2fe323b6c8fd25d0fbdf8e9fbed2a4bd26569b7d9700a2
+            queryFunctionRef: https://axiolune.ai/ontology/finance/post-trade-operations/functions/missing-side-candidate-set/v1
+            queryParametersBytes: '{"asOfAvailable":"2026-07-16T00:01:00Z","asOfKnowledge":"2026-07-16T00:00:00Z","asOfValid":"2026-07-15T23:59:59Z","caseVersionIri":"https://example.test/fact/reconciliation/case/1/v1","comparatorVersionIri":"https://example.test/fact/reconciliation/comparator/1/v1","comparisonKeyDigest":"sha256:84cf4d729e5cc881ac0139b44ead4d7bbf239df491c74e3dbad5a1832a5d4603","expectedSide":"internal","inputRunRecordDigest":"sha256:82f77279160987491c4bcffc1581fa151771a90648a330b259500f1f847bb1c5","inputRunRef":"https://example.test/control/input-context/reconciliation/1","keyId":"k6","pitRequestRecordDigest":"sha256:39bfebb6807e84091082726c966cabb1701191f7d2ada51734a8db3e44f527c9","pitRequestRef":"https://example.test/control/pit-request/reconciliation/1"}'
+            queryParametersDigest: sha256:dc1ef6cb0a5880c75d2ef950eb3cbcea0b67e15c59811385bf7b1b422f383e84
+            ref: https://example.test/probe/reconciliation/missing/k6-internal
+            result: true
+            schemaVersion: '1.0'
+            status: completed
+            subjectSetDigest: sha256:719c6702560132c7c314018468acd925ae83063b73747a542080c843b6b905e1
+            subjectVersionIris: []
+            universeDigest: sha256:ebd77a29498435d9c2da1ea5db1d2cfcd32dc5b20f7774f2dbe022da2ea2c06b
+            digest: sha256:3340fbc63f6574a0a9f411deabdda6d79aa6fd8c8003a7039e5386730921ccac
+      findings:
+        - versionIri: https://example.test/fact/reconciliation/finding/k1/v1
+          caseVersionIri: *rec_case
+          generatingContextRef: &rec_finding_context https://example.test/control/run/reconciliation/findings
+          validFrom: *rec_asof_valid
+          knowledgeFrom: *rec_asof_knowledge
+          availableFrom: *rec_asof_available
+          keyId: k1
+          kind: matched
+          matchedFinding: true
+          internalProjectionVersionIris: [https://example.test/fact/reconciliation/internal/k1/1/v1]
+          externalStatementLineVersionIris: [https://example.test/fact/reconciliation/external/k1/1/v1]
+          internalCount: 1
+          externalCount: 1
+          crossSideValueRelation: allEqual
+          comparisonKeyDigest: *k1
+          evidenceSetDigest: sha256:a909d68346608c6a8d2cb06a5f2e7229e12656969f52f1a2bdf4065a3ba9ac5e
+          findingSubjectDigest: sha256:b1d2948a8882250d372e1d3ca13ddac02cc71155734899318f28bf0a756b4353
+        - versionIri: https://example.test/fact/reconciliation/finding/k2/v1
+          caseVersionIri: *rec_case
+          generatingContextRef: *rec_finding_context
+          validFrom: *rec_asof_valid
+          knowledgeFrom: *rec_asof_knowledge
+          availableFrom: *rec_asof_available
+          keyId: k2
+          kind: valueMismatch
+          valueMismatchFinding: true
+          internalProjectionVersionIris: [https://example.test/fact/reconciliation/internal/k2/1/v1]
+          externalStatementLineVersionIris: [https://example.test/fact/reconciliation/external/k2/1/v1]
+          internalCount: 1
+          externalCount: 1
+          crossSideValueRelation: mismatch
+          crossMismatchDimensions: [quantity]
+          mismatchDimensions: [quantity]
+          comparisonKeyDigest: *k2
+          evidenceSetDigest: sha256:865443f01b7889037317293d4949db61c0a17a1b487e11069f621c8385c8dbe1
+          findingSubjectDigest: sha256:a8442140c3b6e5a9c5eaaf66589dafef5d29784f8e2649025457fd6bba86192f
+        - versionIri: https://example.test/fact/reconciliation/finding/k3/v1
+          caseVersionIri: *rec_case
+          generatingContextRef: *rec_finding_context
+          validFrom: *rec_asof_valid
+          knowledgeFrom: *rec_asof_knowledge
+          availableFrom: *rec_asof_available
+          keyId: k3
+          kind: missingSide
+          missingSideFinding: true
+          internalProjectionVersionIris: [https://example.test/fact/reconciliation/internal/k3/1/v1]
+          externalStatementLineVersionIris: []
+          internalCount: 1
+          externalCount: 0
+          missingSideAssertionVersionIri: https://example.test/fact/reconciliation/missing/k3/external/v1
+          comparisonKeyDigest: *k3
+          evidenceSetDigest: sha256:4d07586de988910a6f97b1622e4c403ce688ad2e6331f7141ec21f601a39b57c
+          findingSubjectDigest: sha256:be6bff6f2661281bae097086b0a2e46177b665cf9db53e4dad312f291e845d85
+        - versionIri: https://example.test/fact/reconciliation/finding/k4/v1
+          caseVersionIri: *rec_case
+          generatingContextRef: *rec_finding_context
+          validFrom: *rec_asof_valid
+          knowledgeFrom: *rec_asof_knowledge
+          availableFrom: *rec_asof_available
+          keyId: k4
+          kind: missingSide
+          missingSideFinding: true
+          internalProjectionVersionIris: []
+          externalStatementLineVersionIris: [https://example.test/fact/reconciliation/external/k4/1/v1]
+          internalCount: 0
+          externalCount: 1
+          missingSideAssertionVersionIri: https://example.test/fact/reconciliation/missing/k4/internal/v1
+          comparisonKeyDigest: *k4
+          evidenceSetDigest: sha256:1b001bfd014c85adeb3383f0de520fd7dda111dcda7952f3e939a21090654b2b
+          findingSubjectDigest: sha256:b1421d968487d9d994baf60d1dfcbe7eb0f6b4ce71fd944583f0b11c3051a1e5
+        - versionIri: https://example.test/fact/reconciliation/finding/k5/v1
+          caseVersionIri: *rec_case
+          generatingContextRef: *rec_finding_context
+          validFrom: *rec_asof_valid
+          knowledgeFrom: *rec_asof_knowledge
+          availableFrom: *rec_asof_available
+          keyId: k5
+          kind: duplicate
+          duplicateFinding: true
+          internalProjectionVersionIris: [https://example.test/fact/reconciliation/internal/k5/1/v1, https://example.test/fact/reconciliation/internal/k5/2/v1]
+          externalStatementLineVersionIris: []
+          internalCount: 2
+          externalCount: 0
+          duplicateSide: internal
+          internalDuplicateValueRelation: conflicting
+          internalMismatchDimensions: [quantity]
+          mismatchDimensions: [quantity]
+          missingSideAssertionVersionIri: https://example.test/fact/reconciliation/missing/k5/external/v1
+          comparisonKeyDigest: *k5
+          evidenceSetDigest: sha256:aaa04c5a5197e1599ba709f89563211d801900b73643af7fffe031eac49f4b0b
+          findingSubjectDigest: sha256:1b5f4b722d55b85f0a38d74f42d3db36e724ab26159073fbb5c65c4106180a0b
+        - versionIri: https://example.test/fact/reconciliation/finding/k6/v1
+          caseVersionIri: *rec_case
+          generatingContextRef: *rec_finding_context
+          validFrom: *rec_asof_valid
+          knowledgeFrom: *rec_asof_knowledge
+          availableFrom: *rec_asof_available
+          keyId: k6
+          kind: duplicate
+          duplicateFinding: true
+          internalProjectionVersionIris: []
+          externalStatementLineVersionIris: [https://example.test/fact/reconciliation/external/k6/1/v1, https://example.test/fact/reconciliation/external/k6/2/v1]
+          internalCount: 0
+          externalCount: 2
+          duplicateSide: external
+          externalDuplicateValueRelation: conflicting
+          externalMismatchDimensions: [quantity]
+          mismatchDimensions: [quantity]
+          missingSideAssertionVersionIri: https://example.test/fact/reconciliation/missing/k6/internal/v1
+          comparisonKeyDigest: *k6
+          evidenceSetDigest: sha256:324680394a5a0058a2840d70e955eecd47494706b387a7deab7547c6e3551b05
+          findingSubjectDigest: sha256:572594675038d456af937e27152446e8dd6cec70912bd7bb7eef8aabff641d3f
+        - versionIri: https://example.test/fact/reconciliation/finding/k7/v1
+          caseVersionIri: *rec_case
+          generatingContextRef: *rec_finding_context
+          validFrom: *rec_asof_valid
+          knowledgeFrom: *rec_asof_knowledge
+          availableFrom: *rec_asof_available
+          keyId: k7
+          kind: duplicate
+          duplicateFinding: true
+          internalProjectionVersionIris: [https://example.test/fact/reconciliation/internal/k7/1/v1, https://example.test/fact/reconciliation/internal/k7/2/v1]
+          externalStatementLineVersionIris: [https://example.test/fact/reconciliation/external/k7/1/v1]
+          internalCount: 2
+          externalCount: 1
+          duplicateSide: internal
+          internalDuplicateValueRelation: identical
+          crossSideValueRelation: allEqual
+          comparisonKeyDigest: *k7
+          evidenceSetDigest: sha256:fe30bfe374f2cbf5770e64eab08a057338e4f13b6dec61b30fecec7dd195a3bf
+          findingSubjectDigest: sha256:45d13b88107782fc515b6945e6296cbbfe820f64f9a5fa38c713c31405a63cd6
+        - versionIri: https://example.test/fact/reconciliation/finding/k8/v1
+          caseVersionIri: *rec_case
+          generatingContextRef: *rec_finding_context
+          validFrom: *rec_asof_valid
+          knowledgeFrom: *rec_asof_knowledge
+          availableFrom: *rec_asof_available
+          keyId: k8
+          kind: duplicate
+          duplicateFinding: true
+          internalProjectionVersionIris: [https://example.test/fact/reconciliation/internal/k8/1/v1]
+          externalStatementLineVersionIris: [https://example.test/fact/reconciliation/external/k8/1/v1, https://example.test/fact/reconciliation/external/k8/2/v1]
+          internalCount: 1
+          externalCount: 2
+          duplicateSide: external
+          externalDuplicateValueRelation: identical
+          crossSideValueRelation: allEqual
+          comparisonKeyDigest: *k8
+          evidenceSetDigest: sha256:e579bac22a5453020136d150ef59af9e45ccf821c7bf53a6f24bdec4a3c00d98
+          findingSubjectDigest: sha256:d520904231ca18ecb00fa10788b4ef2511a8558184d8821342600f1943a29709
+        - versionIri: https://example.test/fact/reconciliation/finding/k9/v1
+          caseVersionIri: *rec_case
+          generatingContextRef: *rec_finding_context
+          validFrom: *rec_asof_valid
+          knowledgeFrom: *rec_asof_knowledge
+          availableFrom: *rec_asof_available
+          keyId: k9
+          kind: duplicate
+          duplicateFinding: true
+          internalProjectionVersionIris: [https://example.test/fact/reconciliation/internal/k9/1/v1, https://example.test/fact/reconciliation/internal/k9/2/v1]
+          externalStatementLineVersionIris: [https://example.test/fact/reconciliation/external/k9/1/v1, https://example.test/fact/reconciliation/external/k9/2/v1]
+          internalCount: 2
+          externalCount: 2
+          duplicateSide: both
+          internalDuplicateValueRelation: identical
+          externalDuplicateValueRelation: identical
+          crossSideValueRelation: allEqual
+          comparisonKeyDigest: *k9
+          evidenceSetDigest: sha256:02130c51f908b9953370d62fe34ac06d51a1e5cd172a13787ad426beaa502936
+          findingSubjectDigest: sha256:4b7ce89954269834fb8f50e0c0f67c5eeb6d981b71614555d36cd2721bf2cdb4
+      statusEvents:
+        - versionIri: https://example.test/fact/reconciliation/status/1/open/v1
+          caseVersionIri: *rec_case
+          sourceAuthorityVersionIri: *rec_internal_authority_version
+          sourceAuthorityLogicalIri: https://example.test/party/internal-settlement-authority
+          providerEventId: rec-1-open
+          sourceOrderKey: 1
+          state: open
+          observedAt: '2026-07-15T00:00:00Z'
+          sourceArtifactRef: https://example.test/artifact/reconciliation-status/1
+          sourceArtifactDigest: sha256:c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1
+          sourceLocator: $.events[0]
+          validFrom: '2026-07-15T00:00:00Z'
+          knowledgeFrom: '2026-07-15T00:01:00Z'
+          availableFrom: '2026-07-15T00:02:00Z'
+        - versionIri: https://example.test/fact/reconciliation/status/1/investigating/v1
+          caseVersionIri: *rec_case
+          sourceAuthorityVersionIri: *rec_internal_authority_version
+          sourceAuthorityLogicalIri: https://example.test/party/internal-settlement-authority
+          providerEventId: rec-1-investigating
+          sourceOrderKey: 2
+          state: investigating
+          observedAt: '2026-07-15T12:00:00Z'
+          sourceArtifactRef: https://example.test/artifact/reconciliation-status/1
+          sourceArtifactDigest: sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2
+          sourceLocator: $.events[1]
+          validFrom: '2026-07-15T12:00:00Z'
+          knowledgeFrom: '2026-07-15T12:01:00Z'
+          availableFrom: '2026-07-15T12:02:00Z'
+        - versionIri: https://example.test/fact/reconciliation/status/1/resolved/v1
+          caseVersionIri: *rec_case
+          sourceAuthorityVersionIri: *rec_internal_authority_version
+          sourceAuthorityLogicalIri: https://example.test/party/internal-settlement-authority
+          providerEventId: rec-1-resolved
+          sourceOrderKey: 3
+          state: resolved
+          observedAt: '2026-07-15T23:00:00Z'
+          sourceArtifactRef: https://example.test/artifact/reconciliation-status/1
+          sourceArtifactDigest: sha256:c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3
+          sourceLocator: $.events[2]
+          validFrom: '2026-07-15T23:00:00Z'
+          knowledgeFrom: '2026-07-15T23:01:00Z'
+          availableFrom: '2026-07-15T23:02:00Z'
+
+  - id: settlement-account-security-cash-projection-and-status-history
+    contract: ReconciliationProjectionAndMatrix
+    instance:
+      case:
+        logicalIri: https://example.test/fact/reconciliation/case/settlement-account
+        versionIri: &sa_case https://example.test/fact/reconciliation/case/settlement-account/v1
+        authorityScopedId: reconciliation-case-2026-07-17-settlement-account
+        reconciliationScope: accountDateSystem
+        caseOwnerVersionIri: https://example.test/fact/party/reconciliation-operations/v1
+        internalSourceAuthorityVersionIri: &sa_internal_authority_version https://example.test/fact/party/internal-settlement-authority/v1
+        externalStatementVersionIri: &sa_statement https://example.test/fact/reconciliation/statement/settlement-account/v1
+        internalProjectionMode: settlementAccount
+        settlementAccountMode: true
+        focalAccount: &sa_focal https://example.test/account/settlement-direct
+        comparatorVersionIri: &sa_comparator https://example.test/fact/reconciliation/comparator/settlement-account/v1
+        internalSourceAuthorityLogicalIri: &sa_internal_authority https://example.test/party/internal-settlement-authority
+        externalProviderLogicalIri: &sa_external_provider https://example.test/party/external-statement-provider
+        reconciliationDate: '2026-07-17'
+        reconciliationAsOfValid: &sa_asof_valid '2026-07-17T23:59:59Z'
+        reconciliationAsOfKnowledge: &sa_asof_knowledge '2026-07-18T00:00:00Z'
+        reconciliationAsOfAvailable: &sa_asof_available '2026-07-18T00:01:00Z'
+        inputContextRef: &sa_input_context https://example.test/control/input-context/reconciliation/settlement-account
+        inputContextRecordDigest: sha256:d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1
+        generatingContextRef: https://example.test/control/run/reconciliation/case/settlement-account
+        validFrom: *sa_asof_valid
+        knowledgeFrom: *sa_asof_knowledge
+        availableFrom: *sa_asof_available
+        currentStatus: resolved
+      externalStatementVersionIri: *sa_statement
+      comparator:
+        versionIri: *sa_comparator
+        implementationDigest: sha256:d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2
+        runtimeDigest: sha256:d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3
+        inputContractDigest: sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4
+        outputContractDigest: sha256:d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5d5
+        referenceNormalizationDigest: sha256:d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6
+        canonicalizationDigest: sha256:d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7d7
+        numericTolerance: '0'
+        sourceArtifactRef: https://example.test/artifact/reconciliation-comparator/settlement-account
+        sourceArtifactDigest: sha256:d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8
+        sourceLocator: $.comparators[1]
+        validFrom: &sa_valid_from '2026-07-01T00:00:00Z'
+        knowledgeFrom: &sa_knowledge_from '2026-07-01T00:00:00Z'
+        availableFrom: &sa_available_from '2026-07-01T00:00:00Z'
+      externalStatement:
+        versionIri: *sa_statement
+        providerVersionIri: https://example.test/fact/party/external-statement-provider/v1
+        providerLogicalIri: *sa_external_provider
+        authorityScopedId: statement-2026-07-17-settlement-account
+        focalAccount: *sa_focal
+        statementDate: '2026-07-17'
+        sourceSnapshotRef: https://example.test/snapshot/external-statement/2026-07-17
+        sourceSnapshotDigest: sha256:d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9
+        sourceSchemaDigest: sha256:dadadadadadadadadadadadadadadadadadadadadadadadadadadadadadadada
+        sourceArtifactRef: https://example.test/artifact/external-statement/2026-07-17
+        sourceArtifactDigest: sha256:dbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdb
+        sourceLocator: $.statements[1]
+        validFrom: *sa_valid_from
+        knowledgeFrom: *sa_knowledge_from
+        availableFrom: *sa_available_from
+      legs:
+        - versionIri: &sa_security_leg https://example.test/fact/leg/sa-security/v1
+          instructionVersionIri: https://example.test/fact/instruction/sa-security/v1
+          instructionAuthorityLogicalIri: *sa_internal_authority
+          normalizedSettlementReference: DTC-SA-SEC
+          settlementDate: '2026-07-17'
+          system: DTC
+          location: US
+          fromAccount: https://example.test/account/settlement-counterparty
+          toAccount: *sa_focal
+          asset: {kind: security, amount: '25', unit: https://example.test/unit/share, instrumentIri: https://example.test/security/s2, precision: 0}
+          validFrom: *sa_valid_from
+          knowledgeFrom: *sa_knowledge_from
+          availableFrom: *sa_available_from
+        - versionIri: &sa_cash_leg https://example.test/fact/leg/sa-cash/v1
+          instructionVersionIri: https://example.test/fact/instruction/sa-cash/v1
+          instructionAuthorityLogicalIri: *sa_internal_authority
+          normalizedSettlementReference: DTC-SA-CASH
+          settlementDate: '2026-07-17'
+          system: DTC
+          location: US
+          fromAccount: *sa_focal
+          toAccount: https://example.test/account/cash-counterparty
+          asset: {kind: money, amount: '1000.00', currency: USD, scale: 2}
+          validFrom: *sa_valid_from
+          knowledgeFrom: *sa_knowledge_from
+          availableFrom: *sa_available_from
+      expectedProjections:
+        - {legVersionIri: *sa_security_leg, direction: credit, keyId: sa-security, comparisonKeyDigest: sha256:86b2f93dbf23545aed39148e22c2f31d6ee38846acd34a45e00498046a9047f6, amount: '25', allocationVersionIris: [], bridgeVersionIris: []}
+        - {legVersionIri: *sa_cash_leg, direction: debit, keyId: sa-cash, comparisonKeyDigest: sha256:544dc41cb1588387861aad7596914746b5d3d0c35edfac050cd4f55a54f61fd3, amount: '1000', allocationVersionIris: [], bridgeVersionIris: []}
+      comparisonKeys:
+        - {keyId: sa-security, focalAccountLogicalIri: *sa_focal, normalizedSettlementReference: DTC-SA-SEC, settlementDate: '2026-07-17', settlementSystem: DTC, settlementLocation: US, entryDirection: credit, assetKind: security, assetIdentity: https://example.test/security/s2, unitIdentity: https://example.test/unit/share, comparisonKeyDigest: &sa_security_key sha256:86b2f93dbf23545aed39148e22c2f31d6ee38846acd34a45e00498046a9047f6}
+        - {keyId: sa-cash, focalAccountLogicalIri: *sa_focal, normalizedSettlementReference: DTC-SA-CASH, settlementDate: '2026-07-17', settlementSystem: DTC, settlementLocation: US, entryDirection: debit, assetKind: cash, assetIdentity: USD, unitIdentity: 2, comparisonKeyDigest: &sa_cash_key sha256:544dc41cb1588387861aad7596914746b5d3d0c35edfac050cd4f55a54f61fd3}
+      internalProjections:
+        - versionIri: &sa_internal_security https://example.test/fact/reconciliation/internal/sa-security/v1
+          caseVersionIri: *sa_case
+          comparatorVersionIri: *sa_comparator
+          focalAccount: *sa_focal
+          mode: settlementAccount
+          projectionSettlementAccountMode: true
+          keyId: sa-security
+          comparisonKeyDigest: *sa_security_key
+          legVersionIri: *sa_security_leg
+          direction: credit
+          normalizedSettlementReference: DTC-SA-SEC
+          settlementDate: '2026-07-17'
+          settlementSystem: DTC
+          settlementLocation: US
+          entryDirection: credit
+          settlementAssetKind: security
+          projectionInstrumentIri: https://example.test/security/s2
+          internalSourceVersionSetDigest: sha256:56d1ed94549e24cf86aa0bd11776a7e786264ac9f0d9dad3eacf6d4f199d2dd6
+          reconciliationAsOfValid: *sa_asof_valid
+          reconciliationAsOfKnowledge: *sa_asof_knowledge
+          reconciliationAsOfAvailable: *sa_asof_available
+          inputContextRef: *sa_input_context
+          generatingContextRef: https://example.test/control/run/reconciliation/settlement-account/projections
+          validFrom: *sa_asof_valid
+          knowledgeFrom: *sa_asof_knowledge
+          availableFrom: *sa_asof_available
+          value: {kind: quantity, amount: '25', instrumentIri: https://example.test/security/s2, unit: https://example.test/unit/share, precision: 0}
+        - versionIri: &sa_internal_cash https://example.test/fact/reconciliation/internal/sa-cash/v1
+          caseVersionIri: *sa_case
+          comparatorVersionIri: *sa_comparator
+          focalAccount: *sa_focal
+          mode: settlementAccount
+          projectionSettlementAccountMode: true
+          keyId: sa-cash
+          comparisonKeyDigest: *sa_cash_key
+          legVersionIri: *sa_cash_leg
+          direction: debit
+          normalizedSettlementReference: DTC-SA-CASH
+          settlementDate: '2026-07-17'
+          settlementSystem: DTC
+          settlementLocation: US
+          entryDirection: debit
+          settlementAssetKind: cash
+          internalSourceVersionSetDigest: sha256:f4a137e0a15c8a28eb382f3a78dab91c4f2ac8666e62e12d1e3256fc4a7d0ed9
+          reconciliationAsOfValid: *sa_asof_valid
+          reconciliationAsOfKnowledge: *sa_asof_knowledge
+          reconciliationAsOfAvailable: *sa_asof_available
+          inputContextRef: *sa_input_context
+          generatingContextRef: https://example.test/control/run/reconciliation/settlement-account/projections
+          validFrom: *sa_asof_valid
+          knowledgeFrom: *sa_asof_knowledge
+          availableFrom: *sa_asof_available
+          value: {kind: money, amount: '1000.00', currency: USD, scale: 2}
+      externalStatementLines:
+        - versionIri: &sa_external_security https://example.test/fact/reconciliation/external/sa-security/v1
+          statementVersionIri: *sa_statement
+          authorityScopedId: line-sa-security
+          focalAccount: *sa_focal
+          normalizedSettlementReference: DTC-SA-SEC
+          settlementDate: '2026-07-17'
+          settlementSystem: DTC
+          settlementLocation: US
+          entryDirection: credit
+          lineInstrumentIri: https://example.test/security/s2
+          sourceArtifactRef: https://example.test/artifact/external-statement/2026-07-17
+          sourceArtifactDigest: sha256:dbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdb
+          sourceLocator: $.statements[1].lines[0]
+          validFrom: *sa_valid_from
+          knowledgeFrom: *sa_knowledge_from
+          availableFrom: *sa_available_from
+          keyId: sa-security
+          comparisonKeyDigest: *sa_security_key
+          value: {kind: quantity, amount: '25.0', instrumentIri: https://example.test/security/s2, unit: https://example.test/unit/share, precision: 0}
+        - versionIri: &sa_external_cash https://example.test/fact/reconciliation/external/sa-cash/v1
+          statementVersionIri: *sa_statement
+          authorityScopedId: line-sa-cash
+          focalAccount: *sa_focal
+          normalizedSettlementReference: DTC-SA-CASH
+          settlementDate: '2026-07-17'
+          settlementSystem: DTC
+          settlementLocation: US
+          entryDirection: debit
+          sourceArtifactRef: https://example.test/artifact/external-statement/2026-07-17
+          sourceArtifactDigest: sha256:dbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdb
+          sourceLocator: $.statements[1].lines[1]
+          validFrom: *sa_valid_from
+          knowledgeFrom: *sa_knowledge_from
+          availableFrom: *sa_available_from
+          keyId: sa-cash
+          comparisonKeyDigest: *sa_cash_key
+          value: {kind: money, amount: '999.50', currency: USD, scale: 2}
+      missingSideAssertions: []
+      findings:
+        - versionIri: https://example.test/fact/reconciliation/finding/sa-security/v1
+          caseVersionIri: *sa_case
+          generatingContextRef: https://example.test/control/run/reconciliation/settlement-account/findings
+          validFrom: *sa_asof_valid
+          knowledgeFrom: *sa_asof_knowledge
+          availableFrom: *sa_asof_available
+          keyId: sa-security
+          kind: matched
+          matchedFinding: true
+          internalProjectionVersionIris: [*sa_internal_security]
+          externalStatementLineVersionIris: [*sa_external_security]
+          internalCount: 1
+          externalCount: 1
+          crossSideValueRelation: allEqual
+          comparisonKeyDigest: *sa_security_key
+          evidenceSetDigest: sha256:6ed5b9fbe7083d35d9fb0c2b6ed0046d67e593b1da1202d92d503946d10f8fc8
+          findingSubjectDigest: sha256:833be349e16ceeb1f7b5b30348dce889b4355636006907c775f59cbd4fce91ab
+        - versionIri: https://example.test/fact/reconciliation/finding/sa-cash/v1
+          caseVersionIri: *sa_case
+          generatingContextRef: https://example.test/control/run/reconciliation/settlement-account/findings
+          validFrom: *sa_asof_valid
+          knowledgeFrom: *sa_asof_knowledge
+          availableFrom: *sa_asof_available
+          keyId: sa-cash
+          kind: valueMismatch
+          valueMismatchFinding: true
+          internalProjectionVersionIris: [*sa_internal_cash]
+          externalStatementLineVersionIris: [*sa_external_cash]
+          internalCount: 1
+          externalCount: 1
+          crossSideValueRelation: mismatch
+          crossMismatchDimensions: [amount]
+          mismatchDimensions: [amount]
+          comparisonKeyDigest: *sa_cash_key
+          evidenceSetDigest: sha256:283b2c7271978287108515b9274e10bca5c0ad7bc55029d5e6d04c14d722d8b5
+          findingSubjectDigest: sha256:502e644fbd40d15fb96743082774e013f01dcb1af201b5182b2784a9f7beab8d
+      statusEvents:
+        - versionIri: https://example.test/fact/reconciliation/status/settlement-account/open/v1
+          caseVersionIri: *sa_case
+          sourceAuthorityVersionIri: *sa_internal_authority_version
+          sourceAuthorityLogicalIri: *sa_internal_authority
+          providerEventId: sa-open
+          sourceOrderKey: 1
+          state: open
+          observedAt: '2026-07-17T08:00:00Z'
+          sourceArtifactRef: https://example.test/artifact/reconciliation-status/settlement-account
+          sourceArtifactDigest: sha256:dcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdc
+          sourceLocator: $.events[0]
+          validFrom: '2026-07-17T08:00:00Z'
+          knowledgeFrom: '2026-07-17T08:01:00Z'
+          availableFrom: '2026-07-17T08:02:00Z'
+        - versionIri: https://example.test/fact/reconciliation/status/settlement-account/investigating/v1
+          caseVersionIri: *sa_case
+          sourceAuthorityVersionIri: *sa_internal_authority_version
+          sourceAuthorityLogicalIri: *sa_internal_authority
+          providerEventId: sa-investigating
+          sourceOrderKey: 2
+          state: investigating
+          observedAt: '2026-07-17T12:00:00Z'
+          sourceArtifactRef: https://example.test/artifact/reconciliation-status/settlement-account
+          sourceArtifactDigest: sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+          sourceLocator: $.events[1]
+          validFrom: '2026-07-17T12:00:00Z'
+          knowledgeFrom: '2026-07-17T12:01:00Z'
+          availableFrom: '2026-07-17T12:02:00Z'
+        - versionIri: https://example.test/fact/reconciliation/status/settlement-account/resolved/v1
+          caseVersionIri: *sa_case
+          sourceAuthorityVersionIri: *sa_internal_authority_version
+          sourceAuthorityLogicalIri: *sa_internal_authority
+          providerEventId: sa-resolved
+          sourceOrderKey: 3
+          state: resolved
+          observedAt: '2026-07-17T18:00:00Z'
+          sourceArtifactRef: https://example.test/artifact/reconciliation-status/settlement-account
+          sourceArtifactDigest: sha256:dededededededededededededededededededededededededededededededede
+          sourceLocator: $.events[2]
+          validFrom: '2026-07-17T18:00:00Z'
+          knowledgeFrom: '2026-07-17T18:01:00Z'
+          availableFrom: '2026-07-17T18:02:00Z'

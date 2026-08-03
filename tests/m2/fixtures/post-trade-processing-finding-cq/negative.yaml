@@ -1,0 +1,52 @@
+schemaVersion: '1.0'
+contract: axiolune-m2-cq-post-trade-processing-finding/v1
+cases:
+  - id: cq-pto3-before-first-availability-is-empty
+    cqId: CQ-PTO3
+    expectedOutcome: empty
+    query:
+      eventVersionIri: https://example.test/fact/corporate-action/event/pf-1/v1
+      pivot:
+        asOfValid: '2026-07-15T09:03:00Z'
+        asOfKnowledge: '2026-07-15T09:03:00Z'
+        asOfAvailable: '2026-07-15T09:00:01Z'
+        referenceTime: '2026-07-31T00:00:00Z'
+
+  - id: cq-pto3-absent-event-version-is-empty
+    cqId: CQ-PTO3
+    expectedOutcome: empty
+    query:
+      eventVersionIri: https://example.test/fact/corporate-action/event/absent/v1
+      pivot:
+        asOfValid: '2026-07-15T09:03:00Z'
+        asOfKnowledge: '2026-07-15T09:03:00Z'
+        asOfAvailable: '2026-07-15T09:03:00Z'
+        referenceTime: '2026-07-31T00:00:00Z'
+
+  - id: cq-pto3-future-knowledge-pivot-is-rejected
+    cqId: CQ-PTO3
+    expectedOutcome: violation
+    expectedErrorCode: processing-finding-query-future-knowledge
+    query:
+      eventVersionIri: https://example.test/fact/corporate-action/event/pf-1/v1
+      pivot:
+        asOfValid: '2026-07-15T09:03:00Z'
+        asOfKnowledge: '2026-08-01T00:00:01Z'
+        asOfAvailable: '2026-07-15T09:03:00Z'
+        referenceTime: '2026-08-01T00:00:00Z'
+
+  - id: cq-pto3-evidence-digest-is-recomputed
+    cqId: CQ-PTO3
+    expectedOutcome: violation
+    expectedErrorCode: processing-finding-evidence-digest
+    sourceMutation:
+      op: set
+      path: findings.0.evidenceSetDigest
+      value: sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+    query:
+      eventVersionIri: https://example.test/fact/corporate-action/event/pf-1/v1
+      pivot:
+        asOfValid: '2026-07-15T09:03:00Z'
+        asOfKnowledge: '2026-07-15T09:03:00Z'
+        asOfAvailable: '2026-07-15T09:03:00Z'
+        referenceTime: '2026-07-31T00:00:00Z'

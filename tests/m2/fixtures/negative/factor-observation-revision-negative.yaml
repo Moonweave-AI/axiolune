@@ -1,45 +1,130 @@
-# FactorObservation negatives — availability fail-closed + revision hygiene
+# FactorObservation v0.3 negatives — fail-closed availability and immutable facts.
+schemaVersion: '1.0'
+anchors:
+  authority: &authority
+    iri: https://axiolune.ai/data/party/research-governance
+    type: https://axiolune.ai/ontology/finance/foundation/Party
+  instrument: &instrument
+    iri: https://axiolune.ai/data/instrument/US0378331005/version/2
+    type: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+  run-kind-research: &run-kind-research
+    iri: https://axiolune.ai/ontology/finance/strategy-research/RunContextKind/value/research
+    type: https://axiolune.ai/ontology/finance/strategy-research/RunContextKind
+  factor: &factor
+    iri: https://axiolune.ai/data/factor/roe/version/4
+    type: https://axiolune.ai/ontology/finance/strategy-research/FactorDefinition
+    generatorId: roe
+    generatorName: Return on Equity
+    implementationDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+    inputContractDigest: sha256:1212121212121212121212121212121212121212121212121212121212121212
+    outputContractDigest: sha256:1313131313131313131313131313131313131313131313131313131313131313
+    toolLockRef: https://axiolune.ai/artifact/tool-lock/factor-runtime
+    toolLockDigest: sha256:1414141414141414141414141414141414141414141414141414141414141414
+    runtimeDigest: sha256:1515151515151515151515151515151515151515151515151515151515151515
+    factorExpressionRef: https://axiolune.ai/artifact/factor/roe-v4
+    factorExpressionDigest: sha256:1616161616161616161616161616161616161616161616161616161616161616
+    generatorAuthority: https://axiolune.ai/data/party/research-governance
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef: https://axiolune.ai/artifact/source/factor-roe-v4
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest: sha256:1717171717171717171717171717171717171717171717171717171717171717
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator: https://axiolune.ai/artifact/locator/factor-roe-v4
+    validFrom: '2024-01-01T00:00:00Z'
+    knowledgeFrom: '2024-01-02T00:00:00Z'
+    availableFrom: '2024-01-02T00:00:01Z'
+    revision: 0
+    source: https://axiolune.ai/source/research-governance
+  run: &run
+    iri: https://axiolune.ai/data/run/research-roe-revision/version/1
+    type: https://axiolune.ai/ontology/finance/strategy-research/RunContext
+    runContextId: research-roe-revision
+    runContextKind: https://axiolune.ai/ontology/finance/strategy-research/RunContextKind/value/research
+    runStartedAt: '2024-04-15T07:00:00Z'
+    parameterSnapshotRef: https://axiolune.ai/artifact/parameter/factor-research
+    parameterSnapshotDigest: sha256:2121212121212121212121212121212121212121212121212121212121212121
+    ontologyClosureDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+    mappingClosureDigest: sha256:2323232323232323232323232323232323232323232323232323232323232323
+    calendarSnapshotRef: https://axiolune.ai/artifact/calendar/XNAS-2024
+    calendarSnapshotDigest: sha256:2424242424242424242424242424242424242424242424242424242424242424
+    compilerDigest: sha256:2525252525252525252525252525252525252525252525252525252525252525
+    inputContextRef: https://axiolune.ai/run/materialization/factor-input
+    inputContextRecordDigest: sha256:2626262626262626262626262626262626262626262626262626262626262626
+    pitRequestRef: https://axiolune.ai/run/pit/request/factor-research
+    pitRequestRecordDigest: sha256:2727272727272727272727272727272727272727272727272727272727272727
+    runAuthority: https://axiolune.ai/data/party/research-governance
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef: https://axiolune.ai/artifact/run/factor-research
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest: sha256:2828282828282828282828282828282828282828282828282828282828282828
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator: https://axiolune.ai/artifact/locator/factor-research
+    validFrom: '2024-01-01T00:00:00Z'
+    knowledgeFrom: '2024-04-15T07:00:00Z'
+    availableFrom: '2024-04-15T07:00:01Z'
+    revision: 0
+    source: https://axiolune.ai/source/research-engine
+  support: &support
+    - *authority
+    - *instrument
+    - *run-kind-research
+    - *factor
+    - *run
 fixtures:
   - id: factor-obs-missing-availableFrom
-    description: FactorObservation without availableFrom must reject (ADR-012 fail-closed)
+    description: FactorObservation without availableFrom must reject.
     type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
     instance:
-      iri: https://axiolune.ai/data/factors/obs-bad-no-avail
+      iri: https://axiolune.ai/data/factor-observation/roe/AAPL/2024Q1/provider-roe/version/bad-no-availability
       type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
-      observesFactor: https://axiolune.ai/data/factors/def-roe
-      observedInstrument: https://axiolune.ai/data/instruments/AX-EQ-AAPL
-      hasFactorPeriod: 2024Q1
-      hasFactorValue:
+      https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/observedFactor: https://axiolune.ai/data/factor/roe/version/4
+      https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/factorInstrument: https://axiolune.ai/data/instrument/US0378331005/version/2
+      https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/factorRunContext: https://axiolune.ai/data/run/research-roe-revision/version/1
+      sourceFactorId: provider-roe
+      reportingPeriodKey: 2024Q1
+      factorValue:
         type: QuantityValue
-        hasNumericAmount: '0.10'
-        hasUnitCode: share
+        value: '0.10'
+        unit: https://axiolune.ai/unit/one
+        rounding: half-even
       validFrom: '2024-01-01T00:00:00Z'
       knowledgeFrom: '2024-04-15T08:00:00Z'
-      source: qlib-pit-synthetic
+      revision: 0
+      source: https://axiolune.ai/source/qlib-pit-synthetic
+    supportNodes: *support
     expectedResult: rejected
-    expectedViolation: missing-availability-time
+    violationType: missing-availability-time
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/factor-observation/roe/AAPL/2024Q1/provider-roe/version/bad-no-availability
+      path: https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom
+      severity: http://www.w3.org/ns/shacl#Violation
+
   - id: factor-obs-future-availability
-    description: asOfAvailable before availableFrom must not accept observation
+    description: asOfAvailable before availableFrom must reject the observation.
     type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
     instance:
-      iri: https://axiolune.ai/data/factors/obs-future-avail
+      iri: https://axiolune.ai/data/factor-observation/roe/AAPL/2024Q2/provider-roe/version/0
       type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
-      observesFactor: https://axiolune.ai/data/factors/def-roe
-      observedInstrument: https://axiolune.ai/data/instruments/AX-EQ-AAPL
-      hasFactorPeriod: 2024Q2
-      hasFactorValue:
+      https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/observedFactor: https://axiolune.ai/data/factor/roe/version/4
+      https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/factorInstrument: https://axiolune.ai/data/instrument/US0378331005/version/2
+      https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/factorRunContext: https://axiolune.ai/data/run/research-roe-revision/version/1
+      sourceFactorId: provider-roe
+      reportingPeriodKey: 2024Q2
+      factorValue:
         type: QuantityValue
-        hasNumericAmount: '0.20'
-        hasUnitCode: share
+        value: '0.20'
+        unit: https://axiolune.ai/unit/one
+        rounding: half-even
       validFrom: '2024-04-01T00:00:00Z'
       validTo: '2024-07-01T00:00:00Z'
-      knowledgeFrom: '2024-07-20T08:00:00Z'
-      availableFrom: '2024-07-20T08:05:00Z'
-      source: qlib-pit-synthetic
+      knowledgeFrom: '2024-07-09T08:00:00Z'
+      availableFrom: '2024-07-09T08:05:00Z'
+      revision: 0
+      source: https://axiolune.ai/source/qlib-pit-synthetic
+    supportNodes: *support
     pitQuery:
       asOfValid: '2024-06-15T00:00:00Z'
-      asOfKnowledge: '2024-07-20T08:00:00Z'
-      asOfAvailable: '2024-07-20T08:00:00Z'
+      asOfKnowledge: '2024-07-09T08:00:00Z'
+      asOfAvailable: '2024-07-09T08:00:00Z'
     expectedResult: rejected
-    expectedViolation: future-availability
-    note: availableFrom 08:05 > asOfAvailable 08:00
+    validationEngine: pit
+    violationType: future-availability
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#SPARQLConstraintComponent
+      focus: https://axiolune.ai/data/factor-observation/roe/AAPL/2024Q2/provider-roe/version/0
+      severity: http://www.w3.org/ns/shacl#Violation

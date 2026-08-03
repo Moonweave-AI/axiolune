@@ -1,0 +1,55 @@
+fixtureId: cross-module-s5-negative-v1
+functionVersion: axiolune-m2-cq-cross-module/v1
+baseContract: cross-module-s5-contract.yaml
+cases:
+  - caseId: cq-s5-semantic-replay-mismatch-rejected
+    mutations:
+      - op: set
+        path: fixedInputs.replayDataset.artifactRef
+        value: tests/m2/fixtures/slice-a/cq-v03/s5/dataset-mutated.nq
+      - op: set
+        path: fixedInputs.replayDataset.artifactDigest
+        value: sha256:0e5797d82341e484094403a386d0dcb797a64d23ce06427a1f7f49c100c355a8
+    expectedCode: CQ_S5_REPLAY_MISMATCH
+
+  - caseId: cq-s5-raw-artifact-drift-rejected
+    mutations:
+      - op: set
+        path: fixedInputs.replayDataset.artifactDigest
+        value: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    expectedCode: CQ_S5_ARTIFACT_DIGEST
+
+  - caseId: cq-s5-future-availability-pivot-rejected
+    mutations:
+      - op: set
+        path: fixedInputs.pivots.asOfAvailable
+        value: '2024-07-10T00:00:00.000000001Z'
+    expectedCode: CQ_S5_FUTURE_PIVOT
+
+  - caseId: cq-s5-mapping-root-drift-rejected
+    mutations:
+      - op: set
+        path: expected.mappingClosureDigest
+        value: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    expectedCode: CQ_S5_MAPPING_ROOT
+
+  - caseId: cq-s5-urdna-name-rejected
+    mutations:
+      - op: set
+        path: expected.canonicalization
+        value: URDNA2015
+    expectedCode: CQ_S5_CANONICALIZATION
+
+  - caseId: cq-s5-member-graph-digest-drift-rejected
+    mutations:
+      - op: set
+        path: expected.memberGraphs[1].outputGraphDigest
+        value: sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+    expectedCode: CQ_S5_GRAPH_DIGEST
+
+  - caseId: cq-s5-tool-lock-drift-rejected
+    mutations:
+      - op: set
+        path: fixedInputs.toolLock.artifactDigest
+        value: sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+    expectedCode: CQ_S5_ARTIFACT_DIGEST

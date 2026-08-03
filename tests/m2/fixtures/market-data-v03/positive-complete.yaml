@@ -1,0 +1,574 @@
+caseId: market-data-v03-positive-complete
+fixtureScope:
+  familyId: market-data-v03-positive-complete
+  kind: semantic-contract-fixture
+  releaseEligible: false
+graphRef: urn:graph:market-data-v03-output
+templates:
+  sourceArtifactRef: &sourceArtifactRef
+    kind: path
+    root: sourceTree
+    path: tests/m2/fixtures/market-data-v03/evidence/market-data-source-snapshot-v1.json
+  wholeFileExtractorProfileRef: &wholeFileExtractorProfileRef
+    kind: path
+    root: sourceTree
+    path: tests/m2/fixtures/market-data-v03/evidence/whole-file-raw-v1.json
+  jsonPointerExtractorProfileRef: &jsonPointerExtractorProfileRef
+    kind: path
+    root: sourceTree
+    path: scripts/domain/reference-extractors/json-pointer-jcs-v1.json
+  provenance: &provenance
+    sourceArtifactRef: *sourceArtifactRef
+    sourceArtifactDigest: sha256:6ebf05e270a7eea658c0fe65ef454c5c9c91d88b242a0a988d7b0d94d31abb5d
+    sourceLocator:
+      kind: wholeFile
+      path: tests/m2/fixtures/market-data-v03/evidence/market-data-source-snapshot-v1.json
+      mediaType: application/json
+      extractorProfileRef: *wholeFileExtractorProfileRef
+      extractorProfileDigest: sha256:dd1f703e804ab47cf6f5c4e102a08f6bcabec865c3fb8fd8ba8447ae045e85d8
+      selectionDigest: sha256:23036264c421aceeddc5529178767c26a3b19bf80749403d14e258190e4a62e8
+  streamMappings: &streamMappings
+    observationIdFieldLocator: &observationIdFieldLocator
+      kind: jsonPointer
+      path: tests/m2/fixtures/market-data-v03/evidence/record-envelope-schema-v1.json
+      mediaType: application/json
+      extractorProfileRef: *jsonPointerExtractorProfileRef
+      extractorProfileDigest: sha256:83b1c7bfe40503516274b2593bc92888b5677e1a017f9841222c0b25fcb848ef
+      selectionDigest: sha256:fa31eb09ea27b3e1577080dba5d0f6c3a9fdb964bacea7c100385d1b63bfe198
+      pointer: /properties/id
+    orderingTuple: [observedAt, sourceSequence, sourceEventId]
+    orderingTransformRef: urn:transform:canonical-market-order-v1
+    orderingTransformDigest: sha256:c8880d841a615850107f742e873bda3a65ea3fa6ad456dc26e7c3adbffdcad30
+  sourceRevisionFieldLocator: &sourceRevisionFieldLocator
+    kind: jsonPointer
+    path: tests/m2/fixtures/market-data-v03/evidence/record-envelope-schema-v1.json
+    mediaType: application/json
+    extractorProfileRef: *jsonPointerExtractorProfileRef
+    extractorProfileDigest: sha256:83b1c7bfe40503516274b2593bc92888b5677e1a017f9841222c0b25fcb848ef
+    selectionDigest: sha256:3d5e2c5dfd9d780d37aa20ce7f019c8c15d5f23f5713bdf01db0f70ba58e2709
+    pointer: /properties/revisionToken
+  listedContext: &listedContext
+    listing:
+      versionIri: urn:listing:aapl:xnas:v1
+      instrumentVersionIri: urn:instrument:aapl:v1
+      quoteCurrency: USD
+  instrument: &instrument
+    versionIri: urn:instrument:aapl:v1
+    logicalIri: urn:instrument:aapl
+  quotation: &quotation
+    versionIri: urn:quotation:aapl-xnas-usd-share:v1
+    instrumentLogicalIri: urn:instrument:aapl
+    contextVersionIri: urn:listing:aapl:xnas:v1
+    quoteCurrency: USD
+    kind: directUnitPrice
+    multiplier: 1
+    denominatorUnit: urn:unit:share
+
+artifactBindings:
+  - artifactIri: urn:source-contract:price-immutable-v1
+    artifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/source-contract-price-immutable-v1.json}
+    artifactDigest: sha256:a0f3ce0b264eebdfb60a5c4c9689fc28d35a7c4d1273c90211577b0aef0839dc
+  - artifactIri: urn:source-contract:quote-immutable-v1
+    artifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/source-contract-quote-immutable-v1.json}
+    artifactDigest: sha256:d75b94e97abeba01f6a493752750879474ec9a152dba381454cfbb5b063fcc59
+  - artifactIri: urn:source-contract:trade-immutable-v1
+    artifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/source-contract-trade-immutable-v1.json}
+    artifactDigest: sha256:75aa4a83141e0adad2f1f7195798da10b1c36f20c3d44b1e8fe44e0ae07a801a
+  - artifactIri: urn:source-contract:trade-bar-immutable-v1
+    artifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/source-contract-trade-bar-immutable-v1.json}
+    artifactDigest: sha256:6f3a03e4e97e1edc2d7215d68afe92641d747524713916a178afa8cb3e61064e
+  - artifactIri: urn:source-contract:quote-bar-immutable-v1
+    artifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/source-contract-quote-bar-immutable-v1.json}
+    artifactDigest: sha256:f080dd11f684c3d4af7bf979b161724e3e46eb06afa613bace60206635796d69
+  - artifactIri: urn:source-contract:price-revisioned-v1
+    artifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/source-contract-price-revisioned-v1.json}
+    artifactDigest: sha256:ea934646156e9dc51a7eb82b50d141027aacfcbe71f2a5393966f9738e9188b5
+  - artifactIri: urn:source-contract:fx-revisioned-v1
+    artifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/source-contract-fx-revisioned-v1.json}
+    artifactDigest: sha256:4f2ae9e08563e0fa25f8e866f808b4a1dadb58a7ce124c356897784b96dd678c
+  - artifactIri: urn:transform:canonical-market-order-v1
+    artifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/canonical-market-order-v1.json}
+    artifactDigest: sha256:c8880d841a615850107f742e873bda3a65ea3fa6ad456dc26e7c3adbffdcad30
+  - artifactIri: urn:calculation:vwap:v1
+    artifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/vwap-calculation-v1.json}
+    artifactDigest: sha256:65cc21f8ec5d0b65e814ebc84b88f0cb43093e57b62c3657aed207b13c239e30
+  - artifactIri: urn:calculation-run:vwap:price-002:v1
+    artifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/vwap-price-002-calculation-run-v1.json}
+    artifactDigest: sha256:e6617732aed69bbed7807cfe9acfa047ba5525fb0f76b1fbd79b8d06eeefbcb5
+  - artifactIri: urn:transform:fx-reciprocal-v1
+    artifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/fx-reciprocal-v1.json}
+    artifactDigest: sha256:a2851160d6fcfb5d780b5faabed441e7a674b4eac18bd10b72f3dae6a4e2f2d6
+  - artifactIri: urn:validation-run:market-data-v03
+    artifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/market-data-semantic-fixture-context-v1.json}
+    artifactDigest: sha256:7d3f649154392e1277dbd80f06101c67e4fb6d0c0f015d7687348916e5e0db16
+
+queryPivot:
+  asOfValid: '2026-07-31T12:00:00Z'
+  asOfKnowledge: '2026-07-31T12:00:00Z'
+  asOfAvailable: '2026-07-31T12:00:00Z'
+  referenceTime: '2026-07-31T12:00:00Z'
+
+referenceGraph:
+  listings:
+    - versionIri: urn:listing:aapl:xnas:v1
+      instrumentVersionIri: urn:instrument:aapl:v1
+      facilityLogicalIri: urn:facility:xnas
+      quoteCurrencyLogicalIri: urn:currency:USD
+  currencies:
+    - logicalIri: urn:currency:USD
+      alphabeticCode: USD
+      registryEntryVersionIri: urn:iso4217-entry:USD:v1
+
+streams:
+  - id: price-immutable
+    versionIri: urn:stream:price:immutable:v1
+    logicalIri: urn:stream:price:immutable
+    providerLogicalIri: urn:party:provider-a
+    providerStreamId: prices-primary
+    sourceContractRef: urn:source-contract:price-immutable-v1
+    sourceContractDigest: sha256:a0f3ce0b264eebdfb60a5c4c9689fc28d35a7c4d1273c90211577b0aef0839dc
+    sourceApiIdentifier: prices-api
+    sourceSchemaIdentifier: price-record
+    sourceSchemaVersion: '1.0'
+    purpose: priceObservation
+    revisionMode: immutableRecord
+    mappings: *streamMappings
+    axes: {validFrom: '2026-01-01T00:00:00Z', knowledgeFrom: '2026-01-01T00:00:01Z', availableFrom: '2026-01-01T00:00:02Z', revision: 0}
+    provenance: *provenance
+  - id: quote-immutable
+    versionIri: urn:stream:quote:immutable:v1
+    logicalIri: urn:stream:quote:immutable
+    providerLogicalIri: urn:party:provider-a
+    providerStreamId: quotes-primary
+    sourceContractRef: urn:source-contract:quote-immutable-v1
+    sourceContractDigest: sha256:d75b94e97abeba01f6a493752750879474ec9a152dba381454cfbb5b063fcc59
+    sourceApiIdentifier: quotes-api
+    sourceSchemaIdentifier: quote-record
+    sourceSchemaVersion: '1.0'
+    purpose: quoteObservation
+    revisionMode: immutableRecord
+    mappings: *streamMappings
+    axes: {validFrom: '2026-01-01T00:00:00Z', knowledgeFrom: '2026-01-01T00:00:01Z', availableFrom: '2026-01-01T00:00:02Z', revision: 0}
+    provenance: *provenance
+  - id: trade-immutable
+    versionIri: urn:stream:trade:immutable:v1
+    logicalIri: urn:stream:trade:immutable
+    providerLogicalIri: urn:party:provider-a
+    providerStreamId: trades-primary
+    sourceContractRef: urn:source-contract:trade-immutable-v1
+    sourceContractDigest: sha256:75aa4a83141e0adad2f1f7195798da10b1c36f20c3d44b1e8fe44e0ae07a801a
+    sourceApiIdentifier: trades-api
+    sourceSchemaIdentifier: trade-record
+    sourceSchemaVersion: '1.0'
+    purpose: tradeObservation
+    revisionMode: immutableRecord
+    mappings: *streamMappings
+    axes: {validFrom: '2026-01-01T00:00:00Z', knowledgeFrom: '2026-01-01T00:00:01Z', availableFrom: '2026-01-01T00:00:02Z', revision: 0}
+    provenance: *provenance
+  - id: trade-bar-immutable
+    versionIri: urn:stream:trade-bar:immutable:v1
+    logicalIri: urn:stream:trade-bar:immutable
+    providerLogicalIri: urn:party:provider-a
+    providerStreamId: trade-bars-primary
+    sourceContractRef: urn:source-contract:trade-bar-immutable-v1
+    sourceContractDigest: sha256:6f3a03e4e97e1edc2d7215d68afe92641d747524713916a178afa8cb3e61064e
+    sourceApiIdentifier: bars-api
+    sourceSchemaIdentifier: trade-bar-record
+    sourceSchemaVersion: '1.0'
+    purpose: tradeBar
+    revisionMode: immutableRecord
+    mappings: *streamMappings
+    axes: {validFrom: '2026-01-01T00:00:00Z', knowledgeFrom: '2026-01-01T00:00:01Z', availableFrom: '2026-01-01T00:00:02Z', revision: 0}
+    provenance: *provenance
+  - id: quote-bar-immutable
+    versionIri: urn:stream:quote-bar:immutable:v1
+    logicalIri: urn:stream:quote-bar:immutable
+    providerLogicalIri: urn:party:provider-a
+    providerStreamId: quote-bars-primary
+    sourceContractRef: urn:source-contract:quote-bar-immutable-v1
+    sourceContractDigest: sha256:f080dd11f684c3d4af7bf979b161724e3e46eb06afa613bace60206635796d69
+    sourceApiIdentifier: bars-api
+    sourceSchemaIdentifier: quote-bar-record
+    sourceSchemaVersion: '1.0'
+    purpose: quoteBar
+    revisionMode: immutableRecord
+    mappings: *streamMappings
+    axes: {validFrom: '2026-01-01T00:00:00Z', knowledgeFrom: '2026-01-01T00:00:01Z', availableFrom: '2026-01-01T00:00:02Z', revision: 0}
+    provenance: *provenance
+  - id: price-revisioned
+    versionIri: urn:stream:price:revisioned:v1
+    logicalIri: urn:stream:price:revisioned
+    providerLogicalIri: urn:party:provider-a
+    providerStreamId: price-corrections
+    sourceContractRef: urn:source-contract:price-revisioned-v1
+    sourceContractDigest: sha256:ea934646156e9dc51a7eb82b50d141027aacfcbe71f2a5393966f9738e9188b5
+    sourceApiIdentifier: prices-api
+    sourceSchemaIdentifier: price-correction-record
+    sourceSchemaVersion: '1.0'
+    purpose: priceObservation
+    revisionMode: revisionedRecord
+    mappings:
+      observationIdFieldLocator: *observationIdFieldLocator
+      orderingTuple: [observedAt, sourceSequence, sourceEventId]
+      orderingTransformRef: urn:transform:canonical-market-order-v1
+      orderingTransformDigest: sha256:c8880d841a615850107f742e873bda3a65ea3fa6ad456dc26e7c3adbffdcad30
+      sourceRevisionFieldLocator: *sourceRevisionFieldLocator
+    axes: {validFrom: '2026-01-01T00:00:00Z', knowledgeFrom: '2026-01-01T00:00:01Z', availableFrom: '2026-01-01T00:00:02Z', revision: 0}
+    provenance: *provenance
+  - id: fx-revisioned
+    versionIri: urn:stream:fx:revisioned:v1
+    logicalIri: urn:stream:fx:revisioned
+    providerLogicalIri: urn:party:provider-a
+    providerStreamId: fx-corrections
+    sourceContractRef: urn:source-contract:fx-revisioned-v1
+    sourceContractDigest: sha256:4f2ae9e08563e0fa25f8e866f808b4a1dadb58a7ce124c356897784b96dd678c
+    sourceApiIdentifier: fx-api
+    sourceSchemaIdentifier: fx-record
+    sourceSchemaVersion: '1.0'
+    purpose: fxRateObservation
+    revisionMode: revisionedRecord
+    mappings:
+      observationIdFieldLocator: *observationIdFieldLocator
+      orderingTuple: [observedAt, sourceSequence, sourceEventId]
+      orderingTransformRef: urn:transform:canonical-market-order-v1
+      orderingTransformDigest: sha256:c8880d841a615850107f742e873bda3a65ea3fa6ad456dc26e7c3adbffdcad30
+      sourceRevisionFieldLocator: *sourceRevisionFieldLocator
+    axes: {validFrom: '2026-01-01T00:00:00Z', knowledgeFrom: '2026-01-01T00:00:01Z', availableFrom: '2026-01-01T00:00:02Z', revision: 0}
+    provenance: *provenance
+
+barSpecifications:
+  - id: one-minute-trade
+    versionIri: urn:bar-spec:one-minute-trade:v1
+    logicalIri: urn:bar-spec:one-minute-trade
+    stream: trade-bar-immutable
+    streamVersionIri: urn:stream:trade-bar:immutable:v1
+    barSpecificationId: one-minute-trade
+    aggregation: time
+    basis: trade
+    sourceTimeZone: America/New_York
+    calendarVersionIri: urn:calendar:xnas:2026:v1
+    timestampConvention: intervalEnd
+    intervalSeconds: 60
+    axes: {validFrom: '2026-01-01T00:00:00Z', knowledgeFrom: '2026-01-01T00:00:01Z', availableFrom: '2026-01-01T00:00:02Z', revision: 0}
+    provenance: *provenance
+  - id: hundred-tick-quote
+    versionIri: urn:bar-spec:hundred-tick-quote:v1
+    logicalIri: urn:bar-spec:hundred-tick-quote
+    stream: quote-bar-immutable
+    streamVersionIri: urn:stream:quote-bar:immutable:v1
+    barSpecificationId: hundred-tick-quote
+    aggregation: tick
+    basis: bidAsk
+    sourceTimeZone: America/New_York
+    calendarVersionIri: urn:calendar:xnas:2026:v1
+    timestampConvention: intervalEnd
+    threshold: {value: '100', unit: urn:unit:quote-update, rounding: half-even}
+    axes: {validFrom: '2026-01-01T00:00:00Z', knowledgeFrom: '2026-01-01T00:00:01Z', availableFrom: '2026-01-01T00:00:02Z', revision: 0}
+    provenance: *provenance
+
+observations:
+  - id: price-001-v0
+    versionIri: urn:observation:price-001:v0
+    logicalIri: urn:observation:price-001
+    type: PriceObservation
+    stream: price-immutable
+    streamVersionIri: urn:stream:price:immutable:v1
+    providerObservationId: PRICE-001
+    observedAt: '2026-07-31T10:00:00Z'
+    sourceOrderKey: 1
+    context: *listedContext
+    observedInstrument: *instrument
+    quotation: *quotation
+    price: {amount: '100.25', currency: USD}
+    priceKind: last
+    axes: {validFrom: '2026-07-31T10:00:00Z', knowledgeFrom: '2026-07-31T10:00:01Z', availableFrom: '2026-07-31T10:00:02Z', revision: 0}
+    provenance: *provenance
+  - id: price-002-v0
+    versionIri: urn:observation:price-002:v0
+    logicalIri: urn:observation:price-002
+    type: PriceObservation
+    stream: price-immutable
+    streamVersionIri: urn:stream:price:immutable:v1
+    providerObservationId: PRICE-002
+    observedAt: '2026-07-31T10:00:05Z'
+    sourceOrderKey: 2
+    context: *listedContext
+    observedInstrument: *instrument
+    quotation: *quotation
+    price: {amount: '100.26', currency: USD}
+    priceKind: vwap
+    calculationDefinitionRef: urn:calculation:vwap:v1
+    calculationDefinitionDigest: sha256:65cc21f8ec5d0b65e814ebc84b88f0cb43093e57b62c3657aed207b13c239e30
+    calculationRunRef: urn:calculation-run:vwap:price-002:v1
+    calculationRunDigest: sha256:e6617732aed69bbed7807cfe9acfa047ba5525fb0f76b1fbd79b8d06eeefbcb5
+    calculationInputSetDigest: sha256:027e8a4e2beca0fd60dbbaba43fd9cb63b2b248779fa71c49c6dc7b3112dc7d1
+    axes: {validFrom: '2026-07-31T10:00:05Z', knowledgeFrom: '2026-07-31T10:00:06Z', availableFrom: '2026-07-31T10:00:07Z', revision: 0}
+    provenance: *provenance
+  - id: quote-001-v0
+    versionIri: urn:observation:quote-001:v0
+    logicalIri: urn:observation:quote-001
+    type: QuoteObservation
+    stream: quote-immutable
+    streamVersionIri: urn:stream:quote:immutable:v1
+    providerObservationId: QUOTE-001
+    observedAt: '2026-07-31T10:00:02Z'
+    sourceOrderKey: 1
+    context: *listedContext
+    observedInstrument: *instrument
+    quotation: *quotation
+    bidPrice: {amount: '100.20', currency: USD}
+    bidSize: {value: '100', unit: urn:unit:share, rounding: half-even}
+    askPrice: {amount: '100.30', currency: USD}
+    askSize: {value: '200', unit: urn:unit:share, rounding: half-even}
+    axes: {validFrom: '2026-07-31T10:00:02Z', knowledgeFrom: '2026-07-31T10:00:03Z', availableFrom: '2026-07-31T10:00:04Z', revision: 0}
+    provenance: *provenance
+  - id: trade-001-v0
+    versionIri: urn:observation:trade-001:v0
+    logicalIri: urn:observation:trade-001
+    type: TradeObservation
+    stream: trade-immutable
+    streamVersionIri: urn:stream:trade:immutable:v1
+    sourceTradeId: TRADE-001
+    observedAt: '2026-07-31T10:00:03Z'
+    sourceOrderKey: 1
+    context: *listedContext
+    observedInstrument: *instrument
+    quotation: *quotation
+    tradePrice: {amount: '100.25', currency: USD}
+    tradeSize: {value: '10', unit: urn:unit:share, rounding: half-even}
+    priceKind: last
+    axes: {validFrom: '2026-07-31T10:00:03Z', knowledgeFrom: '2026-07-31T10:00:04Z', availableFrom: '2026-07-31T10:00:05Z', revision: 0}
+    provenance: *provenance
+  - id: trade-002-v0
+    versionIri: urn:observation:trade-002:v0
+    logicalIri: urn:observation:trade-002
+    type: TradeObservation
+    stream: trade-immutable
+    streamVersionIri: urn:stream:trade:immutable:v1
+    sourceTradeId: TRADE-002
+    observedAt: '2026-07-31T10:00:04Z'
+    sourceOrderKey: 2
+    context: *listedContext
+    observedInstrument: *instrument
+    quotation: *quotation
+    tradePrice: {amount: '100.27', currency: USD}
+    tradeSize: {value: '10', unit: urn:unit:share, rounding: half-even}
+    priceKind: last
+    axes: {validFrom: '2026-07-31T10:00:04Z', knowledgeFrom: '2026-07-31T10:00:05Z', availableFrom: '2026-07-31T10:00:06Z', revision: 0}
+    provenance: *provenance
+  - id: trade-bar-001-v0
+    versionIri: urn:observation:trade-bar-001:v0
+    logicalIri: urn:observation:trade-bar-001
+    type: TradeBar
+    stream: trade-bar-immutable
+    streamVersionIri: urn:stream:trade-bar:immutable:v1
+    providerObservationId: TRADE-BAR-001
+    observedAt: '2026-07-31T10:01:00Z'
+    sourceOrderKey: 1
+    context: *listedContext
+    observedInstrument: *instrument
+    quotation: *quotation
+    barSpecification: one-minute-trade
+    barSpecificationVersionIri: urn:bar-spec:one-minute-trade:v1
+    intervalStart: '2026-07-31T10:00:00Z'
+    intervalEnd: '2026-07-31T10:01:00Z'
+    tradeOpenPrice: {amount: '100.10', currency: USD}
+    tradeHighPrice: {amount: '100.50', currency: USD}
+    tradeLowPrice: {amount: '100.00', currency: USD}
+    tradeClosePrice: {amount: '100.30', currency: USD}
+    tradeVolume: {value: '1000', unit: urn:unit:share, rounding: half-even}
+    axes: {validFrom: '2026-07-31T10:00:00Z', knowledgeFrom: '2026-07-31T10:01:01Z', availableFrom: '2026-07-31T10:01:02Z', revision: 0}
+    provenance: *provenance
+  - id: quote-bar-001-v0
+    versionIri: urn:observation:quote-bar-001:v0
+    logicalIri: urn:observation:quote-bar-001
+    type: QuoteBar
+    stream: quote-bar-immutable
+    streamVersionIri: urn:stream:quote-bar:immutable:v1
+    providerObservationId: QUOTE-BAR-001
+    observedAt: '2026-07-31T10:02:00Z'
+    sourceOrderKey: 1
+    context: *listedContext
+    observedInstrument: *instrument
+    quotation: *quotation
+    barSpecification: hundred-tick-quote
+    barSpecificationVersionIri: urn:bar-spec:hundred-tick-quote:v1
+    barSequence: 42
+    firstContributingEventAt: '2026-07-31T10:01:00Z'
+    lastContributingEventAt: '2026-07-31T10:02:00Z'
+    bidOpenPrice: {amount: '100.10', currency: USD}
+    bidHighPrice: {amount: '100.40', currency: USD}
+    bidLowPrice: {amount: '100.00', currency: USD}
+    bidClosePrice: {amount: '100.20', currency: USD}
+    askOpenPrice: {amount: '100.20', currency: USD}
+    askHighPrice: {amount: '100.50', currency: USD}
+    askLowPrice: {amount: '100.10', currency: USD}
+    askClosePrice: {amount: '100.30', currency: USD}
+    lastBidSize: {value: '120', unit: urn:unit:share, rounding: half-even}
+    lastAskSize: {value: '140', unit: urn:unit:share, rounding: half-even}
+    axes: {validFrom: '2026-07-31T10:01:00Z', knowledgeFrom: '2026-07-31T10:02:01Z', availableFrom: '2026-07-31T10:02:02Z', revision: 0}
+    provenance: *provenance
+  - id: fx-001-v0
+    versionIri: urn:observation:fx-001:v0
+    logicalIri: urn:observation:fx-001
+    type: FXRateObservation
+    stream: fx-revisioned
+    streamVersionIri: urn:stream:fx:revisioned:v1
+    providerObservationId: FX-001
+    observedAt: '2026-07-31T10:03:00Z'
+    sourceOrderKey: 1
+    sourceRevisionToken: r0
+    sourceRevisionOrder: 0
+    context: {otc: {versionIri: urn:otc-context:eur-usd:v1, quoteCurrency: USD}}
+    baseCurrency: {logicalIri: urn:currency:EUR, code: EUR}
+    quoteCurrency: {logicalIri: urn:currency:USD, code: USD}
+    fxRate: {value: '1.1400', unit: urn:unit:USD-per-EUR, rounding: half-even}
+    axes: {validFrom: '2026-07-31T10:03:00Z', knowledgeFrom: '2026-07-31T10:03:01Z', availableFrom: '2026-07-31T10:03:02Z', revision: 0}
+    provenance: *provenance
+  - id: fx-001-v1
+    versionIri: urn:observation:fx-001:v1
+    logicalIri: urn:observation:fx-001
+    type: FXRateObservation
+    stream: fx-revisioned
+    streamVersionIri: urn:stream:fx:revisioned:v1
+    providerObservationId: FX-001
+    observedAt: '2026-07-31T10:03:00Z'
+    sourceOrderKey: 1
+    sourceRevisionToken: r1
+    sourceRevisionOrder: 1
+    supersedes: urn:observation:fx-001:v0
+    context: {otc: {versionIri: urn:otc-context:eur-usd:v1, quoteCurrency: USD}}
+    baseCurrency: {logicalIri: urn:currency:EUR, code: EUR}
+    quoteCurrency: {logicalIri: urn:currency:USD, code: USD}
+    fxRate: {value: '1.1401', unit: urn:unit:USD-per-EUR, rounding: half-even}
+    axes: {validFrom: '2026-07-31T10:03:00Z', knowledgeFrom: '2026-07-31T10:04:01Z', availableFrom: '2026-07-31T10:04:02Z', revision: 1}
+    provenance: *provenance
+  - id: fx-001-v2
+    versionIri: urn:observation:fx-001:v2
+    logicalIri: urn:observation:fx-001
+    type: FXRateObservation
+    stream: fx-revisioned
+    streamVersionIri: urn:stream:fx:revisioned:v1
+    providerObservationId: FX-001
+    observedAt: '2026-07-31T10:03:00Z'
+    sourceOrderKey: 1
+    sourceRevisionToken: r2
+    sourceRevisionOrder: 2
+    supersedes: urn:observation:fx-001:v1
+    context: {otc: {versionIri: urn:otc-context:eur-usd:v1, quoteCurrency: USD}}
+    baseCurrency: {logicalIri: urn:currency:EUR, code: EUR}
+    quoteCurrency: {logicalIri: urn:currency:USD, code: USD}
+    fxRate: {value: '1.1402', unit: urn:unit:USD-per-EUR, rounding: half-even}
+    axes: {validFrom: '2026-07-31T10:03:00Z', knowledgeFrom: '2026-07-31T10:05:01Z', availableFrom: '2026-07-31T10:05:02Z', revision: 2}
+    provenance: *provenance
+  - id: close-001-v0
+    versionIri: urn:observation:close-001:v0
+    logicalIri: urn:observation:close-001
+    type: PriceObservation
+    stream: price-immutable
+    streamVersionIri: urn:stream:price:immutable:v1
+    providerObservationId: CLOSE-001
+    observedAt: '2026-07-31T09:58:00Z'
+    sourceOrderKey: 3
+    context: *listedContext
+    observedInstrument: *instrument
+    quotation: *quotation
+    price: {amount: '99.90', currency: USD}
+    priceKind: close
+    axes: {validFrom: '2026-07-31T09:58:00Z', knowledgeFrom: '2026-07-31T09:58:01Z', availableFrom: '2026-07-31T09:58:02Z', revision: 0}
+    provenance: *provenance
+  - id: close-002-v0
+    versionIri: urn:observation:close-002:v0
+    logicalIri: urn:observation:close-002
+    type: PriceObservation
+    stream: price-immutable
+    streamVersionIri: urn:stream:price:immutable:v1
+    providerObservationId: CLOSE-002
+    observedAt: '2026-07-31T09:59:00Z'
+    sourceOrderKey: 4
+    context: *listedContext
+    observedInstrument: *instrument
+    quotation: *quotation
+    price: {amount: '100.00', currency: USD}
+    priceKind: close
+    axes: {validFrom: '2026-07-31T09:59:00Z', knowledgeFrom: '2026-07-31T09:59:01Z', availableFrom: '2026-07-31T09:59:02Z', revision: 0}
+    provenance: *provenance
+  - id: corrected-close-v0
+    versionIri: urn:observation:corrected-close:v0
+    logicalIri: urn:observation:corrected-close
+    type: PriceObservation
+    stream: price-revisioned
+    streamVersionIri: urn:stream:price:revisioned:v1
+    providerObservationId: CORRECTED-CLOSE
+    observedAt: '2026-07-31T09:57:00Z'
+    sourceOrderKey: 1
+    sourceRevisionToken: r0
+    sourceRevisionOrder: 0
+    context: *listedContext
+    observedInstrument: *instrument
+    quotation: *quotation
+    price: {amount: '99.80', currency: USD}
+    priceKind: close
+    axes: {validFrom: '2026-07-31T09:57:00Z', knowledgeFrom: '2026-07-31T09:57:01Z', availableFrom: '2026-07-31T09:57:02Z', revision: 0}
+    provenance: *provenance
+  - id: corrected-close-v1
+    versionIri: urn:observation:corrected-close:v1
+    logicalIri: urn:observation:corrected-close
+    type: PriceObservation
+    stream: price-revisioned
+    streamVersionIri: urn:stream:price:revisioned:v1
+    providerObservationId: CORRECTED-CLOSE
+    observedAt: '2026-07-31T09:57:00Z'
+    sourceOrderKey: 1
+    sourceRevisionToken: r1
+    sourceRevisionOrder: 1
+    supersedes: urn:observation:corrected-close:v0
+    context: *listedContext
+    observedInstrument: *instrument
+    quotation: *quotation
+    price: {amount: '99.85', currency: USD}
+    priceKind: close
+    axes: {validFrom: '2026-07-31T09:57:00Z', knowledgeFrom: '2026-07-31T10:30:00Z', availableFrom: '2026-07-31T10:30:01Z', revision: 1}
+    provenance: *provenance
+
+closures:
+  - id: https://axiolune.ai/data/fact-closure-assertion/sha256-55da7a2e17d4feb4659392db9fb721097a7476a87bb644937081256f23bb180d
+    targetVersionIri: urn:observation:corrected-close:v0
+    axis: knowledge
+    closedAt: '2026-07-31T10:30:00Z'
+    causeKind: successor
+    causeVersionIri: urn:observation:corrected-close:v1
+    evidenceRef: urn:observation:corrected-close:v1
+    generatingContextRef: urn:validation-run:market-data-v03
+  - id: https://axiolune.ai/data/fact-closure-assertion/sha256-8d9481f5f0d9d5efec456ae2f080c314f67d5d655907bd4b5b6c71c7115322a0
+    targetVersionIri: urn:observation:fx-001:v0
+    axis: knowledge
+    closedAt: '2026-07-31T10:04:01Z'
+    causeKind: successor
+    causeVersionIri: urn:observation:fx-001:v1
+    evidenceRef: urn:observation:fx-001:v1
+    generatingContextRef: urn:validation-run:market-data-v03
+  - id: https://axiolune.ai/data/fact-closure-assertion/sha256-44f5aead44efb02b65573ddf96802146e3296a0289a3a36723b6a0bc005a5dc6
+    targetVersionIri: urn:observation:fx-001:v1
+    axis: knowledge
+    closedAt: '2026-07-31T10:05:01Z'
+    causeKind: successor
+    causeVersionIri: urn:observation:fx-001:v2
+    evidenceRef: urn:observation:fx-001:v2
+    generatingContextRef: urn:validation-run:market-data-v03
+
+fxDerivations:
+  - id: inverse-fx-001-v2
+    sourceVersionIri: urn:observation:fx-001:v2
+    operator: reciprocal
+    baseCurrencyLogicalIri: urn:currency:USD
+    quoteCurrencyLogicalIri: urn:currency:EUR
+    rate: {value: '0.8770391159445711', unit: urn:unit:EUR-per-USD, rounding: half-even}
+    transformationRef: urn:transform:fx-reciprocal-v1
+    transformationDigest: sha256:a2851160d6fcfb5d780b5faabed441e7a674b4eac18bd10b72f3dae6a4e2f2d6
+    generatingContextRef: urn:validation-run:market-data-v03
+    provenance: *provenance
+
+findings: []
+expected:
+  valid: true

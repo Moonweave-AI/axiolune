@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axiolune.ai/schemas/m2/0.3.0/constraint-instance-expectations",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "profileRef", "entries"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "profileRef": { "const": "https://axiolune.ai/conformance/m2/0.3.0" },
+    "entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/entry" }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "root", "path"],
+      "properties": {
+        "kind": { "const": "path" },
+        "root": { "const": "sourceTree" },
+        "path": { "type": "string", "minLength": 1 }
+      }
+    },
+    "expectation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fixtureId", "artifactRef", "artifactDigest", "schemaRef",
+        "schemaDigest", "expectedResult"
+      ],
+      "properties": {
+        "fixtureId": { "type": "string", "pattern": "^[\\x21-\\x7e]+$" },
+        "artifactRef": { "$ref": "#/$defs/artifactRef" },
+        "artifactDigest": { "$ref": "#/$defs/digest" },
+        "schemaRef": { "$ref": "#/$defs/artifactRef" },
+        "schemaDigest": { "$ref": "#/$defs/digest" },
+        "expectedResult": { "enum": ["conforms", "violates"] }
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "constraintInstanceId", "positiveExpectation", "negativeExpectation"
+      ],
+      "properties": {
+        "constraintInstanceId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "positiveExpectation": {
+          "allOf": [
+            { "$ref": "#/$defs/expectation" },
+            { "properties": { "expectedResult": { "const": "conforms" } } }
+          ]
+        },
+        "negativeExpectation": {
+          "allOf": [
+            { "$ref": "#/$defs/expectation" },
+            { "properties": { "expectedResult": { "const": "violates" } } }
+          ]
+        }
+      }
+    }
+  }
+}

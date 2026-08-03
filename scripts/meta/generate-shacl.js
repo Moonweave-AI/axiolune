@@ -35,9 +35,14 @@ const yaml = require('js-yaml');
 const { Writer, DataFactory } = require('n3');
 const { quad, namedNode, literal } = DataFactory;
 
-const META_DIR = path.join(__dirname, '..', '..', 'ontology', 'meta');
-const OUT1 = path.join(META_DIR, 'projection', 'axiolune-meta.shacl.ttl');       // Tier 1 (machine-verifiable)
-const OUT2 = path.join(META_DIR, 'projection', 'axiolune-meta.shacl-sparql.ttl'); // Tier 2 (parse-verified)
+const META_DIR = process.env.META_DIR
+  ? path.resolve(process.env.META_DIR)
+  : path.join(__dirname, '..', '..', 'ontology', 'meta');
+const PROJECTION_DIR = process.env.META_PROJECTION_DIR
+  ? path.resolve(process.env.META_PROJECTION_DIR)
+  : path.join(META_DIR, 'projection');
+const OUT1 = path.join(PROJECTION_DIR, 'axiolune-meta.shacl.ttl');       // Tier 1 (machine-verifiable)
+const OUT2 = path.join(PROJECTION_DIR, 'axiolune-meta.shacl-sparql.ttl'); // Tier 2 (parse-verified)
 const AX = 'https://axiolune.ai/ontology/meta/';
 const SH = 'http://www.w3.org/ns/shacl#';
 const XSD = 'http://www.w3.org/2001/XMLSchema#';
@@ -61,6 +66,19 @@ const sh = (n) => namedNode(SH + n);
 let bn = 0;
 const bnode = () => DataFactory.blankNode('b' + (++bn));
 
+function rdfList(values) {
+  if (values.length === 0) return namedNode(RDF + 'nil');
+  const head = bnode();
+  let current = head;
+  values.forEach((value, index) => {
+    add(current, namedNode(RDF + 'first'), value);
+    const next = index === values.length - 1 ? namedNode(RDF + 'nil') : bnode();
+    add(current, namedNode(RDF + 'rest'), next);
+    current = next;
+  });
+  return head;
+}
+
 function severityOf(c) {
   const s = (c.severity || '').toLowerCase();
   if (s === 'warning') return sh('Warning');
@@ -76,6 +94,50 @@ const factShape = namedNode(AX + 'PatternFactShape');
 add(factClass, namedNode(RDF + 'type'), namedNode('http://www.w3.org/2002/07/owl#Class'));
 add(factShape, namedNode(RDF + 'type'), sh('NodeShape'));
 add(factShape, sh('targetClass'), factClass);
+
+// ---- Canonical structured-value shapes (Tier 1) ----
+// These shapes are derived from the same M3 projection metadata used by OWL.
+// The cardinalities are part of the v0.6 canonical encoding: effective scale
+// and rounding values are emitted, so replay never depends on generator defaults.
+const REQUIRED_STRUCTURED_COMPONENTS = new Set([
+  'hasAmount', 'hasCurrency', 'hasScale',
+  'hasNumericValue', 'hasUnit', 'hasRounding',
+]);
+let structuredShapes = 0;
+function projectStructuredShape(typeDefinition) {
+  const projection = typeDefinition && typeDefinition.owlProjection;
+  if (!projection || projection.kind !== 'structuredValueClass' || !projection.classIri) return;
+  const shape = namedNode(projection.classIri + 'Shape');
+  add(shape, namedNode(RDF + 'type'), sh('NodeShape'));
+  add(shape, sh('targetClass'), namedNode(projection.classIri));
+  for (const property of (projection.properties || [])) {
+    if (!property.predicateIri) continue;
+    const propertyShape = bnode();
+    const localName = property.predicateIri.slice(property.predicateIri.lastIndexOf('/') + 1);
+    add(shape, sh('property'), propertyShape);
+    add(propertyShape, sh('path'), namedNode(property.predicateIri));
+    const range = typeof property.range === 'string' && property.range.startsWith('xsd:')
+      ? XSD + property.range.slice(4)
+      : property.range;
+    if (range) add(propertyShape, sh('datatype'), namedNode(range));
+    add(
+      propertyShape,
+      sh('minCount'),
+      literal(REQUIRED_STRUCTURED_COMPONENTS.has(localName) ? '1' : '0', namedNode(XSD + 'integer')),
+    );
+    add(propertyShape, sh('maxCount'), literal('1', namedNode(XSD + 'integer')));
+    if (property.pattern) add(propertyShape, sh('pattern'), literal(property.pattern));
+    if (localName === 'hasUnit') {
+      add(propertyShape, sh('pattern'), literal('^[A-Za-z][A-Za-z0-9+.-]*:[^\\s]+$'));
+    }
+    if (Array.isArray(property.values) && property.values.length) {
+      add(propertyShape, sh('in'), rdfList(property.values.map((value) => literal(String(value)))));
+    }
+  }
+  structuredShapes++;
+}
+projectStructuredShape(core.MetaModel && core.MetaModel.MoneyTypeDefinition);
+projectStructuredShape(core.MetaModel && core.MetaModel.QuantityTypeDefinition);
 
 // ---- Per-pattern anchor classes + targeted shapes (Tier 1) ----
 // Each pattern that injects required attributes gets its own anchor class and
@@ -226,6 +288,6 @@ function writeQuads(file, qset, header) {
 fs.mkdirSync(path.dirname(OUT1), { recursive: true });
 writeQuads(OUT1, quads, 'Axiolune meta-model SHACL shapes — Tier 1 (machine-verifiable via rdf-validate-shacl).');
 writeQuads(OUT2, sparqlQuads, 'Axiolune meta-model SHACL Tier 2 — parameter-free sh:sparql + parameterized sh:ConstraintComponent (parse-verified; enforcement requires a SPARQL-capable SHACL engine, e.g. pyshacl).');
-console.log(`✓ SHACL projected: Tier1 ${tier1} format/range + ${patternShapes} per-pattern shapes (machine-verifiable) -> ${path.basename(OUT1)}`);
+console.log(`✓ SHACL projected: Tier1 ${tier1} format/range + ${patternShapes} per-pattern + ${structuredShapes} structured-value shapes (machine-verifiable) -> ${path.basename(OUT1)}`);
 console.log(`✓ SHACL projected: Tier2 ${tier2} parameter-free SPARQL + ${tier2param} ConstraintComponent (parse-verified) -> ${path.basename(OUT2)}`);
 console.log(`  ${quads.length} Tier1 triples, ${sparqlQuads.length} Tier2 triples`);

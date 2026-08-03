@@ -1,0 +1,182 @@
+caseId: market-data-v03-positive-twap
+fixtureScope:
+  familyId: market-data-v03-positive-twap
+  kind: semantic-contract-fixture
+  releaseEligible: false
+graphRef: urn:graph:market-data-v03-twap-output
+templates:
+  sourceArtifactRef: &sourceArtifactRef
+    kind: path
+    root: sourceTree
+    path: tests/m2/fixtures/market-data-v03/evidence/market-data-twap-source-snapshot-v1.json
+  wholeFileExtractorProfileRef: &wholeFileExtractorProfileRef
+    kind: path
+    root: sourceTree
+    path: tests/m2/fixtures/market-data-v03/evidence/whole-file-raw-v1.json
+  jsonPointerExtractorProfileRef: &jsonPointerExtractorProfileRef
+    kind: path
+    root: sourceTree
+    path: scripts/domain/reference-extractors/json-pointer-jcs-v1.json
+  provenance: &provenance
+    sourceArtifactRef: *sourceArtifactRef
+    sourceArtifactDigest: sha256:d5ef19f290e26ea36cfdc5ba86ca76d7cbd6877ec2da752b8573a1730b64c0ae
+    sourceLocator:
+      kind: wholeFile
+      path: tests/m2/fixtures/market-data-v03/evidence/market-data-twap-source-snapshot-v1.json
+      mediaType: application/json
+      extractorProfileRef: *wholeFileExtractorProfileRef
+      extractorProfileDigest: sha256:dd1f703e804ab47cf6f5c4e102a08f6bcabec865c3fb8fd8ba8447ae045e85d8
+      selectionDigest: sha256:340c03fc9f4d4492f46f69ff63aee8fb86037a29b28a62a7c1c43eed4ae94644
+  observationIdFieldLocator: &observationIdFieldLocator
+    kind: jsonPointer
+    path: tests/m2/fixtures/market-data-v03/evidence/record-envelope-schema-v1.json
+    mediaType: application/json
+    extractorProfileRef: *jsonPointerExtractorProfileRef
+    extractorProfileDigest: sha256:83b1c7bfe40503516274b2593bc92888b5677e1a017f9841222c0b25fcb848ef
+    selectionDigest: sha256:fa31eb09ea27b3e1577080dba5d0f6c3a9fdb964bacea7c100385d1b63bfe198
+    pointer: /properties/id
+
+artifactBindings:
+  - artifactIri: urn:source-contract:price-immutable-v1
+    artifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/source-contract-price-immutable-v1.json}
+    artifactDigest: sha256:a0f3ce0b264eebdfb60a5c4c9689fc28d35a7c4d1273c90211577b0aef0839dc
+  - artifactIri: urn:transform:canonical-market-order-v1
+    artifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/canonical-market-order-v1.json}
+    artifactDigest: sha256:c8880d841a615850107f742e873bda3a65ea3fa6ad456dc26e7c3adbffdcad30
+  - artifactIri: urn:calculation:twap:v1
+    artifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/twap-calculation-v1.json}
+    artifactDigest: sha256:5b99f9c229bcc504ae2607d94387eedcb2a8b78fb19bb987e43982f0bf181572
+  - artifactIri: urn:calculation-run:twap:twap-001:v1
+    artifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/twap-001-calculation-run-v1.json}
+    artifactDigest: sha256:44d2f91fad329818bdba8d9219a85562605c6246ec03697c15b2c4ef24f5ccc8
+  - artifactIri: urn:calculation:vwap:v1
+    artifactRef: {kind: path, root: sourceTree, path: tests/m2/fixtures/market-data-v03/evidence/vwap-calculation-v1.json}
+    artifactDigest: sha256:65cc21f8ec5d0b65e814ebc84b88f0cb43093e57b62c3657aed207b13c239e30
+
+queryPivot:
+  asOfValid: '2026-07-31T12:00:00Z'
+  asOfKnowledge: '2026-07-31T12:00:00Z'
+  asOfAvailable: '2026-07-31T12:00:00Z'
+  referenceTime: '2026-07-31T12:00:00Z'
+
+streams:
+  - id: price-twap
+    versionIri: urn:stream:price:twap:v1
+    logicalIri: urn:stream:price:twap
+    providerLogicalIri: urn:party:provider-a
+    providerStreamId: prices-primary
+    sourceContractRef: urn:source-contract:price-immutable-v1
+    sourceContractDigest: sha256:a0f3ce0b264eebdfb60a5c4c9689fc28d35a7c4d1273c90211577b0aef0839dc
+    sourceApiIdentifier: prices-api
+    sourceSchemaIdentifier: price-record
+    sourceSchemaVersion: '1.0'
+    purpose: priceObservation
+    revisionMode: immutableRecord
+    mappings:
+      observationIdFieldLocator: *observationIdFieldLocator
+      orderingTuple: [observedAt, sourceSequence, sourceEventId]
+      orderingTransformRef: urn:transform:canonical-market-order-v1
+      orderingTransformDigest: sha256:c8880d841a615850107f742e873bda3a65ea3fa6ad456dc26e7c3adbffdcad30
+    axes: {validFrom: '2026-01-01T00:00:00Z', knowledgeFrom: '2026-01-01T00:00:01Z', availableFrom: '2026-01-01T00:00:02Z', revision: 0}
+    provenance: *provenance
+
+barSpecifications: []
+
+observations:
+  - id: twap-001-v0
+    versionIri: urn:observation:twap-001:v0
+    logicalIri: urn:observation:twap-001
+    type: PriceObservation
+    stream: price-twap
+    streamVersionIri: urn:stream:price:twap:v1
+    providerObservationId: TWAP-001
+    observedAt: '2026-07-31T10:10:00Z'
+    sourceOrderKey: 3
+    context:
+      listing:
+        versionIri: urn:listing:aapl:xnas:v1
+        instrumentVersionIri: urn:instrument:aapl:v1
+        quoteCurrency: USD
+    observedInstrument:
+      versionIri: urn:instrument:aapl:v1
+      logicalIri: urn:instrument:aapl
+    quotation:
+      versionIri: urn:quotation:aapl-xnas-usd-share:v1
+      instrumentLogicalIri: urn:instrument:aapl
+      contextVersionIri: urn:listing:aapl:xnas:v1
+      quoteCurrency: USD
+      kind: directUnitPrice
+      multiplier: 1
+      denominatorUnit: urn:unit:share
+    price: {amount: '100.40', currency: USD}
+    priceKind: twap
+    calculationDefinitionRef: urn:calculation:twap:v1
+    calculationDefinitionDigest: sha256:5b99f9c229bcc504ae2607d94387eedcb2a8b78fb19bb987e43982f0bf181572
+    calculationRunRef: urn:calculation-run:twap:twap-001:v1
+    calculationRunDigest: sha256:44d2f91fad329818bdba8d9219a85562605c6246ec03697c15b2c4ef24f5ccc8
+    calculationInputSetDigest: sha256:356755d838d1bec27a39828c26c35655b33bcbc9195cb61ee9cb810db0d525b1
+    axes: {validFrom: '2026-07-31T10:10:00Z', knowledgeFrom: '2026-07-31T10:10:01Z', availableFrom: '2026-07-31T10:10:02Z', revision: 0}
+    provenance: *provenance
+  - id: twap-input-001-v0
+    versionIri: urn:observation:twap-input-001:v0
+    logicalIri: urn:observation:twap-input-001
+    type: PriceObservation
+    stream: price-twap
+    streamVersionIri: urn:stream:price:twap:v1
+    providerObservationId: TWAP-IN-001
+    observedAt: '2026-07-31T10:08:00Z'
+    sourceOrderKey: 1
+    context:
+      listing:
+        versionIri: urn:listing:aapl:xnas:v1
+        instrumentVersionIri: urn:instrument:aapl:v1
+        quoteCurrency: USD
+    observedInstrument:
+      versionIri: urn:instrument:aapl:v1
+      logicalIri: urn:instrument:aapl
+    quotation:
+      versionIri: urn:quotation:aapl-xnas-usd-share:v1
+      instrumentLogicalIri: urn:instrument:aapl
+      contextVersionIri: urn:listing:aapl:xnas:v1
+      quoteCurrency: USD
+      kind: directUnitPrice
+      multiplier: 1
+      denominatorUnit: urn:unit:share
+    price: {amount: '100.20', currency: USD}
+    priceKind: last
+    axes: {validFrom: '2026-07-31T10:08:00Z', knowledgeFrom: '2026-07-31T10:08:01Z', availableFrom: '2026-07-31T10:08:02Z', revision: 0}
+    provenance: *provenance
+  - id: twap-input-002-v0
+    versionIri: urn:observation:twap-input-002:v0
+    logicalIri: urn:observation:twap-input-002
+    type: PriceObservation
+    stream: price-twap
+    streamVersionIri: urn:stream:price:twap:v1
+    providerObservationId: TWAP-IN-002
+    observedAt: '2026-07-31T10:09:00Z'
+    sourceOrderKey: 2
+    context:
+      listing:
+        versionIri: urn:listing:aapl:xnas:v1
+        instrumentVersionIri: urn:instrument:aapl:v1
+        quoteCurrency: USD
+    observedInstrument:
+      versionIri: urn:instrument:aapl:v1
+      logicalIri: urn:instrument:aapl
+    quotation:
+      versionIri: urn:quotation:aapl-xnas-usd-share:v1
+      instrumentLogicalIri: urn:instrument:aapl
+      contextVersionIri: urn:listing:aapl:xnas:v1
+      quoteCurrency: USD
+      kind: directUnitPrice
+      multiplier: 1
+      denominatorUnit: urn:unit:share
+    price: {amount: '100.60', currency: USD}
+    priceKind: last
+    axes: {validFrom: '2026-07-31T10:09:00Z', knowledgeFrom: '2026-07-31T10:09:01Z', availableFrom: '2026-07-31T10:09:02Z', revision: 0}
+    provenance: *provenance
+
+closures: []
+fxDerivations: []
+findings: []
+expected: {valid: true}

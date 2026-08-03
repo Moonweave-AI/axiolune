@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0",
+  "profileRef": "https://axiolune.ai/conformance/m2/0.3.0",
+  "runtimeId": "axiolune-risk-custom-runtime-v1",
+  "constraints": [
+    {
+      "constraintIri": "https://axiolune.ai/ontology/finance/risk/LimitBreachContract",
+      "dispatchDigest": "sha256:12c957c929c006682fe54bd9b6514990dbe598e6c00e53c105a6d54883d65847",
+      "evaluatorId": "validateLimitBreachConstraint",
+      "targetElement": "https://axiolune.ai/ontology/finance/risk/LimitBreach",
+      "expressionDigest": "sha256:bc78be7e9df0790fd05e9a5dc4184a6b8374f4219afe3bb6a36719855d01f150",
+      "positiveFixtureId": "cq-r2-quantity-breach-closes-exactly",
+      "negativeCaseId": "breach-copies-a-different-limit-version",
+      "expectedViolation": "breach-exact-references"
+    },
+    {
+      "constraintIri": "https://axiolune.ai/ontology/finance/risk/RiskBucketSchemaContract",
+      "dispatchDigest": "sha256:ae5adff94d716a77be79f82b66c39599f5d374a20c32aa2cb32b1a182857ad08",
+      "evaluatorId": "validateRiskBucketSchemaConstraint",
+      "targetElement": "https://axiolune.ai/ontology/finance/risk/RiskBucketSchema",
+      "expressionDigest": "sha256:83815855198b6993c01f32f503be7eb0ed40e724c6c0c7c61e90afc223b9c757",
+      "positiveFixtureId": "cq-r1-bucketed-greeks-within-limit",
+      "inlineNegativeMutation": {
+        "op": "set",
+        "path": "records.1.bucketDimensionRef",
+        "value": "not-an-absolute-iri"
+      },
+      "expectedViolation": "definition-bucket-schema"
+    },
+    {
+      "constraintIri": "https://axiolune.ai/ontology/finance/risk/RiskBucketSetClosureContract",
+      "dispatchDigest": "sha256:255b8296aeafd070aa1fef2ccb9a8c7cb8d2b20aadf86a85df708ef4e491c2bc",
+      "evaluatorId": "validateRiskBucketSetClosureConstraint",
+      "targetElement": "https://axiolune.ai/ontology/finance/risk/RiskBucketSet",
+      "expressionDigest": "sha256:d80ad0c8487d2c902f1f828c76643b8f4d1611892623737e1b5b1b8ccebb4cb1",
+      "positiveFixtureId": "cq-r1-bucketed-greeks-within-limit",
+      "negativeCaseId": "bucket-closure-is-not-complete",
+      "expectedViolation": "measurement-bucket-closure"
+    },
+    {
+      "constraintIri": "https://axiolune.ai/ontology/finance/risk/RiskBucketValueContract",
+      "dispatchDigest": "sha256:a33989c6615245d3f23fcc28493aa5d99d5843c0af4600df6c661981fc7cdcb4",
+      "evaluatorId": "validateRiskBucketValueConstraint",
+      "targetElement": "https://axiolune.ai/ontology/finance/risk/RiskBucketValue",
+      "expressionDigest": "sha256:7c7364d20945c1efaa8c25dadbedb049419418cfdd33a7d067f10558e1f8c1fa",
+      "positiveFixtureId": "cq-r1-bucketed-greeks-within-limit",
+      "negativeCaseId": "bucket-unit-differs-from-schema",
+      "expectedViolation": "measurement-bucket-unit"
+    },
+    {
+      "constraintIri": "https://axiolune.ai/ontology/finance/risk/RiskLimitContract",
+      "dispatchDigest": "sha256:99a04b13f92e942b2e10f3fb11c32d86676252e3f97fac51a08577492865ffc5",
+      "evaluatorId": "validateRiskLimitConstraint",
+      "targetElement": "https://axiolune.ai/ontology/finance/risk/RiskLimit",
+      "expressionDigest": "sha256:226ee35fa8fb1e266893156e308e324cb1c40bfa2d000323bb338eea6c89d6c3",
+      "positiveFixtureId": "cq-r1-money-measurement-within-limit",
+      "negativeCaseId": "limit-approval-is-before-valid-interval",
+      "expectedViolation": "limit-approval"
+    },
+    {
+      "constraintIri": "https://axiolune.ai/ontology/finance/risk/RiskLimitEvaluationContract",
+      "dispatchDigest": "sha256:34d88eb49b125d5f76384e58840dd7ab8c7af48f38b20d2e79f153214764c02e",
+      "evaluatorId": "validateRiskLimitEvaluationConstraint",
+      "targetElement": "https://axiolune.ai/ontology/finance/risk/RiskLimitEvaluation",
+      "expressionDigest": "sha256:81bd1870c64191587cc96e2887b6b337361eb95f348d530deb51311f669bfa26",
+      "positiveFixtureId": "cq-r1-money-measurement-within-limit",
+      "negativeCaseId": "deterministic-comparison-result-is-wrong",
+      "expectedViolation": "evaluation-result"
+    },
+    {
+      "constraintIri": "https://axiolune.ai/ontology/finance/risk/RiskMeasureDefinitionContract",
+      "dispatchDigest": "sha256:c622224078c205358ee8b910d42f0a2a88fe88f927b7f61df412a74fe1e3ff6d",
+      "evaluatorId": "validateRiskMeasureDefinitionConstraint",
+      "targetElement": "https://axiolune.ai/ontology/finance/risk/RiskMeasureDefinition",
+      "expressionDigest": "sha256:4969550827c477c69d40d5a3da078fd6851a23217322b87ad3e7ffe5ae9efe54",
+      "positiveFixtureId": "cq-r1-money-measurement-within-limit",
+      "negativeCaseId": "definition-uses-scalar-source-locator",
+      "expectedViolation": "definition-provenance"
+    },
+    {
+      "constraintIri": "https://axiolune.ai/ontology/finance/risk/RiskMeasurementContract",
+      "dispatchDigest": "sha256:a34d0e1e1670280e1b28bb94debd93ec795c7a32e2777a42a8ef3b07fc072c65",
+      "evaluatorId": "validateRiskMeasurementConstraint",
+      "targetElement": "https://axiolune.ai/ontology/finance/risk/RiskMeasurement",
+      "expressionDigest": "sha256:75e606cea712185e38630d0a470f8c66d5d688a9a6269ceddfbf232d886d8279",
+      "positiveFixtureId": "cq-r1-money-measurement-within-limit",
+      "negativeCaseId": "measurement-input-context-is-not-strictly-prior",
+      "expectedViolation": "measurement-input-context-order"
+    }
+  ]
+}

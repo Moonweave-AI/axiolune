@@ -1,0 +1,88 @@
+schemaVersion: '1.0'
+baseFixtureId: corporate-action-processing-finding-three-stage-closure
+cases:
+  - id: processing-finding-evidence-digest-is-recomputed
+    mutations:
+      - op: set
+        path: findings.0.evidenceSetDigest
+        value: sha256:0000000000000000000000000000000000000000000000000000000000000000
+    expectedViolation: processing-finding-evidence-digest
+  - id: processing-finding-stage-subject-is-required
+    mutations:
+      - op: delete
+        path: findings.0.scheduleSubjectVersionIri
+    expectedViolation: processing-finding-stage-xone
+  - id: processing-finding-stage-subject-is-exclusive
+    mutations:
+      - op: set
+        path: findings.0.entitlementSubjectVersionIri
+        value: https://example.test/fact/corporate-action/entitlement/pf-1/v1
+    expectedViolation: processing-finding-stage-xone
+  - id: processing-finding-kind-must-belong-to-stage
+    mutations:
+      - op: set
+        path: findings.0.processingFindingKind
+        value: missingElection
+    expectedViolation: processing-finding-stage-kind
+  - id: processing-finding-rule-conflict-reference-is-required
+    mutations:
+      - op: delete
+        path: findings.0.findingRuleConflictVersionIri
+    expectedViolation: processing-finding-presence-matrix
+  - id: processing-finding-election-conflict-requires-two-candidates
+    mutations:
+      - op: set
+        path: findings.1.relatedElectionVersionIris
+        value:
+          - https://example.test/fact/corporate-action/election/pf-1/provider-a/v1
+    expectedViolation: processing-finding-presence-matrix
+  - id: processing-finding-related-reference-type-is-exact
+    mutations:
+      - op: set
+        path: findings.1.relatedElectionVersionIris
+        value:
+          - https://example.test/fact/corporate-action/election/pf-1/provider-a/v1
+          - https://example.test/fact/corporate-action/rule-conflict/pf-1/v1
+    expectedViolation: processing-finding-related-reference
+  - id: processing-finding-forbids-cross-stage-related-role
+    mutations:
+      - op: set
+        path: findings.0.relatedAdjustmentVersionIri
+        value: https://example.test/fact/corporate-action/adjustment/ghost/v1
+    expectedViolation: processing-finding-presence-matrix
+  - id: processing-finding-related-entitlement-is-due-bill-only
+    mutations:
+      - op: set
+        path: findings.0.relatedEntitlementVersionIri
+        value: https://example.test/fact/corporate-action/entitlement/pf-1/v1
+    expectedViolation: processing-finding-presence-matrix
+  - id: processing-finding-related-entitlement-joins-exact-due-bill-subject
+    mutations:
+      - op: set
+        path: records.3.scheduleResolutionVersionIri
+        value: https://example.test/fact/corporate-action/schedule-resolution/other/v1
+    expectedViolation: processing-finding-related-reference
+  - id: processing-finding-digest-covers-declared-related-entitlement
+    mutations:
+      - op: set
+        path: findings.2.evidenceSetDigest
+        value: sha256:15ae68f76713276a5bb0889745de96798e087c2c01e71bc2512627af835818b5
+    expectedViolation: processing-finding-evidence-digest
+  - id: processing-finding-generating-context-is-absolute
+    mutations:
+      - op: set
+        path: findings.0.generatingContextRef
+        value: relative-run
+    expectedViolation: processing-finding-generating-context
+  - id: processing-finding-standard-version-key-requires-nonnegative-revision
+    mutations:
+      - op: set
+        path: findings.0.revision
+        value: -1
+    expectedViolation: processing-finding-version-key
+  - id: processing-finding-logical-iri-cannot-name-another-identity
+    mutations:
+      - op: set
+        path: findings.1.logicalIri
+        value: https://example.test/fact/corporate-action/processing-finding/pf-1/schedule-rule-conflict
+    expectedViolation: processing-finding-logical-identity

@@ -1,0 +1,331 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axiolune.ai/schemas/m2/0.3.0/owl-dl-evidence",
+  "title": "Axiolune M2 OWL 2 DL and reasoner evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "profileRef",
+    "outcome",
+    "moduleCount",
+    "importedOntologyIris",
+    "sourceArtifacts",
+    "flattenedClosure",
+    "toolchain",
+    "gates",
+    "negativeReasonerCorpus"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "profileRef": {
+      "const": "https://axiolune.ai/conformance/m2/0.3.0"
+    },
+    "outcome": {
+      "const": "passed"
+    },
+    "moduleCount": {
+      "const": 10
+    },
+    "importedOntologyIris": {
+      "type": "array",
+      "minItems": 11,
+      "maxItems": 11,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uri"
+      }
+    },
+    "sourceArtifacts": {
+      "type": "array",
+      "minItems": 11,
+      "maxItems": 11,
+      "items": {
+        "$ref": "#/$defs/sourceArtifact"
+      }
+    },
+    "flattenedClosure": {
+      "$ref": "#/$defs/flattenedClosure"
+    },
+    "toolchain": {
+      "$ref": "#/$defs/toolchain"
+    },
+    "gates": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/profileGate"
+        },
+        {
+          "$ref": "#/$defs/reasonerGate"
+        },
+        {
+          "$ref": "#/$defs/reasonerGate"
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "negativeReasonerCorpus": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "$ref": "#/$defs/negativeReasonerResult"
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "sourceArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "digest",
+        "ontologyIri",
+        "imports",
+        "quadCount",
+        "headerQuadCount",
+        "axiomQuadCount"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*\\\\).+$"
+        },
+        "digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "ontologyIri": {
+          "type": "string",
+          "format": "uri"
+        },
+        "imports": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "quadCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "headerQuadCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "axiomQuadCount": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "flattenedClosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "digest",
+        "sourceQuadCount",
+        "removedHeaderQuadCount",
+        "preDedupAxiomQuadCount",
+        "duplicateAxiomQuadCount",
+        "outputQuadCount"
+      ],
+      "properties": {
+        "path": {
+          "const": "flattened-closure.ttl"
+        },
+        "digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "sourceQuadCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "removedHeaderQuadCount": {
+          "type": "integer",
+          "minimum": 11
+        },
+        "preDedupAxiomQuadCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "duplicateAxiomQuadCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "outputQuadCount": {
+          "type": "integer",
+          "minimum": 2
+        }
+      }
+    },
+    "toolchain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "toolLockPath",
+        "toolLockDigest",
+        "discoveryContractPath",
+        "discoveryContractDigest",
+        "evidenceSchemaPath",
+        "evidenceSchemaDigest",
+        "javaArchiveDigest",
+        "robotDigest",
+        "robotVersion",
+        "owlApiVersion",
+        "n3Version",
+        "n3PackageIntegrity",
+        "nodeDependencyLockPath",
+        "nodeDependencyLockDigest"
+      ],
+      "properties": {
+        "toolLockPath": {
+          "const": "scripts/domain/owl-dl-profile/v0.3.0/tool-lock.json"
+        },
+        "toolLockDigest": {
+          "$ref": "#/$defs/digest"
+        },
+        "discoveryContractPath": {
+          "const": "scripts/domain/owl-dl-profile/v0.3.0/subject-discovery-contract.json"
+        },
+        "discoveryContractDigest": {
+          "$ref": "#/$defs/digest"
+        },
+        "evidenceSchemaPath": {
+          "const": "scripts/domain/owl-dl-profile/v0.3.0/owl-dl-evidence.schema.json"
+        },
+        "evidenceSchemaDigest": {
+          "$ref": "#/$defs/digest"
+        },
+        "javaArchiveDigest": {
+          "$ref": "#/$defs/digest"
+        },
+        "robotDigest": {
+          "$ref": "#/$defs/digest"
+        },
+        "robotVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owlApiVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "n3Version": {
+          "const": "2.1.1"
+        },
+        "n3PackageIntegrity": {
+          "const": "sha512-kqg8ers6Lc+uAmHeS+ycd3b8mC4x8wr8V8Fi6+w7l4hX6b0KZ5bT05Tf49qM2mujwaqZT3+08zcgtXgfxivbVQ=="
+        },
+        "nodeDependencyLockPath": {
+          "const": "package-lock.json"
+        },
+        "nodeDependencyLockDigest": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "profileGate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gateId",
+        "outcome",
+        "negativeProfileViolation"
+      ],
+      "properties": {
+        "gateId": {
+          "const": "owl-dl-profile"
+        },
+        "outcome": {
+          "const": "passed"
+        },
+        "negativeProfileViolation": {
+          "const": "rejected"
+        }
+      }
+    },
+    "reasonerGate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gateId",
+        "name",
+        "implementation",
+        "version",
+        "outcome",
+        "outputDigest"
+      ],
+      "properties": {
+        "gateId": {
+          "enum": [
+            "owl-reasoner-primary",
+            "owl-reasoner-secondary"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "implementation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "outcome": {
+          "const": "passed"
+        },
+        "outputDigest": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "negativeReasonerResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reasoner",
+        "fixture",
+        "outcome",
+        "diagnosticCode"
+      ],
+      "properties": {
+        "reasoner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fixture": {
+          "enum": [
+            "inconsistent.ttl",
+            "unsatisfiable.ttl"
+          ]
+        },
+        "outcome": {
+          "const": "rejected"
+        },
+        "diagnosticCode": {
+          "enum": [
+            "ontology-inconsistent",
+            "unsatisfiable-class"
+          ]
+        }
+      }
+    }
+  }
+}

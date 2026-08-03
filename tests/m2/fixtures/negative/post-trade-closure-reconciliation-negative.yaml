@@ -1,0 +1,1356 @@
+fixtureProfile: axiolune-post-trade-v0.3-negative-mutations
+status: executable-contract-fixture
+cases:
+  - id: cash-dividend-leaks-split-ratio
+    baseFixtureId: corporate-action-three-kind-closed-matrix
+    mutations:
+      - {op: set, path: events.0.splitRatio, value: '2'}
+    expectedViolation: event-field-matrix
+  - id: stock-split-missing-effective-date
+    baseFixtureId: corporate-action-three-kind-closed-matrix
+    mutations:
+      - {op: delete, path: events.1.dates.effective}
+    expectedViolation: event-date-matrix
+  - id: rights-issue-is-transferable
+    baseFixtureId: corporate-action-three-kind-closed-matrix
+    mutations:
+      - {op: set, path: events.2.nonTransferableDirectSubscription, value: false}
+    expectedViolation: rights-transferability-profile
+  - id: unsupported-corporate-action-kind
+    baseFixtureId: corporate-action-three-kind-closed-matrix
+    mutations:
+      - {op: set, path: events.1.kind, value: stockDividend}
+    expectedViolation: event-kind-closed
+
+  - id: distribution-assessment-price-kind-does-not-match-exact-observation
+    baseFixtureId: distribution-assessment-price-kind-and-input-identity
+    mutations:
+      - {op: set, path: assessment.priceKind, value: settlement}
+    expectedViolation: assessment-price-kind
+  - id: distribution-assessment-input-branch-is-exclusive
+    baseFixtureId: distribution-assessment-price-kind-and-input-identity
+    mutations:
+      - {op: set, path: assessment.rightsCalculatedInput, value: true}
+    expectedViolation: assessment-input-xone
+  - id: distribution-assessment-input-member-is-omitted
+    baseFixtureId: distribution-assessment-price-kind-and-input-identity
+    mutations:
+      - {op: set, path: assessment.inputVersionIris.4, value: https://example.test/fact/assessment/unrelated/v1}
+    expectedViolation: assessment-input-version-set
+  - id: distribution-assessment-input-count-is-wrong
+    baseFixtureId: distribution-assessment-price-kind-and-input-identity
+    mutations:
+      - {op: set, path: assessment.inputVersionCount, value: 5}
+    expectedViolation: assessment-input-version-count
+  - id: distribution-assessment-input-digest-is-wrong
+    baseFixtureId: distribution-assessment-price-kind-and-input-identity
+    mutations:
+      - {op: set, path: assessment.inputVersionSetDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: assessment-input-version-digest
+  - id: distribution-assessment-price-observation-is-after-valid-pivot
+    baseFixtureId: distribution-assessment-price-kind-and-input-identity
+    mutations:
+      - {op: set, path: assessment.priceObservation.observedAt, value: '2026-05-08T12:00:01Z'}
+    expectedViolation: assessment-price-valid-pivot
+  - id: distribution-assessment-price-is-not-available-at-query-time
+    baseFixtureId: distribution-assessment-price-kind-and-input-identity
+    mutations:
+      - {op: set, path: assessment.priceObservation.availableFrom, value: '2026-05-08T12:06:00Z'}
+    expectedViolation: assessment-price-pit
+  - id: distribution-assessment-price-provenance-is-required
+    baseFixtureId: distribution-assessment-price-kind-and-input-identity
+    mutations:
+      - {op: set, path: assessment.priceObservation.sourceArtifactDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: assessment-price-provenance
+  - id: distribution-assessment-valid-interval-starts-after-pivot
+    baseFixtureId: distribution-assessment-price-kind-and-input-identity
+    mutations:
+      - {op: set, path: assessment.priceObservation.validFrom, value: '2026-05-08T12:00:01Z'}
+    expectedViolation: assessment-price-pit
+  - id: distribution-assessment-valid-to-is-half-open
+    baseFixtureId: distribution-assessment-price-kind-and-input-identity
+    mutations:
+      - {op: set, path: assessment.priceObservation.validTo, value: '2026-05-08T12:00:00Z'}
+    expectedViolation: assessment-price-pit
+  - id: distribution-assessment-knowledge-version-expired
+    baseFixtureId: distribution-assessment-price-kind-and-input-identity
+    mutations:
+      - {op: set, path: assessment.priceObservation.knowledgeTo, value: '2026-05-08T12:04:00Z'}
+    expectedViolation: assessment-price-pit
+  - id: distribution-assessment-availability-version-expired
+    baseFixtureId: distribution-assessment-price-kind-and-input-identity
+    mutations:
+      - {op: set, path: assessment.priceObservation.availableTo, value: '2026-05-08T12:05:00Z'}
+    expectedViolation: assessment-price-pit
+  - id: distribution-assessment-price-is-for-wrong-security
+    baseFixtureId: distribution-assessment-price-kind-and-input-identity
+    mutations:
+      - {op: set, path: assessment.priceObservation.observedSecurityLogicalIri, value: https://example.test/security/unrelated}
+    expectedViolation: assessment-price-subject-join
+  - id: distribution-assessment-price-is-for-wrong-listing
+    baseFixtureId: distribution-assessment-price-kind-and-input-identity
+    mutations:
+      - {op: set, path: assessment.priceObservation.listingVersionIri, value: https://example.test/fact/listing/unrelated/v1}
+    expectedViolation: assessment-price-subject-join
+  - id: distribution-assessment-price-currency-does-not-match-cash
+    baseFixtureId: distribution-assessment-price-kind-and-input-identity
+    mutations:
+      - {op: set, path: assessment.priceObservation.price.currency, value: EUR}
+    expectedViolation: assessment-price-currency
+  - id: distribution-assessment-percentage-is-not-recomputed
+    baseFixtureId: distribution-assessment-price-kind-and-input-identity
+    mutations:
+      - {op: set, path: assessment.assessmentPercentage, value: '999'}
+    expectedViolation: assessment-percentage-arithmetic
+  - id: distribution-assessment-method-digest-does-not-join
+    baseFixtureId: distribution-assessment-price-kind-and-input-identity
+    mutations:
+      - {op: set, path: assessment.implementationDigest, value: sha256:4444444444444444444444444444444444444444444444444444444444444444}
+    expectedViolation: assessment-method-join
+
+  - id: due-bill-event-record-is-required
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: delete, path: event}
+    expectedViolation: due-bill-event-resolution
+  - id: due-bill-dtc-stock-split-is-not-fail-tracking-eligible
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: resolution.failTrackingEligible, value: true}
+    expectedViolation: due-bill-dtc-profile
+  - id: due-bill-qualification-must-join-exact-event
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: qualifications.0.eventVersionIri, value: https://example.test/fact/corporate-action/event/unrelated/v1}
+    expectedViolation: due-bill-qualification-event-resolution
+  - id: due-bill-execution-must-be-inside-cum-entitlement-interval
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: qualifications.0.execution.occurrenceTime, value: '2026-05-10T00:00:00Z'}
+    expectedViolation: due-bill-qualification-interval
+  - id: due-bill-allocation-must-join-exact-execution
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: qualifications.0.allocation.executionVersionIri, value: https://example.test/fact/execution/unrelated/v1}
+    expectedViolation: due-bill-qualification-source-join
+  - id: due-bill-buy-execution-account-is-beneficiary-economic-account
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: qualifications.0.execution.account, value: https://example.test/account/a}
+    expectedViolation: due-bill-qualification-direction
+  - id: due-bill-dvp-settlement-evidence-is-atomic
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: qualifications.0.settlementStatusEvent.atomicCompletionEvidenceDigest, value: sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff}
+    expectedViolation: due-bill-qualification-status
+  - id: due-bill-settlement-evidence-must-be-pit-visible
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: qualifications.0.settlementStatusEvent.availableFrom, value: '2026-05-11T00:00:01Z'}
+    expectedViolation: due-bill-qualification-status-pit
+  - id: due-bill-only-eligible-qualification-may-feed-obligation
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: qualifications.0.result, value: ineligible}
+    expectedViolation: due-bill-qualification-result
+  - id: due-bill-trade-obligation-must-join-qualification
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: obligations.0.tradeQualificationVersionIri, value: https://example.test/fact/due-bill-qualification/unrelated/v1}
+    expectedViolation: obligation-trade-qualification
+  - id: due-bill-obligation-source-branch-is-exclusive
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: obligations.0.externalClaimId, value: illegal-second-source}
+    expectedViolation: obligation-source-xone
+  - id: due-bill-external-claim-artifact-is-required
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: obligations.1.sourceArtifactDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: obligation-external-claim
+  - id: due-bill-obligation-benefit-is-recomputed
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: obligations.0.benefit.amount, value: '11'}
+    expectedViolation: obligation-benefit-arithmetic
+  - id: due-bill-entitlement-omits-incident-obligation
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: entitlements.1.obligationVersionIris, value: []}
+    expectedViolation: entitlement-obligation-set
+  - id: due-bill-obligation-set-digest-is-not-section-5-8
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: entitlements.0.obligationSetDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: entitlement-obligation-set-digest
+  - id: due-bill-obligation-closure-probe-not-completed-true
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: entitlements.0.closureProbe.result, value: false}
+    expectedViolation: entitlement-obligation-closure-probe
+  - id: due-bill-obligation-closure-probe-is-not-bound-to-set
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: entitlements.0.closureProbe.subjectSetDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: entitlement-obligation-closure-probe
+  - id: due-bill-eligible-quantity-does-not-net-outgoing
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: entitlements.0.eligibleQuantity, value: '100'}
+    expectedViolation: entitlement-eligible-arithmetic
+  - id: due-bill-closure-counts-superseded-transfer
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: transferClosures.0.transferVersionIris.0, value: https://example.test/fact/transfer/1/v1}
+    expectedViolation: transfer-current-version-set
+  - id: due-bill-current-transfers-over-fulfill
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: transfers.2.asset.amount, value: '5'}
+    expectedViolation: transfer-over-fulfillment
+  - id: due-bill-partial-closure-falsely-reports-full
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: transferClosures.1.result, value: fullyFulfilled}
+    expectedViolation: transfer-closure-result
+  - id: due-bill-movement-evidence-reused
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: transfers.2.movementEvidenceIri, value: https://example.test/evidence/transfer/1-corrected}
+    expectedViolation: transfer-evidence-unique
+  - id: due-bill-movement-evidence-digest-alias-reused
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: transfers.2.movementEvidenceDigest, value: sha256:2020202020202020202020202020202020202020202020202020202020202020}
+    expectedViolation: transfer-evidence-unique
+  - id: due-bill-transfer-time-cannot-be-after-pit
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: transfers.2.transferTime, value: '2099-01-01T00:00:00Z'}
+    expectedViolation: transfer-time-after-pit
+  - id: due-bill-future-correction-still-requires-valid-intervals
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: transfers.1.availableFrom, value: '2026-05-11T00:00:01Z'}
+      - {op: set, path: transfers.1.availableTo, value: '2026-05-10T23:59:59Z'}
+    expectedViolation: transfer-temporal-availability
+  - id: due-bill-liable-party-role-missing
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: obligations.0.liableAccountPartyRoles, value: []}
+    expectedViolation: obligation-liable-party-role
+  - id: due-bill-beneficiary-party-role-wrong-account
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: obligations.0.beneficiaryAccountPartyRoles.0.account, value: https://example.test/account/unrelated}
+    expectedViolation: obligation-beneficiary-party-role
+  - id: due-bill-liable-party-role-kind-not-economic-owner
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: obligations.0.liableAccountPartyRoles.0.kind, value: custodian}
+    expectedViolation: obligation-liable-party-role
+  - id: due-bill-liable-party-role-not-pit-eligible
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: obligations.0.liableAccountPartyRoles.0.pitEligible, value: false}
+    expectedViolation: obligation-liable-party-role
+  - id: due-bill-negative-transfer-amount
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: transfers.3.asset.amount, value: '-1'}
+    expectedViolation: transfer-amount-positive
+  - id: due-bill-orphan-transfer-targets-unknown-obligation
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - op: append
+        path: transfers
+        value:
+          logicalIri: https://example.test/fact/transfer/orphan
+          versionIri: https://example.test/fact/transfer/orphan/v1
+          transferAuthorityVersionIri: https://example.test/fact/party/transfer-authority/v1
+          authorityScopedId: transfer-orphan
+          transferTime: '2026-05-10T10:05:00Z'
+          obligationVersionIri: https://example.test/fact/obligation/unknown/v1
+          fromAccount: https://example.test/account/x
+          toAccount: https://example.test/account/y
+          fromParty: https://example.test/party/x
+          toParty: https://example.test/party/y
+          state: completed
+          asset: {kind: quantity, amount: '1', unit: share, instrumentIri: https://example.test/security/s1}
+          movementEvidenceIri: https://example.test/evidence/transfer/orphan
+          movementEvidenceDigest: sha256:7070707070707070707070707070707070707070707070707070707070707070
+          sourceArtifactRef: https://example.test/artifact/transfer/orphan
+          sourceArtifactDigest: sha256:7171717171717171717171717171717171717171717171717171717171717171
+          sourceLocator: $.transfers[5]
+    expectedViolation: transfer-obligation-join
+  - id: due-bill-transfer-party-endpoint-does-not-join-obligation
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: transfers.2.toParty, value: https://example.test/party/unrelated}
+    expectedViolation: transfer-party-endpoint-join
+  - id: due-bill-transfer-source-evidence-is-required
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: transfers.2.sourceArtifactDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: transfer-source-evidence
+  - id: due-bill-transfer-authority-id-cannot-name-two-logical-transfers
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: transfers.2.authorityScopedId, value: transfer-1}
+    expectedViolation: transfer-logical-identity
+  - id: due-bill-transfer-closure-must-bind-pit-request
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: delete, path: transferClosures.0.pitRequestRef}
+    expectedViolation: transfer-closure-pit-context
+  - id: due-bill-transfer-closure-must-join-authoritative-pit-request
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: transferClosures.0.pitRequestRecordDigest, value: sha256:6363636363636363636363636363636363636363636363636363636363636363}
+    expectedViolation: transfer-closure-pit-context
+  - id: due-bill-future-correction-cannot-displace-pit-current-predecessor
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: transfers.1.availableFrom, value: '2026-05-11T00:00:01Z'}
+    expectedViolation: transfer-closure-probe
+  - id: due-bill-transfer-valid-to-is-half-open-at-pit
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: transfers.2.validTo, value: '2026-05-11T00:00:00Z'}
+    expectedViolation: transfer-closure-probe
+  - id: due-bill-incomparable-eligible-corrections-are-rejected
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - op: append
+        path: transfers
+        value:
+          logicalIri: https://example.test/fact/transfer/1
+          versionIri: https://example.test/fact/transfer/1/v3-branch
+          supersedesVersionIri: https://example.test/fact/transfer/1/v1
+          transferAuthorityVersionIri: https://example.test/fact/party/transfer-authority/v1
+          authorityScopedId: transfer-1
+          transferTime: '2026-05-10T10:01:30Z'
+          obligationVersionIri: https://example.test/fact/obligation/1/v1
+          fromAccount: https://example.test/account/a
+          toAccount: https://example.test/account/b
+          fromParty: https://example.test/party/a
+          toParty: https://example.test/party/b
+          state: completed
+          asset: {kind: quantity, amount: '5', unit: share, instrumentIri: https://example.test/security/s1}
+          movementEvidenceIri: https://example.test/evidence/transfer/1-branch
+          movementEvidenceDigest: sha256:6464646464646464646464646464646464646464646464646464646464646464
+          sourceArtifactRef: https://example.test/artifact/transfer/1-branch
+          sourceArtifactDigest: sha256:6565656565656565656565656565656565656565656565656565656565656565
+          sourceLocator: $.transfers.branch
+          validFrom: '2026-05-10T10:00:00Z'
+          knowledgeFrom: '2026-05-10T10:01:30Z'
+          availableFrom: '2026-05-10T10:01:30Z'
+    expectedViolation: transfer-nonlinear-current-head
+  - id: due-bill-duplicate-fulfillment-closure
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - op: append
+        path: transferClosures
+        value: {obligationVersionIri: https://example.test/fact/obligation/1/v1}
+    expectedViolation: transfer-closure-duplicate
+  - id: due-bill-transfer-closure-probe-is-not-bound-to-current-set
+    baseFixtureId: due-bill-bilateral-empty-correction-partial-full
+    mutations:
+      - {op: set, path: transferClosures.0.closureProbe.subjectSetDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: transfer-closure-probe
+
+  - id: rights-election-exceeds-entitlement
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: electionCandidates.0.electedQuantity, value: '13'}
+    expectedViolation: rights-over-election
+  - id: rights-candidate-set-is-incomplete
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: candidateVersionIris.1, value: https://example.test/fact/election/unknown/v1}
+    expectedViolation: rights-candidate-version-set
+  - id: rights-candidate-closure-probe-false
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: candidateClosureProbe.result, value: false}
+    expectedViolation: rights-candidate-closure-probe
+  - id: rights-policy-provider-members-are-not-traversable
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: providerPolicy.providerMembers, value: []}
+    expectedViolation: rights-policy-provider-members
+  - id: rights-policy-event-scope-digest-is-recomputed
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: providerPolicy.eventScopeDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: rights-policy-event-scope-digest
+  - id: rights-policy-runtime-must-be-locked
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: providerPolicy.runtimeDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: rights-policy-executable-evidence
+  - id: rights-policy-source-locator-is-canonical-nonempty-text
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: providerPolicy.sourceLocator, value: ' $.electionPolicies[0] '}
+    expectedViolation: rights-policy-source-evidence
+  - id: rights-policy-normalization-key-is-not-canonical
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: providerPolicy.normalizationMappings.0.sourceProviderKey, value: ' SRC-A '}
+      - {op: set, path: electionCandidates.0.sourceProviderKey, value: ' SRC-A '}
+    expectedViolation: rights-policy-normalization-key
+  - id: rights-policy-does-not-infer-precedence-through-non-candidate-provider
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - op: append
+        path: providerPolicy.providerMembers
+        value: {versionIri: https://example.test/fact/election-policy/1/member/provider-c/v1, policyVersionIri: https://example.test/fact/election-policy/1/v1, providerLogicalIri: https://example.test/party/election-provider-c, normalizedProviderKey: provider-c, generatingContextRef: https://example.test/control/run/election-policy/1, validFrom: '2026-07-01T00:00:00Z', knowledgeFrom: '2026-07-01T00:00:00Z', availableFrom: '2026-07-01T00:00:00Z'}
+      - {op: set, path: providerPolicy.eligibleProviderCount, value: 3}
+      - {op: set, path: providerPolicy.eligibleProviderSetDigest, value: sha256:0ef5912d92a4c08578981c87d6df26e184c807c37abe747bf9be48fd2e516eb9}
+      - {op: set, path: providerPolicy.providerMemberVersionSetDigest, value: sha256:59a2e4b4a2946667b246cef8253f8efc8c9ae4c936e37aec78278d2b7af603a8}
+      - op: append
+        path: providerPolicy.normalizationMappings
+        value: {versionIri: https://example.test/fact/election-policy/1/normalization/src-c/v1, policyVersionIri: https://example.test/fact/election-policy/1/v1, sourceProviderKey: SRC-C, normalizedProviderLogicalIri: https://example.test/party/election-provider-c, normalizedProviderKey: provider-c, generatingContextRef: https://example.test/control/run/election-policy/1, validFrom: '2026-07-01T00:00:00Z', knowledgeFrom: '2026-07-01T00:00:00Z', availableFrom: '2026-07-01T00:00:00Z'}
+      - {op: set, path: providerPolicy.providerNormalizationCount, value: 3}
+      - {op: set, path: providerPolicy.providerNormalizationDigest, value: sha256:95601d5d4f0cf09f5f32dfccc7581ba34d81c785957c9df42c09ef9a2cb51aa7}
+      - op: append
+        path: providerPolicy.precedenceEdges
+        value: {versionIri: https://example.test/fact/election-policy/1/precedence/b-over-c/v1, policyVersionIri: https://example.test/fact/election-policy/1/v1, higherProviderLogicalIri: https://example.test/party/election-provider-b, lowerProviderLogicalIri: https://example.test/party/election-provider-c, generatingContextRef: https://example.test/control/run/election-policy/1, validFrom: '2026-07-01T00:00:00Z', knowledgeFrom: '2026-07-01T00:00:00Z', availableFrom: '2026-07-01T00:00:00Z'}
+      - {op: set, path: providerPolicy.precedenceEdgeCount, value: 2}
+      - {op: set, path: providerPolicy.precedenceGraphDigest, value: sha256:f9a5c08c682a2bc5d6e1fa28452848e07d314a51dafab7d2b6893455c7d9bb77}
+      - {op: set, path: electionCandidates.1.providerLogicalIri, value: https://example.test/party/election-provider-c}
+      - {op: set, path: electionCandidates.1.providerVersionIri, value: https://example.test/fact/party/election-provider-c/v1}
+      - {op: set, path: electionCandidates.1.providerVersionLogicalIri, value: https://example.test/party/election-provider-c}
+      - {op: set, path: electionCandidates.1.sourceProviderKey, value: SRC-C}
+    expectedViolation: rights-resolution-conflict
+  - id: rights-policy-member-version-set-digest-is-recomputed
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: providerPolicy.providerMemberVersionSetDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: rights-policy-provider-member-version-digest
+  - id: rights-policy-normalization-target-is-not-a-member
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: providerPolicy.normalizationMappings.0.normalizedProviderLogicalIri, value: https://example.test/party/not-eligible}
+    expectedViolation: rights-policy-normalization-target
+  - id: rights-policy-normalization-must-cover-every-member
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: providerPolicy.normalizationMappings.1.normalizedProviderLogicalIri, value: https://example.test/party/election-provider-a}
+      - {op: set, path: providerPolicy.normalizationMappings.1.normalizedProviderKey, value: provider-a}
+    expectedViolation: rights-policy-normalization-coverage
+  - id: rights-policy-precedence-graph-is-cyclic
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - op: append
+        path: providerPolicy.precedenceEdges
+        value:
+          versionIri: https://example.test/fact/election-policy/1/precedence/b-over-a/v1
+          policyVersionIri: https://example.test/fact/election-policy/1/v1
+          higherProviderLogicalIri: https://example.test/party/election-provider-b
+          lowerProviderLogicalIri: https://example.test/party/election-provider-a
+          generatingContextRef: https://example.test/control/run/election-policy/1
+          validFrom: '2026-07-01T00:00:00Z'
+          knowledgeFrom: '2026-07-01T00:00:00Z'
+          availableFrom: '2026-07-01T00:00:00Z'
+    expectedViolation: rights-policy-precedence-cycle
+  - id: rights-policy-stale-precedence-edge-cannot-select-winner
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: providerPolicy.precedenceEdges.0.validTo, value: '2026-07-08T23:59:59Z'}
+    expectedViolation: rights-policy-precedence-pit
+  - id: rights-resolution-must-bind-authoritative-pit-request
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: resolution.pitRequestRecordDigest, value: sha256:7979797979797979797979797979797979797979797979797979797979797979}
+    expectedViolation: rights-resolution-pit-context
+  - id: rights-resolution-proof-must-name-explicit-edge
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: resolution.precedenceProof.precedenceEdgeVersionIris, value: []}
+    expectedViolation: rights-resolution-precedence-proof
+  - id: rights-resolution-proof-must-name-normalization-mappings
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: resolution.precedenceProof.normalizationMappingVersionIris, value: [https://example.test/fact/election-policy/1/normalization/src-a/v1]}
+    expectedViolation: rights-resolution-precedence-proof
+  - id: rights-candidate-source-evidence-is-required
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: electionCandidates.0.sourceRecordDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: rights-candidate-source-evidence
+  - id: rights-authorization-role-must-be-pit-eligible
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: electionCandidates.1.authorizationAccountPartyRole.availableFrom, value: '2026-07-09T00:00:01Z'}
+    expectedViolation: rights-candidate-authorization-role-pit
+  - id: rights-candidate-joins-unrelated-policy
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: electionCandidates.0.providerPolicyVersionIri, value: https://example.test/fact/election-policy/unrelated/v1}
+    expectedViolation: rights-candidate-policy
+  - id: rights-candidate-provider-is-not-eligible
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: electionCandidates.0.providerLogicalIri, value: https://example.test/party/not-eligible}
+    expectedViolation: rights-candidate-provider
+  - id: rights-candidate-provider-version-does-not-join-logical-provider
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: electionCandidates.0.providerVersionLogicalIri, value: https://example.test/party/election-provider-b}
+    expectedViolation: rights-candidate-provider-version-join
+  - id: rights-candidate-provider-key-is-not-normalized
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: electionCandidates.0.sourceProviderKey, value: UNKNOWN}
+    expectedViolation: rights-candidate-provider-normalization
+  - id: rights-provider-authority-id-cannot-name-two-logical-elections
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: electionCandidates.1.providerLogicalIri, value: https://example.test/party/election-provider-a}
+      - {op: set, path: electionCandidates.1.providerVersionIri, value: https://example.test/fact/party/election-provider-a/v3}
+      - {op: set, path: electionCandidates.1.providerVersionLogicalIri, value: https://example.test/party/election-provider-a}
+      - {op: set, path: electionCandidates.1.sourceProviderKey, value: SRC-A}
+      - {op: set, path: electionCandidates.1.authorityScopedId, value: provider-a-election-1}
+    expectedViolation: rights-candidate-logical-identity
+  - id: rights-candidate-arrives-after-deadline
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: electionCandidates.0.receivedAt, value: '2026-07-09T00:00:00Z'}
+    expectedViolation: rights-candidate-deadline
+  - id: rights-candidate-selects-both-authorization-branches
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: electionCandidates.1.selfElection, value: true}
+    expectedViolation: rights-candidate-authorization-xone
+  - id: rights-self-election-marker-must-be-true
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: electionCandidates.0.selfElection, value: false}
+    expectedViolation: rights-candidate-self-marker
+  - id: rights-candidate-role-authorizes-another-account
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: electionCandidates.1.authorizationAccountPartyRole.account, value: https://example.test/account/unrelated}
+    expectedViolation: rights-candidate-authorization-role
+  - id: rights-decline-illegally-carries-quantity
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: electionCandidates.1.electedQuantity, value: '1'}
+    expectedViolation: rights-candidate-decline-quantity
+  - id: rights-incompatible-undominated-candidates-are-a-conflict
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: providerPolicy.precedenceEdges, value: []}
+      - {op: set, path: providerPolicy.precedenceEdgeCount, value: 0}
+      - {op: set, path: providerPolicy.precedenceGraphDigest, value: sha256:ff48a8baef9c88260ec2d8f25f7fd89e56f318820af95e6e1e83fbab8be036a0}
+    expectedViolation: rights-resolution-conflict
+  - id: rights-candidate-closure-probe-is-not-bound-to-candidate-set
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: candidateClosureProbe.subjectSetDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: rights-candidate-closure-probe
+  - id: rights-subscription-cash-arithmetic-mismatch
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: subscriptionObligation.cashAmount, value: '21'}
+    expectedViolation: rights-obligation-cash-arithmetic
+  - id: rights-security-fulfillment-not-completed
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: fulfillments.1.state, value: pending}
+    expectedViolation: rights-fulfillment-state-join
+  - id: rights-closure-not-fully-fulfilled
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: fulfillmentClosure.result, value: partiallyFulfilled}
+    expectedViolation: rights-closure-not-full
+  - id: rights-fulfillment-closure-probe-is-not-bound-to-current-set
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: fulfillmentClosure.closureProbe.subjectSetDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: rights-fulfillment-closure-probe
+  - id: rights-adjustment-uses-wrong-cash-date
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: adjustment.cashEffectiveDate, value: 2026-07-11}
+    expectedViolation: rights-adjustment-date
+  - id: rights-adjustment-movement-set-digest-mismatch
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: adjustment.movementEvidenceSetDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: rights-adjustment-evidence-closure
+  - id: rights-cash-fulfillment-must-be-positive
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: fulfillments.0.amount, value: '0'}
+    expectedViolation: rights-fulfillment-amount-positive
+  - id: rights-cash-fulfillment-currency-must-equal-obligation
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: fulfillments.0.currency, value: EUR}
+    expectedViolation: rights-cash-fulfillment-asset
+  - id: rights-security-fulfillment-instrument-must-equal-successor
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: fulfillments.1.instrumentIri, value: https://example.test/security/unrelated}
+    expectedViolation: rights-security-fulfillment-asset
+  - id: rights-cash-fulfillment-parties-must-equal-obligation
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: fulfillments.0.toParty, value: https://example.test/fact/party/unrelated/v1}
+    expectedViolation: rights-cash-fulfillment
+  - id: rights-fulfillment-source-artifact-digest-is-required
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: fulfillments.0.sourceArtifactDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: rights-fulfillment-source-evidence
+  - id: rights-fulfillment-closure-must-bind-pit-record-digest
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: fulfillmentClosure.pitRequestRecordDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: rights-fulfillment-closure-pit-context
+  - id: rights-fulfillment-closure-reported-cash-is-recomputed
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: fulfillmentClosure.fulfilledCashAmount, value: '19'}
+    expectedViolation: rights-closure-arithmetic
+  - id: rights-obligation-must-join-exact-schedule-resolution
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: subscriptionObligation.scheduleResolutionVersionIri, value: https://example.test/fact/schedule-resolution/unrelated/v1}
+    expectedViolation: rights-obligation-resolution-join
+  - id: rights-adjustment-must-join-selected-election
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: adjustment.selectedElectionVersionIri, value: https://example.test/fact/election/unrelated/v1}
+    expectedViolation: rights-adjustment-closure-join
+  - id: rights-adjustment-valid-from-is-latest-completion
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: adjustment.validFrom, value: '2026-07-10T13:59:59Z'}
+    expectedViolation: rights-adjustment-valid-from
+  - id: rights-fulfillment-movement-evidence-is-unique
+    baseFixtureId: rights-election-subscription-adjustment-chain
+    mutations:
+      - {op: set, path: fulfillments.1.movementEvidenceIri, value: https://example.test/evidence/subscription/cash}
+    expectedViolation: rights-fulfillment-evidence-unique
+
+  - id: settlement-dvp-reclassified-with-two-legs-as-fop
+    baseFixtureId: settlement-dvp-fop-direct-omnibus-allocation
+    mutations:
+      - {op: set, path: instructions.0.method, value: freeOfPayment}
+    expectedViolation: settlement-fop-leg-matrix
+  - id: settlement-dvp-cash-direction-not-reciprocal
+    baseFixtureId: settlement-dvp-fop-direct-omnibus-allocation
+    mutations:
+      - {op: set, path: instructions.0.legs.1.fromParty, value: https://example.test/party/unrelated-cash-sender}
+    expectedViolation: settlement-dvp-cash-reciprocity
+  - id: settlement-dvp-lacks-atomic-completion
+    baseFixtureId: settlement-dvp-fop-direct-omnibus-allocation
+    mutations:
+      - {op: set, path: instructions.0.statusEvents.1.atomicCompletionEvidenceDigest, value: sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff}
+    expectedViolation: settlement-dvp-atomic-completion
+  - id: settlement-status-member-must-be-closed
+    baseFixtureId: settlement-dvp-fop-direct-omnibus-allocation
+    mutations:
+      - {op: set, path: instructions.1.statusEvents.0.state, value: banana}
+    expectedViolation: settlement-status-state
+  - id: settlement-status-order-key-must-be-unique
+    baseFixtureId: settlement-dvp-fop-direct-omnibus-allocation
+    mutations:
+      - {op: set, path: instructions.0.statusEvents.1.order, value: 1}
+    expectedViolation: settlement-status-order
+  - id: settlement-status-leg-subject-must-belong-to-instruction
+    baseFixtureId: settlement-dvp-fop-direct-omnibus-allocation
+    mutations:
+      - {op: set, path: instructions.1.statusEvents.0.legVersionIri, value: https://example.test/fact/leg/dvp-security/v1}
+    expectedViolation: settlement-status-subject-xone
+  - id: settlement-status-subject-is-an-exclusive-branch
+    baseFixtureId: settlement-dvp-fop-direct-omnibus-allocation
+    mutations:
+      - {op: set, path: instructions.1.statusEvents.0.atomicGroupId, value: atomic-fop-1}
+    expectedViolation: settlement-status-subject-xone
+  - id: settlement-fop-system-is-required
+    baseFixtureId: settlement-dvp-fop-direct-omnibus-allocation
+    mutations:
+      - {op: delete, path: instructions.1.system}
+    expectedViolation: settlement-instruction-system
+  - id: settlement-dvp-party-must-be-an-absolute-iri
+    baseFixtureId: settlement-dvp-fop-direct-omnibus-allocation
+    mutations:
+      - {op: set, path: instructions.0.securitiesDeliverer, value: seller}
+    expectedViolation: settlement-instruction-party
+  - id: settlement-settled-status-is-terminal
+    baseFixtureId: settlement-dvp-fop-direct-omnibus-allocation
+    mutations:
+      - op: append
+        path: instructions.0.statusEvents
+        value: {order: 3, subject: group, atomicGroupId: atomic-dvp-1, state: failed}
+    expectedViolation: settlement-status-transition
+  - id: settlement-allocation-uses-stale-bridge
+    baseFixtureId: settlement-dvp-fop-direct-omnibus-allocation
+    mutations:
+      - {op: set, path: bridges.0.pitEligible, value: false}
+    expectedViolation: settlement-bridge-pit
+  - id: settlement-buy-execution-points-to-seller
+    baseFixtureId: settlement-dvp-fop-direct-omnibus-allocation
+    mutations:
+      - {op: set, path: allocations.0.execution.account, value: https://example.test/account/seller-securities}
+    expectedViolation: allocation-buy-direction
+  - id: settlement-direct-branch-hides-omnibus-difference
+    baseFixtureId: settlement-dvp-fop-direct-omnibus-allocation
+    mutations:
+      - {op: set, path: allocations.0.toMode, value: directAccount}
+    expectedViolation: allocation-to-direct-xone
+  - id: settlement-duplicate-execution-leg-allocation-identity
+    baseFixtureId: settlement-dvp-fop-direct-omnibus-allocation
+    mutations:
+      - op: append
+        path: allocations
+        value:
+          versionIri: https://example.test/fact/allocation/dvp/duplicate-v1
+          instructionVersionIri: https://example.test/fact/instruction/dvp/v1
+          securityLegVersionIri: https://example.test/fact/leg/dvp-security/v1
+          execution: {versionIri: https://example.test/fact/execution/dvp/v1, side: buy, account: https://example.test/account/buyer-beneficial, instrumentIri: https://example.test/security/s1, quantity: '40'}
+          quantity: {amount: '1', unit: https://example.test/unit/share}
+          fromEconomicAccount: https://example.test/account/seller-securities
+          toEconomicAccount: https://example.test/account/buyer-beneficial
+          fromMode: directAccount
+          toMode: custodyOrOmnibus
+          toBridgeVersionIri: https://example.test/fact/bridge/buyer/v1
+    expectedViolation: allocation-logical-identity
+  - id: settlement-execution-allocation-aggregate-exceeds-executed-quantity
+    baseFixtureId: settlement-dvp-fop-direct-omnibus-allocation
+    mutations:
+      - op: append
+        path: instructions
+        value:
+          versionIri: https://example.test/fact/instruction/fop-s1/v1
+          method: freeOfPayment
+          securitiesDeliverer: https://example.test/party/seller
+          securitiesReceiver: https://example.test/party/buyer-custodian
+          atomicGroupId: atomic-fop-s1
+          system: DTC
+          location: US
+          legs:
+            - versionIri: https://example.test/fact/leg/fop-s1/v1
+              atomicGroupId: atomic-fop-s1
+              fromParty: https://example.test/party/seller
+              toParty: https://example.test/party/buyer-custodian
+              fromAccount: https://example.test/account/seller-securities
+              toAccount: https://example.test/account/buyer-omnibus-securities
+              asset: {kind: security, amount: '1', unit: https://example.test/unit/share, instrumentIri: https://example.test/security/s1}
+          statusEvents:
+            - {order: 1, subject: leg, legVersionIri: https://example.test/fact/leg/fop-s1/v1, state: settled}
+      - op: append
+        path: allocations
+        value:
+          versionIri: https://example.test/fact/allocation/fop-s1/v1
+          instructionVersionIri: https://example.test/fact/instruction/fop-s1/v1
+          securityLegVersionIri: https://example.test/fact/leg/fop-s1/v1
+          execution: {versionIri: https://example.test/fact/execution/dvp/v1, side: buy, account: https://example.test/account/buyer-beneficial, instrumentIri: https://example.test/security/s1, quantity: '40'}
+          quantity: {amount: '1', unit: https://example.test/unit/share}
+          fromEconomicAccount: https://example.test/account/seller-securities
+          toEconomicAccount: https://example.test/account/buyer-beneficial
+          fromMode: directAccount
+          toMode: custodyOrOmnibus
+          toBridgeVersionIri: https://example.test/fact/bridge/buyer/v1
+    expectedViolation: allocation-execution-aggregate
+  - id: settlement-execution-version-must-be-an-absolute-iri
+    baseFixtureId: settlement-dvp-fop-direct-omnibus-allocation
+    mutations:
+      - {op: set, path: allocations.0.execution.versionIri, value: not-an-iri}
+    expectedViolation: allocation-execution-version
+  - id: settlement-leg-allocation-aggregate-cannot-exceed-leg
+    baseFixtureId: settlement-dvp-fop-direct-omnibus-allocation
+    mutations:
+      - op: append
+        path: allocations
+        value:
+          versionIri: https://example.test/fact/allocation/dvp/other-execution/v1
+          instructionVersionIri: https://example.test/fact/instruction/dvp/v1
+          securityLegVersionIri: https://example.test/fact/leg/dvp-security/v1
+          execution: {versionIri: https://example.test/fact/execution/dvp/other/v1, side: buy, account: https://example.test/account/buyer-beneficial, instrumentIri: https://example.test/security/s1, quantity: '100'}
+          quantity: {amount: '100', unit: https://example.test/unit/share}
+          fromEconomicAccount: https://example.test/account/seller-securities
+          toEconomicAccount: https://example.test/account/buyer-beneficial
+          fromMode: directAccount
+          toMode: custodyOrOmnibus
+          toBridgeVersionIri: https://example.test/fact/bridge/buyer/v1
+    expectedViolation: allocation-leg-aggregate
+
+  - id: missing-side-cash-key-currency-digest-mismatch
+    baseFixtureId: missing-side-strict-cash-security-key
+    mutations:
+      - {op: set, path: assertions.0.comparisonCurrencyAlphaCode, value: EUR}
+    expectedViolation: missing-side-key-digest
+  - id: missing-side-cash-key-missing-scale
+    baseFixtureId: missing-side-strict-cash-security-key
+    mutations:
+      - {op: delete, path: assertions.0.comparisonCurrencyScale}
+    expectedViolation: missing-side-cash-scale
+  - id: missing-side-security-key-missing-unit
+    baseFixtureId: missing-side-strict-cash-security-key
+    mutations:
+      - {op: delete, path: assertions.1.comparisonQuantityUnit}
+    expectedViolation: missing-side-security-unit
+  - id: missing-side-security-key-leaks-cash-identity
+    baseFixtureId: missing-side-strict-cash-security-key
+    mutations:
+      - {op: set, path: assertions.1.comparisonCurrencyAlphaCode, value: USD}
+    expectedViolation: missing-side-asset-xone
+
+  - id: reconciliation-settlement-case-mode-marker-is-exclusive
+    baseFixtureId: settlement-account-security-cash-projection-and-status-history
+    mutations:
+      - {op: set, path: case.economicAccountAllocationMode, value: true}
+    expectedViolation: reconciliation-case-mode-xone
+  - id: reconciliation-settlement-case-forbids-allocation-closure-fields
+    baseFixtureId: settlement-account-security-cash-projection-and-status-history
+    mutations:
+      - {op: set, path: case.allocationCount, value: 0}
+    expectedViolation: reconciliation-settlement-mode-forbids-allocation
+  - id: reconciliation-settlement-case-forbids-bridge-inventory
+    baseFixtureId: settlement-account-security-cash-projection-and-status-history
+    mutations:
+      - op: set
+        path: bridges
+        value:
+          - {versionIri: https://example.test/fact/bridge/forbidden/v1}
+    expectedViolation: reconciliation-settlement-mode-forbids-allocation
+  - id: reconciliation-settlement-leg-authority-must-equal-case-source
+    baseFixtureId: settlement-account-security-cash-projection-and-status-history
+    mutations:
+      - {op: set, path: legs.0.instructionAuthorityLogicalIri, value: https://example.test/party/unrelated-authority}
+    expectedViolation: reconciliation-leg-authority
+  - id: reconciliation-settlement-cash-leg-forbids-security-unit
+    baseFixtureId: settlement-account-security-cash-projection-and-status-history
+    mutations:
+      - {op: set, path: legs.1.asset.unit, value: https://example.test/unit/share}
+    expectedViolation: reconciliation-leg-money
+  - id: reconciliation-settlement-projection-forbids-allocation-members
+    baseFixtureId: settlement-account-security-cash-projection-and-status-history
+    mutations:
+      - {op: set, path: internalProjections.0.allocationVersionIris, value: []}
+    expectedViolation: reconciliation-settlement-projection-source-xone
+  - id: reconciliation-settlement-projection-mode-marker-is-exclusive
+    baseFixtureId: settlement-account-security-cash-projection-and-status-history
+    mutations:
+      - {op: set, path: internalProjections.0.projectionEconomicAllocationMode, value: true}
+    expectedViolation: reconciliation-internal-mode-xone
+  - id: reconciliation-settlement-projection-source-digest-is-recomputed
+    baseFixtureId: settlement-account-security-cash-projection-and-status-history
+    mutations:
+      - {op: set, path: internalProjections.0.internalSourceVersionSetDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: reconciliation-internal-source-digest
+  - id: reconciliation-settlement-cash-projection-must-equal-full-leg
+    baseFixtureId: settlement-account-security-cash-projection-and-status-history
+    mutations:
+      - {op: set, path: internalProjections.1.value.amount, value: '999'}
+    expectedViolation: reconciliation-internal-value-source
+  - id: reconciliation-status-member-is-closed
+    baseFixtureId: settlement-account-security-cash-projection-and-status-history
+    mutations:
+      - {op: set, path: statusEvents.1.state, value: pending}
+    expectedViolation: reconciliation-status-state
+  - id: reconciliation-status-order-key-is-unique
+    baseFixtureId: settlement-account-security-cash-projection-and-status-history
+    mutations:
+      - {op: set, path: statusEvents.2.sourceOrderKey, value: 2}
+    expectedViolation: reconciliation-status-order
+  - id: reconciliation-status-transition-cannot-repeat-state
+    baseFixtureId: settlement-account-security-cash-projection-and-status-history
+    mutations:
+      - {op: set, path: statusEvents.2.state, value: investigating}
+      - {op: set, path: case.currentStatus, value: investigating}
+    expectedViolation: reconciliation-status-transition
+  - id: reconciliation-status-current-is-derived
+    baseFixtureId: settlement-account-security-cash-projection-and-status-history
+    mutations:
+      - {op: set, path: case.currentStatus, value: open}
+    expectedViolation: reconciliation-status-current
+  - id: reconciliation-status-authority-must-equal-case-source
+    baseFixtureId: settlement-account-security-cash-projection-and-status-history
+    mutations:
+      - {op: set, path: statusEvents.1.sourceAuthorityLogicalIri, value: https://example.test/party/unrelated-authority}
+    expectedViolation: reconciliation-status-authority
+  - id: reconciliation-status-source-artifact-digest-is-required
+    baseFixtureId: settlement-account-security-cash-projection-and-status-history
+    mutations:
+      - {op: set, path: statusEvents.1.sourceArtifactDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: reconciliation-status-source-evidence
+  - id: reconciliation-status-event-must-be-pit-visible
+    baseFixtureId: settlement-account-security-cash-projection-and-status-history
+    mutations:
+      - {op: set, path: statusEvents.2.availableFrom, value: '2026-07-18T00:01:01Z'}
+    expectedViolation: reconciliation-status-pit
+
+  - id: reconciliation-allocation-closure-count-wrong
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: case.allocationCount, value: 3}
+    expectedViolation: reconciliation-allocation-closure
+  - id: reconciliation-allocation-closure-probe-is-not-bound-to-current-set
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: case.allocationClosureProbe.subjectSetDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: reconciliation-allocation-closure-probe
+  - id: reconciliation-global-current-allocation-conserves-leg
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: allocations.3.quantity.amount, value: '80'}
+    expectedViolation: reconciliation-allocation-conservation
+  - id: reconciliation-future-allocation-still-requires-valid-intervals
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: allocations.3.availableFrom, value: '2026-07-16T00:01:01Z'}
+      - {op: set, path: allocations.3.availableTo, value: '2026-07-16T00:00:59Z'}
+    expectedViolation: reconciliation-allocation-temporal-availability
+  - id: reconciliation-future-allocation-still-requires-positive-quantity
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: allocations.3.availableFrom, value: '2026-07-16T00:01:01Z'}
+      - {op: set, path: allocations.3.quantity.amount, value: '-1'}
+    expectedViolation: reconciliation-allocation-quantity
+  - id: reconciliation-future-allocation-still-requires-canonical-unit
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: allocations.3.availableFrom, value: '2026-07-16T00:01:01Z'}
+      - {op: set, path: allocations.3.quantity.unit, value: share}
+    expectedViolation: reconciliation-allocation-quantity
+  - id: reconciliation-future-allocation-still-requires-distinct-endpoints
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: allocations.3.availableFrom, value: '2026-07-16T00:01:01Z'}
+      - {op: set, path: allocations.3.toEconomicAccount, value: https://example.test/account/omnibus-source}
+    expectedViolation: reconciliation-allocation-endpoint-distinct
+  - id: reconciliation-attributes-whole-omnibus-leg
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: expectedProjections.0.amount, value: '100'}
+    expectedViolation: reconciliation-economic-projection
+  - id: reconciliation-one-one-mismatch-called-matched
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: findings.1.kind, value: matched}
+    expectedViolation: reconciliation-finding-kind
+  - id: reconciliation-two-zero-omits-opposite-absence
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: delete, path: findings.4.missingSideAssertionVersionIri}
+    expectedViolation: reconciliation-missing-side
+  - id: reconciliation-empty-empty-bucket-is-invalid
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - op: append
+        path: comparisonKeys
+        value: {keyId: k10, focalAccountLogicalIri: https://example.test/account/focal-beneficial, normalizedSettlementReference: DTC-MATRIX-10, settlementDate: 2026-07-15, settlementSystem: DTC, settlementLocation: US, entryDirection: credit, assetKind: security, assetIdentity: https://example.test/security/s1, unitIdentity: https://example.test/unit/share, comparisonKeyDigest: sha256:f43a25865439ded29dc9b317fcc922663ab68254bbfcaef0b696b80fcc974a1d}
+      - op: append
+        path: findings
+        value: {versionIri: https://example.test/fact/reconciliation/finding/k10/v1, caseVersionIri: https://example.test/fact/reconciliation/case/1/v1, generatingContextRef: https://example.test/control/run/reconciliation/findings, keyId: k10, kind: matched}
+    expectedViolation: reconciliation-empty-bucket
+  - id: reconciliation-internal-duplicate-relation-is-recomputed
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: findings.4.internalDuplicateValueRelation, value: identical}
+    expectedViolation: reconciliation-internal-duplicate-relation
+  - id: reconciliation-external-duplicate-dimensions-are-recomputed
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: findings.5.externalMismatchDimensions, value: []}
+    expectedViolation: reconciliation-external-mismatch-dimensions
+  - id: reconciliation-cross-side-dimensions-are-recomputed
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: findings.1.crossMismatchDimensions, value: []}
+    expectedViolation: reconciliation-cross-mismatch-dimensions
+  - id: reconciliation-matched-finding-cannot-claim-mismatch
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: findings.0.mismatchDimensions, value: [quantity]}
+    expectedViolation: reconciliation-matched-forbids-mismatch
+  - id: reconciliation-false-extra-variant-is-still-present
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: findings.0.valueMismatchFinding, value: false}
+    expectedViolation: reconciliation-variant-xone
+  - id: reconciliation-finding-variant-is-exclusive
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: findings.0.valueMismatchFinding, value: true}
+    expectedViolation: reconciliation-variant-xone
+  - id: reconciliation-evidence-digest-is-recomputed
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: findings.0.evidenceSetDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: reconciliation-evidence-digest
+  - id: reconciliation-private-evidence-version-set-is-rejected
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - op: set
+        path: findings.0.evidenceVersionIris
+        value:
+          - https://example.test/fact/reconciliation/external/k1/1/v1
+          - https://example.test/fact/reconciliation/internal/k1/1/v1
+    expectedViolation: reconciliation-private-field
+  - id: reconciliation-declared-internal-projection-role-cannot-omit-member
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: findings.0.internalProjectionVersionIris, value: []}
+    expectedViolation: reconciliation-finding-members
+  - id: reconciliation-finding-subject-digest-is-recomputed
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: findings.0.findingSubjectDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: reconciliation-finding-subject-digest
+  - id: reconciliation-missing-assertion-probe-is-bound-to-empty-result-set
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: missingSideAssertions.0.absenceProbe.subjectSetDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: reconciliation-missing-absence-probe
+  - id: reconciliation-missing-assertion-complete-key-cannot-contradict-digest
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: missingSideAssertions.0.normalizedSettlementReference, value: DTC-WRONG}
+    expectedViolation: missing-side-key-digest
+  - id: reconciliation-missing-assertion-must-join-case
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: missingSideAssertions.0.caseVersionIri, value: https://example.test/fact/reconciliation/case/unrelated/v1}
+    expectedViolation: reconciliation-missing-assertion-key
+  - id: reconciliation-missing-assertion-pivots-must-equal-case
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: missingSideAssertions.0.reconciliationAsOfAvailable, value: '2026-07-16T00:01:01Z'}
+    expectedViolation: reconciliation-missing-assertion-pit
+  - id: reconciliation-case-comparator-is-required
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: delete, path: case.comparatorVersionIri}
+    expectedViolation: reconciliation-case-comparator
+  - id: reconciliation-comparator-record-is-required
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: delete, path: comparator}
+    expectedViolation: reconciliation-comparator-record
+  - id: reconciliation-comparator-tolerance-is-exactly-zero
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: comparator.numericTolerance, value: '0.0001'}
+    expectedViolation: reconciliation-comparator-zero-tolerance
+  - id: reconciliation-comparator-runtime-digest-is-required
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: comparator.runtimeDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: reconciliation-comparator-contract
+  - id: reconciliation-comparator-must-be-pit-visible
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: comparator.availableFrom, value: '2026-07-16T00:01:01Z'}
+    expectedViolation: reconciliation-comparator-pit
+  - id: reconciliation-statement-record-is-required
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: delete, path: externalStatement}
+    expectedViolation: reconciliation-statement-record
+  - id: reconciliation-statement-must-cover-case-account
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: externalStatement.focalAccount, value: https://example.test/account/unrelated}
+    expectedViolation: reconciliation-statement-focal-account
+  - id: reconciliation-statement-provider-must-join-case-source
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: externalStatement.providerLogicalIri, value: https://example.test/party/unrelated-provider}
+    expectedViolation: reconciliation-case-source-authority
+  - id: reconciliation-statement-snapshot-digest-is-required
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: externalStatement.sourceSnapshotDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: reconciliation-statement-snapshot
+  - id: reconciliation-declared-internal-projection-role-cannot-add-member
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: findings.0.internalProjectionVersionIris.0, value: https://example.test/fact/reconciliation/internal/unknown/v1}
+    expectedViolation: reconciliation-finding-members
+  - id: reconciliation-statement-line-joins-exact-statement
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: externalStatementLines.0.statementVersionIri, value: https://example.test/fact/reconciliation/statement/unrelated/v1}
+    expectedViolation: reconciliation-external-key-statement
+  - id: reconciliation-comparison-key-digest-is-recomputed
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: comparisonKeys.0.normalizedSettlementReference, value: DTC-TAMPERED}
+    expectedViolation: reconciliation-key-digest
+  - id: reconciliation-synthetic-internal-projection-has-no-source-group
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: internalProjections.0.legVersionIri, value: https://example.test/fact/leg/synthetic/v1}
+    expectedViolation: reconciliation-internal-source-closure
+  - id: reconciliation-projected-value-must-equal-allocation-sum
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: internalProjections.0.value.amount, value: '49'}
+    expectedViolation: reconciliation-internal-value-source
+  - id: reconciliation-internal-source-digest-is-recomputed
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: internalProjections.0.internalSourceVersionSetDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: reconciliation-internal-source-digest
+  - id: reconciliation-projection-cannot-omit-one-source-allocation
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: internalProjections.0.allocationVersionIris, value: [https://example.test/fact/allocation/rec-1/v2]}
+    expectedViolation: reconciliation-internal-source-members
+  - id: reconciliation-bridge-must-be-pit-eligible
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: bridges.0.validTo, value: '2026-07-15T23:59:59Z'}
+    expectedViolation: reconciliation-allocation-to-bridge-join-pit
+  - id: reconciliation-allocation-closure-is-pit-filtered
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: allocations.2.availableTo, value: '2026-07-16T00:01:00Z'}
+    expectedViolation: reconciliation-allocation-closure-probe
+  - id: reconciliation-quantity-must-obey-declared-precision
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: externalStatementLines.5.value.amount, value: '10.5'}
+    expectedViolation: reconciliation-value-security-precision
+  - id: reconciliation-external-line-key-digest-must-join-key
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: externalStatementLines.0.comparisonKeyDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: reconciliation-external-key-statement
+  - id: reconciliation-case-logical-identity-is-required
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: delete, path: case.logicalIri}
+    expectedViolation: reconciliation-case-identity
+  - id: reconciliation-case-owner-is-an-exact-version
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: delete, path: case.caseOwnerVersionIri}
+    expectedViolation: reconciliation-case-owner
+  - id: reconciliation-case-scope-is-the-closed-v03-value
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: case.reconciliationScope, value: portfolioWide}
+    expectedViolation: reconciliation-case-scope
+  - id: reconciliation-case-internal-source-authority-is-an-exact-version
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: delete, path: case.internalSourceAuthorityVersionIri}
+    expectedViolation: reconciliation-case-source-authority-version
+  - id: reconciliation-case-exact-statement-must-join-input
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: case.externalStatementVersionIri, value: https://example.test/fact/reconciliation/statement/unrelated/v1}
+    expectedViolation: reconciliation-case-statement-version
+  - id: reconciliation-case-generating-context-is-required
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: delete, path: case.generatingContextRef}
+    expectedViolation: reconciliation-case-generating-context
+  - id: reconciliation-case-must-be-visible-at-its-explicit-pivots
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: case.availableFrom, value: '2026-07-16T00:01:01Z'}
+    expectedViolation: reconciliation-case-pit
+  - id: reconciliation-status-exact-authority-must-equal-case-source
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: statusEvents.0.sourceAuthorityVersionIri, value: https://example.test/fact/party/unrelated/v1}
+    expectedViolation: reconciliation-status-authority
+  - id: reconciliation-internal-projection-key-fields-are-recomputed
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: internalProjections.0.normalizedSettlementReference, value: DTC-WRONG}
+    expectedViolation: reconciliation-internal-key-fields
+  - id: reconciliation-internal-projection-instrument-is-the-key-instrument
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: internalProjections.0.projectionInstrumentIri, value: https://example.test/security/unrelated}
+    expectedViolation: reconciliation-internal-instrument
+  - id: reconciliation-internal-projection-must-be-pit-visible
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: internalProjections.0.availableFrom, value: '2026-07-16T00:01:01Z'}
+    expectedViolation: reconciliation-internal-pit
+  - id: reconciliation-external-line-authority-scoped-id-is-required
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: delete, path: externalStatementLines.0.authorityScopedId}
+    expectedViolation: reconciliation-external-identity
+  - id: reconciliation-external-line-authority-identity-is-unique-per-statement
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: externalStatementLines.1.authorityScopedId, value: line-k1-1}
+    expectedViolation: reconciliation-external-authority-identity
+  - id: reconciliation-external-line-focal-account-equals-header
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: externalStatementLines.0.focalAccount, value: https://example.test/account/unrelated}
+    expectedViolation: reconciliation-external-header-join
+  - id: reconciliation-external-line-key-fields-are-recomputed
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: externalStatementLines.0.normalizedSettlementReference, value: DTC-WRONG}
+    expectedViolation: reconciliation-external-key-fields
+  - id: reconciliation-external-security-line-instrument-equals-key
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: externalStatementLines.0.lineInstrumentIri, value: https://example.test/security/unrelated}
+    expectedViolation: reconciliation-external-instrument
+  - id: reconciliation-external-line-artifact-evidence-is-required
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: externalStatementLines.0.sourceArtifactDigest, value: sha256:0000000000000000000000000000000000000000000000000000000000000000}
+    expectedViolation: reconciliation-external-source-evidence
+  - id: reconciliation-external-line-must-be-pit-visible
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: externalStatementLines.0.availableFrom, value: '2026-07-16T00:01:01Z'}
+    expectedViolation: reconciliation-external-pit
+  - id: reconciliation-cash-line-forbids-security-instrument-role
+    baseFixtureId: settlement-account-security-cash-projection-and-status-history
+    mutations:
+      - {op: set, path: externalStatementLines.1.lineInstrumentIri, value: https://example.test/security/s2}
+    expectedViolation: reconciliation-external-asset-xone
+  - id: reconciliation-missing-assertion-probe-ref-and-digest-join-probe
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: missingSideAssertions.0.absenceProbeRef, value: https://example.test/probe/reconciliation/missing/unrelated}
+    expectedViolation: reconciliation-missing-absence-probe-contract
+  - id: reconciliation-missing-assertion-is-a-pit-visible-temporal-fact
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: missingSideAssertions.0.availableFrom, value: '2026-07-16T00:01:01Z'}
+    expectedViolation: reconciliation-missing-assertion-pit
+  - id: reconciliation-finding-is-a-pit-visible-temporal-fact
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - {op: set, path: findings.0.availableFrom, value: '2026-07-16T00:01:01Z'}
+    expectedViolation: reconciliation-finding-pit
+  - id: reconciliation-missing-probe-rejects-wrong-query-with-coherent-digests
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - op: set
+        path: missingSideProbeArtifacts.queryFunctionBytes
+        value: '{"algorithm":"trust-self-reported-empty-result-v0","functionIri":"https://axiolune.ai/ontology/finance/post-trade-operations/functions/missing-side-candidate-set/v1","inputKinds":{"external":"ExternalSettlementStatementLine","internal":"SettlementReconciliationInternalProjection"},"parameters":["asOfAvailable","asOfKnowledge","asOfValid","caseVersionIri","comparatorVersionIri","comparisonKeyDigest","expectedSide","inputRunRecordDigest","inputRunRef","keyId","pitRequestRecordDigest","pitRequestRef"],"resultKind":"sortedExactVersionIriSet","schemaVersion":"1.0"}'
+      - op: set
+        path: missingSideAssertions.0.absenceProbe.queryFunctionDigest
+        value: sha256:8aef0f1d2b5aeff1113524536b6e8e601d5cb63cecc2eab728bafea0586a7797
+      - op: set
+        path: missingSideAssertions.0.absenceProbe.digest
+        value: sha256:4f2271e52b36c32551e745bccc1c205849328bd13f0e5d6563ad7c4662dfafef
+      - op: set
+        path: missingSideAssertions.0.absenceProbeDigest
+        value: sha256:4f2271e52b36c32551e745bccc1c205849328bd13f0e5d6563ad7c4662dfafef
+    expectedViolation: reconciliation-missing-query-contract
+  - id: reconciliation-missing-probe-rejects-incomplete-universe-with-coherent-digests
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - op: set
+        path: missingSideProbeArtifacts.inputRunBytes
+        value: '{"completedAt":"2026-07-16T00:00:30Z","iri":"https://example.test/control/input-context/reconciliation/1","recordType":"MaterializationRun","referenceTime":"2026-07-16T00:01:00Z","schemaVersion":"1.0","status":"completed","universes":{"external":{"members":[{"recordDigest":"sha256:12b5afea3439c1df404803e84a5898aba4359dcdf9e8f7b7f771621c4e72d650","versionIri":"https://example.test/fact/reconciliation/external/k7/1/v1"},{"recordDigest":"sha256:4a45e8cce5ac8135c862445e271f0559bb27aaf260c5813cc543d3b2ea21a614","versionIri":"https://example.test/fact/reconciliation/external/k8/2/v1"},{"recordDigest":"sha256:4bb9b5997c00e670327ad241d925ca72552329886a728b24ca524803340841a0","versionIri":"https://example.test/fact/reconciliation/external/k6/1/v1"},{"recordDigest":"sha256:6ce4b01805b9f263129c0837550a17bded04ff619b9e701820b878ce44e372a1","versionIri":"https://example.test/fact/reconciliation/external/k6/2/v1"},{"recordDigest":"sha256:85d11183651e750251af917b4ab5b02df02080880474995a212e100d5b067dc2","versionIri":"https://example.test/fact/reconciliation/external/k9/1/v1"},{"recordDigest":"sha256:97303440b45b6365e08c76e8d95b9ec877cff11ea84520c210c0d1604c7490fd","versionIri":"https://example.test/fact/reconciliation/external/k4/1/v1"},{"recordDigest":"sha256:bab9d2040a8b1a1c06a1652f580f65da0e1056ff2e163347c457af9546a330ac","versionIri":"https://example.test/fact/reconciliation/external/k9/2/v1"},{"recordDigest":"sha256:c52f3dbe784f8275b1a9c465f62382b379bbec675f139ea773471804d55916c1","versionIri":"https://example.test/fact/reconciliation/external/k2/1/v1"},{"recordDigest":"sha256:c677f11f69e42215a2a470639c365bb459887a0c15ded4b9b6f03b195bb4f925","versionIri":"https://example.test/fact/reconciliation/external/k8/1/v1"}],"recordCount":9,"recordSetDigest":"sha256:93acdd5e662f2442920002727e730b19f39addd7ce3774e90803743de45c21e6"},"internal":{"members":[{"recordDigest":"sha256:095fe9b2e0519b5f74eaa01aaf3cf12a351a8b7407d0f45febf41b2896f71f6d","versionIri":"https://example.test/fact/reconciliation/internal/k7/2/v1"},{"recordDigest":"sha256:7abddbfc78e2af87166867141f4795c1ce5ebfac5d217a0e7f96976c3be7d555","versionIri":"https://example.test/fact/reconciliation/internal/k7/1/v1"},{"recordDigest":"sha256:943449d147ea513c76c27f235e6f917798a4d14f05cd25119f3b606e5453214b","versionIri":"https://example.test/fact/reconciliation/internal/k3/1/v1"},{"recordDigest":"sha256:949623db343800800be24aa9d1a14a1430819c19680b965ee5b19ebf63dd5329","versionIri":"https://example.test/fact/reconciliation/internal/k9/2/v1"},{"recordDigest":"sha256:9888cb0c023dcd540e99430bb955ec2f144901cad244bae9679de3be61c18503","versionIri":"https://example.test/fact/reconciliation/internal/k5/2/v1"},{"recordDigest":"sha256:9f37911e72bc1c8b94d6f856e5e709a9e44f703e6e753764683f4cbd4fd78e72","versionIri":"https://example.test/fact/reconciliation/internal/k2/1/v1"},{"recordDigest":"sha256:b7f25cb1892a23b5976fb8d91200494b8debd4e79b35b51bd294e32167d1f483","versionIri":"https://example.test/fact/reconciliation/internal/k9/1/v1"},{"recordDigest":"sha256:c5dc00929d33e9f78bd379fca9f1cc6536f04c688a580e3ac970dec23cb157b1","versionIri":"https://example.test/fact/reconciliation/internal/k1/1/v1"},{"recordDigest":"sha256:d31521c685e64cfda5b3dd5dd8ec5421343d2a93c2ab49f107ca22e8de352a03","versionIri":"https://example.test/fact/reconciliation/internal/k5/1/v1"},{"recordDigest":"sha256:f1516bda3c3b929f68c8ae4020ef728cf2963f5ea0cc4e63c88083a6d16ca792","versionIri":"https://example.test/fact/reconciliation/internal/k8/1/v1"}],"recordCount":10,"recordSetDigest":"sha256:ebd77a29498435d9c2da1ea5db1d2cfcd32dc5b20f7774f2dbe022da2ea2c06b"}}}'
+      - op: set
+        path: missingSideAssertions.0.absenceProbe.inputRunRecordDigest
+        value: sha256:0ef69f5995f336b1e497d93a88a8aa3206f25158dddf1c31ea50166f252a1484
+      - op: set
+        path: missingSideAssertions.0.absenceProbe.queryParametersBytes
+        value: '{"asOfAvailable":"2026-07-16T00:01:00Z","asOfKnowledge":"2026-07-16T00:00:00Z","asOfValid":"2026-07-15T23:59:59Z","caseVersionIri":"https://example.test/fact/reconciliation/case/1/v1","comparatorVersionIri":"https://example.test/fact/reconciliation/comparator/1/v1","comparisonKeyDigest":"sha256:801e6aadcff8a009827da81b52c30bf2690099ae15722f8fb97622782423224a","expectedSide":"external","inputRunRecordDigest":"sha256:0ef69f5995f336b1e497d93a88a8aa3206f25158dddf1c31ea50166f252a1484","inputRunRef":"https://example.test/control/input-context/reconciliation/1","keyId":"k3","pitRequestRecordDigest":"sha256:39bfebb6807e84091082726c966cabb1701191f7d2ada51734a8db3e44f527c9","pitRequestRef":"https://example.test/control/pit-request/reconciliation/1"}'
+      - op: set
+        path: missingSideAssertions.0.absenceProbe.queryParametersDigest
+        value: sha256:1502d0ffea96f3c89391c1c88123157c67e5ce9d5e022777f1b98dc9790699fe
+      - op: set
+        path: missingSideAssertions.0.absenceProbe.digest
+        value: sha256:23b83eacfa3192a61a76a500eedfb052b82439f0530c2dcfc272a3cab6f9056e
+      - op: set
+        path: missingSideAssertions.0.absenceProbeDigest
+        value: sha256:23b83eacfa3192a61a76a500eedfb052b82439f0530c2dcfc272a3cab6f9056e
+    expectedViolation: reconciliation-missing-input-universe
+  - id: reconciliation-missing-probe-rejects-pit-request-replacement
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - op: set
+        path: missingSideProbeArtifacts.pitRequestBytes
+        value: '{"asOfAvailable":"2026-07-16T00:01:00Z","asOfKnowledge":"2026-07-16T00:00:00Z","asOfValid":"2026-07-15T23:59:59Z","caseVersionIri":"https://example.test/fact/reconciliation/case/1/v1","inputRunRecordDigest":"sha256:82f77279160987491c4bcffc1581fa151771a90648a330b259500f1f847bb1c5","inputRunRef":"https://example.test/control/input-context/reconciliation/1","iri":"https://example.test/control/pit-request/reconciliation/replacement","recordType":"PointInTimeRequest","schemaVersion":"1.0"}'
+      - op: set
+        path: missingSideAssertions.0.absenceProbe.pitRequestRef
+        value: https://example.test/control/pit-request/reconciliation/replacement
+      - op: set
+        path: missingSideAssertions.0.absenceProbe.pitRequestRecordDigest
+        value: sha256:1ea24994a03d06ed932a807fd8ae5d2ab7939b9cc22fd9a704a03e82c401b661
+      - op: set
+        path: missingSideAssertions.0.absenceProbe.queryParametersBytes
+        value: '{"asOfAvailable":"2026-07-16T00:01:00Z","asOfKnowledge":"2026-07-16T00:00:00Z","asOfValid":"2026-07-15T23:59:59Z","caseVersionIri":"https://example.test/fact/reconciliation/case/1/v1","comparatorVersionIri":"https://example.test/fact/reconciliation/comparator/1/v1","comparisonKeyDigest":"sha256:801e6aadcff8a009827da81b52c30bf2690099ae15722f8fb97622782423224a","expectedSide":"external","inputRunRecordDigest":"sha256:82f77279160987491c4bcffc1581fa151771a90648a330b259500f1f847bb1c5","inputRunRef":"https://example.test/control/input-context/reconciliation/1","keyId":"k3","pitRequestRecordDigest":"sha256:1ea24994a03d06ed932a807fd8ae5d2ab7939b9cc22fd9a704a03e82c401b661","pitRequestRef":"https://example.test/control/pit-request/reconciliation/replacement"}'
+      - op: set
+        path: missingSideAssertions.0.absenceProbe.queryParametersDigest
+        value: sha256:c020449d2583740b77857b9f01d78e7e56f0a68f4556116d390acb12258517b3
+      - op: set
+        path: missingSideAssertions.0.absenceProbe.digest
+        value: sha256:a089b84a7aa2a512f5961e757f6a3a1ce9d5c8e34ad269e1c56ad67afc2ffe7b
+      - op: set
+        path: missingSideAssertions.0.absenceProbeDigest
+        value: sha256:a089b84a7aa2a512f5961e757f6a3a1ce9d5c8e34ad269e1c56ad67afc2ffe7b
+    expectedViolation: reconciliation-missing-pit-request-binding
+  - id: reconciliation-missing-probe-rejects-input-run-replacement
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - op: set
+        path: missingSideProbeArtifacts.inputRunBytes
+        value: '{"completedAt":"2026-07-16T00:00:30Z","iri":"https://example.test/control/input-context/reconciliation/replacement","recordType":"MaterializationRun","referenceTime":"2026-07-16T00:01:00Z","schemaVersion":"1.0","status":"completed","universes":{"external":{"members":[{"recordDigest":"sha256:12b5afea3439c1df404803e84a5898aba4359dcdf9e8f7b7f771621c4e72d650","versionIri":"https://example.test/fact/reconciliation/external/k7/1/v1"},{"recordDigest":"sha256:4a45e8cce5ac8135c862445e271f0559bb27aaf260c5813cc543d3b2ea21a614","versionIri":"https://example.test/fact/reconciliation/external/k8/2/v1"},{"recordDigest":"sha256:4bb9b5997c00e670327ad241d925ca72552329886a728b24ca524803340841a0","versionIri":"https://example.test/fact/reconciliation/external/k6/1/v1"},{"recordDigest":"sha256:6ce4b01805b9f263129c0837550a17bded04ff619b9e701820b878ce44e372a1","versionIri":"https://example.test/fact/reconciliation/external/k6/2/v1"},{"recordDigest":"sha256:85d11183651e750251af917b4ab5b02df02080880474995a212e100d5b067dc2","versionIri":"https://example.test/fact/reconciliation/external/k9/1/v1"},{"recordDigest":"sha256:97303440b45b6365e08c76e8d95b9ec877cff11ea84520c210c0d1604c7490fd","versionIri":"https://example.test/fact/reconciliation/external/k4/1/v1"},{"recordDigest":"sha256:bab9d2040a8b1a1c06a1652f580f65da0e1056ff2e163347c457af9546a330ac","versionIri":"https://example.test/fact/reconciliation/external/k9/2/v1"},{"recordDigest":"sha256:c52f3dbe784f8275b1a9c465f62382b379bbec675f139ea773471804d55916c1","versionIri":"https://example.test/fact/reconciliation/external/k2/1/v1"},{"recordDigest":"sha256:c677f11f69e42215a2a470639c365bb459887a0c15ded4b9b6f03b195bb4f925","versionIri":"https://example.test/fact/reconciliation/external/k8/1/v1"},{"recordDigest":"sha256:df258401d8ed68ee4777e960b4b5875f2ebd41a25774f76cd47dcca8d7404fb4","versionIri":"https://example.test/fact/reconciliation/external/k1/1/v1"}],"recordCount":10,"recordSetDigest":"sha256:68da4276d7899ce363261cd50a8b44ba7b21335c51d88678a539b84590bec909"},"internal":{"members":[{"recordDigest":"sha256:095fe9b2e0519b5f74eaa01aaf3cf12a351a8b7407d0f45febf41b2896f71f6d","versionIri":"https://example.test/fact/reconciliation/internal/k7/2/v1"},{"recordDigest":"sha256:7abddbfc78e2af87166867141f4795c1ce5ebfac5d217a0e7f96976c3be7d555","versionIri":"https://example.test/fact/reconciliation/internal/k7/1/v1"},{"recordDigest":"sha256:943449d147ea513c76c27f235e6f917798a4d14f05cd25119f3b606e5453214b","versionIri":"https://example.test/fact/reconciliation/internal/k3/1/v1"},{"recordDigest":"sha256:949623db343800800be24aa9d1a14a1430819c19680b965ee5b19ebf63dd5329","versionIri":"https://example.test/fact/reconciliation/internal/k9/2/v1"},{"recordDigest":"sha256:9888cb0c023dcd540e99430bb955ec2f144901cad244bae9679de3be61c18503","versionIri":"https://example.test/fact/reconciliation/internal/k5/2/v1"},{"recordDigest":"sha256:9f37911e72bc1c8b94d6f856e5e709a9e44f703e6e753764683f4cbd4fd78e72","versionIri":"https://example.test/fact/reconciliation/internal/k2/1/v1"},{"recordDigest":"sha256:b7f25cb1892a23b5976fb8d91200494b8debd4e79b35b51bd294e32167d1f483","versionIri":"https://example.test/fact/reconciliation/internal/k9/1/v1"},{"recordDigest":"sha256:c5dc00929d33e9f78bd379fca9f1cc6536f04c688a580e3ac970dec23cb157b1","versionIri":"https://example.test/fact/reconciliation/internal/k1/1/v1"},{"recordDigest":"sha256:d31521c685e64cfda5b3dd5dd8ec5421343d2a93c2ab49f107ca22e8de352a03","versionIri":"https://example.test/fact/reconciliation/internal/k5/1/v1"},{"recordDigest":"sha256:f1516bda3c3b929f68c8ae4020ef728cf2963f5ea0cc4e63c88083a6d16ca792","versionIri":"https://example.test/fact/reconciliation/internal/k8/1/v1"}],"recordCount":10,"recordSetDigest":"sha256:ebd77a29498435d9c2da1ea5db1d2cfcd32dc5b20f7774f2dbe022da2ea2c06b"}}}'
+      - op: set
+        path: missingSideAssertions.0.absenceProbe.inputRunRef
+        value: https://example.test/control/input-context/reconciliation/replacement
+      - op: set
+        path: missingSideAssertions.0.absenceProbe.inputRunRecordDigest
+        value: sha256:41a305c223667918b00510b055efa70c3e91d9ed5bfb675ad4404b3763edd385
+      - op: set
+        path: missingSideAssertions.0.absenceProbe.queryParametersBytes
+        value: '{"asOfAvailable":"2026-07-16T00:01:00Z","asOfKnowledge":"2026-07-16T00:00:00Z","asOfValid":"2026-07-15T23:59:59Z","caseVersionIri":"https://example.test/fact/reconciliation/case/1/v1","comparatorVersionIri":"https://example.test/fact/reconciliation/comparator/1/v1","comparisonKeyDigest":"sha256:801e6aadcff8a009827da81b52c30bf2690099ae15722f8fb97622782423224a","expectedSide":"external","inputRunRecordDigest":"sha256:41a305c223667918b00510b055efa70c3e91d9ed5bfb675ad4404b3763edd385","inputRunRef":"https://example.test/control/input-context/reconciliation/replacement","keyId":"k3","pitRequestRecordDigest":"sha256:39bfebb6807e84091082726c966cabb1701191f7d2ada51734a8db3e44f527c9","pitRequestRef":"https://example.test/control/pit-request/reconciliation/1"}'
+      - op: set
+        path: missingSideAssertions.0.absenceProbe.queryParametersDigest
+        value: sha256:69a8c5f5e713eadbee940feffef90b5deeeedbc47cccccfc40d9f6e451e7b05c
+      - op: set
+        path: missingSideAssertions.0.absenceProbe.digest
+        value: sha256:3ec536685c825dc3b05ca30c8000af957889b1c2e23ace116281927a3b6a0f5e
+      - op: set
+        path: missingSideAssertions.0.absenceProbeDigest
+        value: sha256:3ec536685c825dc3b05ca30c8000af957889b1c2e23ace116281927a3b6a0f5e
+    expectedViolation: reconciliation-missing-input-run-binding
+  - id: reconciliation-missing-probe-rejects-hidden-eligible-candidate
+    baseFixtureId: economic-allocation-projection-and-closed-finding-matrix
+    mutations:
+      - op: append
+        path: externalStatementLines
+        value:
+          versionIri: https://example.test/fact/reconciliation/external/k3/hidden/v1
+          statementVersionIri: https://example.test/fact/reconciliation/statement/1/v1
+          authorityScopedId: line-k3-hidden
+          focalAccount: https://example.test/account/focal-beneficial
+          normalizedSettlementReference: DTC-MATRIX-03
+          settlementDate: '2026-07-15'
+          settlementSystem: DTC
+          settlementLocation: US
+          entryDirection: credit
+          lineInstrumentIri: https://example.test/security/s1
+          sourceArtifactRef: https://example.test/artifact/external-statement/2026-07-15
+          sourceArtifactDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+          sourceLocator: $.statements[0].lines[hidden-k3]
+          validFrom: '2026-07-01T00:00:00Z'
+          knowledgeFrom: '2026-07-01T00:00:00Z'
+          availableFrom: '2026-07-01T00:00:00Z'
+          keyId: k3
+          comparisonKeyDigest: sha256:801e6aadcff8a009827da81b52c30bf2690099ae15722f8fb97622782423224a
+          value:
+            kind: quantity
+            amount: '10'
+            instrumentIri: https://example.test/security/s1
+            unit: https://example.test/unit/share
+            precision: 0
+    expectedViolation: reconciliation-missing-input-universe

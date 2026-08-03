@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axiolune.ai/schemas/m2/0.3.0/custom-constraint-test-vectors",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "profileRef", "constraintIri", "categories"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "profileRef": { "const": "https://axiolune.ai/conformance/m2/0.3.0" },
+    "constraintIri": { "type": "string", "format": "uri" },
+    "categories": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["positive", "violation", "tamper", "emptySubject", "engineFailure"],
+      "properties": {
+        "positive": { "$ref": "#/$defs/nonEmptyCases" },
+        "violation": { "$ref": "#/$defs/nonEmptyCases" },
+        "tamper": { "$ref": "#/$defs/nonEmptyCases" },
+        "emptySubject": { "$ref": "#/$defs/nonEmptyCases" },
+        "engineFailure": { "$ref": "#/$defs/nonEmptyCases" }
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "root", "path"],
+      "properties": {
+        "kind": { "const": "path" },
+        "root": { "const": "sourceTree" },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*\\\\)[\\x20-\\x7E]+$"
+        }
+      }
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "outcome", "code", "semanticOwner"],
+      "properties": {
+        "status": { "enum": ["completed", "engineFailure"] },
+        "outcome": { "enum": ["accepted", "violation", "engineFailure"] },
+        "code": {
+          "oneOf": [
+            { "type": "string", "minLength": 1 },
+            { "type": "null" }
+          ]
+        },
+        "semanticOwner": { "type": "string", "format": "uri" }
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["caseId", "category", "inputRef", "inputDigest", "expected"],
+      "properties": {
+        "caseId": { "type": "string", "minLength": 1 },
+        "category": {
+          "enum": ["positive", "violation", "tamper", "emptySubject", "engineFailure"]
+        },
+        "inputRef": { "$ref": "#/$defs/artifactRef" },
+        "inputDigest": { "$ref": "#/$defs/digest" },
+        "expected": { "$ref": "#/$defs/expected" }
+      }
+    },
+    "nonEmptyCases": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/case" }
+    }
+  }
+}

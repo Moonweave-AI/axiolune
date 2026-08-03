@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axiolune.ai/schema/m2/shacl-instance-fixture-aggregate/1.0",
+  "title": "Axiolune M2 isolated SHACL constraint-instance fixture aggregate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "profileRef",
+    "artifactKind",
+    "polarity",
+    "rdfCanonicalization",
+    "rdfCanonicalizer",
+    "cases"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "profileRef": { "const": "https://axiolune.ai/conformance/m2/0.3.0" },
+    "artifactKind": { "const": "constraintInstanceFixtureAggregate" },
+    "polarity": { "enum": ["positive", "negative"] },
+    "rdfCanonicalization": { "const": "RDFC-1.0" },
+    "rdfCanonicalizer": { "pattern": "^rdf-canonize@[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "cases": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/case" }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "instanceId": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fixtureId",
+        "constraintInstanceId",
+        "emittedBy",
+        "shapeRef",
+        "shapeDigest",
+        "shapeNQuads",
+        "dataDigest",
+        "dataNQuads",
+        "focusNode",
+        "expectedPath",
+        "expectedComponent",
+        "expectedSeverity",
+        "expectedResult"
+      ],
+      "properties": {
+        "fixtureId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}-(positive|negative)$"
+        },
+        "constraintInstanceId": { "$ref": "#/$defs/instanceId" },
+        "emittedBy": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "shapeRef": { "type": "string", "format": "uri" },
+        "shapeDigest": { "$ref": "#/$defs/sha256" },
+        "shapeNQuads": { "type": "string", "minLength": 1 },
+        "dataDigest": { "$ref": "#/$defs/sha256" },
+        "dataNQuads": { "type": "string", "minLength": 1 },
+        "focusNode": { "type": "string", "minLength": 1 },
+        "expectedPath": {
+          "oneOf": [
+            { "type": "string", "format": "uri" },
+            { "type": "null" }
+          ]
+        },
+        "expectedComponent": { "type": "string", "format": "uri" },
+        "expectedSeverity": { "type": "string", "format": "uri" },
+        "expectedResult": { "enum": ["conforms", "violates"] }
+      }
+    }
+  }
+}

@@ -1,0 +1,362 @@
+schemaVersion: '1.0'
+contract: axiolune-m2-cq-orders-portfolio/v1
+
+pivots:
+  noon: &noon
+    asOfValid: '2026-07-31T12:00:00Z'
+    asOfKnowledge: '2026-07-31T12:00:00Z'
+    asOfAvailable: '2026-07-31T12:00:00Z'
+
+cases:
+  - id: cq-oe2-accepted-external-order
+    cqId: CQ-OE2
+    query:
+      orderIntentVersionIri: urn:order-intent:accepted:v0
+      pivot: *noon
+    expectedRows:
+      - orderIntentVersionIri: urn:order-intent:accepted:v0
+        externalOrderVersionIri: urn:external-order:accepted:v0
+        externalOrderId: VENUE-1001
+        acceptanceEventVersionIri: urn:order-event:accepted-accepted:v0
+        providerEventId: event-accepted-3
+        acceptedAt: '2026-07-31T09:02:00Z'
+
+  - id: cq-oe2-rejected-is-empty
+    cqId: CQ-OE2
+    query:
+      orderIntentVersionIri: urn:order-intent:rejected:v0
+      pivot: *noon
+    expectedRows: []
+
+  - id: cq-oe3-exact-quantity-and-vwap
+    cqId: CQ-OE3
+    query:
+      orderIntentVersionIri: urn:order-intent:accepted:v0
+      pivot: *noon
+    expectedRows:
+      - orderIntentVersionIri: urn:order-intent:accepted:v0
+        executionVersionIris:
+          - urn:execution:fill-1:v0
+          - urn:execution:fill-2:v0
+        totalQuantity: {value: '5', unit: 'urn:unit:share'}
+        volumeWeightedPrice: {amount: '105.4', currency: USD}
+        quotationContextVersionIri: urn:listing:aapl-xnas:v0
+
+  - id: cq-oe3-no-executions-is-empty
+    cqId: CQ-OE3
+    query:
+      orderIntentVersionIri: urn:order-intent:rejected:v0
+      pivot: *noon
+    expectedRows: []
+
+  - id: cq-oe4-complete-immutable-trace
+    cqId: CQ-OE4
+    query:
+      executionVersionIri: urn:execution:fill-1:v0
+      pivot: *noon
+    expectedRows:
+      - executionVersionIri: urn:execution:fill-1:v0
+        accountVersionIri: urn:account:alpha:v0
+        accountLogicalIri: urn:account:alpha
+        executionPartyLogicalIri: urn:party:investor-alpha
+        contraAccountVersionIri: urn:account:contra:v0
+        contraAccountLogicalIri: urn:account:contra
+        contraPartyLogicalIri: urn:party:contra-one
+        executingBrokerLogicalIri: urn:party:broker-one
+        streamVersionIri: urn:order-stream:accepted:v0
+        externalOrderVersionIri: urn:external-order:accepted:v0
+        externalOrderId: VENUE-1001
+        orderIntentVersionIri: urn:order-intent:accepted:v0
+        lifecycleEvents:
+          - eventVersionIri: urn:order-event:accepted-initialized:v0
+            providerEventId: event-accepted-1
+            sourceOrderKey: 1
+            state: Initialized
+            observedAt: '2026-07-31T09:00:00Z'
+          - eventVersionIri: urn:order-event:accepted-submitted:v0
+            providerEventId: event-accepted-2
+            sourceOrderKey: 2
+            state: Submitted
+            observedAt: '2026-07-31T09:01:00Z'
+          - eventVersionIri: urn:order-event:accepted-accepted:v0
+            providerEventId: event-accepted-3
+            sourceOrderKey: 3
+            state: Accepted
+            observedAt: '2026-07-31T09:02:00Z'
+          - eventVersionIri: urn:order-event:accepted-filled:v0
+            providerEventId: event-accepted-4
+            sourceOrderKey: 4
+            state: Filled
+            observedAt: '2026-07-31T09:05:00Z'
+
+  - id: cq-oe6-valid-occurrence-sequence
+    cqId: CQ-OE6
+    query:
+      orderIntentVersionIri: urn:order-intent:accepted:v0
+      transitionProfileVersionIri: urn:transition-profile:broker-one:v0
+      pivot: *noon
+    expectedRows:
+      - orderIntentVersionIri: urn:order-intent:accepted:v0
+        transitionProfileVersionIri: urn:transition-profile:broker-one:v0
+        compliant: true
+        orderedEventVersionIris:
+          - urn:order-event:accepted-initialized:v0
+          - urn:order-event:accepted-submitted:v0
+          - urn:order-event:accepted-accepted:v0
+          - urn:order-event:accepted-filled:v0
+        counterexamples: []
+
+  - id: cq-oe6-explicit-counterexample-finding
+    cqId: CQ-OE6
+    query:
+      orderIntentVersionIri: urn:order-intent:violation:v0
+      transitionProfileVersionIri: urn:transition-profile:broker-one:v0
+      pivot: *noon
+    expectedRows:
+      - orderIntentVersionIri: urn:order-intent:violation:v0
+        transitionProfileVersionIri: urn:transition-profile:broker-one:v0
+        compliant: false
+        orderedEventVersionIris:
+          - urn:order-event:violation-submitted:v0
+          - urn:order-event:violation-filled:v0
+        counterexamples:
+          - fromEventVersionIri: urn:order-event:violation-submitted:v0
+            fromState: Submitted
+            toEventVersionIri: urn:order-event:violation-filled:v0
+            toState: Filled
+            findingVersionIri: urn:order-finding:violation:v0
+
+  - id: cq-oe7-complete-cost-basis-graph
+    cqId: CQ-OE7
+    query:
+      executionVersionIri: urn:execution:fill-1:v0
+      pivot: *noon
+    expectedRows:
+      - executionVersionIri: urn:execution:fill-1:v0
+        quotationContractVersionIri: urn:quotation:aapl-direct:v0
+        feeVersionIris: [urn:fee:fill-1:v0]
+        liquidityDetermination:
+          determinationVersionIri: urn:liquidity-determination:fill-1:v0
+          perspective: executionAccountOrder
+          result: classified
+          role: maker
+          sourceRecordRef: urn:source-record:fill-1
+          sourceRecordDigest: sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+          rawFieldLocator: /liquidity
+          rawLexicalValue: M
+          mappingVersionIri: urn:mapping:liquidity:v0
+        allocationClosureVersionIri: urn:allocation-closure:fill-1:v0
+        allocationVersionIris: [urn:lot-allocation:fill-1:v0]
+        feeAllocationVersionIris: [urn:fee-allocation:fill-1:v0]
+        costBasis:
+          - allocationVersionIri: urn:lot-allocation:fill-1:v0
+            positionLotVersionIri: urn:position-lot:fill-1:v0
+            amount: '202'
+            currency: USD
+
+  - id: cq-oe8-before-knowledge-closure
+    cqId: CQ-OE8
+    query:
+      orderIntentLogicalIri: urn:order-intent:corrected
+      pivot:
+        asOfValid: '2026-07-31T09:10:00Z'
+        asOfKnowledge: '2026-07-31T10:59:59.999999999Z'
+        asOfAvailable: '2026-07-31T10:59:59.999999999Z'
+    expectedRows:
+      - orderIntentVersionIri: urn:order-intent:corrected:v0
+        derivedState: Accepted
+        stateEventVersionIri: urn:order-event:corrected:v0
+        eventVersionIris: [urn:order-event:corrected:v0]
+        asOfKnowledge: '2026-07-31T10:59:59.999999999Z'
+
+  - id: cq-oe8-at-knowledge-and-availability-boundary
+    cqId: CQ-OE8
+    query:
+      orderIntentLogicalIri: urn:order-intent:corrected
+      pivot:
+        asOfValid: '2026-07-31T09:10:00Z'
+        asOfKnowledge: '2026-07-31T11:00:00Z'
+        asOfAvailable: '2026-07-31T11:00:01Z'
+    expectedRows:
+      - orderIntentVersionIri: urn:order-intent:corrected:v0
+        derivedState: Rejected
+        stateEventVersionIri: urn:order-event:corrected:v1
+        eventVersionIris: [urn:order-event:corrected:v1]
+        asOfKnowledge: '2026-07-31T11:00:00Z'
+
+  - id: cq-oe9-half-open-facility-window
+    cqId: CQ-OE9
+    query:
+      from: '2026-07-31T09:03:00Z'
+      to: '2026-07-31T09:04:00Z'
+      facilityLogicalIri: urn:facility:XNAS
+      pivot: *noon
+    expectedRows:
+      - executionVersionIri: urn:execution:fill-1:v0
+        observedAt: '2026-07-31T09:03:00Z'
+        orderIntentVersionIri: urn:order-intent:accepted:v0
+        accountVersionIri: urn:account:alpha:v0
+        accountLogicalIri: urn:account:alpha
+        executionPartyLogicalIri: urn:party:investor-alpha
+        contraAccountVersionIri: urn:account:contra:v0
+        contraAccountLogicalIri: urn:account:contra
+        contraPartyLogicalIri: urn:party:contra-one
+        executingBrokerLogicalIri: urn:party:broker-one
+        listingVersionIri: urn:listing:aapl-xnas:v0
+        instrumentVersionIri: urn:instrument:aapl:v0
+        instrumentLogicalIri: urn:instrument:aapl
+        facilityLogicalIri: urn:facility:XNAS
+
+  - id: cq-oe9-after-upper-bound-is-empty
+    cqId: CQ-OE9
+    query:
+      from: '2026-07-31T09:04:00.000000001Z'
+      to: '2026-07-31T09:05:00Z'
+      facilityLogicalIri: urn:facility:XNAS
+      pivot: *noon
+    expectedRows: []
+
+  - id: cq-oe11-split-one-to-many-lineage
+    cqId: CQ-OE11
+    query:
+      orderIntentVersionIri: urn:order-intent:lineage-root:v0
+      pivot: *noon
+    expectedRows:
+      - orderIntentVersionIri: urn:order-intent:lineage-root:v0
+        focusRole: source
+        lineageVersionIri: urn:order-intent-lineage:split-root:v0
+        lineageKind: split
+        sourceIntentVersionIris:
+          - urn:order-intent:lineage-root:v0
+        sourceIntentCount: 1
+        sourceIntentVersionSetDigest: sha256:7ff9efe4cf5d6544100c9162c2b97ceca6d8d16ef0b6d9c22df54ef7014cbae9
+        resultIntentVersionIris:
+          - urn:order-intent:lineage-split-a:v0
+          - urn:order-intent:lineage-split-b:v0
+        resultIntentCount: 2
+        resultIntentVersionSetDigest: sha256:4ca93700b0abefb4cf212f6781bbbf456f1761cbe51c5eae8be76efc0833d120
+        orderLineageKeyDigest: sha256:4d9544db53947930693432028b50703aa5133ee624ec3c2a4ac72d210d93e1eb
+
+  - id: cq-oe11-aggregation-many-to-one-lineage
+    cqId: CQ-OE11
+    query:
+      orderIntentVersionIri: urn:order-intent:lineage-aggregate-result:v0
+      pivot: *noon
+    expectedRows:
+      - orderIntentVersionIri: urn:order-intent:lineage-aggregate-result:v0
+        focusRole: result
+        lineageVersionIri: urn:order-intent-lineage:aggregate-routed:v0
+        lineageKind: aggregation
+        sourceIntentVersionIris:
+          - urn:order-intent:lineage-aggregate-other:v0
+          - urn:order-intent:lineage-split-a:v0
+        sourceIntentCount: 2
+        sourceIntentVersionSetDigest: sha256:353d19029cbe417d5ad20254e098cee727fcd9ab9e6b4f56857356b4100c42cd
+        resultIntentVersionIris:
+          - urn:order-intent:lineage-aggregate-result:v0
+        resultIntentCount: 1
+        resultIntentVersionSetDigest: sha256:474fb72f580461bc104c1567acdf13ccace0aabcc4c1c6900409524206d9e13a
+        orderLineageKeyDigest: sha256:ea57d77d8a3e05095b7a717aaf6d632cdfa65711cf5e0a2f569df8aac2c7f6d0
+
+  - id: cq-pp1-foundation-account-types
+    cqId: CQ-PP1
+    query: {pivot: *noon}
+    expectedRows:
+      - accountVersionIri: urn:account:alpha:v0
+        accountLogicalIri: urn:account:alpha
+        accountTypeMemberIri: https://axiolune.ai/ontology/finance/foundation/AccountType/securitiesCustody
+        accountTypeNotation: securitiesCustody
+      - accountVersionIri: urn:account:cash:v0
+        accountLogicalIri: urn:account:cash
+        accountTypeMemberIri: https://axiolune.ai/ontology/finance/foundation/AccountType/cash
+        accountTypeNotation: cash
+      - accountVersionIri: urn:account:contra:v0
+        accountLogicalIri: urn:account:contra
+        accountTypeMemberIri: https://axiolune.ai/ontology/finance/foundation/AccountType/securitiesCustody
+        accountTypeNotation: securitiesCustody
+
+  - id: cq-pp2-pit-management-mandate
+    cqId: CQ-PP2
+    query:
+      portfolioLogicalIri: urn:portfolio:alpha
+      pivot: *noon
+    expectedRows:
+      - portfolioLogicalIri: urn:portfolio:alpha
+        portfolioIdentifier: PORT-ALPHA
+        portfolioName: Alpha Portfolio
+        mandateVersionIri: urn:mandate:alpha-manager:v0
+        managingPartyLogicalIri: urn:party:manager-alpha
+        managingPartyName: Alpha Asset Management
+        authorityLogicalIri: urn:authority:investment-committee
+        authorityScope: full-discretionary-management
+        approvalRef: urn:decision:mandate-alpha-approved
+        approvalDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+
+  - id: cq-s3-membership-three-axis-snapshot
+    cqId: CQ-S3
+    query:
+      portfolioLogicalIri: urn:portfolio:alpha
+      pivot: *noon
+    expectedRows:
+      - portfolioLogicalIri: urn:portfolio:alpha
+        membershipVersionIri: urn:membership:alpha-account:v0
+        holdingVersionIri: urn:holding:alpha-aapl-10:v0
+        accountVersionIri: urn:account:alpha:v0
+        instrumentVersionIri: urn:instrument:aapl:v0
+        instrumentLogicalIri: urn:instrument:aapl
+        quantity: {value: '10', unit: 'urn:unit:share'}
+      - portfolioLogicalIri: urn:portfolio:alpha
+        membershipVersionIri: urn:membership:alpha-account:v0
+        holdingVersionIri: urn:holding:alpha-aapl-5:v0
+        accountVersionIri: urn:account:alpha:v0
+        instrumentVersionIri: urn:instrument:aapl:v0
+        instrumentLogicalIri: urn:instrument:aapl
+        quantity: {value: '5', unit: 'urn:unit:share'}
+      - portfolioLogicalIri: urn:portfolio:alpha
+        membershipVersionIri: urn:membership:alpha-account:v0
+        holdingVersionIri: urn:holding:alpha-bond:v0
+        accountVersionIri: urn:account:alpha:v0
+        instrumentVersionIri: urn:instrument:bond-1:v0
+        instrumentLogicalIri: urn:instrument:bond-1
+        quantity: {value: '2', unit: 'urn:unit:bond'}
+
+  - id: cq-s3-before-membership-valid-time-is-empty
+    cqId: CQ-S3
+    query:
+      portfolioLogicalIri: urn:portfolio:alpha
+      pivot:
+        asOfValid: '2025-12-31T23:59:59.999999999Z'
+        asOfKnowledge: '2026-01-01T00:00:01Z'
+        asOfAvailable: '2026-01-01T00:00:02Z'
+    expectedRows: []
+
+  - id: cq-pp5-group-by-source-currency
+    cqId: CQ-PP5
+    query:
+      portfolioLogicalIri: urn:portfolio:alpha
+      pivot: *noon
+    expectedRows:
+      - portfolioLogicalIri: urn:portfolio:alpha
+        portfolioValuationVersionIri: urn:portfolio-valuation:alpha:v0
+        membershipClosureVersionIri: urn:membership-closure:alpha:v0
+        byCurrency:
+          - {currency: EUR, amount: '200', lineCount: 1}
+          - {currency: USD, amount: '1500', lineCount: 2}
+
+  - id: cq-pp5-explicit-fx-aggregate
+    cqId: CQ-PP5
+    query:
+      portfolioLogicalIri: urn:portfolio:alpha
+      targetCurrency: USD
+      pivot: *noon
+    expectedRows:
+      - portfolioLogicalIri: urn:portfolio:alpha
+        portfolioValuationVersionIri: urn:portfolio-valuation:alpha:v0
+        membershipClosureVersionIri: urn:membership-closure:alpha:v0
+        byCurrency:
+          - {currency: EUR, amount: '200', lineCount: 1}
+          - {currency: USD, amount: '1500', lineCount: 2}
+        targetCurrency: USD
+        convertedTotal: '1720'
+        lineCount: 3
+        fxConversionVersionIris: [urn:fx-conversion:bond-eur-usd:v0]

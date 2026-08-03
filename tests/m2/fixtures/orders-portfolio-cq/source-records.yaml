@@ -1,0 +1,38 @@
+schemaVersion: '1.0'
+artifactKind: synthetic-cq-materialization-input
+authority: none
+purpose: >-
+  Deterministic synthetic input bytes for the Orders/Portfolio CQ execution
+  graph. This artifact is test evidence only and is not ontology source
+  authority, code-list authority, or release adoption evidence.
+records:
+  - kind: order-stream
+    provider: broker-one
+    externalOrderId: VENUE-1001
+    events: [Initialized, Submitted, Accepted, Filled]
+    executions:
+      - {providerExecutionId: fill-1, executionParty: investor-alpha, executionAccount: alpha, contraParty: contra-one, contraAccount: contra, executingBroker: broker-one, quantity: '2', price: '100', currency: USD}
+      - {providerExecutionId: fill-2, executionParty: investor-alpha, executionAccount: alpha, contraParty: contra-one, contraAccount: contra, executingBroker: broker-one, quantity: '3', price: '109', currency: USD}
+  - kind: portfolio-valuation
+    portfolioId: PORT-ALPHA
+    definition:
+      method: directUnitPriceTimesQuantity
+      quotationContractVersionIris:
+        - urn:quotation:aapl-direct:v0
+        - urn:quotation:bond-direct-eur:v0
+      quotationContractCount: 2
+      quotationContractVersionSetDigest: sha256:28d54863d0953e149b28431c359f85caaf4160a4b1af5eeeb8467154ecfb8b8c
+      precisionPolicy: axiolune-direct-unit-valuation-precision-v1
+      roundingPolicy: axiolune-direct-unit-valuation-rounding-v1
+    inputs:
+      - {snapshot: urn:holding:alpha-aapl-10:v0, price: urn:price:aapl-usd:v0}
+      - {snapshot: urn:holding:alpha-aapl-5:v0, price: urn:price:aapl-usd:v0}
+      - {snapshot: urn:holding:alpha-bond:v0, price: urn:price:bond-eur:v0}
+    replayedValues:
+      - {amount: '1000', currency: USD}
+      - {amount: '500', currency: USD}
+      - {amount: '200', currency: EUR, convertedAmount: '220', convertedCurrency: USD}
+    fx:
+      baseCurrency: EUR
+      quoteCurrency: USD
+      rate: '1.1'

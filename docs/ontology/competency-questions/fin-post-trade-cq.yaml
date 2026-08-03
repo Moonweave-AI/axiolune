@@ -1,18 +1,157 @@
-# Axiolune M2 Post-Trade Operations — Competency Questions (stub)
-# Status: draft
+# Axiolune M2 Post-Trade Operations �?Competency Questions
+# Module: fin-post-trade | Version: 0.3.0 | Status: active (semantic approval)
 
 cqs:
   - id: CQ-PTO1
-    question: 某公司行动在指定三轴 as-of 下对持仓权益有何影响？
-    dependsOn:
+    question: >-
+      At a specified three-axis as-of time, how does a corporate action event affect entitlements
+      and holding quantities for affected instruments?
+    businessContext: Dividend, split, merger entitlement processing (Lean corporate action path)
+    scopeConstraints:
+      - CorporateActionEvent must not affect holdings before availableFrom
+      - entitlement must reference instrument and ex-date / record date semantics
+    expectedResult: event, affected holdings, quantity adjustment narrative, or empty if not yet available
+    negativeExample: corporate action applied before availableFrom must be excluded from historical holdings
+    dependsOnElements:
       - https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionEvent
-    expected: 返回事件、适用范围与时间解释
-    negative: 未到 availableFrom 的公司行动不得进入历史权益计算
-    status: draft
+      - https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionEntitlement
+      - https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
+    testFixtures:
+      - fixture: post-trade-closure-reconciliation-positive
+        expectedOutcome: returns entitlement impact chain
+      - fixture: post-trade-negative-unavailable-corporate-action
+        expectedOutcome: empty or rejected
+    riskLevel: high
+    status: active
+
   - id: CQ-PTO2
-    question: 结算指令与外部对账单是否存在对账断裂？
-    dependsOn:
+    question: >-
+      Is there a reconciliation break between internal settlement records and an external statement,
+      and what evidence exists on each side?
+    businessContext: Ops control �?break must not be confirmed without bilateral evidence
+    expectedResult: ReconciliationBreak with internal fact, external fact, and break classification
+    negativeExample: break elevated to confirmed without external-side evidence
+    dependsOnElements:
       - https://axiolune.ai/ontology/finance/post-trade-operations/ReconciliationBreak
-    expected: 返回 break 及双方事实引用
-    negative: 缺少任一侧证据的 break 不得提升为已确认运营事实
-    status: draft
+      - https://axiolune.ai/ontology/finance/post-trade-operations/SettlementInstruction
+      - https://axiolune.ai/ontology/finance/post-trade-operations/ExternalStatementLine
+    testFixtures:
+      - fixture: post-trade-closure-reconciliation-negative
+        expectedOutcome: break remains provisional or rejected
+    riskLevel: high
+    status: active
+
+  - id: CQ-PTO3
+    question: What settlement instructions exist for an execution, and what is their lifecycle state?
+    businessContext: Post-trade settlement tracking from execution to settled
+    expectedResult: SettlementInstruction linked to Execution with status and parties
+    negativeExample: settlement instruction without linked execution or missing settlement date context
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/post-trade-operations/SettlementInstruction
+      - https://axiolune.ai/ontology/finance/orders-execution/Execution
+    riskLevel: medium
+    status: active
+
+  - id: CQ-PTO4
+    question: >-
+      For a failed or partial settlement, what exception case is open and what remediation actions apply?
+    businessContext: Exception management �?rqalpha/Lean settlement failure paths
+    expectedResult: SettlementExceptionCase with reason, affected instruction, remediation action
+    negativeExample: confirmed settled status while exception case still open
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/post-trade-operations/SettlementExceptionCase
+      - https://axiolune.ai/ontology/finance/post-trade-operations/SettlementInstruction
+    riskLevel: high
+    status: active
+
+  - id: CQ-PTO5
+    question: How does a corporate action chain through revision if the event terms are corrected?
+    businessContext: Knowledge-time revision without overwriting history (TemporalFact)
+    expectedResult: revised CorporateActionEvent with superseded prior version closed in knowledge time
+    negativeExample: silent overwrite of prior corporate action terms
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionEvent
+      - https://axiolune.ai/ontology/meta/patterns/TemporalFact
+    riskLevel: medium
+    status: active
+
+  - id: CQ-PTO6
+    question: >-
+      For a tender offer corporate action, what consideration and election deadline apply to affected holders?
+    businessContext: Voluntary corporate action ? ADR-018 exotic top-3
+    expectedResult: CorporateActionEvent with kind tenderOffer, consideration, election deadline
+    negativeExample: tender offer without election deadline or consideration rejected
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionEvent
+    testFixtures:
+      - fixture: post-trade-exotic-tender-positive
+        expectedOutcome: returns tender offer chain
+      - fixture: post-trade-exotic-tender-negative
+        expectedOutcome: rejected
+    riskLevel: high
+    status: active
+
+  - id: CQ-PTO7
+    question: >-
+      For a spin-off, what successor instrument and entitlement ratio apply to parent security holders?
+    businessContext: Multi-leg entitlement ? ADR-018 exotic top-3
+    expectedResult: spinOff event with successor security and ratio
+    negativeExample: spin-off without successor or ratio rejected
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionEvent
+    testFixtures:
+      - fixture: post-trade-exotic-spinoff-positive
+        expectedOutcome: returns spin-off chain
+      - fixture: post-trade-exotic-spinoff-negative
+        expectedOutcome: rejected
+    riskLevel: high
+    status: active
+
+  - id: CQ-PTO8
+    question: >-
+      For an exchange offer, what swap ratio and successor security replace the affected instrument?
+    businessContext: Security swap corporate action ? ADR-018 exotic top-3
+    expectedResult: exchangeOffer event with ratio and successor
+    negativeExample: exchange offer without ratio rejected
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionEvent
+    testFixtures:
+      - fixture: post-trade-exotic-exchange-positive
+        expectedOutcome: returns exchange offer chain
+      - fixture: post-trade-exotic-exchange-negative
+        expectedOutcome: rejected
+    riskLevel: high
+    status: active
+
+  - id: CQ-PTO9
+    question: >-
+      For a voluntary corporate action, what election decision was recorded and is it authorized?
+    businessContext: Election resolution before entitlement processing
+    expectedResult: CorporateActionElection with exercise/decline and authorization evidence
+    negativeExample: election without decision or authorization rejected
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionElection
+    testFixtures:
+      - fixture: post-trade-election-positive
+        expectedOutcome: returns election fact
+      - fixture: post-trade-election-negative
+        expectedOutcome: rejected
+    riskLevel: medium
+    status: active
+
+  - id: CQ-PTO10
+    question: >-
+      For a due-bill trade, is the trade qualified and what obligation quantity applies?
+    businessContext: Due-bill entitlement chain (MS-G4 / post-trade closure)
+    expectedResult: DueBillTradeQualification with eligible result and quantity
+    negativeExample: due-bill qualification without result or quantity rejected
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionDueBillTradeQualification
+      - https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionDueBillObligation
+    testFixtures:
+      - fixture: post-trade-duebill-positive
+        expectedOutcome: returns qualification chain
+      - fixture: post-trade-duebill-negative
+        expectedOutcome: rejected
+    riskLevel: medium
+    status: active

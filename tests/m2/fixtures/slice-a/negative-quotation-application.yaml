@@ -1,0 +1,18 @@
+caseId: negative-quotation-application
+extends: positive-market-instrument-contract.yaml
+expected:
+  valid: false
+  codes:
+    - QUOTATION_MULTIPLIER
+    - QUOTATION_UNIT_MISMATCH
+    - QUOTATION_UNSUPPORTED_APPLICATION
+mutations:
+  - op: set
+    path: quotationContracts[0].contractMultiplier
+    value: '100'
+  - op: set
+    path: quotationContracts[0].consumedQuantityUnits[0]
+    value: https://axiolune.ai/units/lot
+  - op: set
+    path: quotationContracts[0].unsupportedApplications
+    value: [percentageOfPar, accruedInterest, inverse]

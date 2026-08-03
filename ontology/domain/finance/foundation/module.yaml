@@ -1,389 +1,1388 @@
-# Axiolune M2 Finance — Foundation Module
-# Module: fin-foundation
-# Version: 0.1.0
-# Status: draft
-# ADR: ADR-013 (M2 Authoring Profile)
-# Dependencies: M3 core (no M2 imports yet — this is the base layer)
-# Terminology: docs/ontology/terminology/fin-foundation-terms.yaml
-# CQ: docs/ontology/competency-questions/fin-foundation-cq.yaml
-# Alignment: FIBO FND/BE/SEC/FBC + ISO 6166/10383/17442/4217
 module:
   moduleIri: https://axiolune.ai/ontology/finance/foundation
   baseIri: https://axiolune.ai/ontology/finance/foundation/
   preferredPrefix: fin-foundation
-  version: 0.2.0
+  version: 1.0.0
   label: Financial Foundation
-  definition: >-
-    financial identity, identifiers, currency, jurisdiction, and party vocabulary shared across all finance domain
-    modules
+  definition: financial identity, identifiers, currency, jurisdiction, and party
+    vocabulary shared across all finance domain modules
   imports: []
   exports: []
   status: approved
+  governance:
+    ownerRef: urn:axiolune:principal:repository-owner
+    status: approved
 domain:
-  ISIN:
-    iri: https://axiolune.ai/ontology/finance/foundation/ISIN
-    namespace: fin-foundation
-    localName: ISIN
-    label: International Securities Identification Number
-    definition: >-
-      12-character alphanumeric code that identifies a security as specified by ISO 6166, consisting of a 2-character
-      ISO 3166-1 country code, a 9-character national securities identifying number, and a Luhn check digit
-    pattern: ^[A-Z]{2}[A-Z0-9]{9}[0-9]$
-    checkAlgorithm: Luhn
-    length: 12
-    alignments:
-      - vocabulary: FIBO
-        targetIri: >-
-          https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesIdentification/InternationalSecuritiesIdentificationNumber
-        relation: rdfs:subClassOf
-        sourceRelease:
-          vocabulary: FIBO
-          release: local-evidence-bundle
-          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
-          lockRef: fibo-local-evidence
-          claimedReleaseLabel: 2026Q1
-          releaseNote: >-
-            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
-            maturity.
-        rationale: >-
-          Axiolune ISIN is a concrete identifier conforming to ISO 6166, subsumed by FIBO's securities identification
-          hierarchy
-        verification:
-          status: proposed
-  LEI:
-    iri: https://axiolune.ai/ontology/finance/foundation/LEI
-    namespace: fin-foundation
-    localName: LEI
-    label: Legal Entity Identifier
-    definition: >-
-      20-character alphanumeric code that uniquely identifies a legal entity as defined in ISO 17442, consisting of a
-      4-character LOU prefix, 12-character entity-specific identifier, and 2 check digits
-    pattern: ^[A-Z0-9]{18}[0-9]{2}$
-    checkAlgorithm: ISO 17442
-    length: 20
-    alignments:
-      - vocabulary: FIBO
-        targetIri: https://spec.edmcouncil.org/fibo/ontology/BE/LegalEntities/LEIEntities/LegalEntityIdentifier
-        relation: rdfs:subClassOf
-        sourceRelease:
-          vocabulary: FIBO
-          release: local-evidence-bundle
-          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
-          lockRef: fibo-local-evidence
-          claimedReleaseLabel: 2026Q1
-          releaseNote: >-
-            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
-            maturity.
-        rationale: >-
-          Axiolune LEI is a concrete identifier conforming to ISO 17442, subsumed by FIBO's legal entity identification
-          hierarchy
-        verification:
-          status: proposed
-  MIC:
-    iri: https://axiolune.ai/ontology/finance/foundation/MIC
-    namespace: fin-foundation
-    localName: MIC
-    label: Market Identifier Code
-    definition: >-
-      market identifier code that uniquely identifies an exchange, trading platform, or market as specified by ISO
-      10383, comprising a 4-character alphanumeric operating-level code or a 4+4 character segment-level code
-    pattern: ^[A-Z]{4}([A-Z]{4})?$
-    length: 4
-    alignments:
-      - vocabulary: FIBO
-        targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/Markets/MarketIdentifier
-        relation: rdfs:subClassOf
-        sourceRelease:
-          vocabulary: FIBO
-          release: local-evidence-bundle
-          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
-          lockRef: fibo-local-evidence
-          claimedReleaseLabel: 2026Q1
-          releaseNote: >-
-            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
-            maturity.
-        rationale: Axiolune MIC is a concrete identifier conforming to ISO 10383, subsumed by FIBO's market identifier hierarchy
-        verification:
-          status: proposed
-  hasPrimaryIdentifier:
-    iri: https://axiolune.ai/ontology/finance/foundation/hasPrimaryIdentifier
-    namespace: fin-foundation
-    localName: hasPrimaryIdentifier
-    label: Has Primary Identifier
-    definition: relation from a financial instrument to its primary externally-issued identifier such as an ISIN
-    valueType: string
-    defaultCardinality:
-      minCount: 0
-      maxCount: 1
-    note: >-
-      value references an IdentifierTypeDefinition instance (ISIN/LEI/MIC); G1 uses string for simplicity until
-      cross-module type references are wired
-  hasLegalName:
-    iri: https://axiolune.ai/ontology/finance/foundation/hasLegalName
-    namespace: fin-foundation
-    localName: hasLegalName
-    label: Has Legal Name
-    definition: relation from a legal entity to its registered legal name
-    valueType: string
-    defaultCardinality:
-      minCount: 0
-      maxCount: 1
-    alignments:
-      - vocabulary: FIBO
-        targetIri: https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/hasLegalName
-        relation: rdfs:subPropertyOf
-        sourceRelease:
-          vocabulary: FIBO
-          release: local-evidence-bundle
-          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
-          lockRef: fibo-local-evidence
-          claimedReleaseLabel: 2026Q1
-          releaseNote: >-
-            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
-            maturity.
-        rationale: hasLegalName in Axiolune is a domain-level subproperty of FIBO's generic hasLegalName
-        verification:
-          status: proposed
-  MonetaryAmount:
-    iri: https://axiolune.ai/ontology/finance/foundation/MonetaryAmount
-    namespace: fin-foundation
-    localName: MonetaryAmount
-    label: Monetary Amount
-    definition: >-
-      structured monetary amount with numeric magnitude, ISO 4217 currency code, and optional scale; financial amounts
-      MUST NOT use bare decimal literals
-    superTypes: []
-    attributeUses:
-      - attribute: https://axiolune.ai/ontology/finance/foundation/hasNumericAmount
+  objectTypes:
+    IdentifiableSubject:
+      iri: https://axiolune.ai/ontology/finance/foundation/IdentifiableSubject
+      namespace: fin-foundation
+      localName: IdentifiableSubject
+      label: Identifiable Subject
+      definition: common Foundation range for a domain subject to which a governed
+        identifier can be assigned
+      superTypes: []
+      attributeUses: []
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    IdentifierAuthority:
+      iri: https://axiolune.ai/ontology/finance/foundation/IdentifierAuthority
+      namespace: fin-foundation
+      localName: IdentifierAuthority
+      label: Identifier Authority
+      definition: identifiable organization authorized to maintain a scheme or issue
+        identifier assignments under it
+      superTypes:
+        - https://axiolune.ai/ontology/finance/foundation/Party
+      attributeUses: []
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    IdentifierScheme:
+      iri: https://axiolune.ai/ontology/finance/foundation/IdentifierScheme
+      namespace: fin-foundation
+      localName: IdentifierScheme
+      label: Identifier Scheme
+      definition: versioned specification that governs identifier syntax,
+        compatibility, uniqueness, maintenance, and evidence. Its logical
+        identity is the scheme IRI; source evidence and validator are immutable
+        within a version.
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/foundation/identifierSchemeKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/foundation/identifierSchemeVersion
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/foundation/identifierSchemeValidatorRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/foundation/identifierUniquenessScope
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/foundation/identifierSchemeSourceEvidenceRef
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    IdentifierValue:
+      iri: https://axiolune.ai/ontology/finance/foundation/IdentifierValue
+      namespace: fin-foundation
+      localName: IdentifierValue
+      label: Identifier Value
+      definition: canonical scheme-bound identifier value whose logical identity is
+        the scheme logical IRI and canonical lexical form
+      superTypes: []
+      attributeUses: []
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    ISINValue:
+      iri: https://axiolune.ai/ontology/finance/foundation/ISINValue
+      namespace: fin-foundation
+      localName: ISINValue
+      label: ISIN Value
+      definition: scheme-bound and versioned IdentifierValue governed by ISO 6166,
+        carrying one canonical ISIN lexical value
+      alignments:
+        - vocabulary: FIBO
+          targetIri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesIdentification/InternationalSecuritiesIdentificationNumber
+          relation: rdfs:subClassOf
+          sourceRelease:
+            vocabulary: FIBO
+            release: FIBO development snapshot; observed versionIRI 20260701
+            artifactDigest: sha256:202f38c7d61f6d5abe57935d9165b3729f33c6ada5a9632c2e596725fb79694f
+          rationale: FIBO models the ISO 6166 identifier as an OWL class; Axiolune
+            ISINValue is the narrower scheme-bound, temporal, and provenanced
+            identifier-value class, while the lexical ISIN datatype remains
+            unaligned.
+          verification:
+            status: reviewed
+            verifiedBy: urn:axiolune:agent:codex:m2-alignment-semantic-review-2026-08-01
+            verifiedAt: 2026-08-01T01:35:11+08:00
+            notes: Machine semantic review closed against locked FIBO bytes and generated
+              OWL projection; not terminal DRI approval.
+          sourceLocator:
+            kind: rdfResource
+            path: SEC/Securities/SecuritiesIdentification.rdf
+            mediaType: application/rdf+xml
+            extractorProfileRef:
+              kind: path
+              root: sourceTree
+              path: scripts/domain/reference-extractors/rdf-resource-rdfxml-v1.json
+            extractorProfileDigest: sha256:28b979f70323a4b46008d8aadc7ee1085cb433a89ee16b4f2e4ca136c35bf39a
+            selectionDigest: sha256:22de90bf1b919f1bc77a294373f92758a2f3abf51cc77bfb04c3224d4a2dc829
+            resourceIri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesIdentification/InternationalSecuritiesIdentificationNumber
+      superTypes:
+        - https://axiolune.ai/ontology/finance/foundation/IdentifierValue
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/foundation/isinLexicalValue
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    LEIValue:
+      iri: https://axiolune.ai/ontology/finance/foundation/LEIValue
+      namespace: fin-foundation
+      localName: LEIValue
+      label: LEI Value
+      definition: scheme-bound and versioned IdentifierValue governed by ISO 17442 and
+        the GLEIF LEI system, carrying one canonical LEI lexical value
+      alignments:
+        - vocabulary: FIBO
+          targetIri: https://spec.edmcouncil.org/fibo/ontology/BE/LegalEntities/LEIEntities/LegalEntityIdentifier
+          relation: rdfs:subClassOf
+          sourceRelease:
+            vocabulary: FIBO
+            release: FIBO development snapshot; observed versionIRI 20260701
+            artifactDigest: sha256:202f38c7d61f6d5abe57935d9165b3729f33c6ada5a9632c2e596725fb79694f
+          rationale: FIBO models the ISO 17442 identifier as an OWL class; Axiolune
+            LEIValue is the narrower scheme-bound, temporal, and provenanced
+            identifier-value class, while the lexical LEI datatype remains
+            unaligned.
+          verification:
+            status: reviewed
+            verifiedBy: urn:axiolune:agent:codex:m2-alignment-semantic-review-2026-08-01
+            verifiedAt: 2026-08-01T01:35:11+08:00
+            notes: Machine semantic review closed against locked FIBO bytes and generated
+              OWL projection; not terminal DRI approval.
+          sourceLocator:
+            kind: rdfResource
+            path: BE/LegalEntities/LEIEntities.rdf
+            mediaType: application/rdf+xml
+            extractorProfileRef:
+              kind: path
+              root: sourceTree
+              path: scripts/domain/reference-extractors/rdf-resource-rdfxml-v1.json
+            extractorProfileDigest: sha256:28b979f70323a4b46008d8aadc7ee1085cb433a89ee16b4f2e4ca136c35bf39a
+            selectionDigest: sha256:2f0beaad1354541771aac38f7a4fb3dde5c92d92fe6a761c0d1792af4b6fe047
+            resourceIri: https://spec.edmcouncil.org/fibo/ontology/BE/LegalEntities/LEIEntities/LegalEntityIdentifier
+      superTypes:
+        - https://axiolune.ai/ontology/finance/foundation/IdentifierValue
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/foundation/leiLexicalValue
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    MICValue:
+      iri: https://axiolune.ai/ontology/finance/foundation/MICValue
+      namespace: fin-foundation
+      localName: MICValue
+      label: MIC Value
+      definition: scheme-bound and versioned IdentifierValue governed by ISO 10383,
+        carrying one canonical four-character MIC lexical value
+      alignments:
+        - vocabulary: FIBO
+          targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/Markets/MarketIdentifier
+          relation: rdfs:subClassOf
+          sourceRelease:
+            vocabulary: FIBO
+            release: FIBO development snapshot; observed versionIRI 20260701
+            artifactDigest: sha256:202f38c7d61f6d5abe57935d9165b3729f33c6ada5a9632c2e596725fb79694f
+          rationale: FIBO models the ISO 10383 market identifier as an OWL class; Axiolune
+            MICValue is the narrower scheme-bound, temporal, and provenanced
+            identifier-value class, while the lexical MIC datatype remains
+            unaligned.
+          verification:
+            status: reviewed
+            verifiedBy: urn:axiolune:agent:codex:m2-alignment-semantic-review-2026-08-01
+            verifiedAt: 2026-08-01T01:35:11+08:00
+            notes: Machine semantic review closed against locked FIBO bytes and generated
+              OWL projection; not terminal DRI approval.
+          sourceLocator:
+            kind: rdfResource
+            path: FBC/FunctionalEntities/Markets.rdf
+            mediaType: application/rdf+xml
+            extractorProfileRef:
+              kind: path
+              root: sourceTree
+              path: scripts/domain/reference-extractors/rdf-resource-rdfxml-v1.json
+            extractorProfileDigest: sha256:28b979f70323a4b46008d8aadc7ee1085cb433a89ee16b4f2e4ca136c35bf39a
+            selectionDigest: sha256:f321ba9f4798a6b84953a49eada86a60e97700b55e0f8ec8b4ef0c1c17d189a2
+            resourceIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/Markets/MarketIdentifier
+      superTypes:
+        - https://axiolune.ai/ontology/finance/foundation/IdentifierValue
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/foundation/micLexicalValue
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    LocalIdentifierValue:
+      iri: https://axiolune.ai/ontology/finance/foundation/LocalIdentifierValue
+      namespace: fin-foundation
+      localName: LocalIdentifierValue
+      label: Local Identifier Value
+      definition: authority-scoped IdentifierValue whose lexical form has no meaning
+        independently of its IdentifierScheme
+      superTypes:
+        - https://axiolune.ai/ontology/finance/foundation/IdentifierValue
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/foundation/localIdentifierLexicalValue
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    FinancialAccount:
+      iri: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+      namespace: fin-foundation
+      localName: FinancialAccount
+      label: Financial Account
+      definition: "account that identifies a governed cash, securities-custody, or
+        multi-asset holding capability. Logical identity is exactly
+        (accountIdentifierScheme logical IRI, accountIdentifierValue logical
+        IRI). accountType is version content: changing it creates a new account
+        version, never a new logical account. The scheme kind must be
+        financialAccount, the value must be LocalIdentifierValue, value.scheme
+        must equal accountIdentifierScheme, and a PIT-eligible
+        assigning-authority authorization must cover the account version."
+      alignments:
+        - vocabulary: FIBO
+          targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/ClientsAndAccounts/Account
+          relation: rdfs:subClassOf
+          sourceRelease:
+            vocabulary: FIBO
+            release: FIBO development snapshot; observed versionIRI 20260701
+            artifactDigest: sha256:202f38c7d61f6d5abe57935d9165b3729f33c6ada5a9632c2e596725fb79694f
+          rationale: FIBO Account is the broader account container for regular
+            transactions and services; Axiolune narrows it to a governed cash,
+            securities-custody, or multi-asset holding account with scheme-bound
+            identity and separate temporal party-role facts.
+          verification:
+            status: reviewed
+            verifiedBy: urn:axiolune:agent:codex:m2-alignment-semantic-review-2026-08-01
+            verifiedAt: 2026-08-01T01:35:11+08:00
+            notes: Machine semantic review closed against locked FIBO bytes and generated
+              OWL projection; not terminal DRI approval.
+          sourceLocator:
+            kind: rdfResource
+            path: FBC/ProductsAndServices/ClientsAndAccounts.rdf
+            mediaType: application/rdf+xml
+            extractorProfileRef:
+              kind: path
+              root: sourceTree
+              path: scripts/domain/reference-extractors/rdf-resource-rdfxml-v1.json
+            extractorProfileDigest: sha256:28b979f70323a4b46008d8aadc7ee1085cb433a89ee16b4f2e4ca136c35bf39a
+            selectionDigest: sha256:ceb23447467629b7ec5f56b141e72e8b99257cddc35704c046114d0dc27a10f4
+            resourceIri: https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/ClientsAndAccounts/Account
+      superTypes:
+        - https://axiolune.ai/ontology/finance/foundation/IdentifiableSubject
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/foundation/accountType
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    Party:
+      iri: https://axiolune.ai/ontology/finance/foundation/Party
+      namespace: fin-foundation
+      localName: Party
+      label: Party
+      definition: autonomous agent that can participate in legal or financial
+        relationships, including natural persons and legal entities
+      superTypes:
+        - https://axiolune.ai/ontology/finance/foundation/IdentifiableSubject
+      attributeUses: []
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    LegalEntity:
+      iri: https://axiolune.ai/ontology/finance/foundation/LegalEntity
+      namespace: fin-foundation
+      localName: LegalEntity
+      label: Legal Entity
+      definition: organization that is legally or financially responsible for the
+        performance of financial transactions and is capable of accruing
+        liability on its own part, excluding natural persons but including
+        governments and supranational entities
+      superTypes:
+        - https://axiolune.ai/ontology/finance/foundation/Party
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/foundation/hasLegalName
+          minCount: 0
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    Currency:
+      iri: https://axiolune.ai/ontology/finance/foundation/Currency
+      namespace: fin-foundation
+      localName: Currency
+      label: Currency
+      definition: medium of exchange value defined by reference to the geographical
+        location of the monetary authorities responsible for it, as specified in
+        ISO 4217
+      alignments:
+        - vocabulary: FIBO
+          targetIri: https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/Currency
+          relation: rdfs:subClassOf
+          sourceRelease:
+            vocabulary: FIBO
+            release: FIBO development snapshot; observed versionIRI 20260701
+            artifactDigest: sha256:202f38c7d61f6d5abe57935d9165b3729f33c6ada5a9632c2e596725fb79694f
+          rationale: FIBO Currency is the ISO 4217 monetary measurement-unit concept;
+            Axiolune narrows it to a versioned and provenanced currency identity
+            whose registry attributes are represented by ISO4217RegistryEntry
+            facts.
+          verification:
+            status: reviewed
+            verifiedBy: urn:axiolune:agent:codex:m2-alignment-semantic-review-2026-08-01
+            verifiedAt: 2026-08-01T01:35:11+08:00
+            notes: Machine semantic review closed against locked FIBO bytes and generated
+              OWL projection; not terminal DRI approval.
+          sourceLocator:
+            kind: rdfResource
+            path: FND/Accounting/CurrencyAmount.rdf
+            mediaType: application/rdf+xml
+            extractorProfileRef:
+              kind: path
+              root: sourceTree
+              path: scripts/domain/reference-extractors/rdf-resource-rdfxml-v1.json
+            extractorProfileDigest: sha256:28b979f70323a4b46008d8aadc7ee1085cb433a89ee16b4f2e4ca136c35bf39a
+            selectionDigest: sha256:8a4ecdb977fbd0ebaa70c00470edbb597e14d4ec8c090ea3412e2aab4f7ad700
+            resourceIri: https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/Currency
+      superTypes: []
+      attributeUses: []
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    Jurisdiction:
+      iri: https://axiolune.ai/ontology/finance/foundation/Jurisdiction
+      namespace: fin-foundation
+      localName: Jurisdiction
+      label: Jurisdiction
+      definition: legal authority that has the power to make and enforce rules of
+        conduct within a defined geographical or functional scope
+      superTypes: []
+      attributeUses: []
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    ISO4217RegistryEntry:
+      iri: https://axiolune.ai/ontology/finance/foundation/ISO4217RegistryEntry
+      namespace: fin-foundation
+      localName: ISO4217RegistryEntry
+      label: ISO 4217 Registry Entry
+      definition: immutable version of an ISO 4217 registry assertion for one registry
+        authority and alphabetic code, carrying the numeric code, minor unit,
+        registry status, locked source reference, and the Currency represented
+        by the entry. Its logical identity is exactly (registry-authority
+        logical IRI, alphabetic code); a registry snapshot is provenance and
+        version content rather than business identity.
+      superTypes:
+        - https://axiolune.ai/ontology/finance/foundation/IdentifiableSubject
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/foundation/iso4217AlphaCode
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/foundation/iso4217NumericCode
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/foundation/iso4217MinorUnit
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/foundation/iso4217EntryStatus
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/foundation/iso4217RegistrySourceRef
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+  associationTypes:
+    IdentifierSchemeAuthorization:
+      iri: https://axiolune.ai/ontology/finance/foundation/IdentifierSchemeAuthorization
+      namespace: fin-foundation
+      localName: IdentifierSchemeAuthorization
+      label: Identifier Scheme Authorization
+      definition: temporal authorization for an IdentifierAuthority version to act in
+        one reviewed role under one IdentifierScheme version. Authorization
+        validity is half-open and must cover every assignment or direct account
+        identity use that relies on it.
+      participantRoles:
+        - id: authorizedSchemeVersion
+          range: https://axiolune.ai/ontology/finance/foundation/IdentifierScheme
+          minCount: 1
+          maxCount: 1
+          label: authorized scheme version
+          definition: exact IdentifierScheme fact version under which the authority role
+            is granted
+        - id: authorizedAuthorityVersion
+          range: https://axiolune.ai/ontology/finance/foundation/IdentifierAuthority
+          minCount: 1
+          maxCount: 1
+          label: authorized authority version
+          definition: exact IdentifierAuthority fact version receiving the scheme
+            authorization
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/foundation/identifierAuthorityRole
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    FinancialIdentifierAssignment:
+      iri: https://axiolune.ai/ontology/finance/foundation/FinancialIdentifierAssignment
+      namespace: fin-foundation
+      localName: FinancialIdentifierAssignment
+      label: Financial Identifier Assignment
+      definition: "authority-scoped temporal fact assigning exactly one governed
+        IdentifierValue version to exactly one subject version. Logical identity
+        is (assigning-authority logical IRI, assignmentId); the standard version
+        key is (validFrom, knowledgeFrom, availableFrom, revision). The exact
+        scheme version is evidence, not an independent scheme truth: its
+        versionOf must equal the IdentifierValue's scheme logical IRI and be
+        PIT-eligible. An active assigningAuthority authorization must cover the
+        assignment valid interval. hasPrimaryIdentifier is prohibited;
+        convenience identifier properties are derived views only."
+      participantRoles:
+        - id: identifiedSubjectVersion
+          range: https://axiolune.ai/ontology/finance/foundation/IdentifiableSubject
+          minCount: 1
+          maxCount: 1
+          label: identified subject version
+          definition: exact fact version of the subject to which the governed identifier
+            is assigned
+        - id: identifierValueVersion
+          range: https://axiolune.ai/ontology/finance/foundation/IdentifierValue
+          minCount: 1
+          maxCount: 1
+          label: identifier value version
+          definition: exact scheme-bound IdentifierValue fact version assigned to the
+            subject
+        - id: identifierSchemeVersion
+          range: https://axiolune.ai/ontology/finance/foundation/IdentifierScheme
+          minCount: 1
+          maxCount: 1
+          label: identifier scheme version
+          definition: exact IdentifierScheme fact version providing assignment evidence
+            and compatibility rules
+        - id: assigningAuthorityVersion
+          range: https://axiolune.ai/ontology/finance/foundation/IdentifierAuthority
+          minCount: 1
+          maxCount: 1
+          label: assigning authority version
+          definition: exact authorized IdentifierAuthority fact version that made the
+            assignment
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/foundation/assignmentId
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    IdentifierAssignmentConflict:
+      iri: https://axiolune.ai/ontology/finance/foundation/IdentifierAssignmentConflict
+      namespace: fin-foundation
+      localName: IdentifierAssignmentConflict
+      label: Identifier Assignment Conflict
+      definition: explicit conflict fact emitted when global-uniqueness assignments
+        overlap for different subject logical identities. Logical identity is
+        assignmentVersionSetDigest. The conflict selects no silent winner;
+        generating context is provenance and never business identity.
+      participantRoles:
+        - id: conflictingAssignmentVersion
+          range: https://axiolune.ai/ontology/finance/foundation/FinancialIdentifierAssignment
+          minCount: 2
+          maxCount: null
+          label: conflicting assignment version
+          definition: exact assignment fact version participating in the incompatible
+            overlapping assignment set
+        - id: conflictSchemeVersion
+          range: https://axiolune.ai/ontology/finance/foundation/IdentifierScheme
+          minCount: 1
+          maxCount: 1
+          label: conflict scheme version
+          definition: exact scheme version whose uniqueness contract is violated by the
+            assignment set
+        - id: conflictValueVersion
+          range: https://axiolune.ai/ontology/finance/foundation/IdentifierValue
+          minCount: 1
+          maxCount: 1
+          label: conflict value version
+          definition: exact IdentifierValue version assigned incompatibly to different
+            subject identities
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/foundation/assignmentVersionSetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    FinancialAccountPartyRole:
+      iri: https://axiolune.ai/ontology/finance/foundation/FinancialAccountPartyRole
+      namespace: fin-foundation
+      localName: FinancialAccountPartyRole
+      label: Financial Account Party Role
+      definition: temporal and provenanced sole truth that assigns one reviewed
+        account role to a Party for a FinancialAccount. Logical identity is
+        exactly (account logical IRI, party logical IRI, role member). It is the
+        only stored account/party truth; direct hasAccountHolder,
+        hasBeneficialOwner, authorizedOperator, or custodian edges are derived
+        views and are prohibited as independent facts.
+      participantRoles:
+        - id: roleAccount
+          range: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+          minCount: 1
+          maxCount: 1
+          label: role account
+          definition: logical FinancialAccount identity to which the Party role applies
+        - id: roleParty
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 1
+          maxCount: 1
+          label: role party
+          definition: logical Party identity that bears the reviewed role for the account
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/foundation/financialAccountPartyRoleKind
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    CurrencyUsage:
+      iri: https://axiolune.ai/ontology/finance/foundation/CurrencyUsage
+      namespace: fin-foundation
+      localName: CurrencyUsage
+      label: Currency Usage
+      definition: temporal and provenanced assertion that one Currency logical
+        identity is used within one Jurisdiction logical identity under the
+        authoritative source carried by ProvenancedFact. Its logical identity is
+        exactly (Currency logical IRI, Jurisdiction logical IRI). It does not
+        duplicate the ISO 4217 alphabetic code or a MonetaryAmount currency
+        component.
+      participantRoles:
+        - id: usedCurrency
+          range: https://axiolune.ai/ontology/finance/foundation/Currency
+          minCount: 1
+          maxCount: 1
+          label: used currency
+          definition: logical Currency identity whose jurisdictional usage is asserted
+        - id: usageJurisdiction
+          range: https://axiolune.ai/ontology/finance/foundation/Jurisdiction
+          minCount: 1
+          maxCount: 1
+          label: usage jurisdiction
+          definition: logical Jurisdiction identity within which the currency usage is
+            asserted
+      attributeUses: []
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+  relationTypes:
+    identifierSchemeMaintainer:
+      iri: https://axiolune.ai/ontology/finance/foundation/identifierSchemeMaintainer
+      namespace: fin-foundation
+      localName: identifierSchemeMaintainer
+      label: Identifier Scheme Maintainer
+      definition: direct logical reference from an IdentifierScheme version to the
+        IdentifierAuthority responsible for maintaining that scheme
+      domain: https://axiolune.ai/ontology/finance/foundation/IdentifierScheme
+      range: https://axiolune.ai/ontology/finance/foundation/IdentifierAuthority
+      characteristics:
+        - functional
+    identifierValueScheme:
+      iri: https://axiolune.ai/ontology/finance/foundation/identifierValueScheme
+      namespace: fin-foundation
+      localName: identifierValueScheme
+      label: Identifier Value Scheme
+      definition: relates an IdentifierValue version to exactly one IdentifierScheme
+        logical identity
+      domain: https://axiolune.ai/ontology/finance/foundation/IdentifierValue
+      range: https://axiolune.ai/ontology/finance/foundation/IdentifierScheme
+      characteristics:
+        - functional
+    accountIdentifierScheme:
+      iri: https://axiolune.ai/ontology/finance/foundation/accountIdentifierScheme
+      namespace: fin-foundation
+      localName: accountIdentifierScheme
+      label: Account Identifier Scheme
+      definition: direct FinancialAccount identity slot referencing exactly one
+        financial-account IdentifierScheme logical identity
+      domain: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+      range: https://axiolune.ai/ontology/finance/foundation/IdentifierScheme
+      characteristics:
+        - functional
+    accountIdentifierValue:
+      iri: https://axiolune.ai/ontology/finance/foundation/accountIdentifierValue
+      namespace: fin-foundation
+      localName: accountIdentifierValue
+      label: Account Identifier Value
+      definition: direct FinancialAccount identity slot referencing exactly one
+        LocalIdentifierValue logical identity
+      domain: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+      range: https://axiolune.ai/ontology/finance/foundation/LocalIdentifierValue
+      characteristics:
+        - functional
+    iso4217RegistryAuthority:
+      iri: https://axiolune.ai/ontology/finance/foundation/iso4217RegistryAuthority
+      namespace: fin-foundation
+      localName: iso4217RegistryAuthority
+      label: ISO 4217 Registry Authority
+      definition: direct logical-identity slot from an ISO4217RegistryEntry version to
+        the IdentifierAuthority that owns the registry assertion
+      domain: https://axiolune.ai/ontology/finance/foundation/ISO4217RegistryEntry
+      range: https://axiolune.ai/ontology/finance/foundation/IdentifierAuthority
+      characteristics:
+        - functional
+    iso4217EntryCurrency:
+      iri: https://axiolune.ai/ontology/finance/foundation/iso4217EntryCurrency
+      namespace: fin-foundation
+      localName: iso4217EntryCurrency
+      label: ISO 4217 Entry Currency
+      definition: direct logical reference from one registry entry version to the
+        Currency represented by that entry
+      domain: https://axiolune.ai/ontology/finance/foundation/ISO4217RegistryEntry
+      range: https://axiolune.ai/ontology/finance/foundation/Currency
+      characteristics:
+        - functional
+  attributeTypes:
+    identifierSchemeKind:
+      iri: https://axiolune.ai/ontology/finance/foundation/identifierSchemeKind
+      namespace: fin-foundation
+      localName: identifierSchemeKind
+      label: Identifier Scheme Kind
+      definition: reviewed compatibility kind of an IdentifierScheme version
+      valueType: https://axiolune.ai/ontology/finance/foundation/IdentifierSchemeKind
+      defaultCardinality:
         minCount: 1
         maxCount: 1
-      - attribute: https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode
+    identifierSchemeVersion:
+      iri: https://axiolune.ai/ontology/finance/foundation/identifierSchemeVersion
+      namespace: fin-foundation
+      localName: identifierSchemeVersion
+      label: Identifier Scheme Version
+      definition: non-empty NFC version identifier assigned by the scheme maintainer
+      valueType: string
+      defaultCardinality:
         minCount: 1
         maxCount: 1
-      - attribute: https://axiolune.ai/ontology/finance/foundation/hasScale
+      pattern: ^\S(?:.*\S)?$
+    identifierSchemeValidatorRef:
+      iri: https://axiolune.ai/ontology/finance/foundation/identifierSchemeValidatorRef
+      namespace: fin-foundation
+      localName: identifierSchemeValidatorRef
+      label: Identifier Scheme Validator Reference
+      definition: absolute IRI of the scheme-locked validator executable contract
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    identifierUniquenessScope:
+      iri: https://axiolune.ai/ontology/finance/foundation/identifierUniquenessScope
+      namespace: fin-foundation
+      localName: identifierUniquenessScope
+      label: Identifier Uniqueness Scope
+      definition: reviewed uniqueness scope of an IdentifierScheme version
+      valueType: https://axiolune.ai/ontology/finance/foundation/IdentifierUniquenessScope
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    identifierSchemeSourceEvidenceRef:
+      iri: https://axiolune.ai/ontology/finance/foundation/identifierSchemeSourceEvidenceRef
+      namespace: fin-foundation
+      localName: identifierSchemeSourceEvidenceRef
+      label: Identifier Scheme Source Evidence Reference
+      definition: absolute IRI of the immutable source-evidence record governing the
+        scheme version
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    isinLexicalValue:
+      iri: https://axiolune.ai/ontology/finance/foundation/isinLexicalValue
+      namespace: fin-foundation
+      localName: isinLexicalValue
+      label: ISIN Lexical Value
+      definition: canonical UTF-8 NFC lexical value validated by the referenced ISIN
+        IdentifierTypeDefinition
+      valueType: https://axiolune.ai/ontology/finance/foundation/ISIN
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    leiLexicalValue:
+      iri: https://axiolune.ai/ontology/finance/foundation/leiLexicalValue
+      namespace: fin-foundation
+      localName: leiLexicalValue
+      label: LEI Lexical Value
+      definition: canonical UTF-8 NFC lexical value validated by the referenced LEI
+        IdentifierTypeDefinition
+      valueType: https://axiolune.ai/ontology/finance/foundation/LEI
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    micLexicalValue:
+      iri: https://axiolune.ai/ontology/finance/foundation/micLexicalValue
+      namespace: fin-foundation
+      localName: micLexicalValue
+      label: MIC Lexical Value
+      definition: canonical UTF-8 NFC lexical value validated by the referenced MIC
+        IdentifierTypeDefinition
+      valueType: https://axiolune.ai/ontology/finance/foundation/MIC
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    localIdentifierLexicalValue:
+      iri: https://axiolune.ai/ontology/finance/foundation/localIdentifierLexicalValue
+      namespace: fin-foundation
+      localName: localIdentifierLexicalValue
+      label: Local Identifier Lexical Value
+      definition: non-empty canonical UTF-8 NFC local identifier interpreted only
+        together with its IdentifierScheme
+      valueType: https://axiolune.ai/ontology/finance/foundation/LocalIdentifier
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    assignmentId:
+      iri: https://axiolune.ai/ontology/finance/foundation/assignmentId
+      namespace: fin-foundation
+      localName: assignmentId
+      label: Assignment Identifier
+      definition: non-empty NFC identifier scoped to the assigning authority
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    identifierAuthorityRole:
+      iri: https://axiolune.ai/ontology/finance/foundation/identifierAuthorityRole
+      namespace: fin-foundation
+      localName: identifierAuthorityRole
+      label: Identifier Authority Role
+      definition: reviewed role held by an authority in an IdentifierSchemeAuthorization
+      valueType: https://axiolune.ai/ontology/finance/foundation/IdentifierAuthorityRole
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    assignmentVersionSetDigest:
+      iri: https://axiolune.ai/ontology/finance/foundation/assignmentVersionSetDigest
+      namespace: fin-foundation
+      localName: assignmentVersionSetDigest
+      label: Assignment Version Set Digest
+      definition: framed digest of the sorted exact assignment-version IRI set that
+        forms an identifier assignment conflict
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    accountType:
+      iri: https://axiolune.ai/ontology/finance/foundation/accountType
+      namespace: fin-foundation
+      localName: accountType
+      label: Account Type
+      definition: reviewed Foundation AccountType member required on a
+        FinancialAccount version
+      valueType: https://axiolune.ai/ontology/finance/foundation/AccountType
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    financialAccountPartyRoleKind:
+      iri: https://axiolune.ai/ontology/finance/foundation/financialAccountPartyRoleKind
+      namespace: fin-foundation
+      localName: financialAccountPartyRoleKind
+      label: Financial Account Party Role Kind
+      definition: reviewed role member required on a FinancialAccountPartyRole version
+      valueType: https://axiolune.ai/ontology/finance/foundation/FinancialAccountPartyRoleKind
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    hasLegalName:
+      iri: https://axiolune.ai/ontology/finance/foundation/hasLegalName
+      namespace: fin-foundation
+      localName: hasLegalName
+      label: Has Legal Name
+      definition: relation from a legal entity to its registered legal name
+      alignments:
+        - vocabulary: FIBO
+          targetIri: https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/hasLegalName
+          relation: rdfs:subPropertyOf
+          sourceRelease:
+            vocabulary: FIBO
+            release: FIBO development snapshot; observed versionIRI 20260701
+            artifactDigest: sha256:202f38c7d61f6d5abe57935d9165b3729f33c6ada5a9632c2e596725fb79694f
+          rationale: FIBO hasLegalName denotes a name used for a party in legal
+            communications; Axiolune narrows that datatype property to the
+            registered legal name carried by a LegalEntity version.
+          verification:
+            status: reviewed
+            verifiedBy: urn:axiolune:agent:codex:m2-alignment-semantic-review-2026-08-01
+            verifiedAt: 2026-08-01T01:35:11+08:00
+            notes: Machine semantic review closed against locked FIBO bytes and generated
+              OWL projection; not terminal DRI approval.
+          sourceLocator:
+            kind: rdfResource
+            path: FND/Relations/Relations.rdf
+            mediaType: application/rdf+xml
+            extractorProfileRef:
+              kind: path
+              root: sourceTree
+              path: scripts/domain/reference-extractors/rdf-resource-rdfxml-v1.json
+            extractorProfileDigest: sha256:28b979f70323a4b46008d8aadc7ee1085cb433a89ee16b4f2e4ca136c35bf39a
+            selectionDigest: sha256:8096f985f1bde9d423ffb92c21b35c97509adfaeba90cbbdc430dcdeb962a060
+            resourceIri: https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/hasLegalName
+      valueType: string
+      defaultCardinality:
         minCount: 0
         maxCount: 1
-    alignments:
-      - vocabulary: FIBO
-        targetIri: https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/MonetaryAmount
-        relation: skos:closeMatch
-        sourceRelease:
-          vocabulary: FIBO
-          release: local-evidence-bundle
-          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
-          lockRef: fibo-local-evidence
-        rationale: >-
-          FIBO MonetaryAmount requires hasAmount + hasCurrency; Axiolune uses hasNumericAmount + hasCurrencyCode (ISO
-          4217 string) as local-evidence stand-in without importing Currency individuals
-        verification:
-          status: proposed
-    note: >-
-      Round-5 P0: real structure (was empty shell). Consuming attributes with valueType=MonetaryAmount are
-      owl:ObjectProperty / sh:class MonetaryAmount — bare xsd:decimal on those paths is forbidden.
-  QuantityValue:
-    iri: https://axiolune.ai/ontology/finance/foundation/QuantityValue
-    namespace: fin-foundation
-    localName: QuantityValue
-    label: Quantity Value
-    definition: structured measurement with numeric magnitude and unit code; quantities MUST NOT use bare decimal
-    superTypes: []
-    attributeUses:
-      - attribute: https://axiolune.ai/ontology/finance/foundation/hasNumericAmount
+    iso4217AlphaCode:
+      iri: https://axiolune.ai/ontology/finance/foundation/iso4217AlphaCode
+      namespace: fin-foundation
+      localName: iso4217AlphaCode
+      label: ISO 4217 Alphabetic Code
+      definition: exactly three uppercase ASCII letters asserted by one ISO 4217
+        registry entry version
+      valueType: string
+      defaultCardinality:
         minCount: 1
         maxCount: 1
-      - attribute: https://axiolune.ai/ontology/finance/foundation/hasUnitCode
+      pattern: ^[A-Z]{3}$
+    iso4217NumericCode:
+      iri: https://axiolune.ai/ontology/finance/foundation/iso4217NumericCode
+      namespace: fin-foundation
+      localName: iso4217NumericCode
+      label: ISO 4217 Numeric Code
+      definition: exactly three ASCII digits, including leading zeroes, asserted by
+        one ISO 4217 registry entry version
+      valueType: string
+      defaultCardinality:
         minCount: 1
         maxCount: 1
-      - attribute: https://axiolune.ai/ontology/finance/foundation/hasScale
-        minCount: 0
-        maxCount: 1
-    note: >-
-      Round-5 P0: real structure. Unit codes are open strings for draft (share, contract, ratio, 1); codelist lock
-      later.
-  hasNumericAmount:
-    iri: https://axiolune.ai/ontology/finance/foundation/hasNumericAmount
-    namespace: fin-foundation
-    localName: hasNumericAmount
-    label: Has Numeric Amount
-    definition: numeric magnitude of a MonetaryAmount or QuantityValue (aligned to FIBO hasAmount / Commons hasNumericValue)
-    valueType: decimal
-    defaultCardinality:
-      minCount: 1
-      maxCount: 1
-  hasScale:
-    iri: https://axiolune.ai/ontology/finance/foundation/hasScale
-    namespace: fin-foundation
-    localName: hasScale
-    label: Has Scale
-    definition: optional decimal scale / fractional digits for the numeric amount
-    valueType: integer
-    defaultCardinality:
-      minCount: 0
-      maxCount: 1
-  hasUnitCode:
-    iri: https://axiolune.ai/ontology/finance/foundation/hasUnitCode
-    namespace: fin-foundation
-    localName: hasUnitCode
-    label: Has Unit Code
-    definition: unit of measure code for a QuantityValue (e.g. share, contract, ratio, 1)
-    valueType: string
-    defaultCardinality:
-      minCount: 1
-      maxCount: 1
-  FinancialIdentifierAssignment:
-    iri: https://axiolune.ai/ontology/finance/foundation/FinancialIdentifierAssignment
-    namespace: fin-foundation
-    localName: FinancialIdentifierAssignment
-    label: Financial Identifier Assignment
-    definition: >-
-      association binding an identifier value of a declared identifier type to a party or instrument under an issuing
-      authority and effective interval
-    participantRoles:
-      - roleName: assignsIdentifier
-        range: https://axiolune.ai/ontology/finance/foundation/Party
-        minCount: 0
-        maxCount: 1
-        roleIri: https://axiolune.ai/ontology/finance/foundation/assignsIdentifier
-      - roleName: identifiesSubject
-        range: https://axiolune.ai/ontology/finance/foundation/Party
-        minCount: 0
-        maxCount: 1
-        roleIri: https://axiolune.ai/ontology/finance/foundation/identifiesSubject
-        label: identifies subject
-        definition: >-
-          the party (or party-backed subject) to which the identifier is assigned; instrument-specific binding is a
-          future instruments-module concern
-    attributeUses:
-      - attribute: https://axiolune.ai/ontology/finance/foundation/hasPrimaryIdentifier
+      pattern: ^[0-9]{3}$
+    iso4217MinorUnit:
+      iri: https://axiolune.ai/ontology/finance/foundation/iso4217MinorUnit
+      namespace: fin-foundation
+      localName: iso4217MinorUnit
+      label: ISO 4217 Minor Unit
+      definition: non-negative decimal exponent for the currency minor unit in the
+        locked ISO 4217 registry assertion
+      valueType: integer
+      defaultCardinality:
         minCount: 1
         maxCount: 1
-    patternBindings:
-      - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
-      - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
-    note: M2-PLAN §5.2 foundation core concept; identity assignment is a fact, not a bare string property
-  hasCurrencyCode:
-    iri: https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode
-    namespace: fin-foundation
-    localName: hasCurrencyCode
-    label: Has Currency Code
-    definition: relation from a financial concept to its ISO 4217 3-character alphabetic currency code
-    valueType: string
-    pattern: ^[A-Z]{3}$
-    defaultCardinality:
-      minCount: 0
-      maxCount: 1
-    note: ISO 4217 alphabetic code (e.g. USD, EUR, CNY, JPY)
-  Party:
-    iri: https://axiolune.ai/ontology/finance/foundation/Party
-    namespace: fin-foundation
-    localName: Party
-    label: Party
-    definition: >-
-      autonomous agent that can participate in legal or financial relationships, including natural persons and legal
-      entities
-    superTypes: []
-    attributeUses: []
-    alignments:
-      - vocabulary: FIBO
-        targetIri: https://www.omg.org/spec/Commons/PartiesAndSituations/Party
-        relation: rdfs:subClassOf
-        sourceRelease:
-          vocabulary: FIBO
-          release: local-evidence-bundle
-          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
-          lockRef: fibo-local-evidence
-          claimedReleaseLabel: 2026Q1
-          releaseNote: >-
-            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
-            maturity.
-        rationale: Axiolune Party is a domain-level subclass of Commons Party, the FIBO foundational party concept
-        verification:
-          status: proposed
-  LegalEntity:
-    iri: https://axiolune.ai/ontology/finance/foundation/LegalEntity
-    namespace: fin-foundation
-    localName: LegalEntity
-    label: Legal Entity
-    definition: >-
-      organization that is legally or financially responsible for the performance of financial transactions and is
-      capable of accruing liability on its own part, excluding natural persons but including governments and
-      supranational entities
-    superTypes:
-      - https://axiolune.ai/ontology/finance/foundation/Party
-    attributeUses:
-      - attribute: https://axiolune.ai/ontology/finance/foundation/hasLegalName
-        minCount: 0
-        maxCount: 1
-    alignments:
-      - vocabulary: FIBO
-        targetIri: https://www.omg.org/spec/Commons/Organizations/LegalEntity
-        relation: rdfs:subClassOf
-        sourceRelease:
-          vocabulary: FIBO
-          release: local-evidence-bundle
-          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
-          lockRef: fibo-local-evidence
-          claimedReleaseLabel: 2026Q1
-          releaseNote: >-
-            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
-            maturity.
-        rationale: >-
-          Axiolune LegalEntity is a domain-level subclass of Commons LegalEntity, the FIBO foundational legal entity
-          concept per ISO 17442
-        verification:
-          status: proposed
-  Currency:
-    iri: https://axiolune.ai/ontology/finance/foundation/Currency
-    namespace: fin-foundation
-    localName: Currency
-    label: Currency
-    definition: >-
-      medium of exchange value defined by reference to the geographical location of the monetary authorities responsible
-      for it, as specified in ISO 4217
-    superTypes: []
-    attributeUses:
-      - attribute: https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode
+    iso4217EntryStatus:
+      iri: https://axiolune.ai/ontology/finance/foundation/iso4217EntryStatus
+      namespace: fin-foundation
+      localName: iso4217EntryStatus
+      label: ISO 4217 Entry Status
+      definition: reviewed lifecycle status of one ISO 4217 registry entry version
+      valueType: https://axiolune.ai/ontology/finance/foundation/ISO4217EntryStatus
+      defaultCardinality:
         minCount: 1
         maxCount: 1
-    alignments:
-      - vocabulary: FIBO
-        targetIri: https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/Currency
-        relation: rdfs:subClassOf
-        sourceRelease:
-          vocabulary: FIBO
-          release: local-evidence-bundle
-          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
-          lockRef: fibo-local-evidence
-          claimedReleaseLabel: 2026Q1
-          releaseNote: >-
-            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
-            maturity.
-        rationale: Axiolune Currency is a domain-level subclass of FIBO Currency (ISO 4217)
-        verification:
-          status: proposed
-  Jurisdiction:
-    iri: https://axiolune.ai/ontology/finance/foundation/Jurisdiction
-    namespace: fin-foundation
-    localName: Jurisdiction
-    label: Jurisdiction
-    definition: >-
-      legal authority that has the power to make and enforce rules of conduct within a defined geographical or
-      functional scope
-    superTypes: []
-    attributeUses: []
-    alignments:
-      - vocabulary: FIBO
-        targetIri: https://www.omg.org/spec/Commons/RegulatoryAgencies/Jurisdiction
-        relation: rdfs:subClassOf
-        sourceRelease:
-          vocabulary: FIBO
-          release: local-evidence-bundle
-          artifactDigest: sha256:13381a6f48642dc4b7e26c62960cc55accca20a33b7d0c52434538113672ce5a
-          lockRef: fibo-local-evidence
-          claimedReleaseLabel: 2026Q1
-          releaseNote: >-
-            Digest from references.lock#fibo-local-evidence; Production quarterly claim (2026Q1) unverified — see lock
-            maturity.
-        rationale: Axiolune Jurisdiction is a domain-level subclass of Commons Jurisdiction
-        verification:
-          status: proposed
+    iso4217RegistrySourceRef:
+      iri: https://axiolune.ai/ontology/finance/foundation/iso4217RegistrySourceRef
+      namespace: fin-foundation
+      localName: iso4217RegistrySourceRef
+      label: ISO 4217 Registry Source Reference
+      definition: absolute IRI of the locked registry artifact and locator record
+        supporting this entry version
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+  identifierTypes:
+    ISIN:
+      iri: https://axiolune.ai/ontology/finance/foundation/ISIN
+      namespace: fin-foundation
+      localName: ISIN
+      label: International Securities Identification Number
+      definition: 12-character alphanumeric ISO 6166 identifier with a
+        two-alpha-character ISIN prefix, nine-character basic number (body), and
+        modulus-10 Double-Add-Double check digit
+      baseType: string
+      standard: ISO 6166:2021
+      validatorRef: https://axiolune.ai/ontology/finance/foundation/ISINValidation
+      issuingAuthority: ANNA-recognized National Numbering Agency or Derivatives
+        Service Bureau, according to instrument scope
+    LEI:
+      iri: https://axiolune.ai/ontology/finance/foundation/LEI
+      namespace: fin-foundation
+      localName: LEI
+      label: Legal Entity Identifier
+      definition: 20-character uppercase alphanumeric identifier based on ISO
+        17442-1:2020 that uniquely identifies a legal entity, consisting of a
+        4-character issuer prefix, 14-character entity-specific section, and 2
+        numeric check digits calculated under ISO 7064
+      baseType: string
+      standard: ISO 17442-1:2020
+      validatorRef: https://axiolune.ai/ontology/finance/foundation/LEIValidation
+      issuingAuthority: a GLEIF-accredited LEI Issuer (Local Operating Unit)
+    MIC:
+      iri: https://axiolune.ai/ontology/finance/foundation/MIC
+      namespace: fin-foundation
+      localName: MIC
+      label: Market Identifier Code
+      definition: four-character uppercase ASCII alphanumeric code allocated under ISO
+        10383 to identify an exchange, trading platform, market, or
+        trade-reporting facility; operating/segment classification remains
+        separate registry data
+      baseType: string
+      standard: ISO 10383:2012
+      validatorRef: https://axiolune.ai/ontology/finance/foundation/MICValidation
+      issuingAuthority: SWIFT as ISO 10383 Registration Authority
+    LocalIdentifier:
+      iri: https://axiolune.ai/ontology/finance/foundation/LocalIdentifier
+      namespace: fin-foundation
+      localName: LocalIdentifier
+      label: Authority-scoped Local Identifier
+      definition: non-empty NFC identifier lexical form whose meaning and stronger
+        syntax are determined only by its locked IdentifierScheme and authorized
+        assigning authority
+      baseType: string
+      standard: Axiolune Local Identifier Contract 1.0
+      validatorRef: https://axiolune.ai/ontology/finance/foundation/LocalIdentifierValidation
+      issuingAuthority: scheme-specific authorized assigning authority
+  codeLists:
+    IdentifierSchemeKind:
+      iri: https://axiolune.ai/ontology/finance/foundation/IdentifierSchemeKind
+      namespace: fin-foundation
+      localName: IdentifierSchemeKind
+      label: Identifier Scheme Kind
+      definition: closed compatibility discriminator that determines an
+        IdentifierScheme value subtype and legal identified-subject range
+      vocabulary: Identifier Scheme Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/foundation/IdentifierSchemeKind/value/gleifLei
+          notation: gleifLei
+          label: GLEIF LEI
+          definition: identifier scheme maintained for Legal Entity Identifiers
+        - iri: https://axiolune.ai/ontology/finance/foundation/IdentifierSchemeKind/value/iso6166Isin
+          notation: iso6166Isin
+          label: ISO 6166 ISIN
+          definition: identifier scheme maintained for International Securities
+            Identification Numbers
+        - iri: https://axiolune.ai/ontology/finance/foundation/IdentifierSchemeKind/value/iso10383Mic
+          notation: iso10383Mic
+          label: ISO 10383 MIC
+          definition: identifier scheme maintained for Market Identifier Codes
+        - iri: https://axiolune.ai/ontology/finance/foundation/IdentifierSchemeKind/value/internalInstrument
+          notation: internalInstrument
+          label: Internal Instrument
+          definition: authority-scoped local identifier scheme for FinancialInstrument
+            subjects
+        - iri: https://axiolune.ai/ontology/finance/foundation/IdentifierSchemeKind/value/financialAccount
+          notation: financialAccount
+          label: Financial Account
+          definition: authority-scoped local identifier scheme for FinancialAccount
+            subjects
+        - iri: https://axiolune.ai/ontology/finance/foundation/IdentifierSchemeKind/value/venueListing
+          notation: venueListing
+          label: Venue Listing
+          definition: authority-scoped local identifier scheme for InstrumentListing
+            subjects
+    IdentifierUniquenessScope:
+      iri: https://axiolune.ai/ontology/finance/foundation/IdentifierUniquenessScope
+      namespace: fin-foundation
+      localName: IdentifierUniquenessScope
+      label: Identifier Uniqueness Scope
+      definition: closed classification of the population within which canonical
+        identifier values must be unique
+      vocabulary: Identifier Uniqueness Scope
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/foundation/IdentifierUniquenessScope/value/global
+          notation: global
+          label: Global
+          definition: the scheme and canonical lexical value pair is unique across all
+            assigning authorities
+        - iri: https://axiolune.ai/ontology/finance/foundation/IdentifierUniquenessScope/value/authorityScoped
+          notation: authorityScoped
+          label: Authority Scoped
+          definition: the canonical lexical value is unique only within its assigning
+            authority and scheme
+    IdentifierAuthorityRole:
+      iri: https://axiolune.ai/ontology/finance/foundation/IdentifierAuthorityRole
+      namespace: fin-foundation
+      localName: IdentifierAuthorityRole
+      label: Identifier Authority Role
+      definition: closed classification of an authority's role in an
+        IdentifierSchemeAuthorization
+      vocabulary: Identifier Authority Role
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/foundation/IdentifierAuthorityRole/value/assigningAuthority
+          notation: assigningAuthority
+          label: Assigning Authority
+          definition: authority authorized to issue assignments under the identified
+            scheme during the authorization interval
+    AccountType:
+      iri: https://axiolune.ai/ontology/finance/foundation/AccountType
+      namespace: fin-foundation
+      localName: AccountType
+      label: Account Type
+      definition: closed classification of the asset-holding capability represented by
+        a FinancialAccount
+      vocabulary: Account Type
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/foundation/AccountType/value/cash
+          notation: cash
+          label: Cash
+          definition: account whose governed holding capability is cash
+        - iri: https://axiolune.ai/ontology/finance/foundation/AccountType/value/securitiesCustody
+          notation: securitiesCustody
+          label: Securities Custody
+          definition: account whose governed holding capability is custody of securities
+        - iri: https://axiolune.ai/ontology/finance/foundation/AccountType/value/multiAsset
+          notation: multiAsset
+          label: Multi-asset
+          definition: account whose governed holding capability includes cash and
+            securities
+    FinancialAccountPartyRoleKind:
+      iri: https://axiolune.ai/ontology/finance/foundation/FinancialAccountPartyRoleKind
+      namespace: fin-foundation
+      localName: FinancialAccountPartyRoleKind
+      label: Financial Account Party Role Kind
+      definition: closed classification of a Party's role with respect to a
+        FinancialAccount
+      vocabulary: Financial Account Party Role Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/foundation/FinancialAccountPartyRoleKind/value/accountHolder
+          notation: accountHolder
+          label: Account Holder
+          definition: party named as a holder of the account
+        - iri: https://axiolune.ai/ontology/finance/foundation/FinancialAccountPartyRoleKind/value/beneficialOwner
+          notation: beneficialOwner
+          label: Beneficial Owner
+          definition: party that beneficially owns assets represented by the account
+        - iri: https://axiolune.ai/ontology/finance/foundation/FinancialAccountPartyRoleKind/value/authorizedOperator
+          notation: authorizedOperator
+          label: Authorized Operator
+          definition: party authorized to operate the account without thereby being
+            asserted as its owner
+        - iri: https://axiolune.ai/ontology/finance/foundation/FinancialAccountPartyRoleKind/value/custodian
+          notation: custodian
+          label: Custodian
+          definition: party responsible for custody of assets represented by the account
+    ISO4217EntryStatus:
+      iri: https://axiolune.ai/ontology/finance/foundation/ISO4217EntryStatus
+      namespace: fin-foundation
+      localName: ISO4217EntryStatus
+      label: ISO 4217 Entry Status
+      definition: closed lifecycle classification stating whether an ISO 4217 registry
+        entry is active or withdrawn in the exact locked registry snapshot
+      vocabulary: ISO 4217 Entry Status
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/foundation/ISO4217EntryStatus/value/active
+          notation: active
+          label: Active
+          definition: registry entry currently active in the selected ISO 4217 snapshot
+        - iri: https://axiolune.ai/ontology/finance/foundation/ISO4217EntryStatus/value/withdrawn
+          notation: withdrawn
+          label: Withdrawn
+          definition: registry entry withdrawn in or before the selected ISO 4217 snapshot
+  constraints:
+    ISINValidation:
+      iri: https://axiolune.ai/ontology/finance/foundation/ISINValidation
+      namespace: fin-foundation
+      localName: ISINValidation
+      label: International Securities Identification Number Validation
+      definition: identifier validation rule that enforces the reviewed lexical and
+        check algorithm profile for International Securities Identification
+        Number
+      constraintType: Custom
+      scope: Identifier
+      expression:
+        language: Custom
+        expression: profile=ISIN;pattern=^[A-Z]{2}[A-Z0-9]{9}[0-9]$;length=12;algorithm=Luhn
+      severity: Error
+      message: ISIN value does not satisfy its reviewed identifier profile
+      targetElement: https://axiolune.ai/ontology/finance/foundation/ISIN
+    LEIValidation:
+      iri: https://axiolune.ai/ontology/finance/foundation/LEIValidation
+      namespace: fin-foundation
+      localName: LEIValidation
+      label: Legal Entity Identifier Validation
+      definition: identifier validation rule that enforces the reviewed lexical and
+        check algorithm profile for Legal Entity Identifier
+      constraintType: Custom
+      scope: Identifier
+      expression:
+        language: Custom
+        expression: profile=LEI;pattern=^[A-Z0-9]{18}[0-9]{2}$;length=20;algorithm=ISO/IEC
+          7064 MOD 97-10
+      severity: Error
+      message: LEI value does not satisfy its reviewed identifier profile
+      targetElement: https://axiolune.ai/ontology/finance/foundation/LEI
+    MICValidation:
+      iri: https://axiolune.ai/ontology/finance/foundation/MICValidation
+      namespace: fin-foundation
+      localName: MICValidation
+      label: Market Identifier Code Validation
+      definition: identifier validation rule that enforces the reviewed lexical and
+        check algorithm profile for Market Identifier Code
+      constraintType: Custom
+      scope: Identifier
+      expression:
+        language: Custom
+        expression: profile=MIC;pattern=^[A-Z0-9]{4}$;length=4;algorithm=none
+      severity: Error
+      message: MIC value does not satisfy its reviewed identifier profile
+      targetElement: https://axiolune.ai/ontology/finance/foundation/MIC
+    LocalIdentifierValidation:
+      iri: https://axiolune.ai/ontology/finance/foundation/LocalIdentifierValidation
+      namespace: fin-foundation
+      localName: LocalIdentifierValidation
+      label: Authority-scoped Local Identifier Validation
+      definition: validates the generic non-empty NFC lexical contract before a
+        scheme-locked validator applies stronger rules
+      constraintType: Custom
+      scope: Identifier
+      expression:
+        language: Custom
+        expression: profile=LocalIdentifier;normalization=NFC;trim=false;minUtf8Bytes=1;schemeValidator=required
+      severity: Error
+      message: local identifier is empty, not NFC, or lacks a scheme-locked validator
+      targetElement: https://axiolune.ai/ontology/finance/foundation/LocalIdentifier
+    IdentifierSchemeCompatibilityMatrix:
+      iri: https://axiolune.ai/ontology/finance/foundation/IdentifierSchemeCompatibilityMatrix
+      namespace: fin-foundation
+      localName: IdentifierSchemeCompatibilityMatrix
+      label: Identifier Scheme Compatibility Matrix
+      definition: enforces the closed mapping from scheme kind to IdentifierValue
+        subtype and legal identified-subject range, including direct account and
+        listing identity slots
+      constraintType: CrossField
+      scope: Association
+      expression:
+        language: Custom
+        expression: contract=rfc001-identifier-scheme-value-subject-matrix-v1;closed=true
+      severity: Error
+      message: identifier scheme kind, value subtype, and identified subject are
+        incompatible
+    IdentifierAuthorizationCoverage:
+      iri: https://axiolune.ai/ontology/finance/foundation/IdentifierAuthorizationCoverage
+      namespace: fin-foundation
+      localName: IdentifierAuthorizationCoverage
+      label: Identifier Authorization Coverage
+      definition: requires the assigning authority and exact scheme version to have
+        one PIT-eligible authorization whose half-open valid interval covers the
+        assignment or direct account identity interval
+      constraintType: CrossField
+      scope: Association
+      expression:
+        language: Custom
+        expression: contract=rfc001-identifier-authorization-coverage-v1;interval=half-open;pit=true
+      severity: Error
+      message: identifier assignment or direct account identity lacks covering
+        authority authorization
+    IdentifierGlobalUniquenessConflict:
+      iri: https://axiolune.ai/ontology/finance/foundation/IdentifierGlobalUniquenessConflict
+      namespace: fin-foundation
+      localName: IdentifierGlobalUniquenessConflict
+      label: Identifier Global Uniqueness Conflict
+      definition: requires overlapping assignments of one globally unique scheme/value
+        to different subject identities to emit one explicit
+        IdentifierAssignmentConflict and forbids selection of a silent winner
+      constraintType: CrossField
+      scope: Association
+      expression:
+        language: Custom
+        expression: contract=rfc001-global-identifier-conflict-v1;winner=forbidden
+      severity: Error
+      message: globally unique identifier overlap lacks its exact explicit conflict fact
+    FinancialAccountIdentityIntegrity:
+      iri: https://axiolune.ai/ontology/finance/foundation/FinancialAccountIdentityIntegrity
+      namespace: fin-foundation
+      localName: FinancialAccountIdentityIntegrity
+      label: Financial Account Identity Integrity
+      definition: enforces one financial-account IdentifierScheme logical reference,
+        one LocalIdentifierValue logical reference, scheme equality,
+        authorization coverage, and the exact two-component logical account key
+      constraintType: CrossField
+      scope: Object
+      expression:
+        language: Custom
+        expression: contract=rfc001-financial-account-identity-v1;key=schemeLogicalIri,valueLogicalIri
+      severity: Error
+      message: FinancialAccount identity slots, scheme, value, or authorization are
+        inconsistent
+    ISO4217RegistryEntryIntegrity:
+      iri: https://axiolune.ai/ontology/finance/foundation/ISO4217RegistryEntryIntegrity
+      namespace: fin-foundation
+      localName: ISO4217RegistryEntryIntegrity
+      label: ISO 4217 Registry Entry Integrity
+      definition: enforces the authority/alpha logical key, unique PIT-eligible
+        authority/alpha entry, numeric-code lexical preservation, non-negative
+        minor unit, exact Currency relation, and locked source reference
+      constraintType: CrossField
+      scope: Object
+      expression:
+        language: Custom
+        expression: contract=rfc001-iso4217-registry-entry-v1;pitUnique=true;numericCode=threeDigits
+      severity: Error
+      message: ISO4217RegistryEntry violates its identity, cardinality, value, source,
+        or PIT uniqueness contract
+    CurrencyUsageIntegrity:
+      iri: https://axiolune.ai/ontology/finance/foundation/CurrencyUsageIntegrity
+      namespace: fin-foundation
+      localName: CurrencyUsageIntegrity
+      label: Currency Usage Integrity
+      definition: requires exactly one logical Currency and one logical Jurisdiction
+        with complete three-axis provenance
+      constraintType: CrossField
+      scope: Association
+      expression:
+        language: Custom
+        expression: contract=rfc001-currency-usage-v1;referenceMode=logical
+      severity: Error
+      message: CurrencyUsage must relate exactly one logical currency and one logical
+        jurisdiction
+  relationUses:
+    - relation: https://axiolune.ai/ontology/finance/foundation/identifierSchemeMaintainer
+      subjectType: https://axiolune.ai/ontology/finance/foundation/IdentifierScheme
+      objectType: https://axiolune.ai/ontology/finance/foundation/IdentifierAuthority
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/foundation/identifierSchemeMaintainer
+    - relation: https://axiolune.ai/ontology/finance/foundation/accountIdentifierScheme
+      subjectType: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+      objectType: https://axiolune.ai/ontology/finance/foundation/IdentifierScheme
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/foundation/accountIdentifierScheme
+    - relation: https://axiolune.ai/ontology/finance/foundation/accountIdentifierValue
+      subjectType: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+      objectType: https://axiolune.ai/ontology/finance/foundation/LocalIdentifierValue
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/foundation/accountIdentifierValue
+    - relation: https://axiolune.ai/ontology/finance/foundation/identifierValueScheme
+      subjectType: https://axiolune.ai/ontology/finance/foundation/IdentifierValue
+      objectType: https://axiolune.ai/ontology/finance/foundation/IdentifierScheme
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/foundation/identifierValueScheme
+    - relation: https://axiolune.ai/ontology/finance/foundation/iso4217RegistryAuthority
+      subjectType: https://axiolune.ai/ontology/finance/foundation/ISO4217RegistryEntry
+      objectType: https://axiolune.ai/ontology/finance/foundation/IdentifierAuthority
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/foundation/iso4217RegistryAuthority
+    - relation: https://axiolune.ai/ontology/finance/foundation/iso4217EntryCurrency
+      subjectType: https://axiolune.ai/ontology/finance/foundation/ISO4217RegistryEntry
+      objectType: https://axiolune.ai/ontology/finance/foundation/Currency
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/foundation/iso4217EntryCurrency
+  constraintBindings:
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/foundation/IdentifierSchemeAuthorization/role/authorizedSchemeVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/foundation/IdentifierSchemeAuthorization/role/authorizedAuthorityVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/foundation/FinancialIdentifierAssignment/role/identifiedSubjectVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/foundation/FinancialIdentifierAssignment/role/identifierValueVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/foundation/FinancialIdentifierAssignment/role/identifierSchemeVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/foundation/FinancialIdentifierAssignment/role/assigningAuthorityVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/foundation/IdentifierAssignmentConflict/role/conflictingAssignmentVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/foundation/IdentifierAssignmentConflict/role/conflictSchemeVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/foundation/IdentifierAssignmentConflict/role/conflictValueVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/foundation/FinancialAccountPartyRole/role/roleAccount
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/foundation/FinancialAccountPartyRole/role/roleParty
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/foundation/CurrencyUsage/role/usedCurrency
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/foundation/CurrencyUsage/role/usageJurisdiction
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/foundation/ISINValidation
+      targetElement: https://axiolune.ai/ontology/finance/foundation/ISIN
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/foundation/LEIValidation
+      targetElement: https://axiolune.ai/ontology/finance/foundation/LEI
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/foundation/LocalIdentifierValidation
+      targetElement: https://axiolune.ai/ontology/finance/foundation/LocalIdentifier
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/foundation/MICValidation
+      targetElement: https://axiolune.ai/ontology/finance/foundation/MIC
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/foundation/IdentifierSchemeCompatibilityMatrix
+      targetElement: https://axiolune.ai/ontology/finance/foundation/FinancialIdentifierAssignment
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/foundation/IdentifierAuthorizationCoverage
+      targetElement: https://axiolune.ai/ontology/finance/foundation/FinancialIdentifierAssignment
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/foundation/IdentifierGlobalUniquenessConflict
+      targetElement: https://axiolune.ai/ontology/finance/foundation/IdentifierAssignmentConflict
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/foundation/FinancialAccountIdentityIntegrity
+      targetElement: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/foundation/IdentifierAuthorizationCoverage
+      targetElement: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/foundation/ISO4217RegistryEntryIntegrity
+      targetElement: https://axiolune.ai/ontology/finance/foundation/ISO4217RegistryEntry
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/foundation/CurrencyUsageIntegrity
+      targetElement: https://axiolune.ai/ontology/finance/foundation/CurrencyUsage
+      enforcementLevel: Mandatory

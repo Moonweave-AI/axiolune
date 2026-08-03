@@ -110,35 +110,16 @@ try { result = JSON.parse(out); } catch { result = { status: 'unknown', raw: out
 console.log('=== OWL 2 DL consistency check (OWL-RL) ===');
 console.log('Files merged: ' + owlFiles.length);
 
-// Persist evidence
-const evidence = {
-  iri: 'https://axiolune.ai/evidence/owl-consistency/2026-07-31-r8',
-  checkedAt: '2026-07-29T21:05:00Z',
-  checkedAtBinding: 'slice-a-materialization-run.referenceTime (reproducible)',
-  reasoner: 'owlrl OWLRL_Semantics',
-  moduleCount: owlFiles.length,
-  mergedFile: path.relative(ROOT, mergedPath),
-  result: result.status,
-};
-
 if (result.status === 'consistent') {
-  evidence.triples = result.triples;
-  evidence.classes = result.classes;
-  evidence.nothingInferred = false;
-  fs.writeFileSync(path.join(OUT_DIR, 'owl-consistency-evidence.json'), JSON.stringify(evidence, null, 2) + '\n');
   console.log('✓ consistent — ' + result.triples + ' triples, ' + result.classes + ' classes after OWL-RL closure (no owl:Nothing inferred)');
   process.exit(0);
 } else if (result.status === 'reasoner-warning') {
-  evidence.warning = result.error;
-  fs.writeFileSync(path.join(OUT_DIR, 'owl-consistency-evidence.json'), JSON.stringify(evidence, null, 2) + '\n');
-  console.log('✓ consistent (with reasoner warning: ' + result.error + ')');
-  process.exit(0);
+  console.error('FAIL: OWL-RL reasoner warning is non-final: ' + result.error);
+  process.exit(1);
 } else if (result.status === 'pending-owlrl') {
   console.error('FAIL: owlrl not installed — ' + result.error);
   process.exit(1);
 } else {
-  evidence.error = result.error || result.raw;
-  fs.writeFileSync(path.join(OUT_DIR, 'owl-consistency-evidence.json'), JSON.stringify(evidence, null, 2) + '\n');
   console.error('✗ ' + result.status + ': ' + (result.error || result.raw || ''));
   if (err) console.error(err);
   process.exit(1);

@@ -1,0 +1,21 @@
+caseId: negative-currency-authority-term-substitution
+extends: positive-market-instrument-contract.yaml
+expected:
+  valid: false
+  codes: [CURRENCY_REGISTRY_ENTRY]
+mutations:
+  - op: set
+    path: currencyRegistry[1].iso4217AlphaCode
+    value: ZZZ
+  - op: set
+    path: currencyRegistry[1].iso4217NumericCode
+    value: '999'
+  - op: set
+    path: currencyRegistry[1].iso4217EntryCurrency
+    value: urn:currency:zzz
+  - op: set
+    path: listings[1].quoteCurrency
+    value: urn:currency:zzz
+  - op: set
+    path: quotationContracts[0].quoteCurrency
+    value: urn:currency:zzz

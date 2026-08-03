@@ -1,0 +1,8 @@
+caseId: market-rules-v03-negative-price-limit-money
+extends: positive-cq-execution.yaml
+mutations:
+  - {op: delete, path: "clauses[2].priceLimitPercentage"}
+  - op: set
+    path: "clauses[2].priceLimitAmount"
+    value: {amount: "1.001", currency: usd, scale: 2}
+expected: {valid: false, codes: [RULE_PRICE_LIMIT_VALUE]}

@@ -1,0 +1,81 @@
+functionVersion: market-data-cq/v0.3.0
+graphFixture: ../positive-complete.yaml
+templates:
+  noonPivot: &noonPivot
+    asOfValid: '2026-07-31T12:00:00Z'
+    asOfKnowledge: '2026-07-31T12:00:00Z'
+    asOfAvailable: '2026-07-31T12:00:00Z'
+  listedQuery: &listedQuery
+    listingVersionIri: urn:listing:aapl:xnas:v1
+    instrumentVersionIri: urn:instrument:aapl:v1
+    facilityLogicalIri: urn:facility:xnas
+cases:
+  - caseId: MD-NEG-001-price-before-availability-empty
+    cqId: CQ-MD1
+    kind: query
+    query:
+      <<: *listedQuery
+      priceKind: last
+      pivot: {asOfValid: '2026-07-31T12:00:00Z', asOfKnowledge: '2026-07-31T12:00:00Z', asOfAvailable: '2026-07-31T10:00:01Z'}
+    expected: {status: ok, rows: []}
+  - {caseId: MD-NEG-002-price-missing-availability, cqId: CQ-MD1, kind: fixture, fixture: ../negative-availability-missing.yaml, expected: {status: rejected, codes: [FACT_THREE_AXIS]}}
+  - {caseId: MD-NEG-003-money-number-not-decimal, cqId: CQ-MD1, kind: fixture, fixture: ../negative-money-number.yaml, expected: {status: rejected, codes: [MONEY_VALUE]}}
+  - {caseId: MD-NEG-004-money-boolean-not-decimal, cqId: CQ-MD1, kind: fixture, fixture: ../negative-money-boolean.yaml, expected: {status: rejected, codes: [MONEY_VALUE]}}
+  - {caseId: MD-NEG-005-future-availability, cqId: CQ-MD1, kind: fixture, fixture: ../negative-future-availability.yaml, expected: {status: rejected, codes: [PIT_FUTURE]}}
+  - {caseId: MD-NEG-006-missing-context, cqId: CQ-MD1, kind: fixture, fixture: ../negative-context-missing.yaml, expected: {status: rejected, codes: [OBSERVATION_CONTEXT_XONE]}}
+
+  - caseId: MD-NEG-007-trade-outside-half-open-range-empty
+    cqId: CQ-MD2
+    kind: query
+    query: {from: '2026-07-31T11:00:00Z', to: '2026-07-31T12:00:00Z', pivot: *noonPivot}
+    expected: {status: ok, rows: []}
+  - {caseId: MD-NEG-008-trade-pit-interval-end, cqId: CQ-MD2, kind: fixture, fixture: ../negative-pit-interval-end.yaml, expected: {status: rejected, codes: [PIT_OUTSIDE_INTERVAL]}}
+  - {caseId: MD-NEG-009-unsafe-source-order-integer, cqId: CQ-MD2, kind: fixture, fixture: ../negative-source-order-unsafe-integer.yaml, expected: {status: rejected, codes: [OBSERVATION_ORDER_FIELDS]}}
+  - {caseId: MD-NEG-010-zero-trade-size, cqId: CQ-MD2, kind: fixture, fixture: ../negative-trade-size.yaml, expected: {status: rejected, codes: [QUANTITY_POSITIVE]}}
+  - {caseId: MD-NEG-011-ordering-collision-unreported, cqId: CQ-MD2, kind: fixture, fixture: ../negative-ordering-finding-missing.yaml, expected: {status: rejected, codes: [QUALITY_FINDING_REQUIRED_DUPLICATE, QUALITY_FINDING_REQUIRED_ORDERING]}}
+
+  - {caseId: MD-NEG-012-revision-closure-missing, cqId: CQ-MD3, kind: fixture, fixture: ../negative-revision-closure.yaml, expected: {status: rejected, codes: [REVISION_CLOSURE]}}
+  - {caseId: MD-NEG-013-revision-fields-missing, cqId: CQ-MD3, kind: fixture, fixture: ../negative-revision-fields.yaml, expected: {status: rejected, codes: [REVISION_FIELDS]}}
+  - {caseId: MD-NEG-014-revision-chain-branches, cqId: CQ-MD3, kind: fixture, fixture: ../negative-revision-branch.yaml, expected: {status: rejected, codes: [REVISION_BRANCH, REVISION_PREDECESSOR]}}
+  - {caseId: MD-NEG-015-immutable-record-corrected, cqId: CQ-MD3, kind: fixture, fixture: ../negative-immutable-correction.yaml, expected: {status: rejected, codes: [IMMUTABLE_CORRECTION]}}
+
+  - {caseId: MD-NEG-016-partial-quote, cqId: CQ-MD4, kind: fixture, fixture: ../negative-quote-partial.yaml, expected: {status: rejected, codes: [QUANTITY_VALUE]}}
+  - {caseId: MD-NEG-017-quantity-number-not-decimal, cqId: CQ-MD4, kind: fixture, fixture: ../negative-quantity-number.yaml, expected: {status: rejected, codes: [QUANTITY_VALUE]}}
+  - {caseId: MD-NEG-018-quantity-boolean-not-decimal, cqId: CQ-MD4, kind: fixture, fixture: ../negative-quantity-boolean.yaml, expected: {status: rejected, codes: [QUANTITY_VALUE]}}
+  - {caseId: MD-NEG-019-negative-quote-size, cqId: CQ-MD4, kind: fixture, fixture: ../negative-quote-size.yaml, expected: {status: rejected, codes: [QUANTITY_NON_NEGATIVE]}}
+  - {caseId: MD-NEG-020-crossed-quote-unreported, cqId: CQ-MD4, kind: fixture, fixture: ../negative-crossed-finding-missing.yaml, expected: {status: rejected, codes: [QUALITY_FINDING_REQUIRED_CROSSED]}}
+
+  - {caseId: MD-NEG-021-trade-bar-invalid-ohlc, cqId: CQ-MD5, kind: fixture, fixture: ../negative-trade-bar-ohlc.yaml, expected: {status: rejected, codes: [BAR_OHLC]}}
+  - {caseId: MD-NEG-022-quote-bar-invalid-ohlc, cqId: CQ-MD5, kind: fixture, fixture: ../negative-quote-bar-ohlc.yaml, expected: {status: rejected, codes: [BAR_OHLC]}}
+  - {caseId: MD-NEG-023-bar-basis-mismatch, cqId: CQ-MD5, kind: fixture, fixture: ../negative-bar-basis.yaml, expected: {status: rejected, codes: [BAR_BASIS]}}
+  - {caseId: MD-NEG-024-nontime-bar-wrong-branch, cqId: CQ-MD5, kind: fixture, fixture: ../negative-nontime-bar-branch.yaml, expected: {status: rejected, codes: [BAR_INSTANCE_BRANCH]}}
+  - {caseId: MD-NEG-025-time-bar-wrong-branch, cqId: CQ-MD5, kind: fixture, fixture: ../negative-time-bar-branch.yaml, expected: {status: rejected, codes: [BAR_INSTANCE_BRANCH]}}
+
+  - {caseId: MD-NEG-026-order-mapping-incomplete, cqId: CQ-MD6, kind: fixture, fixture: ../negative-order-mapping.yaml, expected: {status: rejected, codes: [STREAM_SOURCE_MAPPING]}}
+  - {caseId: MD-NEG-027-revision-locator-missing, cqId: CQ-MD6, kind: fixture, fixture: ../negative-revision-mapping-missing.yaml, expected: {status: rejected, codes: [REVISION_MODE_MAPPING]}}
+  - {caseId: MD-NEG-028-scalar-artifact-ref, cqId: CQ-MD6, kind: fixture, fixture: ../negative-provenance-scalar-artifact-ref.yaml, expected: {status: rejected, codes: [FACT_PROVENANCE, RELEASE_SOURCE_ARTIFACT]}}
+  - {caseId: MD-NEG-029-scalar-source-locator, cqId: CQ-MD6, kind: fixture, fixture: ../negative-provenance-scalar-locator.yaml, expected: {status: rejected, codes: [FACT_PROVENANCE, RELEASE_SOURCE_SELECTION]}}
+  - {caseId: MD-NEG-030-placeholder-source-digest, cqId: CQ-MD6, kind: fixture, fixture: ../negative-source-artifact-placeholder-digest.yaml, expected: {status: rejected, codes: [RELEASE_SOURCE_ARTIFACT]}}
+  - {caseId: MD-NEG-031-placeholder-profile-digest, cqId: CQ-MD6, kind: fixture, fixture: ../negative-extractor-profile-placeholder-digest.yaml, expected: {status: rejected, codes: [RELEASE_SOURCE_SELECTION]}}
+  - {caseId: MD-NEG-032-selection-byte-drift, cqId: CQ-MD6, kind: fixture, fixture: ../negative-selection-digest-mismatch.yaml, expected: {status: rejected, codes: [RELEASE_SOURCE_SELECTION]}}
+  - {caseId: MD-NEG-033-source-contract-byte-drift, cqId: CQ-MD6, kind: fixture, fixture: ../negative-source-contract-artifact-drift.yaml, expected: {status: rejected, codes: [RELEASE_ARTIFACT_DIGEST]}}
+  - {caseId: MD-NEG-034-ordering-transform-byte-drift, cqId: CQ-MD6, kind: fixture, fixture: ../negative-ordering-transform-artifact-drift.yaml, expected: {status: rejected, codes: [RELEASE_ARTIFACT_DIGEST]}}
+  - {caseId: MD-NEG-035-scalar-observation-field-locator, cqId: CQ-MD6, kind: fixture, fixture: ../negative-observation-field-scalar-locator.yaml, expected: {status: rejected, codes: [STREAM_SOURCE_MAPPING, RELEASE_FIELD_SELECTION]}}
+  - {caseId: MD-NEG-036-calculation-definition-byte-drift, cqId: CQ-MD6, kind: fixture, fixture: ../negative-calculation-artifact-drift.yaml, expected: {status: rejected, codes: [RELEASE_ARTIFACT_DIGEST]}}
+  - {caseId: MD-NEG-037-fx-transformation-byte-drift, cqId: CQ-MD6, kind: fixture, fixture: ../negative-fx-transformation-artifact-drift.yaml, expected: {status: rejected, codes: [RELEASE_ARTIFACT_DIGEST]}}
+
+  - caseId: MD-NEG-038-no-close-before-cutoff-empty
+    cqId: CQ-MD7
+    kind: query
+    query:
+      <<: *listedQuery
+      before: '2026-07-31T09:00:00Z'
+      pivot: *noonPivot
+    expected: {status: ok, rows: []}
+  - {caseId: MD-NEG-039-latest-close-future-availability, cqId: CQ-MD7, kind: fixture, fixture: ../negative-future-availability.yaml, expected: {status: rejected, codes: [PIT_FUTURE]}}
+
+  - {caseId: MD-NEG-040-json-pointer-duplicate-key, cqId: CQ-MD6, kind: fixture, fixture: ../negative-json-pointer-duplicate-key.yaml, expected: {status: rejected, codes: [RELEASE_FIELD_SELECTION]}}
+  - {caseId: MD-NEG-041-json-pointer-invalid-utf8, cqId: CQ-MD6, kind: fixture, fixture: ../negative-json-pointer-invalid-utf8.yaml, expected: {status: rejected, codes: [RELEASE_FIELD_SELECTION]}}
+  - {caseId: MD-NEG-042-extractor-implementation-drift, cqId: CQ-MD6, kind: fixture, fixture: ../negative-extractor-implementation-drift.yaml, expected: {status: rejected, codes: [RELEASE_FIELD_SELECTION]}}
+  - {caseId: MD-NEG-043-source-record-content-mismatch, cqId: CQ-MD6, kind: fixture, fixture: ../negative-source-record-content-mismatch.yaml, expected: {status: rejected, codes: [RELEASE_SOURCE_RECORD]}}
+  - {caseId: MD-NEG-044-artifact-declared-identity-mismatch, cqId: CQ-MD6, kind: fixture, fixture: ../negative-artifact-declared-identity-mismatch.yaml, expected: {status: rejected, codes: [RELEASE_ARTIFACT_CONTENT]}}

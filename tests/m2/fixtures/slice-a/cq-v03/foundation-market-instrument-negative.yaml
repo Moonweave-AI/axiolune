@@ -1,0 +1,492 @@
+fixtureId: foundation-market-instrument-cq-negative-v1
+functionVersion: axiolune-m2-cq-foundation-market-instrument/v1
+graphFixture: foundation-market-instrument-graph.yaml
+templates:
+  pivot: &pivot
+    asOfValid: '2024-07-10T00:00:00Z'
+    asOfKnowledge: '2024-07-10T00:00:00Z'
+    asOfAvailable: '2024-07-10T00:00:00Z'
+    referenceTime: '2024-07-10T00:00:00Z'
+cases:
+  - caseId: cq-f1-missing-exact-authorization-rejected
+    cqId: CQ-F1
+    query:
+      pivot: *pivot
+      bindings:
+        - assignmentVersionIri: urn:identifier-assignment:acme-isin:v1
+          schemeVersionIri: urn:identifier-scheme:isin:v1
+          valueVersionIri: urn:identifier-value:isin:acme:v1
+          authorizationVersionIri: urn:identifier-authorization:not-found:v1
+        - assignmentVersionIri: urn:identifier-assignment:acme-internal:v1
+          schemeVersionIri: urn:identifier-scheme:acme-internal:v1
+          valueVersionIri: urn:identifier-value:internal:acme:v1
+          authorizationVersionIri: urn:identifier-authorization:internal-acme:v1
+    expected:
+      status: rejected
+      code: CQ_F1_AUTHORIZATION_NOT_FOUND
+  - caseId: cq-f1-global-conflict-without-conflict-fact-rejected
+    cqId: CQ-F1
+    mutations:
+      - op: set
+        path: identifierAssignmentConflictVersions
+        value: []
+    query:
+      pivot: *pivot
+      bindings:
+        - assignmentVersionIri: urn:identifier-assignment:conflict-acme:v1
+          schemeVersionIri: urn:identifier-scheme:isin:v1
+          valueVersionIri: urn:identifier-value:isin:conflict:v1
+          authorizationVersionIri: urn:identifier-authorization:isin-iso6166:v1
+        - assignmentVersionIri: urn:identifier-assignment:conflict-beta:v1
+          schemeVersionIri: urn:identifier-scheme:isin:v1
+          valueVersionIri: urn:identifier-value:isin:conflict:v1
+          authorizationVersionIri: urn:identifier-authorization:isin-iso6166:v1
+    expected:
+      status: rejected
+      code: CQ_F1_CONFLICT_REQUIRED
+  - caseId: cq-f2-before-availability-empty
+    cqId: CQ-F2
+    query:
+      pivot:
+        asOfValid: '2024-01-01T00:00:00Z'
+        asOfKnowledge: '2024-01-02T00:00:00Z'
+        asOfAvailable: '2024-01-02T00:00:00Z'
+        referenceTime: '2024-07-10T00:00:00Z'
+      jurisdictionLogicalIri: urn:jurisdiction:us
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: ok
+      rows: []
+  - caseId: cq-f2-future-knowledge-pivot-rejected
+    cqId: CQ-F2
+    query:
+      pivot:
+        asOfValid: '2024-07-10T00:00:00Z'
+        asOfKnowledge: '2024-07-10T00:00:01Z'
+        asOfAvailable: '2024-07-10T00:00:00Z'
+        referenceTime: '2024-07-10T00:00:00Z'
+      jurisdictionLogicalIri: urn:jurisdiction:us
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_FUTURE_PIVOT
+  - caseId: cq-f2-between-knowledge-and-availability-boundaries-empty
+    cqId: CQ-F2
+    query:
+      pivot:
+        asOfValid: '2024-04-01T00:00:00Z'
+        asOfKnowledge: '2024-04-01T00:00:00Z'
+        asOfAvailable: '2024-04-01T00:00:00Z'
+        referenceTime: '2024-07-10T00:00:00Z'
+      jurisdictionLogicalIri: urn:jurisdiction:us
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: ok
+      rows: []
+  - caseId: cq-f2-successor-without-successor-knowledge-closure-rejected
+    cqId: CQ-F2
+    mutations:
+      - op: set
+        path: factClosureAssertions[4].id
+        value: https://axiolune.ai/data/fact-closure-assertion/sha256-1fd3e4a8dbd8a619a354f885c5bff475e401a9ee135f5ba859e87bba202943b2
+      - op: set
+        path: factClosureAssertions[4].causeKind
+        value: retraction
+      - op: delete
+        path: factClosureAssertions[4].causeVersion
+    query:
+      pivot: *pivot
+      jurisdictionLogicalIri: urn:jurisdiction:us
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_CLOSURE_MISSING
+  - caseId: cq-f2-successor-without-successor-availability-closure-rejected
+    cqId: CQ-F2
+    mutations:
+      - op: set
+        path: factClosureAssertions[5].id
+        value: https://axiolune.ai/data/fact-closure-assertion/sha256-d2685a25c6663ae03000d232749dcb097370ff50455ac9ff2672cc2bc177ee31
+      - op: set
+        path: factClosureAssertions[5].causeKind
+        value: sourceWithdrawal
+      - op: delete
+        path: factClosureAssertions[5].causeVersion
+    query:
+      pivot: *pivot
+      jurisdictionLogicalIri: urn:jurisdiction:us
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_CLOSURE_MISSING
+  - caseId: cq-f2-duplicate-axis-closure-rejected
+    cqId: CQ-F2
+    mutations:
+      - op: set
+        path: factClosureAssertions[6]
+        value:
+          id: https://axiolune.ai/data/fact-closure-assertion/sha256-648ac133974e6251512d47150d43e14b02cc1c10805fddbf300067ed2cc778ec
+          targetVersion: urn:currency-usage:usd-us:v0
+          axis: knowledge
+          closedAt: '2024-04-01T00:00:00Z'
+          causeKind: successor
+          causeVersion: urn:currency-usage:usd-us:v1
+          evidenceRef: urn:currency-usage:usd-us:v1
+          generatingContextRef: urn:run:cq-v03
+    query:
+      pivot: *pivot
+      jurisdictionLogicalIri: urn:jurisdiction:us
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_CLOSURE_DUPLICATE
+  - caseId: cq-f2-noncanonical-closure-id-rejected
+    cqId: CQ-F2
+    mutations:
+      - op: set
+        path: factClosureAssertions[4].id
+        value: https://axiolune.ai/data/fact-closure-assertion/sha256-ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+    query:
+      pivot: *pivot
+      jurisdictionLogicalIri: urn:jurisdiction:us
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_CLOSURE_ID
+  - caseId: cq-f2-inline-knowledge-end-rejected
+    cqId: CQ-F2
+    mutations:
+      - op: set
+        path: currencyUsageVersions[1].knowledgeTo
+        value: '2024-08-01T00:00:00Z'
+    query:
+      pivot: *pivot
+      jurisdictionLogicalIri: urn:jurisdiction:us
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_INLINE_CLOSURE
+  - caseId: cq-f2-missing-fact-provenance-rejected
+    cqId: CQ-F2
+    mutations:
+      - op: delete
+        path: currencyUsageVersions[1].source
+    query:
+      pivot: *pivot
+      jurisdictionLogicalIri: urn:jurisdiction:us
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_FACT_PROVENANCE
+  - caseId: cq-f2-artifact-digest-mismatch-rejected
+    cqId: CQ-F2
+    mutations:
+      - op: set
+        path: currencyUsageVersions[1].source.artifactDigest
+        value: sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+    query:
+      pivot: *pivot
+      jurisdictionLogicalIri: urn:jurisdiction:us
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_FACT_PROVENANCE_DIGEST
+  - caseId: cq-f2-selection-digest-mismatch-rejected
+    cqId: CQ-F2
+    mutations:
+      - op: set
+        path: currencyUsageVersions[1].source.locator.selectionDigest
+        value: sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+    query:
+      pivot: *pivot
+      jurisdictionLogicalIri: urn:jurisdiction:us
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_FACT_PROVENANCE_SELECTION
+  - caseId: cq-f1-conflict-set-digest-mismatch-rejected
+    cqId: CQ-F1
+    mutations:
+      - op: set
+        path: identifierAssignmentConflictVersions[0].assignmentVersionSetDigest
+        value: sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+    query:
+      pivot: *pivot
+      bindings:
+        - assignmentVersionIri: urn:identifier-assignment:conflict-acme:v1
+          schemeVersionIri: urn:identifier-scheme:isin:v1
+          valueVersionIri: urn:identifier-value:isin:conflict:v1
+          authorizationVersionIri: urn:identifier-authorization:isin-iso6166:v1
+        - assignmentVersionIri: urn:identifier-assignment:conflict-beta:v1
+          schemeVersionIri: urn:identifier-scheme:isin:v1
+          valueVersionIri: urn:identifier-value:isin:conflict:v1
+          authorizationVersionIri: urn:identifier-authorization:isin-iso6166:v1
+    expected:
+      status: rejected
+      code: CQ_F1_CONFLICT_DIGEST
+  - caseId: cq-ms1-unknown-mic-value-empty
+    cqId: CQ-MS1
+    query:
+      pivot: *pivot
+      micValueVersionIri: urn:identifier-value:mic:xxxx:v1
+    expected:
+      status: ok
+      rows: []
+  - caseId: cq-ms1-segment-without-operating-chain-rejected
+    cqId: CQ-MS1
+    mutations:
+      - op: set
+        path: micEntries[1].operatingMICEntry
+        value: urn:mic-entry:xnms:v1
+    query:
+      pivot: *pivot
+      micValueVersionIri: urn:identifier-value:mic:xnms:v1
+    expected:
+      status: rejected
+      code: CQ_MS1_SEGMENT_CHAIN
+  - caseId: cq-ms2-no-active-listing-on-date-empty
+    cqId: CQ-MS2
+    query:
+      pivot: *pivot
+      businessDate: '2023-12-31'
+      operatingMicEntryVersionIri: urn:mic-entry:xnas:v1
+    expected:
+      status: ok
+      rows: []
+  - caseId: cq-ms3-unknown-exact-calendar-empty
+    cqId: CQ-MS3
+    query:
+      pivot: *pivot
+      calendarVersionIri: urn:calendar:not-found:v1
+      instant: '2024-07-03T18:00:00Z'
+    expected:
+      status: ok
+      rows: []
+  - caseId: cq-ms3-implicit-instant-rejected
+    cqId: CQ-MS3
+    query:
+      pivot: *pivot
+      calendarVersionIri: urn:calendar:xnas:v1
+    expected:
+      status: rejected
+      code: CQ_INPUT_INSTANT
+  - caseId: cq-i1-identifier-without-issuance-empty
+    cqId: CQ-I1
+    mutations:
+      - op: set
+        path: issuances
+        value: []
+    query:
+      pivot: *pivot
+      isinValueVersionIri: urn:identifier-value:isin:acme:v1
+    expected:
+      status: ok
+      rows: []
+  - caseId: cq-i2-future-currency-registry-rejected
+    cqId: CQ-I2
+    mutations:
+      - op: set
+        path: currencyRegistryEntryVersions[0].availableFrom
+        value: '2025-01-01T00:00:00Z'
+    query:
+      pivot: *pivot
+      businessDate: '2024-07-09'
+      listingVersionIri: urn:listing:xnms-acme:v1
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_FUTURE_FACT_AVAILABILITY
+  - caseId: cq-i2-missing-listing-scheme-authorization-rejected
+    cqId: CQ-I2
+    mutations:
+      - op: set
+        path: identifierAuthorizations[1].active
+        value: false
+    query:
+      pivot: *pivot
+      businessDate: '2024-07-09'
+      listingVersionIri: urn:listing:xnms-acme:v1
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_I2_SCHEME_AUTHORIZATION_MISSING
+  - caseId: cq-i2-future-listing-scheme-authorization-rejected
+    cqId: CQ-I2
+    mutations:
+      - op: set
+        path: identifierAuthorizations[1].availableFrom
+        value: '2025-01-01T00:00:00Z'
+    query:
+      pivot: *pivot
+      businessDate: '2024-07-09'
+      listingVersionIri: urn:listing:xnms-acme:v1
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_FUTURE_FACT_AVAILABILITY
+  - caseId: cq-i2-missing-currency-registry-rejected
+    cqId: CQ-I2
+    mutations:
+      - op: set
+        path: currencyRegistryEntryVersions
+        value: []
+    query:
+      pivot: *pivot
+      businessDate: '2024-07-09'
+      listingVersionIri: urn:listing:xnms-acme:v1
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_I2_CURRENCY_REGISTRY_MISSING
+  - caseId: cq-i2-authority-term-substitution-rejected
+    cqId: CQ-I2
+    mutations:
+      - op: set
+        path: currencyRegistryEntryVersions[0].iso4217AlphaCode
+        value: ZZZ
+      - op: set
+        path: currencyRegistryEntryVersions[0].iso4217NumericCode
+        value: '999'
+      - op: set
+        path: currencyRegistryEntryVersions[0].iso4217EntryCurrency
+        value: urn:currency:zzz
+      - op: set
+        path: listings[2].quoteCurrency
+        value: urn:currency:zzz
+    query:
+      pivot: *pivot
+      businessDate: '2024-07-09'
+      listingVersionIri: urn:listing:xnms-acme:v1
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_I2_CURRENCY_REGISTRY_AUTHORITY_MISMATCH
+  - caseId: cq-i2-currency-logical-substitution-rejected
+    cqId: CQ-I2
+    mutations:
+      - op: set
+        path: currencyRegistryEntryVersions[0].iso4217EntryCurrency
+        value: urn:currency:attacker-usd
+      - op: set
+        path: listings[2].quoteCurrency
+        value: urn:currency:attacker-usd
+    query:
+      pivot: *pivot
+      businessDate: '2024-07-09'
+      listingVersionIri: urn:listing:xnms-acme:v1
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_I2_CURRENCY_REGISTRY_AUTHORITY_MISMATCH
+  - caseId: cq-i2-numeric-tick-size-rejected
+    cqId: CQ-I2
+    mutations:
+      - op: set
+        path: ruleClauseVersions[0].tickSize.value
+        value: 0.01
+    query:
+      pivot: *pivot
+      businessDate: '2024-07-09'
+      listingVersionIri: urn:listing:xnms-acme:v1
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_I2_RULE_TERMS
+  - caseId: cq-i2-exponent-tick-size-rejected
+    cqId: CQ-I2
+    mutations:
+      - op: set
+        path: ruleClauseVersions[0].tickSize.value
+        value: '1e-2'
+    query:
+      pivot: *pivot
+      businessDate: '2024-07-09'
+      listingVersionIri: urn:listing:xnms-acme:v1
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_I2_RULE_TERMS
+  - caseId: cq-i2-boolean-lot-size-rejected
+    cqId: CQ-I2
+    mutations:
+      - op: set
+        path: ruleClauseVersions[1].lotSize.value
+        value: true
+    query:
+      pivot: *pivot
+      businessDate: '2024-07-09'
+      listingVersionIri: urn:listing:xnms-acme:v1
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_I2_RULE_TERMS
+  - caseId: cq-i2-arbitrary-absolute-tick-unit-rejected
+    cqId: CQ-I2
+    mutations:
+      - op: set
+        path: ruleClauseVersions[0].tickSize.unit
+        value: https://evil.invalid/units/unreviewed
+    query:
+      pivot: *pivot
+      businessDate: '2024-07-09'
+      listingVersionIri: urn:listing:xnms-acme:v1
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_I2_RULE_TERMS
+  - caseId: cq-i2-arbitrary-absolute-lot-unit-rejected
+    cqId: CQ-I2
+    mutations:
+      - op: set
+        path: ruleClauseVersions[1].lotSize.unit
+        value: https://evil.invalid/units/unreviewed
+    query:
+      pivot: *pivot
+      businessDate: '2024-07-09'
+      listingVersionIri: urn:listing:xnms-acme:v1
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_I2_RULE_TERMS
+  - caseId: cq-i2-quantity-registry-digest-substitution-rejected
+    cqId: CQ-I2
+    mutations:
+      - op: set
+        path: quantityUnitRegistry[0].registryCandidateDigest
+        value: sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+    query:
+      pivot: *pivot
+      businessDate: '2024-07-09'
+      listingVersionIri: urn:listing:xnms-acme:v1
+      registryAuthorityLogicalIri: urn:authority:iso4217
+    expected:
+      status: rejected
+      code: CQ_I2_QUANTITY_UNIT_REGISTRY
+  - caseId: cq-i3-non-nfc-instrument-iri-rejected
+    cqId: CQ-I3
+    query:
+      pivot: *pivot
+      instrumentVersionIri: "urn:instrument:acme-e\u0301"
+    expected:
+      status: rejected
+      code: CQ_I3_INSTRUMENT
+  - caseId: cq-i3-control-character-instrument-iri-rejected
+    cqId: CQ-I3
+    query:
+      pivot: *pivot
+      instrumentVersionIri: "urn:instrument:acme\u0001"
+    expected:
+      status: rejected
+      code: CQ_I3_INSTRUMENT
+  - caseId: cq-i3-forbidden-equity-instrument-rejected
+    cqId: CQ-I3
+    mutations:
+      - op: set
+        path: instruments[0].type
+        value: EquityInstrument
+    query:
+      pivot: *pivot
+      instrumentVersionIri: urn:instrument:acme:v1
+    expected:
+      status: rejected
+      code: CQ_I3_FORBIDDEN_EQUITY_INSTRUMENT

@@ -1,0 +1,37 @@
+schemaVersion: '1.0'
+fixtures:
+  - id: market-structure-otc-counterparty-only-a
+    description: A single populated counterparty branch must fail the pair contract.
+    profile: market-structure-v03-shacl
+    target: OTCTradingContext
+    counterpartyMode: onlyA
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#SPARQLConstraintComponent
+      focus: https://axiolune.ai/data/test/market-structure-otc-counterparty-only-a
+      path: https://axiolune.ai/ontology/finance/market-structure/otcCounterpartyA
+      severity: http://www.w3.org/ns/shacl#Violation
+
+  - id: market-structure-otc-counterparties-reversed
+    description: Reversed exact-version counterparty IRIs must fail canonical lexical ordering.
+    profile: market-structure-v03-shacl
+    target: OTCTradingContext
+    counterpartyMode: reversed
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#SPARQLConstraintComponent
+      focus: https://axiolune.ai/data/test/market-structure-otc-counterparties-reversed
+      path: https://axiolune.ai/ontology/finance/market-structure/otcCounterpartyA
+      severity: http://www.w3.org/ns/shacl#Violation
+
+  - id: market-structure-otc-counterparties-equal
+    description: Reusing the same exact-version IRI in both counterparty branches must fail.
+    profile: market-structure-v03-shacl
+    target: OTCTradingContext
+    counterpartyMode: equal
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#SPARQLConstraintComponent
+      focus: https://axiolune.ai/data/test/market-structure-otc-counterparties-equal
+      path: https://axiolune.ai/ontology/finance/market-structure/otcCounterpartyA
+      severity: http://www.w3.org/ns/shacl#Violation

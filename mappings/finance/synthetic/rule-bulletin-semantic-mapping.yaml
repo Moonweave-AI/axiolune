@@ -1,0 +1,40 @@
+# SemanticMappingDefinition — exchange rule bulletin ingest (MR-G5 narrative)
+# Status: draft — documented mapping; runner not wired in v0.3.0
+
+iri: "https://axiolune.ai/mapping/finance/synthetic/rule-bulletin-v0.1"
+namespace: "ax-map"
+localName: "RuleBulletinToApplicability"
+label: "Exchange rule bulletin to RuleApplicability"
+definition: "Maps exchange bulletin rows to RuleApplicability facts referencing canonical MarketRule versions"
+version: "0.1.0"
+status: draft
+runnerCapability: "documented-only-v0.3.0"
+
+source:
+  datasetId: "axiolune:synthetic:rule-bulletin:v0.1"
+  rowSet:
+    tables:
+      - rule_bulletins
+    joins: []
+
+targets:
+  - targetTypeIri: "https://axiolune.ai/ontology/finance/market-rules/RuleApplicability"
+    fromTable: rule_bulletins
+    identity:
+      logicalKey: ["rule_bulletins.bulletin_id"]
+      iriTemplate: "https://axiolune.ai/data/rules/app-{rule_bulletins.bulletin_id}"
+    slotMappings:
+      - slotLocal: "appliesRule"
+        binding: { iriTemplate: "https://axiolune.ai/data/rules/{rule_bulletins.rule_code}" }
+      - slotLocal: "scopedToVenue"
+        binding: { iriTemplate: "https://axiolune.ai/data/venues/{rule_bulletins.venue_mic}" }
+      - slotLocal: "appliesToInstrumentClass"
+        binding: { field: "rule_bulletins.instrument_class" }
+      - slot: "https://axiolune.ai/ontology/meta/patterns/TemporalFact/validFrom"
+        binding: { field: "rule_bulletins.effective_from" }
+      - slot: "https://axiolune.ai/ontology/meta/patterns/TemporalFact/knowledgeFrom"
+        binding: { field: "rule_bulletins.published_at" }
+      - slot: "https://axiolune.ai/ontology/meta/patterns/TemporalFact/availableFrom"
+        binding: { field: "rule_bulletins.available_from" }
+
+narrativeRef: "docs/domain/planning/mapping-narratives/MR-G5-rule-bulletin-to-applicability.md"

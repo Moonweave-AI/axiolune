@@ -1,0 +1,1207 @@
+valuationPrecisionArtifact: &valuationPrecisionArtifact
+  ref: https://axiolune.ai/policies/valuation-precision/1
+  digest: sha256:946d8b89e1467d356cd8edd0ce624338f7f7f5727fae1ace3abcdd4c6d4a9b84
+  payload:
+    amountScale: 6
+    arithmetic: exact-rational
+    intermediate: unbounded-integer
+    policyId: axiolune-direct-unit-valuation-precision-v1
+    quantityScale: 6
+    rateScale: 6
+    schemaVersion: "1.0"
+valuationRoundingArtifact: &valuationRoundingArtifact
+  ref: https://axiolune.ai/policies/valuation-rounding/1
+  digest: sha256:94ef9cfff4d16d0930762fc7cd942675a15d4f779bfd64d02ca6087c1cfd9738
+  payload:
+    mode: half-even
+    outputScale: 6
+    policyId: axiolune-direct-unit-valuation-rounding-v1
+    schemaVersion: "1.0"
+    stages: [direct-unit-product, fx-conversion]
+valuationPrecision18Artifact: &valuationPrecision18Artifact
+  ref: https://axiolune.ai/policies/valuation-precision/18
+  digest: sha256:eba11bce30b6af6b5e82bb08175eca533164bf4714c1258b52f64b2967756e7e
+  payload:
+    amountScale: 18
+    arithmetic: exact-rational
+    intermediate: unbounded-integer
+    policyId: axiolune-direct-unit-valuation-precision-v1
+    quantityScale: 18
+    rateScale: 18
+    schemaVersion: "1.0"
+valuationRounding18Artifact: &valuationRounding18Artifact
+  ref: https://axiolune.ai/policies/valuation-rounding/18
+  digest: sha256:91c2a4eabbbbca481474984d21f283a5b1c51528c5872498a09d07d6cf5640c1
+  payload:
+    mode: half-even
+    outputScale: 18
+    policyId: axiolune-direct-unit-valuation-rounding-v1
+    schemaVersion: "1.0"
+    stages: [direct-unit-product, fx-conversion]
+costBasisPrecisionArtifact: &costBasisPrecisionArtifact
+  ref: https://axiolune.ai/policies/cost-basis-precision/1
+  digest: sha256:c3d4177149a5c5dd823176ebba5294a2580e60944f24599053c863856e73c6e4
+  payload:
+    amountScale: 6
+    arithmetic: exact-rational
+    intermediate: unbounded-integer
+    policyId: axiolune-cost-basis-precision-v1
+    quantityScale: 6
+    rateScale: 6
+    schemaVersion: "1.0"
+costBasisRoundingArtifact: &costBasisRoundingArtifact
+  ref: https://axiolune.ai/policies/cost-basis-rounding/1
+  digest: sha256:ff25c303a20c66d54664a4b7a2a36d97f323bee4964750419ea4c9ed1735a60d
+  payload:
+    mode: half-even
+    outputScale: 6
+    policyId: axiolune-cost-basis-rounding-v1
+    schemaVersion: "1.0"
+    stages: [opening-direct-unit-product, fee-allocation, remaining-basis-proration, fx-conversion]
+fxInputContextArtifact: &fxInputContextArtifact
+  ref: https://axiolune.ai/contexts/fx-input/1
+  digest: sha256:c50002388b540883bd55ff81b432e256a6662e9d548355c65cb3fc11cf55b473
+  payload:
+    completedAt: "2025-01-01T00:00:00Z"
+    contextId: fx-input-1
+    schemaVersion: "1.0"
+    status: completed
+fxRateBase: &fxRateBase
+  versionIri: https://axiolune.ai/fx/USD-EUR/version/v1
+  baseCurrency: USD
+  quoteCurrency: EUR
+  rate: {value: "0.9", unit: urn:unit:EUR-per-USD, precision: 6}
+  validFrom: "2026-01-01T00:00:00Z"
+  knowledgeFrom: "2026-01-01T00:00:01Z"
+  availableFrom: "2026-01-01T00:00:02Z"
+fxConversionBase: &fxConversionBase
+  versionIri: https://axiolune.ai/portfolio/fx-conversions/USD-EUR-REVIEW/version/v1
+  rateVersionIri: https://axiolune.ai/fx/USD-EUR/version/v1
+  baseCurrency: USD
+  quoteCurrency: EUR
+  direction: baseToQuote
+  consumerKind: valuationLine
+  consumerVersionIri: https://axiolune.ai/portfolio/position-valuations/PV-FX-REVIEW/version/v1
+  validFrom: "2026-01-02T00:00:00Z"
+  knowledgeFrom: "2026-01-02T00:00:01Z"
+  availableFrom: "2026-01-02T00:00:02Z"
+  generatingContextRef: https://axiolune.ai/runs/valuation/PV-FX-REVIEW
+  roundingPolicy: *valuationRoundingArtifact
+  inputContext: *fxInputContextArtifact
+  rateObservation: *fxRateBase
+  inputMoney: {amount: "100", currency: USD, scale: 6}
+  outputMoney: {amount: "90", currency: EUR, scale: 6}
+fxValuationBase: &fxValuationBase
+  versionIri: https://axiolune.ai/portfolio/position-valuations/PV-FX-REVIEW/version/v1
+  header:
+    versionIri: https://axiolune.ai/portfolio/valuations/PV-FX-REVIEW/version/v1
+    definitionVersionIri: https://axiolune.ai/portfolio/valuation-definitions/direct/version/v1
+    method: directUnitPriceTimesQuantity
+    quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+    reportingCurrency: EUR
+    memberAccounts: [https://axiolune.ai/accounts/ACC-1]
+    precisionPolicy: *valuationPrecisionArtifact
+    roundingPolicy: *valuationRoundingArtifact
+  holdingSnapshot:
+    versionIri: https://axiolune.ai/portfolio/holdings/AAPL/version/fx-review
+    account: https://axiolune.ai/accounts/ACC-1
+    instrument: https://axiolune.ai/instruments/AAPL
+    listingVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+    quantity: {value: "1", unit: urn:unit:share, precision: 6}
+  price:
+    versionIri: https://axiolune.ai/prices/AAPL/version/fx-review
+    instrument: https://axiolune.ai/instruments/AAPL
+    listingVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+    quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+    denominatorUnit: urn:unit:share
+    money: {amount: "100", currency: USD, scale: 6}
+  fxConversion: *fxConversionBase
+  marketValue: {amount: "90", currency: EUR, scale: 6}
+
+fixtures:
+  - id: PP-NEG-000-duplicate-opening-remainder-tuple
+    contract: PositionLotIdentity
+    expectedResult: rejected
+    instance:
+      lots:
+        - logicalIri: https://axiolune.ai/portfolio/lots/L-A
+          versionIri: https://axiolune.ai/portfolio/lots/L-A/version/v1
+          account: https://axiolune.ai/accounts/ACC-1
+          instrument: https://axiolune.ai/instruments/AAPL
+          openingExecutionLogicalIri: https://axiolune.ai/orders/executions/E-1
+          openingExecutionVersionIri: https://axiolune.ai/orders/executions/E-1/version/v1
+          costBasisDefinitionLogicalIri: https://axiolune.ai/portfolio/cost-definitions/C-1
+          costBasisDefinitionVersionIri: https://axiolune.ai/portfolio/cost-definitions/C-1/version/v1
+          discriminator: openingRemainder
+          validFrom: "2026-01-01T00:00:00Z"
+          knowledgeFrom: "2026-01-01T00:00:01Z"
+          availableFrom: "2026-01-01T00:00:02Z"
+          revision: 0
+        - logicalIri: https://axiolune.ai/portfolio/lots/L-B
+          versionIri: https://axiolune.ai/portfolio/lots/L-B/version/v1
+          account: https://axiolune.ai/accounts/ACC-1
+          instrument: https://axiolune.ai/instruments/AAPL
+          openingExecutionLogicalIri: https://axiolune.ai/orders/executions/E-1
+          openingExecutionVersionIri: https://axiolune.ai/orders/executions/E-1/version/v1
+          costBasisDefinitionLogicalIri: https://axiolune.ai/portfolio/cost-definitions/C-1
+          costBasisDefinitionVersionIri: https://axiolune.ai/portfolio/cost-definitions/C-1/version/v1
+          discriminator: openingRemainder
+          validFrom: "2026-01-01T00:00:00Z"
+          knowledgeFrom: "2026-01-01T00:00:01Z"
+          availableFrom: "2026-01-01T00:00:02Z"
+          revision: 0
+
+  - id: PP-NEG-001-negative-holding
+    contract: SnapshotContract
+    expectedResult: rejected
+    instance:
+      kind: holding
+      account: https://axiolune.ai/accounts/ACC-1
+      instrument: https://axiolune.ai/instruments/AAPL
+      quantity: {value: "-1", unit: urn:unit:share}
+
+  - id: PP-NEG-002-position-with-side-duplicate
+    contract: SnapshotContract
+    expectedResult: rejected
+    instance:
+      kind: position
+      account: https://axiolune.ai/accounts/ACC-1
+      instrument: https://axiolune.ai/instruments/AAPL
+      quantity: {value: "-2", unit: urn:unit:share}
+      side: Long
+
+  - id: PP-NEG-003-valuation-input-not-xone
+    contract: PositionValuation
+    expectedResult: rejected
+    instance:
+      header:
+        versionIri: https://axiolune.ai/portfolio/valuations/PV-1/version/v1
+        definitionVersionIri: https://axiolune.ai/portfolio/valuation-definitions/direct/version/v1
+        method: directUnitPriceTimesQuantity
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        reportingCurrency: USD
+        memberAccounts: [https://axiolune.ai/accounts/ACC-1]
+      holdingSnapshot:
+        versionIri: https://axiolune.ai/portfolio/holdings/AAPL/version/v1
+        account: https://axiolune.ai/accounts/ACC-1
+        instrument: https://axiolune.ai/instruments/AAPL
+        quantity: {value: "2", unit: urn:unit:share}
+      positionSnapshot:
+        versionIri: https://axiolune.ai/portfolio/positions/AAPL/version/v1
+        account: https://axiolune.ai/accounts/ACC-1
+        instrument: https://axiolune.ai/instruments/AAPL
+        quantity: {value: "2", unit: urn:unit:share}
+      price:
+        versionIri: https://axiolune.ai/prices/AAPL/version/v1
+        instrument: https://axiolune.ai/instruments/AAPL
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        denominatorUnit: urn:unit:share
+        money: {amount: "100", currency: USD}
+      marketValue: {amount: "200", currency: USD}
+
+  - id: PP-NEG-004-wrong-valuation-arithmetic
+    contract: PositionValuation
+    expectedResult: rejected
+    instance:
+      versionIri: https://axiolune.ai/portfolio/position-valuations/PV-WRONG/version/v1
+      header:
+        versionIri: https://axiolune.ai/portfolio/valuations/PV-1/version/v1
+        definitionVersionIri: https://axiolune.ai/portfolio/valuation-definitions/direct/version/v1
+        method: directUnitPriceTimesQuantity
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        reportingCurrency: USD
+        memberAccounts: [https://axiolune.ai/accounts/ACC-1]
+        precisionPolicy: *valuationPrecisionArtifact
+        roundingPolicy: *valuationRoundingArtifact
+      positionSnapshot:
+        versionIri: https://axiolune.ai/portfolio/positions/AAPL/version/v1
+        account: https://axiolune.ai/accounts/ACC-1
+        instrument: https://axiolune.ai/instruments/AAPL
+        quantity: {value: "2", unit: urn:unit:share, precision: 6}
+      price:
+        versionIri: https://axiolune.ai/prices/AAPL/version/v1
+        instrument: https://axiolune.ai/instruments/AAPL
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        denominatorUnit: urn:unit:share
+        money: {amount: "100", currency: USD, scale: 6}
+      marketValue: {amount: "201", currency: USD, scale: 6}
+
+  - id: PP-NEG-005-same-currency-fx-misuse
+    contract: PositionValuation
+    expectedResult: rejected
+    instance:
+      versionIri: https://axiolune.ai/portfolio/position-valuations/PV-FX-MISUSE/version/v1
+      header:
+        versionIri: https://axiolune.ai/portfolio/valuations/PV-1/version/v1
+        definitionVersionIri: https://axiolune.ai/portfolio/valuation-definitions/direct/version/v1
+        method: directUnitPriceTimesQuantity
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        reportingCurrency: USD
+        memberAccounts: [https://axiolune.ai/accounts/ACC-1]
+        precisionPolicy: *valuationPrecisionArtifact
+        roundingPolicy: *valuationRoundingArtifact
+      holdingSnapshot:
+        versionIri: https://axiolune.ai/portfolio/holdings/AAPL/version/v1
+        account: https://axiolune.ai/accounts/ACC-1
+        instrument: https://axiolune.ai/instruments/AAPL
+        quantity: {value: "1", unit: urn:unit:share, precision: 6}
+      price:
+        versionIri: https://axiolune.ai/prices/AAPL/version/v1
+        instrument: https://axiolune.ai/instruments/AAPL
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        denominatorUnit: urn:unit:share
+        money: {amount: "100", currency: USD, scale: 6}
+      fxConversion:
+        versionIri: https://axiolune.ai/portfolio/fx-conversions/USD-EUR-100/version/v1
+        rateVersionIri: https://axiolune.ai/fx/USD-EUR/version/v1
+        baseCurrency: USD
+        quoteCurrency: EUR
+        rate: "0.9"
+        direction: baseToQuote
+        inputMoney: {amount: "100", currency: USD}
+        outputMoney: {amount: "90", currency: EUR}
+      marketValue: {amount: "100", currency: USD, scale: 6}
+
+  - id: PP-NEG-006-incomplete-fee-allocation
+    contract: ExecutionLotAllocationClosure
+    expectedResult: rejected
+    expectedReason: included Fee has no allocation
+    instance:
+      execution:
+        versionIri: https://axiolune.ai/orders/executions/E-1/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        quantity: {value: "10", unit: urn:unit:share}
+        price: {amount: "100", currency: USD}
+      definition:
+        versionIri: https://axiolune.ai/portfolio/cost-definitions/C-1/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        method: executionAllocatedDirectUnitCost
+        basisCurrency: USD
+        feeTreatment: included
+        lotOpeningPolicy: openingRemainder
+        lotConsumptionPolicy: fifo
+      eligibleLots: []
+      lots:
+        - versionIri: https://axiolune.ai/portfolio/lots/L-1/version/v1
+          discriminator: openingRemainder
+          openingExecutionVersionIri: https://axiolune.ai/orders/executions/E-1/version/v1
+          originalQuantity: {value: "10", unit: urn:unit:share}
+          openingGross: {amount: "1000", currency: USD}
+          openingCostBasis: {amount: "1002", currency: USD}
+      allocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/A-1/version/v1
+          kind: opening
+          executionVersionIri: https://axiolune.ai/orders/executions/E-1/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/L-1/version/v1
+          quantity: {value: "10", unit: urn:unit:share}
+      fees:
+        - versionIri: https://axiolune.ai/orders/fees/F-1/version/v1
+          executionVersionIri: https://axiolune.ai/orders/executions/E-1/version/v1
+          effect: charge
+          money: {amount: "2", currency: USD}
+      feeAllocations: []
+      closure:
+        allocationVersionIris:
+          - https://axiolune.ai/portfolio/allocations/A-1/version/v1
+        feeVersionIris:
+          - https://axiolune.ai/orders/fees/F-1/version/v1
+        feeAllocationVersionIris: []
+        eligibleLotVersionIris: []
+        allocationProbePassed: true
+        feeProbePassed: true
+        selectionProbePassed: true
+
+  - id: PP-NEG-007-over-consumed-lot
+    contract: PositionLotStateClosure
+    expectedResult: rejected
+    expectedReason: lot is over-consumed
+    instance:
+      definition:
+        lotConsumptionPolicy: fifo
+      lots:
+        - versionIri: https://axiolune.ai/portfolio/lots/L-1/version/v1
+          account: https://axiolune.ai/accounts/ACC-1
+          instrument: https://axiolune.ai/instruments/AAPL
+          originalQuantity: {value: "10", unit: urn:unit:share}
+          openingCostBasis: {amount: "1000", currency: USD}
+      consumptionAllocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/C-1/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/L-1/version/v1
+          executionSide: Sell
+          account: https://axiolune.ai/accounts/ACC-1
+          instrument: https://axiolune.ai/instruments/AAPL
+          quantity: {value: "11", unit: urn:unit:share}
+      selectionClosures:
+        - consumptionAllocationVersionIris:
+            - https://axiolune.ai/portfolio/allocations/C-1/version/v1
+          eligibleLots:
+            - versionIri: https://axiolune.ai/portfolio/lots/L-1/version/v1
+              openedAt: "2025-12-01T00:00:00Z"
+              remainingQuantity: {value: "10", unit: urn:unit:share}
+          eligibleLotVersionIris:
+            - https://axiolune.ai/portfolio/lots/L-1/version/v1
+          selectionProbePassed: true
+      snapshot:
+        versionIri: https://axiolune.ai/portfolio/positions/AAPL/version/v2
+        quantity: {value: "0", unit: urn:unit:share}
+      closure:
+        openLotVersionIris: []
+        remainingCostBasis: {amount: "0", currency: USD}
+        lotProbePassed: true
+        allocationProbePassed: true
+
+  - id: PP-NEG-008-pnl-equation-mismatch
+    contract: PositionLotStateClosure
+    expectedResult: rejected
+    expectedReason: unrealized PnL equation mismatch
+    instance:
+      definition:
+        versionIri: https://axiolune.ai/portfolio/cost-definitions/C-STATE-NEG/version/v1
+        lotConsumptionPolicy: fifo
+        precisionPolicy: *costBasisPrecisionArtifact
+        roundingPolicy: *costBasisRoundingArtifact
+      lots:
+        - versionIri: https://axiolune.ai/portfolio/lots/L-1/version/v1
+          account: https://axiolune.ai/accounts/ACC-1
+          instrument: https://axiolune.ai/instruments/AAPL
+          originalQuantity: {value: "10", unit: urn:unit:share, precision: 6}
+          openingCostBasis: {amount: "1000", currency: USD, scale: 6}
+      consumptionAllocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/C-1/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/L-1/version/v1
+          executionSide: Sell
+          account: https://axiolune.ai/accounts/ACC-1
+          instrument: https://axiolune.ai/instruments/AAPL
+          quantity: {value: "4", unit: urn:unit:share, precision: 6}
+      selectionClosures:
+        - consumptionAllocationVersionIris:
+            - https://axiolune.ai/portfolio/allocations/C-1/version/v1
+          eligibleLots:
+            - versionIri: https://axiolune.ai/portfolio/lots/L-1/version/v1
+              openedAt: "2025-12-01T00:00:00Z"
+              remainingQuantity: {value: "10", unit: urn:unit:share, precision: 6}
+          eligibleLotVersionIris:
+            - https://axiolune.ai/portfolio/lots/L-1/version/v1
+          selectionProbePassed: true
+      snapshot:
+        versionIri: https://axiolune.ai/portfolio/positions/AAPL/version/v2
+        quantity: {value: "6", unit: urn:unit:share, precision: 6}
+      closure:
+        openLotVersionIris:
+          - https://axiolune.ai/portfolio/lots/L-1/version/v1
+        remainingCostBasis: {amount: "600", currency: USD, scale: 6}
+        lotProbePassed: true
+        allocationProbePassed: true
+      pnl:
+        currency: USD
+        marketValue: {amount: "720", currency: USD, scale: 6}
+        remainingCostBasis: {amount: "600", currency: USD, scale: 6}
+        unrealizedPnl: {amount: "121", currency: USD, scale: 6}
+
+  - id: PP-NEG-010-orphan-fee-allocation-target
+    contract: ExecutionLotAllocationClosure
+    expectedResult: rejected
+    expectedReason: fee allocation refers to unknown lot allocation
+    instance:
+      execution:
+        versionIri: https://axiolune.ai/orders/executions/E-ORPHAN/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        quantity: {value: "10", unit: urn:unit:share}
+        price: {amount: "100", currency: USD}
+      definition:
+        versionIri: https://axiolune.ai/portfolio/cost-definitions/C-ORPHAN/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        method: executionAllocatedDirectUnitCost
+        basisCurrency: USD
+        feeTreatment: included
+        lotOpeningPolicy: openingRemainder
+        lotConsumptionPolicy: fifo
+      eligibleLots: []
+      lots:
+        - versionIri: https://axiolune.ai/portfolio/lots/L-ORPHAN/version/v1
+          discriminator: openingRemainder
+          openingExecutionVersionIri: https://axiolune.ai/orders/executions/E-ORPHAN/version/v1
+          originalQuantity: {value: "10", unit: urn:unit:share}
+          openingGross: {amount: "1000", currency: USD}
+          openingCostBasis: {amount: "1002", currency: USD}
+      allocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/A-ORPHAN-VALID/version/v1
+          kind: opening
+          executionVersionIri: https://axiolune.ai/orders/executions/E-ORPHAN/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/L-ORPHAN/version/v1
+          quantity: {value: "10", unit: urn:unit:share}
+      fees:
+        - versionIri: https://axiolune.ai/orders/fees/F-ORPHAN/version/v1
+          executionVersionIri: https://axiolune.ai/orders/executions/E-ORPHAN/version/v1
+          effect: charge
+          money: {amount: "2", currency: USD}
+      feeAllocations:
+        - versionIri: https://axiolune.ai/portfolio/fee-allocations/FA-ORPHAN/version/v1
+          feeVersionIri: https://axiolune.ai/orders/fees/F-ORPHAN/version/v1
+          lotAllocationVersionIri: https://axiolune.ai/portfolio/allocations/DOES-NOT-EXIST/version/v1
+          money: {amount: "2", currency: USD}
+      closure:
+        allocationVersionIris:
+          - https://axiolune.ai/portfolio/allocations/A-ORPHAN-VALID/version/v1
+        feeVersionIris:
+          - https://axiolune.ai/orders/fees/F-ORPHAN/version/v1
+        feeAllocationVersionIris:
+          - https://axiolune.ai/portfolio/fee-allocations/FA-ORPHAN/version/v1
+        eligibleLotVersionIris: []
+        allocationProbePassed: true
+        feeProbePassed: true
+        selectionProbePassed: true
+
+  - id: PP-NEG-011-fifo-skips-older-eligible-lot
+    contract: ExecutionLotAllocationClosure
+    expectedResult: rejected
+    expectedReason: fifo consumption violates deterministic eligible-lot order
+    instance:
+      execution:
+        versionIri: https://axiolune.ai/orders/executions/E-FIFO-BAD/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        quantity: {value: "5", unit: urn:unit:share}
+        price: {amount: "100", currency: USD}
+      definition:
+        versionIri: https://axiolune.ai/portfolio/cost-definitions/C-FIFO/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        method: executionAllocatedDirectUnitCost
+        basisCurrency: USD
+        feeTreatment: excluded
+        lotOpeningPolicy: openingRemainder
+        lotConsumptionPolicy: fifo
+      lots: []
+      eligibleLots:
+        - versionIri: https://axiolune.ai/portfolio/lots/FIFO-OLD/version/v1
+          openedAt: "2025-01-01T00:00:00Z"
+          remainingQuantity: {value: "5", unit: urn:unit:share}
+        - versionIri: https://axiolune.ai/portfolio/lots/FIFO-NEW/version/v1
+          openedAt: "2025-02-01T00:00:00Z"
+          remainingQuantity: {value: "5", unit: urn:unit:share}
+      allocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/A-FIFO-BAD/version/v1
+          kind: consumption
+          executionVersionIri: https://axiolune.ai/orders/executions/E-FIFO-BAD/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/FIFO-NEW/version/v1
+          quantity: {value: "5", unit: urn:unit:share}
+      fees: []
+      feeAllocations: []
+      closure:
+        allocationVersionIris:
+          - https://axiolune.ai/portfolio/allocations/A-FIFO-BAD/version/v1
+        feeVersionIris: []
+        feeAllocationVersionIris: []
+        eligibleLotVersionIris:
+          - https://axiolune.ai/portfolio/lots/FIFO-OLD/version/v1
+          - https://axiolune.ai/portfolio/lots/FIFO-NEW/version/v1
+        allocationProbePassed: true
+        feeProbePassed: true
+        selectionProbePassed: true
+
+  - id: PP-NEG-012-lifo-skips-newer-eligible-lot
+    contract: ExecutionLotAllocationClosure
+    expectedResult: rejected
+    expectedReason: lifo consumption violates deterministic eligible-lot order
+    instance:
+      execution:
+        versionIri: https://axiolune.ai/orders/executions/E-LIFO-BAD/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        quantity: {value: "5", unit: urn:unit:share}
+        price: {amount: "100", currency: USD}
+      definition:
+        versionIri: https://axiolune.ai/portfolio/cost-definitions/C-LIFO/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        method: executionAllocatedDirectUnitCost
+        basisCurrency: USD
+        feeTreatment: excluded
+        lotOpeningPolicy: openingRemainder
+        lotConsumptionPolicy: lifo
+      lots: []
+      eligibleLots:
+        - versionIri: https://axiolune.ai/portfolio/lots/LIFO-OLD/version/v1
+          openedAt: "2025-01-01T00:00:00Z"
+          remainingQuantity: {value: "5", unit: urn:unit:share}
+        - versionIri: https://axiolune.ai/portfolio/lots/LIFO-NEW/version/v1
+          openedAt: "2025-02-01T00:00:00Z"
+          remainingQuantity: {value: "5", unit: urn:unit:share}
+      allocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/A-LIFO-BAD/version/v1
+          kind: consumption
+          executionVersionIri: https://axiolune.ai/orders/executions/E-LIFO-BAD/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/LIFO-OLD/version/v1
+          quantity: {value: "5", unit: urn:unit:share}
+      fees: []
+      feeAllocations: []
+      closure:
+        allocationVersionIris:
+          - https://axiolune.ai/portfolio/allocations/A-LIFO-BAD/version/v1
+        feeVersionIris: []
+        feeAllocationVersionIris: []
+        eligibleLotVersionIris:
+          - https://axiolune.ai/portfolio/lots/LIFO-OLD/version/v1
+          - https://axiolune.ai/portfolio/lots/LIFO-NEW/version/v1
+        allocationProbePassed: true
+        feeProbePassed: true
+        selectionProbePassed: true
+
+  - id: PP-NEG-013-specific-allocation-differs-from-selected-set
+    contract: ExecutionLotAllocationClosure
+    expectedResult: rejected
+    expectedReason: specific-identification allocation differs from the exact selected-lot set
+    instance:
+      execution:
+        versionIri: https://axiolune.ai/orders/executions/E-SPECIFIC-BAD/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        quantity: {value: "3", unit: urn:unit:share}
+        price: {amount: "100", currency: USD}
+      definition:
+        versionIri: https://axiolune.ai/portfolio/cost-definitions/C-SPECIFIC/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        method: executionAllocatedDirectUnitCost
+        basisCurrency: USD
+        feeTreatment: excluded
+        lotOpeningPolicy: openingRemainder
+        lotConsumptionPolicy: specificIdentification
+      lots: []
+      eligibleLots:
+        - versionIri: https://axiolune.ai/portfolio/lots/SPECIFIC-A/version/v1
+          openedAt: "2025-01-01T00:00:00Z"
+          remainingQuantity: {value: "4", unit: urn:unit:share}
+        - versionIri: https://axiolune.ai/portfolio/lots/SPECIFIC-B/version/v1
+          openedAt: "2025-02-01T00:00:00Z"
+          remainingQuantity: {value: "4", unit: urn:unit:share}
+      allocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/A-SPECIFIC-BAD/version/v1
+          kind: consumption
+          executionVersionIri: https://axiolune.ai/orders/executions/E-SPECIFIC-BAD/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/SPECIFIC-B/version/v1
+          quantity: {value: "3", unit: urn:unit:share}
+      fees: []
+      feeAllocations: []
+      closure:
+        allocationVersionIris:
+          - https://axiolune.ai/portfolio/allocations/A-SPECIFIC-BAD/version/v1
+        feeVersionIris: []
+        feeAllocationVersionIris: []
+        eligibleLotVersionIris:
+          - https://axiolune.ai/portfolio/lots/SPECIFIC-A/version/v1
+          - https://axiolune.ai/portfolio/lots/SPECIFIC-B/version/v1
+        specificSelectionLotVersionIris:
+          - https://axiolune.ai/portfolio/lots/SPECIFIC-A/version/v1
+        specificSelectionRef: https://evidence.axiolune.ai/portfolio/specific-selection/bad
+        specificSelectionDigest: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        allocationProbePassed: true
+        feeProbePassed: true
+        selectionProbePassed: true
+
+  - id: PP-NEG-014-calculation-definition-authority-key-collision
+    contract: CalculationDefinitionIdentity
+    expectedResult: rejected
+    expectedReason: two calculation-definition logical IRIs share one authority-scoped key
+    instance:
+      definitions:
+        - kind: costBasis
+          authority: https://axiolune.ai/parties/calculation-governance
+          definitionId: fifo-included-v1
+          logicalIri: https://axiolune.ai/portfolio/cost-definitions/fifo-included-a
+          versionIri: https://axiolune.ai/portfolio/cost-definitions/fifo-included-a/version/v1
+          revision: 0
+        - kind: costBasis
+          authority: https://axiolune.ai/parties/calculation-governance
+          definitionId: fifo-included-v1
+          logicalIri: https://axiolune.ai/portfolio/cost-definitions/fifo-included-b
+          versionIri: https://axiolune.ai/portfolio/cost-definitions/fifo-included-b/version/v1
+          revision: 0
+
+  - id: PP-NEG-009-consumption-side-mismatch
+    contract: PositionLotStateClosure
+    expectedResult: rejected
+    expectedReason: consumption Execution side is not opposite the lot sign
+    instance:
+      definition:
+        lotConsumptionPolicy: fifo
+      lots:
+        - versionIri: https://axiolune.ai/portfolio/lots/L-1/version/v1
+          account: https://axiolune.ai/accounts/ACC-1
+          instrument: https://axiolune.ai/instruments/AAPL
+          originalQuantity: {value: "10", unit: urn:unit:share}
+          openingCostBasis: {amount: "1000", currency: USD}
+      consumptionAllocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/C-2/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/L-1/version/v1
+          executionSide: Buy
+          account: https://axiolune.ai/accounts/ACC-1
+          instrument: https://axiolune.ai/instruments/AAPL
+          quantity: {value: "4", unit: urn:unit:share}
+      selectionClosures:
+        - consumptionAllocationVersionIris:
+            - https://axiolune.ai/portfolio/allocations/C-2/version/v1
+          eligibleLots:
+            - versionIri: https://axiolune.ai/portfolio/lots/L-1/version/v1
+              openedAt: "2025-12-01T00:00:00Z"
+              remainingQuantity: {value: "10", unit: urn:unit:share}
+          eligibleLotVersionIris:
+            - https://axiolune.ai/portfolio/lots/L-1/version/v1
+          selectionProbePassed: true
+      snapshot:
+        versionIri: https://axiolune.ai/portfolio/positions/AAPL/version/v2
+        quantity: {value: "6", unit: urn:unit:share}
+      closure:
+        openLotVersionIris:
+          - https://axiolune.ai/portfolio/lots/L-1/version/v1
+        remainingCostBasis: {amount: "600", currency: USD}
+        lotProbePassed: true
+        allocationProbePassed: true
+
+  - id: PP-NEG-015-lot-state-fifo-violation
+    contract: PositionLotStateClosure
+    expectedResult: rejected
+    expectedReason: fifo consumption violates deterministic eligible-lot order
+    instance:
+      definition:
+        lotConsumptionPolicy: fifo
+      lots:
+        - versionIri: https://axiolune.ai/portfolio/lots/STATE-OLD/version/v1
+          account: https://axiolune.ai/accounts/ACC-1
+          instrument: https://axiolune.ai/instruments/AAPL
+          originalQuantity: {value: "10", unit: urn:unit:share}
+          openingCostBasis: {amount: "1000", currency: USD}
+        - versionIri: https://axiolune.ai/portfolio/lots/STATE-NEW/version/v1
+          account: https://axiolune.ai/accounts/ACC-1
+          instrument: https://axiolune.ai/instruments/AAPL
+          originalQuantity: {value: "10", unit: urn:unit:share}
+          openingCostBasis: {amount: "1200", currency: USD}
+      consumptionAllocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/STATE-C-NEW/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/STATE-NEW/version/v1
+          executionSide: Sell
+          account: https://axiolune.ai/accounts/ACC-1
+          instrument: https://axiolune.ai/instruments/AAPL
+          quantity: {value: "5", unit: urn:unit:share}
+      selectionClosures:
+        - consumptionAllocationVersionIris:
+            - https://axiolune.ai/portfolio/allocations/STATE-C-NEW/version/v1
+          eligibleLots:
+            - versionIri: https://axiolune.ai/portfolio/lots/STATE-OLD/version/v1
+              openedAt: "2025-01-01T00:00:00Z"
+              remainingQuantity: {value: "10", unit: urn:unit:share}
+            - versionIri: https://axiolune.ai/portfolio/lots/STATE-NEW/version/v1
+              openedAt: "2025-02-01T00:00:00Z"
+              remainingQuantity: {value: "10", unit: urn:unit:share}
+          eligibleLotVersionIris:
+            - https://axiolune.ai/portfolio/lots/STATE-OLD/version/v1
+            - https://axiolune.ai/portfolio/lots/STATE-NEW/version/v1
+          selectionProbePassed: true
+      snapshot:
+        versionIri: https://axiolune.ai/portfolio/positions/AAPL/version/v3
+        quantity: {value: "15", unit: urn:unit:share}
+      closure:
+        openLotVersionIris:
+          - https://axiolune.ai/portfolio/lots/STATE-OLD/version/v1
+          - https://axiolune.ai/portfolio/lots/STATE-NEW/version/v1
+        remainingCostBasis: {amount: "1600", currency: USD}
+        lotProbePassed: true
+        allocationProbePassed: true
+
+  - id: PP-NEG-016-member-account-string-is-not-a-closure-set
+    contract: PositionValuation
+    expectedResult: rejected
+    expectedReason: valuation header member-account closure must be a unique logical-IRI set
+    instance:
+      header:
+        versionIri: https://axiolune.ai/portfolio/valuations/PV-MEMBER/version/v1
+        definitionVersionIri: https://axiolune.ai/portfolio/valuation-definitions/direct/version/v1
+        method: directUnitPriceTimesQuantity
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        reportingCurrency: USD
+        memberAccounts: https://axiolune.ai/accounts/ACC-1
+      positionSnapshot:
+        versionIri: https://axiolune.ai/portfolio/positions/AAPL/version/v1
+        account: https://axiolune.ai/accounts/ACC-1
+        instrument: https://axiolune.ai/instruments/AAPL
+        quantity: {value: "2", unit: urn:unit:share}
+      price:
+        versionIri: https://axiolune.ai/prices/AAPL/version/v1
+        instrument: https://axiolune.ai/instruments/AAPL
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        denominatorUnit: urn:unit:share
+        money: {amount: "100", currency: USD}
+      marketValue: {amount: "200", currency: USD}
+
+  - id: PP-NEG-017-boolean-money-is-not-decimal
+    contract: PositionValuation
+    expectedResult: rejected
+    expectedReason: price.money.amount must be an explicitly typed decimal lexical value
+    instance:
+      header:
+        versionIri: https://axiolune.ai/portfolio/valuations/PV-BOOL/version/v1
+        definitionVersionIri: https://axiolune.ai/portfolio/valuation-definitions/direct/version/v1
+        method: directUnitPriceTimesQuantity
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        reportingCurrency: USD
+        memberAccounts: [https://axiolune.ai/accounts/ACC-1]
+      positionSnapshot:
+        versionIri: https://axiolune.ai/portfolio/positions/AAPL/version/v1
+        account: https://axiolune.ai/accounts/ACC-1
+        instrument: https://axiolune.ai/instruments/AAPL
+        quantity: {value: "2", unit: urn:unit:share}
+      price:
+        versionIri: https://axiolune.ai/prices/AAPL/version/v1
+        instrument: https://axiolune.ai/instruments/AAPL
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        denominatorUnit: urn:unit:share
+        money: {amount: true, currency: USD}
+      marketValue: {amount: "2", currency: USD}
+
+  - id: PP-NEG-018-allocation-belongs-to-another-execution
+    contract: ExecutionLotAllocationClosure
+    expectedResult: rejected
+    expectedReason: lot allocation belongs to another Execution version
+    instance:
+      execution:
+        versionIri: https://axiolune.ai/orders/executions/E-ALLOC/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        quantity: {value: "5", unit: urn:unit:share}
+        price: {amount: "100", currency: USD}
+      definition:
+        versionIri: https://axiolune.ai/portfolio/cost-definitions/C-ALLOC/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        method: executionAllocatedDirectUnitCost
+        basisCurrency: USD
+        feeTreatment: excluded
+        lotOpeningPolicy: openingRemainder
+        lotConsumptionPolicy: fifo
+      lots: []
+      eligibleLots:
+        - versionIri: https://axiolune.ai/portfolio/lots/ALLOC-OLD/version/v1
+          openedAt: "2025-01-01T00:00:00Z"
+          remainingQuantity: {value: "5", unit: urn:unit:share}
+      allocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/A-ALLOC/version/v1
+          kind: consumption
+          executionVersionIri: https://axiolune.ai/orders/executions/OTHER/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/ALLOC-OLD/version/v1
+          quantity: {value: "5", unit: urn:unit:share}
+      fees: []
+      feeAllocations: []
+      closure:
+        allocationVersionIris: [https://axiolune.ai/portfolio/allocations/A-ALLOC/version/v1]
+        feeVersionIris: []
+        feeAllocationVersionIris: []
+        eligibleLotVersionIris: [https://axiolune.ai/portfolio/lots/ALLOC-OLD/version/v1]
+        allocationProbePassed: true
+        feeProbePassed: true
+        selectionProbePassed: true
+
+  - id: PP-NEG-019-fee-belongs-to-another-execution
+    contract: ExecutionLotAllocationClosure
+    expectedResult: rejected
+    expectedReason: Fee belongs to another Execution version
+    instance:
+      execution:
+        versionIri: https://axiolune.ai/orders/executions/E-FEE/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        quantity: {value: "1", unit: urn:unit:share}
+        price: {amount: "100", currency: USD}
+      definition:
+        versionIri: https://axiolune.ai/portfolio/cost-definitions/C-FEE/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        method: executionAllocatedDirectUnitCost
+        basisCurrency: USD
+        feeTreatment: included
+        lotOpeningPolicy: openingRemainder
+        lotConsumptionPolicy: fifo
+      eligibleLots: []
+      lots:
+        - versionIri: https://axiolune.ai/portfolio/lots/L-FEE/version/v1
+          discriminator: openingRemainder
+          openingExecutionVersionIri: https://axiolune.ai/orders/executions/E-FEE/version/v1
+          originalQuantity: {value: "1", unit: urn:unit:share}
+          openingGross: {amount: "100", currency: USD}
+          openingCostBasis: {amount: "101", currency: USD}
+      allocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/A-FEE/version/v1
+          kind: opening
+          executionVersionIri: https://axiolune.ai/orders/executions/E-FEE/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/L-FEE/version/v1
+          quantity: {value: "1", unit: urn:unit:share}
+      fees:
+        - versionIri: https://axiolune.ai/orders/fees/F-WRONG/version/v1
+          executionVersionIri: https://axiolune.ai/orders/executions/OTHER/version/v1
+          effect: charge
+          money: {amount: "1", currency: USD}
+      feeAllocations:
+        - versionIri: https://axiolune.ai/portfolio/fee-allocations/FA-WRONG/version/v1
+          feeVersionIri: https://axiolune.ai/orders/fees/F-WRONG/version/v1
+          lotAllocationVersionIri: https://axiolune.ai/portfolio/allocations/A-FEE/version/v1
+          money: {amount: "1", currency: USD}
+      closure:
+        allocationVersionIris: [https://axiolune.ai/portfolio/allocations/A-FEE/version/v1]
+        feeVersionIris: [https://axiolune.ai/orders/fees/F-WRONG/version/v1]
+        feeAllocationVersionIris: [https://axiolune.ai/portfolio/fee-allocations/FA-WRONG/version/v1]
+        eligibleLotVersionIris: []
+        allocationProbePassed: true
+        feeProbePassed: true
+        selectionProbePassed: true
+
+  - id: PP-NEG-020-opening-allocation-targets-unknown-lot
+    contract: ExecutionLotAllocationClosure
+    expectedResult: rejected
+    expectedReason: opening allocation targets an unknown PositionLot version
+    instance:
+      execution:
+        versionIri: https://axiolune.ai/orders/executions/E-UNKNOWN-LOT/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        quantity: {value: "1", unit: urn:unit:share, precision: 6}
+        price: {amount: "100", currency: USD, scale: 6}
+      definition:
+        versionIri: https://axiolune.ai/portfolio/cost-definitions/C-UNKNOWN-LOT/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        method: executionAllocatedDirectUnitCost
+        basisCurrency: USD
+        feeTreatment: excluded
+        lotOpeningPolicy: openingRemainder
+        lotConsumptionPolicy: fifo
+        precisionPolicy: *costBasisPrecisionArtifact
+        roundingPolicy: *costBasisRoundingArtifact
+      eligibleLots: []
+      lots: []
+      allocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/A-UNKNOWN-LOT/version/v1
+          kind: opening
+          executionVersionIri: https://axiolune.ai/orders/executions/E-UNKNOWN-LOT/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/UNKNOWN/version/v1
+          quantity: {value: "1", unit: urn:unit:share, precision: 6}
+      fees: []
+      feeAllocations: []
+      closure:
+        allocationVersionIris: [https://axiolune.ai/portfolio/allocations/A-UNKNOWN-LOT/version/v1]
+        feeVersionIris: []
+        feeAllocationVersionIris: []
+        eligibleLotVersionIris: []
+        allocationProbePassed: true
+        feeProbePassed: true
+        selectionProbePassed: true
+
+  - id: PP-NEG-021-cross-currency-opening-gross-without-fx
+    contract: ExecutionLotAllocationClosure
+    expectedResult: rejected
+    expectedReason: cross-currency opening gross requires FXConversion
+    instance:
+      execution:
+        versionIri: https://axiolune.ai/orders/executions/E-GROSS-FX/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        quantity: {value: "1", unit: urn:unit:share, precision: 6}
+        price: {amount: "100", currency: EUR, scale: 6}
+      definition:
+        versionIri: https://axiolune.ai/portfolio/cost-definitions/C-GROSS-FX/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        method: executionAllocatedDirectUnitCost
+        basisCurrency: USD
+        feeTreatment: excluded
+        lotOpeningPolicy: openingRemainder
+        lotConsumptionPolicy: fifo
+        precisionPolicy: *costBasisPrecisionArtifact
+        roundingPolicy: *costBasisRoundingArtifact
+      eligibleLots: []
+      lots:
+        - versionIri: https://axiolune.ai/portfolio/lots/L-GROSS-FX/version/v1
+          discriminator: openingRemainder
+          openingExecutionVersionIri: https://axiolune.ai/orders/executions/E-GROSS-FX/version/v1
+          originalQuantity: {value: "1", unit: urn:unit:share, precision: 6}
+          openingGross: {amount: "110", currency: USD, scale: 6}
+          openingCostBasis: {amount: "110", currency: USD, scale: 6}
+      allocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/A-GROSS-FX/version/v1
+          kind: opening
+          executionVersionIri: https://axiolune.ai/orders/executions/E-GROSS-FX/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/L-GROSS-FX/version/v1
+          quantity: {value: "1", unit: urn:unit:share, precision: 6}
+      fees: []
+      feeAllocations: []
+      closure:
+        allocationVersionIris: [https://axiolune.ai/portfolio/allocations/A-GROSS-FX/version/v1]
+        feeVersionIris: []
+        feeAllocationVersionIris: []
+        eligibleLotVersionIris: []
+        allocationProbePassed: true
+        feeProbePassed: true
+        selectionProbePassed: true
+
+  - id: PP-NEG-022-cross-currency-fee-without-fx
+    contract: ExecutionLotAllocationClosure
+    expectedResult: rejected
+    expectedReason: cross-currency Fee allocation requires FXConversion
+    instance:
+      execution:
+        versionIri: https://axiolune.ai/orders/executions/E-FEE-FX/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        quantity: {value: "1", unit: urn:unit:share, precision: 6}
+        price: {amount: "100", currency: USD, scale: 6}
+      definition:
+        versionIri: https://axiolune.ai/portfolio/cost-definitions/C-FEE-FX/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        method: executionAllocatedDirectUnitCost
+        basisCurrency: USD
+        feeTreatment: included
+        lotOpeningPolicy: openingRemainder
+        lotConsumptionPolicy: fifo
+        precisionPolicy: *costBasisPrecisionArtifact
+        roundingPolicy: *costBasisRoundingArtifact
+      eligibleLots: []
+      lots:
+        - versionIri: https://axiolune.ai/portfolio/lots/L-FEE-FX/version/v1
+          discriminator: openingRemainder
+          openingExecutionVersionIri: https://axiolune.ai/orders/executions/E-FEE-FX/version/v1
+          originalQuantity: {value: "1", unit: urn:unit:share, precision: 6}
+          openingGross: {amount: "100", currency: USD, scale: 6}
+          openingCostBasis: {amount: "101", currency: USD, scale: 6}
+      allocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/A-FEE-FX/version/v1
+          kind: opening
+          executionVersionIri: https://axiolune.ai/orders/executions/E-FEE-FX/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/L-FEE-FX/version/v1
+          quantity: {value: "1", unit: urn:unit:share, precision: 6}
+      fees:
+        - versionIri: https://axiolune.ai/orders/fees/F-FEE-FX/version/v1
+          executionVersionIri: https://axiolune.ai/orders/executions/E-FEE-FX/version/v1
+          effect: charge
+          money: {amount: "1", currency: EUR, scale: 6}
+      feeAllocations:
+        - versionIri: https://axiolune.ai/portfolio/fee-allocations/FA-FEE-FX/version/v1
+          feeVersionIri: https://axiolune.ai/orders/fees/F-FEE-FX/version/v1
+          lotAllocationVersionIri: https://axiolune.ai/portfolio/allocations/A-FEE-FX/version/v1
+          money: {amount: "1", currency: EUR, scale: 6}
+      closure:
+        allocationVersionIris: [https://axiolune.ai/portfolio/allocations/A-FEE-FX/version/v1]
+        feeVersionIris: [https://axiolune.ai/orders/fees/F-FEE-FX/version/v1]
+        feeAllocationVersionIris: [https://axiolune.ai/portfolio/fee-allocations/FA-FEE-FX/version/v1]
+        eligibleLotVersionIris: []
+        allocationProbePassed: true
+        feeProbePassed: true
+        selectionProbePassed: true
+
+  - id: PP-NEG-023-pnl-money-currencies-disagree
+    contract: PositionLotStateClosure
+    expectedResult: rejected
+    expectedReason: PnL Money components do not share the declared reporting currency
+    instance:
+      definition: {lotConsumptionPolicy: fifo}
+      lots:
+        - versionIri: https://axiolune.ai/portfolio/lots/L-PNL-CURRENCY/version/v1
+          account: https://axiolune.ai/accounts/ACC-1
+          instrument: https://axiolune.ai/instruments/AAPL
+          originalQuantity: {value: "1", unit: urn:unit:share}
+          openingCostBasis: {amount: "100", currency: USD}
+      consumptionAllocations: []
+      selectionClosures: []
+      snapshot:
+        versionIri: https://axiolune.ai/portfolio/positions/AAPL/version/v1
+        quantity: {value: "1", unit: urn:unit:share}
+      closure:
+        openLotVersionIris: [https://axiolune.ai/portfolio/lots/L-PNL-CURRENCY/version/v1]
+        remainingCostBasis: {amount: "100", currency: USD}
+        lotProbePassed: true
+        allocationProbePassed: true
+      pnl:
+        currency: USD
+        marketValue: {amount: "120", currency: EUR}
+        remainingCostBasis: {amount: "100", currency: USD}
+        unrealizedPnl: {amount: "20", currency: JPY}
+
+  - id: PP-NEG-024-version-node-stores-derived-knowledge-end
+    contract: PositionLotIdentity
+    expectedResult: rejected
+    expectedReason: PositionLot FactVersion must not store knowledgeTo or availableTo
+    instance:
+      lots:
+        - logicalIri: https://axiolune.ai/portfolio/lots/L-KNOWLEDGE-END
+          versionIri: https://axiolune.ai/portfolio/lots/L-KNOWLEDGE-END/version/v1
+          account: https://axiolune.ai/accounts/ACC-1
+          instrument: https://axiolune.ai/instruments/AAPL
+          openingExecutionLogicalIri: https://axiolune.ai/orders/executions/E-KNOWLEDGE-END
+          openingExecutionVersionIri: https://axiolune.ai/orders/executions/E-KNOWLEDGE-END/version/v1
+          costBasisDefinitionLogicalIri: https://axiolune.ai/portfolio/cost-definitions/C-KNOWLEDGE-END
+          costBasisDefinitionVersionIri: https://axiolune.ai/portfolio/cost-definitions/C-KNOWLEDGE-END/version/v1
+          discriminator: openingRemainder
+          validFrom: "2026-01-01T00:00:00Z"
+          knowledgeFrom: "2026-01-01T00:00:01Z"
+          knowledgeTo: "2026-01-02T00:00:01Z"
+          availableFrom: "2026-01-01T00:00:02Z"
+          revision: 0
+      knowledgeClosures: []
+
+  - id: PP-NEG-025-version-iri-reused-by-another-lot
+    contract: PositionLotIdentity
+    expectedResult: rejected
+    expectedReason: PositionLot version IRI is reused by another logical/version key
+    instance:
+      lots:
+        - logicalIri: https://axiolune.ai/portfolio/lots/L-IRI-A
+          versionIri: https://axiolune.ai/portfolio/lots/SHARED/version/v1
+          account: https://axiolune.ai/accounts/ACC-1
+          instrument: https://axiolune.ai/instruments/AAPL
+          openingExecutionLogicalIri: https://axiolune.ai/orders/executions/E-IRI-A
+          openingExecutionVersionIri: https://axiolune.ai/orders/executions/E-IRI-A/version/v1
+          costBasisDefinitionLogicalIri: https://axiolune.ai/portfolio/cost-definitions/C-IRI
+          costBasisDefinitionVersionIri: https://axiolune.ai/portfolio/cost-definitions/C-IRI/version/v1
+          discriminator: openingRemainder
+          validFrom: "2026-01-01T00:00:00Z"
+          knowledgeFrom: "2026-01-01T00:00:01Z"
+          availableFrom: "2026-01-01T00:00:02Z"
+          revision: 0
+        - logicalIri: https://axiolune.ai/portfolio/lots/L-IRI-B
+          versionIri: https://axiolune.ai/portfolio/lots/SHARED/version/v1
+          account: https://axiolune.ai/accounts/ACC-2
+          instrument: https://axiolune.ai/instruments/AAPL
+          openingExecutionLogicalIri: https://axiolune.ai/orders/executions/E-IRI-B
+          openingExecutionVersionIri: https://axiolune.ai/orders/executions/E-IRI-B/version/v1
+          costBasisDefinitionLogicalIri: https://axiolune.ai/portfolio/cost-definitions/C-IRI
+          costBasisDefinitionVersionIri: https://axiolune.ai/portfolio/cost-definitions/C-IRI/version/v1
+          discriminator: openingRemainder
+          validFrom: "2026-01-01T00:00:00Z"
+          knowledgeFrom: "2026-01-01T00:00:01Z"
+          availableFrom: "2026-01-01T00:00:02Z"
+          revision: 0
+      knowledgeClosures: []
+
+  - id: PP-NEG-026-calculation-definition-revision-chain-starts-after-zero
+    contract: CalculationDefinitionIdentity
+    expectedResult: rejected
+    expectedReason: calculation-definition revision chain must begin at 0
+    instance:
+      definitions:
+        - kind: costBasis
+          authority: https://axiolune.ai/parties/calculation-governance
+          definitionId: starts-late
+          logicalIri: https://axiolune.ai/portfolio/cost-definitions/starts-late
+          versionIri: https://axiolune.ai/portfolio/cost-definitions/starts-late/version/v1
+          revision: 1
+
+  - id: PP-NEG-027-valuation-large-integer-must-not-collapse-through-double
+    contract: PositionValuation
+    expectedResult: rejected
+    expectedReason: "market value mismatch: expected 9007199254740993.000000"
+    instance:
+      versionIri: https://axiolune.ai/portfolio/position-valuations/PV-LARGE/version/v1
+      header:
+        versionIri: https://axiolune.ai/portfolio/valuations/PV-LARGE/version/v1
+        definitionVersionIri: https://axiolune.ai/portfolio/valuation-definitions/direct/version/v1
+        method: directUnitPriceTimesQuantity
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        reportingCurrency: USD
+        memberAccounts: [https://axiolune.ai/accounts/ACC-1]
+        precisionPolicy: *valuationPrecisionArtifact
+        roundingPolicy: *valuationRoundingArtifact
+      positionSnapshot:
+        versionIri: https://axiolune.ai/portfolio/positions/AAPL/version/large
+        account: https://axiolune.ai/accounts/ACC-1
+        instrument: https://axiolune.ai/instruments/AAPL
+        quantity: {value: "1", unit: urn:unit:share, precision: 6}
+      price:
+        versionIri: https://axiolune.ai/prices/AAPL/version/large
+        instrument: https://axiolune.ai/instruments/AAPL
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        denominatorUnit: urn:unit:share
+        money: {amount: "9007199254740993", currency: USD, scale: 6}
+      marketValue: {amount: "9007199254740992", currency: USD, scale: 6}
+
+  - id: PP-NEG-028-valuation-sub-nanounit-difference-is-not-exact
+    contract: PositionValuation
+    expectedResult: rejected
+    expectedReason: "market value mismatch: expected 1.000000000000000000"
+    instance:
+      versionIri: https://axiolune.ai/portfolio/position-valuations/PV-SUB-NANO/version/v1
+      header:
+        versionIri: https://axiolune.ai/portfolio/valuations/PV-SUB-NANO/version/v1
+        definitionVersionIri: https://axiolune.ai/portfolio/valuation-definitions/direct-18/version/v1
+        method: directUnitPriceTimesQuantity
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        reportingCurrency: USD
+        memberAccounts: [https://axiolune.ai/accounts/ACC-1]
+        precisionPolicy: *valuationPrecision18Artifact
+        roundingPolicy: *valuationRounding18Artifact
+      positionSnapshot:
+        versionIri: https://axiolune.ai/portfolio/positions/AAPL/version/sub-nano
+        account: https://axiolune.ai/accounts/ACC-1
+        instrument: https://axiolune.ai/instruments/AAPL
+        quantity: {value: "1", unit: urn:unit:share, precision: 18}
+      price:
+        versionIri: https://axiolune.ai/prices/AAPL/version/sub-nano
+        instrument: https://axiolune.ai/instruments/AAPL
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        denominatorUnit: urn:unit:share
+        money: {amount: "1", currency: USD, scale: 18}
+      marketValue: {amount: "1.0000000005", currency: USD, scale: 18}
+
+  - id: PP-NEG-029-fx-consumer-back-edge-mismatch
+    contract: PositionValuation
+    expectedResult: rejected
+    expectedReason: FX conversion does not close exactly one bidirectional consumer edge
+    instance:
+      <<: *fxValuationBase
+      fxConversion:
+        <<: *fxConversionBase
+        consumerVersionIri: https://axiolune.ai/portfolio/position-valuations/OTHER/version/v1
+
+  - id: PP-NEG-030-fx-rate-version-does-not-resolve
+    contract: PositionValuation
+    expectedResult: rejected
+    expectedReason: FX rate version does not resolve to the embedded exact observation
+    instance:
+      <<: *fxValuationBase
+      fxConversion:
+        <<: *fxConversionBase
+        rateObservation:
+          <<: *fxRateBase
+          versionIri: https://axiolune.ai/fx/USD-EUR/version/v2
+
+  - id: PP-NEG-031-fx-input-context-digest-tamper
+    contract: PositionValuation
+    expectedResult: rejected
+    expectedReason: FX input-context digest does not match canonical context bytes
+    instance:
+      <<: *fxValuationBase
+      fxConversion:
+        <<: *fxConversionBase
+        inputContext:
+          <<: *fxInputContextArtifact
+          payload:
+            completedAt: "2025-01-01T00:00:00Z"
+            contextId: fx-input-tampered
+            schemaVersion: "1.0"
+            status: completed
+
+  - id: PP-NEG-032-fx-rate-not-available-at-conversion-pivot
+    contract: PositionValuation
+    expectedResult: rejected
+    expectedReason: FX rate is not point-in-time eligible on the availableFrom axis
+    instance:
+      <<: *fxValuationBase
+      fxConversion:
+        <<: *fxConversionBase
+        rateObservation:
+          <<: *fxRateBase
+          availableFrom: "2026-01-03T00:00:00Z"
+
+  - id: PP-NEG-033-fx-rounding-policy-differs-from-consumer
+    contract: PositionValuation
+    expectedResult: rejected
+    expectedReason: FX rounding policy differs from its exact consumer definition
+    instance:
+      <<: *fxValuationBase
+      fxConversion:
+        <<: *fxConversionBase
+        roundingPolicy: *valuationRounding18Artifact
+
+  - id: PP-NEG-034-fx-rate-unit-reverses-orientation
+    contract: PositionValuation
+    expectedResult: rejected
+    expectedReason: FX rate unit does not encode the exact quote-per-base orientation
+    instance:
+      <<: *fxValuationBase
+      fxConversion:
+        <<: *fxConversionBase
+        rateObservation:
+          <<: *fxRateBase
+          rate: {value: "0.9", unit: urn:unit:USD-per-EUR, precision: 6}

@@ -1,0 +1,35 @@
+{
+  "artifactTypeIri": "https://axiolune.ai/ontology/finance/market-data/artifact-types/CalculationDefinition",
+  "capabilityIris": [
+    "https://axiolune.ai/ontology/finance/market-data/capabilities/vwap-calculation"
+  ],
+  "calculationDefinitionIri": "urn:calculation:vwap:v1",
+  "version": "1.0.0",
+  "expression": "sum(price * quantity) / sum(quantity)",
+  "arithmetic": "exact-base-10-decimal",
+  "arithmeticPolicy": {
+    "input": "exact-base-10-decimal",
+    "intermediate": "exact-rational",
+    "rounding": {
+      "mode": "half-even",
+      "scale": 2,
+      "stage": "final-output-only"
+    }
+  },
+  "inputContract": {
+    "price": "MonetaryAmount",
+    "quantity": "QuantityValue",
+    "window": "half-open-interval"
+  },
+  "requirements": [
+    "all price.currency = quotation-currency",
+    "all quantity.unit = quotation-denominator-unit",
+    "sum(quantity) > 0",
+    "all samples are within window",
+    "select exactly one three-axis-eligible FactVersion per logical identity at output pivot"
+  ],
+  "outputContract": {
+    "value": "MonetaryAmount",
+    "currency": "quotation-currency"
+  }
+}

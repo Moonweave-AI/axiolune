@@ -1,0 +1,714 @@
+valuationPrecisionArtifact: &valuationPrecisionArtifact
+  ref: https://axiolune.ai/policies/valuation-precision/1
+  digest: sha256:946d8b89e1467d356cd8edd0ce624338f7f7f5727fae1ace3abcdd4c6d4a9b84
+  payload:
+    amountScale: 6
+    arithmetic: exact-rational
+    intermediate: unbounded-integer
+    policyId: axiolune-direct-unit-valuation-precision-v1
+    quantityScale: 6
+    rateScale: 6
+    schemaVersion: "1.0"
+valuationRoundingArtifact: &valuationRoundingArtifact
+  ref: https://axiolune.ai/policies/valuation-rounding/1
+  digest: sha256:94ef9cfff4d16d0930762fc7cd942675a15d4f779bfd64d02ca6087c1cfd9738
+  payload:
+    mode: half-even
+    outputScale: 6
+    policyId: axiolune-direct-unit-valuation-rounding-v1
+    schemaVersion: "1.0"
+    stages: [direct-unit-product, fx-conversion]
+costBasisPrecisionArtifact: &costBasisPrecisionArtifact
+  ref: https://axiolune.ai/policies/cost-basis-precision/1
+  digest: sha256:c3d4177149a5c5dd823176ebba5294a2580e60944f24599053c863856e73c6e4
+  payload:
+    amountScale: 6
+    arithmetic: exact-rational
+    intermediate: unbounded-integer
+    policyId: axiolune-cost-basis-precision-v1
+    quantityScale: 6
+    rateScale: 6
+    schemaVersion: "1.0"
+costBasisRoundingArtifact: &costBasisRoundingArtifact
+  ref: https://axiolune.ai/policies/cost-basis-rounding/1
+  digest: sha256:ff25c303a20c66d54664a4b7a2a36d97f323bee4964750419ea4c9ed1735a60d
+  payload:
+    mode: half-even
+    outputScale: 6
+    policyId: axiolune-cost-basis-rounding-v1
+    schemaVersion: "1.0"
+    stages: [opening-direct-unit-product, fee-allocation, remaining-basis-proration, fx-conversion]
+fxInputContextArtifact: &fxInputContextArtifact
+  ref: https://axiolune.ai/contexts/fx-input/1
+  digest: sha256:c50002388b540883bd55ff81b432e256a6662e9d548355c65cb3fc11cf55b473
+  payload:
+    completedAt: "2025-01-01T00:00:00Z"
+    contextId: fx-input-1
+    schemaVersion: "1.0"
+    status: completed
+
+fixtures:
+  - id: PP-POS-000-position-lot-correction-identity
+    contract: PositionLotIdentity
+    expectedResult: accepted
+    instance:
+      lots:
+        - logicalIri: https://axiolune.ai/portfolio/lots/L-identity
+          versionIri: https://axiolune.ai/portfolio/lots/L-identity/version/v1
+          account: https://axiolune.ai/accounts/ACC-1
+          instrument: https://axiolune.ai/instruments/AAPL
+          openingExecutionLogicalIri: https://axiolune.ai/orders/executions/E-identity
+          openingExecutionVersionIri: https://axiolune.ai/orders/executions/E-identity/version/v1
+          costBasisDefinitionLogicalIri: https://axiolune.ai/portfolio/cost-definitions/C-identity
+          costBasisDefinitionVersionIri: https://axiolune.ai/portfolio/cost-definitions/C-identity/version/v1
+          discriminator: openingRemainder
+          validFrom: "2026-01-01T00:00:00Z"
+          knowledgeFrom: "2026-01-01T00:00:01Z"
+          availableFrom: "2026-01-01T00:00:02Z"
+          revision: 0
+        - logicalIri: https://axiolune.ai/portfolio/lots/L-identity
+          versionIri: https://axiolune.ai/portfolio/lots/L-identity/version/v2
+          account: https://axiolune.ai/accounts/ACC-1
+          instrument: https://axiolune.ai/instruments/AAPL
+          openingExecutionLogicalIri: https://axiolune.ai/orders/executions/E-identity
+          openingExecutionVersionIri: https://axiolune.ai/orders/executions/E-identity/version/v2
+          costBasisDefinitionLogicalIri: https://axiolune.ai/portfolio/cost-definitions/C-identity
+          costBasisDefinitionVersionIri: https://axiolune.ai/portfolio/cost-definitions/C-identity/version/v1
+          discriminator: openingRemainder
+          validFrom: "2026-01-01T00:00:00Z"
+          knowledgeFrom: "2026-01-02T00:00:01Z"
+          availableFrom: "2026-01-02T00:00:02Z"
+          revision: 1
+          supersedesVersionIri: https://axiolune.ai/portfolio/lots/L-identity/version/v1
+      knowledgeClosures:
+        - targetVersionIri: https://axiolune.ai/portfolio/lots/L-identity/version/v1
+          axis: knowledge
+          closedAt: "2026-01-02T00:00:01Z"
+          causeKind: successor
+          causeVersionIri: https://axiolune.ai/portfolio/lots/L-identity/version/v2
+          evidenceRef: https://evidence.axiolune.ai/portfolio/lots/L-identity/revision-1
+          generatingContextRef: https://axiolune.ai/runs/portfolio-lot-identity-1
+
+  - id: PP-POS-001-nonnegative-holding
+    contract: SnapshotContract
+    expectedResult: accepted
+    instance:
+      kind: holding
+      account: https://axiolune.ai/accounts/ACC-1
+      instrument: https://axiolune.ai/instruments/AAPL
+      quantity: {value: "0", unit: urn:unit:share}
+
+  - id: PP-POS-002-signed-short-position
+    contract: SnapshotContract
+    expectedResult: accepted
+    instance:
+      kind: position
+      account: https://axiolune.ai/accounts/ACC-1
+      instrument: https://axiolune.ai/instruments/AAPL
+      quantity: {value: "-2", unit: urn:unit:share}
+
+  - id: PP-POS-003-same-currency-valuation
+    contract: PositionValuation
+    expectedResult: accepted
+    instance:
+      versionIri: https://axiolune.ai/portfolio/position-valuations/PV-LINE-1/version/v1
+      header:
+        versionIri: https://axiolune.ai/portfolio/valuations/PV-1/version/v1
+        definitionVersionIri: https://axiolune.ai/portfolio/valuation-definitions/direct/version/v1
+        method: directUnitPriceTimesQuantity
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        reportingCurrency: USD
+        precisionPolicy: *valuationPrecisionArtifact
+        roundingPolicy: *valuationRoundingArtifact
+        memberAccounts:
+          - https://axiolune.ai/accounts/ACC-1
+      positionSnapshot:
+        versionIri: https://axiolune.ai/portfolio/positions/AAPL/version/v1
+        account: https://axiolune.ai/accounts/ACC-1
+        instrument: https://axiolune.ai/instruments/AAPL
+        listingVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+        quantity: {value: "-2", unit: urn:unit:share, precision: 6}
+      price:
+        versionIri: https://axiolune.ai/prices/AAPL/version/v1
+        instrument: https://axiolune.ai/instruments/AAPL
+        listingVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        denominatorUnit: urn:unit:share
+        money: {amount: "100", currency: USD, scale: 6}
+      marketValue: {amount: "-200", currency: USD, scale: 6}
+
+  - id: PP-POS-004-base-to-quote-valuation
+    contract: PositionValuation
+    expectedResult: accepted
+    instance:
+      versionIri: https://axiolune.ai/portfolio/position-valuations/PV-LINE-2/version/v1
+      header:
+        versionIri: https://axiolune.ai/portfolio/valuations/PV-2/version/v1
+        definitionVersionIri: https://axiolune.ai/portfolio/valuation-definitions/direct/version/v1
+        method: directUnitPriceTimesQuantity
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        reportingCurrency: EUR
+        precisionPolicy: *valuationPrecisionArtifact
+        roundingPolicy: *valuationRoundingArtifact
+        memberAccounts:
+          - https://axiolune.ai/accounts/ACC-1
+      holdingSnapshot:
+        versionIri: https://axiolune.ai/portfolio/holdings/AAPL/version/v1
+        account: https://axiolune.ai/accounts/ACC-1
+        instrument: https://axiolune.ai/instruments/AAPL
+        listingVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+        quantity: {value: "1", unit: urn:unit:share, precision: 6}
+      price:
+        versionIri: https://axiolune.ai/prices/AAPL/version/v1
+        instrument: https://axiolune.ai/instruments/AAPL
+        listingVersionIri: https://axiolune.ai/listings/XNAS-AAPL/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        denominatorUnit: urn:unit:share
+        money: {amount: "100", currency: USD, scale: 6}
+      fxConversion:
+        versionIri: https://axiolune.ai/portfolio/fx-conversions/USD-EUR-100/version/v1
+        rateVersionIri: https://axiolune.ai/fx/USD-EUR/version/v1
+        baseCurrency: USD
+        quoteCurrency: EUR
+        direction: baseToQuote
+        consumerKind: valuationLine
+        consumerVersionIri: https://axiolune.ai/portfolio/position-valuations/PV-LINE-2/version/v1
+        validFrom: "2026-01-02T00:00:00Z"
+        knowledgeFrom: "2026-01-02T00:00:01Z"
+        availableFrom: "2026-01-02T00:00:02Z"
+        generatingContextRef: https://axiolune.ai/runs/valuation/PV-LINE-2
+        roundingPolicy: *valuationRoundingArtifact
+        inputContext: *fxInputContextArtifact
+        rateObservation:
+          versionIri: https://axiolune.ai/fx/USD-EUR/version/v1
+          baseCurrency: USD
+          quoteCurrency: EUR
+          rate: {value: "0.9", unit: urn:unit:EUR-per-USD, precision: 6}
+          validFrom: "2026-01-01T00:00:00Z"
+          knowledgeFrom: "2026-01-01T00:00:01Z"
+          availableFrom: "2026-01-01T00:00:02Z"
+        inputMoney: {amount: "100", currency: USD, scale: 6}
+        outputMoney: {amount: "90", currency: EUR, scale: 6}
+      marketValue: {amount: "90", currency: EUR, scale: 6}
+
+  - id: PP-POS-005-allocation-fee-basis-closure
+    contract: ExecutionLotAllocationClosure
+    expectedResult: accepted
+    instance:
+      execution:
+        versionIri: https://axiolune.ai/orders/executions/E-1/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        quantity: {value: "10", unit: urn:unit:share, precision: 6}
+        price: {amount: "100", currency: USD, scale: 6}
+      definition:
+        versionIri: https://axiolune.ai/portfolio/cost-definitions/C-1/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        method: executionAllocatedDirectUnitCost
+        basisCurrency: USD
+        feeTreatment: included
+        lotOpeningPolicy: openingRemainder
+        lotConsumptionPolicy: fifo
+        precisionPolicy: *costBasisPrecisionArtifact
+        roundingPolicy: *costBasisRoundingArtifact
+      eligibleLots: []
+      lots:
+        - versionIri: https://axiolune.ai/portfolio/lots/L-1/version/v1
+          discriminator: openingRemainder
+          openingExecutionVersionIri: https://axiolune.ai/orders/executions/E-1/version/v1
+          originalQuantity: {value: "10", unit: urn:unit:share, precision: 6}
+          openingGross: {amount: "1000", currency: USD, scale: 6}
+          openingCostBasis: {amount: "1002", currency: USD, scale: 6}
+      allocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/A-1/version/v1
+          kind: opening
+          executionVersionIri: https://axiolune.ai/orders/executions/E-1/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/L-1/version/v1
+          quantity: {value: "10", unit: urn:unit:share, precision: 6}
+      fees:
+        - versionIri: https://axiolune.ai/orders/fees/F-1/version/v1
+          executionVersionIri: https://axiolune.ai/orders/executions/E-1/version/v1
+          effect: charge
+          money: {amount: "2", currency: USD, scale: 6}
+      feeAllocations:
+        - versionIri: https://axiolune.ai/portfolio/fee-allocations/FA-1/version/v1
+          feeVersionIri: https://axiolune.ai/orders/fees/F-1/version/v1
+          lotAllocationVersionIri: https://axiolune.ai/portfolio/allocations/A-1/version/v1
+          money: {amount: "2", currency: USD, scale: 6}
+      closure:
+        allocationVersionIris:
+          - https://axiolune.ai/portfolio/allocations/A-1/version/v1
+        feeVersionIris:
+          - https://axiolune.ai/orders/fees/F-1/version/v1
+        feeAllocationVersionIris:
+          - https://axiolune.ai/portfolio/fee-allocations/FA-1/version/v1
+        eligibleLotVersionIris: []
+        allocationProbePassed: true
+        feeProbePassed: true
+        selectionProbePassed: true
+        allocationCount: 1
+        allocationVersionSetDigest: sha256:8ddf800a7f7494228b67d0718a54698d425f99e1b3d29f2a2dfb03673ce52e4d
+        feeCount: 1
+        feeVersionSetDigest: sha256:6c4322649466d5d02fcc7b65949f8cfd4a2d72fd70734655875306647d246325
+        feeAllocationCount: 1
+        feeAllocationVersionSetDigest: sha256:e5c6978b33f06c394719eaf6da3250206c2b34ae314b45b4ad13298521e25e24
+        eligibleLotCount: 0
+        eligibleLotVersionSetDigest: sha256:719c6702560132c7c314018468acd925ae83063b73747a542080c843b6b905e1
+        pitRequestRef: https://axiolune.ai/tests/m2/evidence/pit-request-v1
+        pitRequestRecordDigest: sha256:e25bda3c67737995e9b974084ef22d189ef13e01b9a3761008c053ef1bb3f7a1
+        inputContextRef: https://axiolune.ai/tests/m2/evidence/input-context-v1
+        inputContextRecordDigest: sha256:9124c15217fd5392844bbe759bec2676029f5952be3ef2973192aa0b88fa1e4c
+        allocationClosureProbeRef: https://axiolune.ai/tests/m2/evidence/allocation-closure-probe-v1
+        allocationClosureProbeDigest: sha256:54f95b9926c7eeb61abead50326396c0b131dc8425ee6a11a854e8accb670534
+        feeClosureProbeRef: https://axiolune.ai/tests/m2/evidence/fee-closure-probe-v1
+        feeClosureProbeDigest: sha256:11095ad093d20a2043d50a152f8e360c4c23b841665cdf0b1f9be845db83e003
+        consumptionSelectionProbeRef: https://axiolune.ai/tests/m2/evidence/consumption-selection-probe-v1
+        consumptionSelectionProbeDigest: sha256:2831cf2fc80d464d9cfa3602e432486bbcfd397a560387504ad98bf8e3802e6d
+        generatingContextRef: https://axiolune.ai/tests/m2/runs/orders-portfolio-v03
+
+  - id: PP-POS-008-authority-scoped-calculation-definition-revisions
+    contract: CalculationDefinitionIdentity
+    expectedResult: accepted
+    instance:
+      definitions:
+        - kind: valuation
+          authority: https://axiolune.ai/parties/calculation-governance
+          definitionId: direct-v1
+          logicalIri: https://axiolune.ai/portfolio/valuation-definitions/direct-v1
+          versionIri: https://axiolune.ai/portfolio/valuation-definitions/direct-v1/version/v1
+          revision: 0
+        - kind: valuation
+          authority: https://axiolune.ai/parties/calculation-governance
+          definitionId: direct-v1
+          logicalIri: https://axiolune.ai/portfolio/valuation-definitions/direct-v1
+          versionIri: https://axiolune.ai/portfolio/valuation-definitions/direct-v1/version/v2
+          revision: 1
+        - kind: valuation
+          authority: https://axiolune.ai/parties/independent-calculation-governance
+          definitionId: direct-v1
+          logicalIri: https://axiolune.ai/portfolio/valuation-definitions/independent-direct-v1
+          versionIri: https://axiolune.ai/portfolio/valuation-definitions/independent-direct-v1/version/v1
+          revision: 0
+
+  - id: PP-POS-009-lifo-consumption-selection-closure
+    contract: ExecutionLotAllocationClosure
+    expectedResult: accepted
+    instance:
+      execution:
+        versionIri: https://axiolune.ai/orders/executions/E-LIFO/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        quantity: {value: "5", unit: urn:unit:share, precision: 6}
+        price: {amount: "100", currency: USD, scale: 6}
+      definition:
+        versionIri: https://axiolune.ai/portfolio/cost-definitions/C-LIFO/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        method: executionAllocatedDirectUnitCost
+        basisCurrency: USD
+        feeTreatment: excluded
+        lotOpeningPolicy: openingRemainder
+        lotConsumptionPolicy: lifo
+        precisionPolicy: *costBasisPrecisionArtifact
+        roundingPolicy: *costBasisRoundingArtifact
+      lots: []
+      eligibleLots:
+        - versionIri: https://axiolune.ai/portfolio/lots/LIFO-OLD/version/v1
+          openedAt: "2025-01-01T00:00:00Z"
+          remainingQuantity: {value: "5", unit: urn:unit:share, precision: 6}
+        - versionIri: https://axiolune.ai/portfolio/lots/LIFO-NEW/version/v1
+          openedAt: "2025-02-01T00:00:00Z"
+          remainingQuantity: {value: "5", unit: urn:unit:share, precision: 6}
+      allocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/A-LIFO/version/v1
+          kind: consumption
+          executionVersionIri: https://axiolune.ai/orders/executions/E-LIFO/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/LIFO-NEW/version/v1
+          quantity: {value: "5", unit: urn:unit:share, precision: 6}
+      fees: []
+      feeAllocations: []
+      closure:
+        allocationVersionIris:
+          - https://axiolune.ai/portfolio/allocations/A-LIFO/version/v1
+        feeVersionIris: []
+        feeAllocationVersionIris: []
+        eligibleLotVersionIris:
+          - https://axiolune.ai/portfolio/lots/LIFO-OLD/version/v1
+          - https://axiolune.ai/portfolio/lots/LIFO-NEW/version/v1
+        allocationProbePassed: true
+        feeProbePassed: true
+        selectionProbePassed: true
+        allocationCount: 1
+        allocationVersionSetDigest: sha256:633e7ed8dfae2b9995928e46d611dd385974c040b66772fcf16e62f9ec51e538
+        feeCount: 0
+        feeVersionSetDigest: sha256:719c6702560132c7c314018468acd925ae83063b73747a542080c843b6b905e1
+        feeAllocationCount: 0
+        feeAllocationVersionSetDigest: sha256:719c6702560132c7c314018468acd925ae83063b73747a542080c843b6b905e1
+        eligibleLotCount: 2
+        eligibleLotVersionSetDigest: sha256:4788095d3ae8ff60af5c994d94a61c236491c06f1212413694952b3c4e69eb36
+        pitRequestRef: https://axiolune.ai/tests/m2/evidence/pit-request-v1
+        pitRequestRecordDigest: sha256:e25bda3c67737995e9b974084ef22d189ef13e01b9a3761008c053ef1bb3f7a1
+        inputContextRef: https://axiolune.ai/tests/m2/evidence/input-context-v1
+        inputContextRecordDigest: sha256:9124c15217fd5392844bbe759bec2676029f5952be3ef2973192aa0b88fa1e4c
+        allocationClosureProbeRef: https://axiolune.ai/tests/m2/evidence/allocation-closure-probe-v1
+        allocationClosureProbeDigest: sha256:54f95b9926c7eeb61abead50326396c0b131dc8425ee6a11a854e8accb670534
+        feeClosureProbeRef: https://axiolune.ai/tests/m2/evidence/fee-closure-probe-v1
+        feeClosureProbeDigest: sha256:11095ad093d20a2043d50a152f8e360c4c23b841665cdf0b1f9be845db83e003
+        consumptionSelectionProbeRef: https://axiolune.ai/tests/m2/evidence/consumption-selection-probe-v1
+        consumptionSelectionProbeDigest: sha256:2831cf2fc80d464d9cfa3602e432486bbcfd397a560387504ad98bf8e3802e6d
+        generatingContextRef: https://axiolune.ai/tests/m2/runs/orders-portfolio-v03
+
+  - id: PP-POS-010-specific-identification-selection-closure
+    contract: ExecutionLotAllocationClosure
+    expectedResult: accepted
+    instance:
+      execution:
+        versionIri: https://axiolune.ai/orders/executions/E-SPECIFIC/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        quantity: {value: "3", unit: urn:unit:share, precision: 6}
+        price: {amount: "100", currency: USD, scale: 6}
+      definition:
+        versionIri: https://axiolune.ai/portfolio/cost-definitions/C-SPECIFIC/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        method: executionAllocatedDirectUnitCost
+        basisCurrency: USD
+        feeTreatment: excluded
+        lotOpeningPolicy: openingRemainder
+        lotConsumptionPolicy: specificIdentification
+        precisionPolicy: *costBasisPrecisionArtifact
+        roundingPolicy: *costBasisRoundingArtifact
+      lots: []
+      eligibleLots:
+        - versionIri: https://axiolune.ai/portfolio/lots/SPECIFIC-A/version/v1
+          openedAt: "2025-01-01T00:00:00Z"
+          remainingQuantity: {value: "4", unit: urn:unit:share, precision: 6}
+        - versionIri: https://axiolune.ai/portfolio/lots/SPECIFIC-B/version/v1
+          openedAt: "2025-02-01T00:00:00Z"
+          remainingQuantity: {value: "4", unit: urn:unit:share, precision: 6}
+      allocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/A-SPECIFIC/version/v1
+          kind: consumption
+          executionVersionIri: https://axiolune.ai/orders/executions/E-SPECIFIC/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/SPECIFIC-B/version/v1
+          quantity: {value: "3", unit: urn:unit:share, precision: 6}
+      fees: []
+      feeAllocations: []
+      closure:
+        allocationVersionIris:
+          - https://axiolune.ai/portfolio/allocations/A-SPECIFIC/version/v1
+        feeVersionIris: []
+        feeAllocationVersionIris: []
+        eligibleLotVersionIris:
+          - https://axiolune.ai/portfolio/lots/SPECIFIC-A/version/v1
+          - https://axiolune.ai/portfolio/lots/SPECIFIC-B/version/v1
+        specificSelectionLotVersionIris:
+          - https://axiolune.ai/portfolio/lots/SPECIFIC-B/version/v1
+        specificSelectionRef: https://evidence.axiolune.ai/portfolio/specific-selection/1
+        specificSelectionDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        allocationProbePassed: true
+        feeProbePassed: true
+        selectionProbePassed: true
+        allocationCount: 1
+        allocationVersionSetDigest: sha256:0cba9a848d37e9f1b7a3b3f1f38e2e9944267abafab50ea1e1306ce452817dbd
+        feeCount: 0
+        feeVersionSetDigest: sha256:719c6702560132c7c314018468acd925ae83063b73747a542080c843b6b905e1
+        feeAllocationCount: 0
+        feeAllocationVersionSetDigest: sha256:719c6702560132c7c314018468acd925ae83063b73747a542080c843b6b905e1
+        eligibleLotCount: 2
+        eligibleLotVersionSetDigest: sha256:69cccd5174df7040b1397c69c7435b2beddf8f9ae2060ca6109884a35cffc565
+        specificSelectionCount: 1
+        specificSelectionVersionSetDigest: sha256:b15ea7467aa1bc9818575a85d052e15bd7fb5055d078293a9352faa75b6d4d80
+        pitRequestRef: https://axiolune.ai/tests/m2/evidence/pit-request-v1
+        pitRequestRecordDigest: sha256:e25bda3c67737995e9b974084ef22d189ef13e01b9a3761008c053ef1bb3f7a1
+        inputContextRef: https://axiolune.ai/tests/m2/evidence/input-context-v1
+        inputContextRecordDigest: sha256:9124c15217fd5392844bbe759bec2676029f5952be3ef2973192aa0b88fa1e4c
+        allocationClosureProbeRef: https://axiolune.ai/tests/m2/evidence/allocation-closure-probe-v1
+        allocationClosureProbeDigest: sha256:54f95b9926c7eeb61abead50326396c0b131dc8425ee6a11a854e8accb670534
+        feeClosureProbeRef: https://axiolune.ai/tests/m2/evidence/fee-closure-probe-v1
+        feeClosureProbeDigest: sha256:11095ad093d20a2043d50a152f8e360c4c23b841665cdf0b1f9be845db83e003
+        consumptionSelectionProbeRef: https://axiolune.ai/tests/m2/evidence/consumption-selection-probe-v1
+        consumptionSelectionProbeDigest: sha256:2831cf2fc80d464d9cfa3602e432486bbcfd397a560387504ad98bf8e3802e6d
+        generatingContextRef: https://axiolune.ai/tests/m2/runs/orders-portfolio-v03
+
+  - id: PP-POS-011-cross-currency-opening-gross-and-fee
+    contract: ExecutionLotAllocationClosure
+    expectedResult: accepted
+    instance:
+      execution:
+        versionIri: https://axiolune.ai/orders/executions/E-CROSS-FX/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        quantity: {value: "2", unit: urn:unit:share, precision: 6}
+        price: {amount: "50", currency: EUR, scale: 6}
+      definition:
+        versionIri: https://axiolune.ai/portfolio/cost-definitions/C-CROSS-FX/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        method: executionAllocatedDirectUnitCost
+        basisCurrency: USD
+        feeTreatment: included
+        lotOpeningPolicy: openingRemainder
+        lotConsumptionPolicy: fifo
+        precisionPolicy: *costBasisPrecisionArtifact
+        roundingPolicy: *costBasisRoundingArtifact
+      eligibleLots: []
+      lots:
+        - versionIri: https://axiolune.ai/portfolio/lots/L-CROSS-FX/version/v1
+          discriminator: openingRemainder
+          openingExecutionVersionIri: https://axiolune.ai/orders/executions/E-CROSS-FX/version/v1
+          originalQuantity: {value: "2", unit: urn:unit:share, precision: 6}
+          openingGross: {amount: "110", currency: USD, scale: 6}
+          openingGrossFxConversion:
+            versionIri: https://axiolune.ai/portfolio/fx-conversions/EUR-USD-100/version/v1
+            rateVersionIri: https://axiolune.ai/fx/EUR-USD/version/v1
+            baseCurrency: EUR
+            quoteCurrency: USD
+            direction: baseToQuote
+            consumerKind: openingLot
+            consumerVersionIri: https://axiolune.ai/portfolio/lots/L-CROSS-FX/version/v1
+            validFrom: "2026-01-02T00:00:00Z"
+            knowledgeFrom: "2026-01-02T00:00:01Z"
+            availableFrom: "2026-01-02T00:00:02Z"
+            generatingContextRef: https://axiolune.ai/runs/cost-basis/E-CROSS-FX
+            roundingPolicy: *costBasisRoundingArtifact
+            inputContext: *fxInputContextArtifact
+            rateObservation:
+              versionIri: https://axiolune.ai/fx/EUR-USD/version/v1
+              baseCurrency: EUR
+              quoteCurrency: USD
+              rate: {value: "1.1", unit: urn:unit:USD-per-EUR, precision: 6}
+              validFrom: "2026-01-01T00:00:00Z"
+              knowledgeFrom: "2026-01-01T00:00:01Z"
+              availableFrom: "2026-01-01T00:00:02Z"
+            inputMoney: {amount: "100", currency: EUR, scale: 6}
+            outputMoney: {amount: "110", currency: USD, scale: 6}
+          openingCostBasis: {amount: "112.2", currency: USD, scale: 6}
+      allocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/A-CROSS-FX/version/v1
+          kind: opening
+          executionVersionIri: https://axiolune.ai/orders/executions/E-CROSS-FX/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/L-CROSS-FX/version/v1
+          quantity: {value: "2", unit: urn:unit:share, precision: 6}
+      fees:
+        - versionIri: https://axiolune.ai/orders/fees/F-CROSS-FX/version/v1
+          executionVersionIri: https://axiolune.ai/orders/executions/E-CROSS-FX/version/v1
+          effect: charge
+          money: {amount: "2", currency: EUR, scale: 6}
+      feeAllocations:
+        - versionIri: https://axiolune.ai/portfolio/fee-allocations/FA-CROSS-FX/version/v1
+          feeVersionIri: https://axiolune.ai/orders/fees/F-CROSS-FX/version/v1
+          lotAllocationVersionIri: https://axiolune.ai/portfolio/allocations/A-CROSS-FX/version/v1
+          money: {amount: "2", currency: EUR, scale: 6}
+          fxConversion:
+            versionIri: https://axiolune.ai/portfolio/fx-conversions/EUR-USD-2/version/v1
+            rateVersionIri: https://axiolune.ai/fx/EUR-USD/version/v1
+            baseCurrency: EUR
+            quoteCurrency: USD
+            direction: baseToQuote
+            consumerKind: feeAllocation
+            consumerVersionIri: https://axiolune.ai/portfolio/fee-allocations/FA-CROSS-FX/version/v1
+            validFrom: "2026-01-02T00:00:00Z"
+            knowledgeFrom: "2026-01-02T00:00:01Z"
+            availableFrom: "2026-01-02T00:00:02Z"
+            generatingContextRef: https://axiolune.ai/runs/cost-basis/E-CROSS-FX
+            roundingPolicy: *costBasisRoundingArtifact
+            inputContext: *fxInputContextArtifact
+            rateObservation:
+              versionIri: https://axiolune.ai/fx/EUR-USD/version/v1
+              baseCurrency: EUR
+              quoteCurrency: USD
+              rate: {value: "1.1", unit: urn:unit:USD-per-EUR, precision: 6}
+              validFrom: "2026-01-01T00:00:00Z"
+              knowledgeFrom: "2026-01-01T00:00:01Z"
+              availableFrom: "2026-01-01T00:00:02Z"
+            inputMoney: {amount: "2", currency: EUR, scale: 6}
+            outputMoney: {amount: "2.2", currency: USD, scale: 6}
+      closure:
+        allocationVersionIris:
+          - https://axiolune.ai/portfolio/allocations/A-CROSS-FX/version/v1
+        feeVersionIris:
+          - https://axiolune.ai/orders/fees/F-CROSS-FX/version/v1
+        feeAllocationVersionIris:
+          - https://axiolune.ai/portfolio/fee-allocations/FA-CROSS-FX/version/v1
+        eligibleLotVersionIris: []
+        allocationProbePassed: true
+        feeProbePassed: true
+        selectionProbePassed: true
+        allocationCount: 1
+        allocationVersionSetDigest: sha256:c4c82f9f7bd06b92d30baeeb02787468fb46cd5b06c1afee92c218ac7c0d052e
+        feeCount: 1
+        feeVersionSetDigest: sha256:151b67738c1bab495c444d974fe5906591e93c5b2e48f03fa2208fdf54a041bd
+        feeAllocationCount: 1
+        feeAllocationVersionSetDigest: sha256:62d7ac8e6be07302b039972e4418b7cceb61173f82b2035230f4c723e89aba3c
+        eligibleLotCount: 0
+        eligibleLotVersionSetDigest: sha256:719c6702560132c7c314018468acd925ae83063b73747a542080c843b6b905e1
+        pitRequestRef: https://axiolune.ai/tests/m2/evidence/pit-request-v1
+        pitRequestRecordDigest: sha256:e25bda3c67737995e9b974084ef22d189ef13e01b9a3761008c053ef1bb3f7a1
+        inputContextRef: https://axiolune.ai/tests/m2/evidence/input-context-v1
+        inputContextRecordDigest: sha256:9124c15217fd5392844bbe759bec2676029f5952be3ef2973192aa0b88fa1e4c
+        allocationClosureProbeRef: https://axiolune.ai/tests/m2/evidence/allocation-closure-probe-v1
+        allocationClosureProbeDigest: sha256:54f95b9926c7eeb61abead50326396c0b131dc8425ee6a11a854e8accb670534
+        feeClosureProbeRef: https://axiolune.ai/tests/m2/evidence/fee-closure-probe-v1
+        feeClosureProbeDigest: sha256:11095ad093d20a2043d50a152f8e360c4c23b841665cdf0b1f9be845db83e003
+        consumptionSelectionProbeRef: https://axiolune.ai/tests/m2/evidence/consumption-selection-probe-v1
+        consumptionSelectionProbeDigest: sha256:2831cf2fc80d464d9cfa3602e432486bbcfd397a560387504ad98bf8e3802e6d
+        generatingContextRef: https://axiolune.ai/tests/m2/runs/orders-portfolio-v03
+
+  - id: PP-POS-006-partial-consumption-and-pnl
+    contract: PositionLotStateClosure
+    expectedResult: accepted
+    instance:
+      definition:
+        versionIri: https://axiolune.ai/portfolio/cost-definitions/C-STATE/version/v1
+        lotConsumptionPolicy: fifo
+        precisionPolicy: *costBasisPrecisionArtifact
+        roundingPolicy: *costBasisRoundingArtifact
+      lots:
+        - versionIri: https://axiolune.ai/portfolio/lots/L-1/version/v1
+          account: https://axiolune.ai/accounts/ACC-1
+          instrument: https://axiolune.ai/instruments/AAPL
+          openingAllocationVersionIri: https://axiolune.ai/portfolio/allocations/A-1/version/v1
+          originalQuantity: {value: "10", unit: urn:unit:share, precision: 6}
+          openingCostBasis: {amount: "1002", currency: USD, scale: 6}
+      consumptionAllocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/C-1/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/L-1/version/v1
+          executionSide: Sell
+          account: https://axiolune.ai/accounts/ACC-1
+          instrument: https://axiolune.ai/instruments/AAPL
+          quantity: {value: "4", unit: urn:unit:share, precision: 6}
+      selectionClosures:
+        - versionIri: https://axiolune.ai/portfolio/execution-closures/E-C-1/version/v1
+          consumptionAllocationVersionIris:
+            - https://axiolune.ai/portfolio/allocations/C-1/version/v1
+          eligibleLots:
+            - versionIri: https://axiolune.ai/portfolio/lots/L-1/version/v1
+              openedAt: "2025-12-01T00:00:00Z"
+              remainingQuantity: {value: "10", unit: urn:unit:share, precision: 6}
+          eligibleLotVersionIris:
+            - https://axiolune.ai/portfolio/lots/L-1/version/v1
+          eligibleLotCount: 1
+          eligibleLotVersionSetDigest: sha256:b18855324c1661f9f5616b42655151693e7a970f65d4cf6514cd97d80b9622c4
+          consumptionSelectionProbeRef: https://axiolune.ai/tests/m2/evidence/consumption-selection-probe-v1
+          consumptionSelectionProbeDigest: sha256:2831cf2fc80d464d9cfa3602e432486bbcfd397a560387504ad98bf8e3802e6d
+          selectionProbePassed: true
+      snapshot:
+        versionIri: https://axiolune.ai/portfolio/positions/AAPL/version/v2
+        quantity: {value: "6", unit: urn:unit:share, precision: 6}
+      closure:
+        openLotVersionIris:
+          - https://axiolune.ai/portfolio/lots/L-1/version/v1
+        openLotVersionSetDigest: sha256:b18855324c1661f9f5616b42655151693e7a970f65d4cf6514cd97d80b9622c4
+        stateAllocationVersionIris:
+          - https://axiolune.ai/portfolio/allocations/A-1/version/v1
+          - https://axiolune.ai/portfolio/allocations/C-1/version/v1
+        stateAllocationVersionSetDigest: sha256:b5513528f613f090eec23bd7fce61034b0a79b83119b9bbb6c16b94186fa7bb5
+        stateExecutionClosureVersionIris:
+          - https://axiolune.ai/portfolio/execution-closures/E-C-1/version/v1
+        stateExecutionClosureVersionSetDigest: sha256:fe3a1604487ea227ed6c196550ed8b7914704cdce2138e5e22e4ebcd8654d0f4
+        remainingCostBasis: {amount: "601.2", currency: USD, scale: 6}
+        calculationContextRef: https://axiolune.ai/tests/m2/calculation-contexts/cost-basis-v1
+        snapshotPivotRef: https://axiolune.ai/tests/m2/pivots/2026-01-01
+        lotClosureProbeRef: https://axiolune.ai/tests/m2/evidence/lot-closure-probe-v1
+        lotClosureProbeDigest: sha256:9c9a4c808566004c9bef685dbc45a245bcace3395414d72cbba84870299e6840
+        stateAllocationClosureProbeRef: https://axiolune.ai/tests/m2/evidence/state-allocation-closure-probe-v1
+        stateAllocationClosureProbeDigest: sha256:d6a0a6ee88cd53292debd684ffeb22504f875a9a98dc9999006fb30a4dd8c1e7
+        pitRequestRef: https://axiolune.ai/tests/m2/evidence/pit-request-v1
+        pitRequestRecordDigest: sha256:e25bda3c67737995e9b974084ef22d189ef13e01b9a3761008c053ef1bb3f7a1
+        inputContextRef: https://axiolune.ai/tests/m2/evidence/input-context-v1
+        inputContextRecordDigest: sha256:9124c15217fd5392844bbe759bec2676029f5952be3ef2973192aa0b88fa1e4c
+        generatingContextRef: https://axiolune.ai/tests/m2/runs/orders-portfolio-v03
+        lotProbePassed: true
+        allocationProbePassed: true
+      pnl:
+        currency: USD
+        openLotVersionSetDigest: sha256:b18855324c1661f9f5616b42655151693e7a970f65d4cf6514cd97d80b9622c4
+        stateAllocationVersionSetDigest: sha256:b5513528f613f090eec23bd7fce61034b0a79b83119b9bbb6c16b94186fa7bb5
+        stateExecutionClosureVersionSetDigest: sha256:fe3a1604487ea227ed6c196550ed8b7914704cdce2138e5e22e4ebcd8654d0f4
+        marketValue: {amount: "720", currency: USD, scale: 6}
+        remainingCostBasis: {amount: "601.2", currency: USD, scale: 6}
+        unrealizedPnl: {amount: "118.8", currency: USD, scale: 6}
+
+  - id: PP-POS-007-close-and-reopen-execution
+    contract: ExecutionLotAllocationClosure
+    expectedResult: accepted
+    instance:
+      execution:
+        versionIri: https://axiolune.ai/orders/executions/E-2/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        quantity: {value: "15", unit: urn:unit:share, precision: 6}
+        price: {amount: "100", currency: USD, scale: 6}
+      definition:
+        versionIri: https://axiolune.ai/portfolio/cost-definitions/C-2/version/v1
+        quotationContractVersionIri: https://axiolune.ai/quotations/AAPL/version/v1
+        method: executionAllocatedDirectUnitCost
+        basisCurrency: USD
+        feeTreatment: included
+        lotOpeningPolicy: openingRemainder
+        lotConsumptionPolicy: fifo
+        precisionPolicy: *costBasisPrecisionArtifact
+        roundingPolicy: *costBasisRoundingArtifact
+      eligibleLots:
+        - versionIri: https://axiolune.ai/portfolio/lots/OLD-LONG/version/v1
+          openedAt: "2025-11-01T00:00:00Z"
+          remainingQuantity: {value: "10", unit: urn:unit:share, precision: 6}
+      lots:
+        - versionIri: https://axiolune.ai/portfolio/lots/L-2/version/v1
+          discriminator: openingRemainder
+          openingExecutionVersionIri: https://axiolune.ai/orders/executions/E-2/version/v1
+          originalQuantity: {value: "-5", unit: urn:unit:share, precision: 6}
+          openingGross: {amount: "500", currency: USD, scale: 6}
+          openingCostBasis: {amount: "-499.25", currency: USD, scale: 6}
+      allocations:
+        - versionIri: https://axiolune.ai/portfolio/allocations/A-2-consume/version/v1
+          kind: consumption
+          executionVersionIri: https://axiolune.ai/orders/executions/E-2/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/OLD-LONG/version/v1
+          quantity: {value: "10", unit: urn:unit:share, precision: 6}
+        - versionIri: https://axiolune.ai/portfolio/allocations/A-2-open/version/v1
+          kind: opening
+          executionVersionIri: https://axiolune.ai/orders/executions/E-2/version/v1
+          lotVersionIri: https://axiolune.ai/portfolio/lots/L-2/version/v1
+          quantity: {value: "5", unit: urn:unit:share, precision: 6}
+      fees:
+        - versionIri: https://axiolune.ai/orders/fees/F-2/version/v1
+          executionVersionIri: https://axiolune.ai/orders/executions/E-2/version/v1
+          effect: charge
+          money: {amount: "2", currency: USD, scale: 6}
+      feeAllocations:
+        - versionIri: https://axiolune.ai/portfolio/fee-allocations/FA-2-consume/version/v1
+          feeVersionIri: https://axiolune.ai/orders/fees/F-2/version/v1
+          lotAllocationVersionIri: https://axiolune.ai/portfolio/allocations/A-2-consume/version/v1
+          money: {amount: "1.25", currency: USD, scale: 6}
+        - versionIri: https://axiolune.ai/portfolio/fee-allocations/FA-2-open/version/v1
+          feeVersionIri: https://axiolune.ai/orders/fees/F-2/version/v1
+          lotAllocationVersionIri: https://axiolune.ai/portfolio/allocations/A-2-open/version/v1
+          money: {amount: "0.75", currency: USD, scale: 6}
+      closure:
+        allocationVersionIris:
+          - https://axiolune.ai/portfolio/allocations/A-2-consume/version/v1
+          - https://axiolune.ai/portfolio/allocations/A-2-open/version/v1
+        feeVersionIris:
+          - https://axiolune.ai/orders/fees/F-2/version/v1
+        feeAllocationVersionIris:
+          - https://axiolune.ai/portfolio/fee-allocations/FA-2-consume/version/v1
+          - https://axiolune.ai/portfolio/fee-allocations/FA-2-open/version/v1
+        eligibleLotVersionIris:
+          - https://axiolune.ai/portfolio/lots/OLD-LONG/version/v1
+        allocationProbePassed: true
+        feeProbePassed: true
+        selectionProbePassed: true
+        allocationCount: 2
+        allocationVersionSetDigest: sha256:b89c6d26d5d6910aaef0084635d550cd051060209f5b4f75b0b4682af0086369
+        feeCount: 1
+        feeVersionSetDigest: sha256:118a07c1cf61aad730b6b1b2e55a92a4f0d8ee1036a18ca2f7540df5aea1b9c9
+        feeAllocationCount: 2
+        feeAllocationVersionSetDigest: sha256:5d9781a551fa9317ead703a768b138280750042b053e42d0f2282012ed577d65
+        eligibleLotCount: 1
+        eligibleLotVersionSetDigest: sha256:dcede57398b89e8cfae60af3bf45d7893ed15e1b2ece59b0f994700d77be6f54
+        pitRequestRef: https://axiolune.ai/tests/m2/evidence/pit-request-v1
+        pitRequestRecordDigest: sha256:e25bda3c67737995e9b974084ef22d189ef13e01b9a3761008c053ef1bb3f7a1
+        inputContextRef: https://axiolune.ai/tests/m2/evidence/input-context-v1
+        inputContextRecordDigest: sha256:9124c15217fd5392844bbe759bec2676029f5952be3ef2973192aa0b88fa1e4c
+        allocationClosureProbeRef: https://axiolune.ai/tests/m2/evidence/allocation-closure-probe-v1
+        allocationClosureProbeDigest: sha256:54f95b9926c7eeb61abead50326396c0b131dc8425ee6a11a854e8accb670534
+        feeClosureProbeRef: https://axiolune.ai/tests/m2/evidence/fee-closure-probe-v1
+        feeClosureProbeDigest: sha256:11095ad093d20a2043d50a152f8e360c4c23b841665cdf0b1f9be845db83e003
+        consumptionSelectionProbeRef: https://axiolune.ai/tests/m2/evidence/consumption-selection-probe-v1
+        consumptionSelectionProbeDigest: sha256:2831cf2fc80d464d9cfa3602e432486bbcfd397a560387504ad98bf8e3802e6d
+        generatingContextRef: https://axiolune.ai/tests/m2/runs/orders-portfolio-v03

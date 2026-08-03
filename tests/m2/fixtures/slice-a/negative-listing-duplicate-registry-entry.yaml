@@ -1,0 +1,38 @@
+caseId: negative-listing-duplicate-registry-entry
+extends: positive-market-instrument-contract.yaml
+expected:
+  valid: false
+  codes: [LISTING_QUOTE_CURRENCY, QUOTATION_CURRENCY_REGISTRY]
+mutations:
+  - op: set
+    path: currencyRegistry[2]
+    value:
+      id: urn:currency-registry-entry:eur-duplicate:v1
+      logicalId: urn:currency-registry-entry:eur-duplicate
+      iso4217RegistryAuthority: urn:authority:iso4217
+      iso4217AlphaCode: EUR
+      iso4217NumericCode: '978'
+      iso4217MinorUnit: 2
+      iso4217EntryStatus: active
+      iso4217EntryCurrency: urn:currency:eur
+      iso4217RegistrySourceRef: https://axiolune.ai/references/six-iso-4217-list-one-2026-01-01
+      validFrom: '2024-01-01T00:00:00Z'
+      knowledgeFrom: '2024-01-02T00:00:00Z'
+      availableFrom: '2024-01-02T00:00:01Z'
+      revision: 0
+      source:
+        artifactRef:
+          kind: path
+          root: sourceTree
+          path: reference/authority-reference/six/2026-07-31/iso-4217-list-one/iso-4217-list-one.xml
+        artifactDigest: sha256:838dfb991648cf36df939edd5fe3811737962b75a32252847d239cedd1e291c9
+        locator:
+          kind: wholeFile
+          path: reference/authority-reference/six/2026-07-31/iso-4217-list-one/iso-4217-list-one.xml
+          mediaType: application/xml
+          extractorProfileRef:
+            kind: path
+            root: sourceTree
+            path: scripts/domain/reference-extractors/whole-file-v1.json
+          extractorProfileDigest: sha256:49c5d4e1c0de9f60a95ac9a1b144dc5f7fb14dd302e7da2cf26fa2cb5360d775
+          selectionDigest: sha256:5b132ebd57c34376295544d8e555d566d684da2366a8684f064f16c1d8eacf12

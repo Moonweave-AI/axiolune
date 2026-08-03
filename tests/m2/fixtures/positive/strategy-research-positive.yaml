@@ -1,211 +1,441 @@
-# Axiolune M2 Finance — Strategy & Research Positive Test Fixtures
-# Module: fin-strategy-research
-# Version: 0.1.0
-# Purpose: Valid instances demonstrating strategy research semantics
+# Strategy and Research v0.3 executable SHACL fixtures.
+# All observations use canonical typed values, exact participant-role predicates,
+# three-axis starts, immutable facts, and explicit revision provenance.
+
+schemaVersion: '1.0'
+anchors:
+  authority: &authority
+    iri: https://axiolune.ai/data/test/party/research-authority
+    type: https://axiolune.ai/ontology/finance/foundation/Party
+
+  instrument: &instrument
+    iri: https://axiolune.ai/data/test/instrument/AAPL/version/2
+    type: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+
+  run-kind-backtest: &run-kind-backtest
+    iri: https://axiolune.ai/ontology/finance/strategy-research/RunContextKind/value/backtest
+    type: https://axiolune.ai/ontology/finance/strategy-research/RunContextKind
+
+  direction-long: &direction-long
+    iri: https://axiolune.ai/ontology/finance/strategy-research/SignalDirection/value/long
+    type: https://axiolune.ai/ontology/finance/strategy-research/SignalDirection
+
+  direction-short: &direction-short
+    iri: https://axiolune.ai/ontology/finance/strategy-research/SignalDirection/value/short
+    type: https://axiolune.ai/ontology/finance/strategy-research/SignalDirection
+
+  metric-kind-quantity: &metric-kind-quantity
+    iri: https://axiolune.ai/ontology/finance/strategy-research/MetricValueKind/value/quantity
+    type: https://axiolune.ai/ontology/finance/strategy-research/MetricValueKind
+
+  frequency-daily: &frequency-daily
+    iri: https://axiolune.ai/ontology/finance/strategy-research/CalculationFrequency/value/daily
+    type: https://axiolune.ai/ontology/finance/strategy-research/CalculationFrequency
+
+  calculation-parameter-artifact: &calculation-parameter-artifact
+    iri: https://axiolune.ai/data/test/artifact/calculation-parameters/daily-simple-compound-v1
+    type: https://axiolune.ai/ontology/meta/data-binding/structures/ArtifactRef
+
+  calculation-parameter-locator: &calculation-parameter-locator
+    iri: https://axiolune.ai/data/test/locator/calculation-parameters/daily-simple-compound-v1
+    type: https://axiolune.ai/ontology/meta/data-binding/structures/SourceLocator
+
+  state-completed: &state-completed
+    iri: https://axiolune.ai/ontology/finance/strategy-research/BacktestLifecycleState/value/completed
+    type: https://axiolune.ai/ontology/finance/strategy-research/BacktestLifecycleState
+
+  factor: &factor
+    iri: https://axiolune.ai/data/test/factor/momentum/version/3
+    type: https://axiolune.ai/ontology/finance/strategy-research/FactorDefinition
+    generatorId: momentum-20d
+    generatorName: Momentum 20 Day
+    implementationDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+    inputContractDigest: sha256:1212121212121212121212121212121212121212121212121212121212121212
+    outputContractDigest: sha256:1313131313131313131313131313131313131313131313131313131313131313
+    toolLockRef: https://axiolune.ai/artifact/tool-lock/research-runtime-v3
+    toolLockDigest: sha256:1414141414141414141414141414141414141414141414141414141414141414
+    runtimeDigest: sha256:1515151515151515151515151515151515151515151515151515151515151515
+    factorExpressionRef: https://axiolune.ai/artifact/factor/momentum-20d-v3
+    factorExpressionDigest: sha256:1616161616161616161616161616161616161616161616161616161616161616
+    generatorAuthority: https://axiolune.ai/data/test/party/research-authority
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef: https://axiolune.ai/artifact/source/factor-momentum-v3
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest: sha256:1717171717171717171717171717171717171717171717171717171717171717
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator: https://axiolune.ai/artifact/locator/factor-momentum-v3
+    validFrom: '2026-01-01T00:00:00Z'
+    knowledgeFrom: '2026-01-02T00:00:00Z'
+    availableFrom: '2026-01-02T00:00:01Z'
+    revision: 0
+    source: https://axiolune.ai/source/research-governance
+
+  strategy: &strategy
+    iri: https://axiolune.ai/data/test/strategy/value-momentum/version/7
+    type: https://axiolune.ai/ontology/finance/strategy-research/StrategyDefinition
+    generatorId: value-momentum
+    generatorName: Value Momentum Strategy
+    implementationDigest: sha256:2121212121212121212121212121212121212121212121212121212121212121
+    inputContractDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+    outputContractDigest: sha256:2323232323232323232323232323232323232323232323232323232323232323
+    toolLockRef: https://axiolune.ai/artifact/tool-lock/strategy-runtime-v7
+    toolLockDigest: sha256:2424242424242424242424242424242424242424242424242424242424242424
+    runtimeDigest: sha256:2525252525252525252525252525252525252525252525252525252525252525
+    strategyDescription: Exact-version value and momentum strategy.
+    generatorAuthority: https://axiolune.ai/data/test/party/research-authority
+    usesFactor: https://axiolune.ai/data/test/factor/momentum/version/3
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef: https://axiolune.ai/artifact/source/strategy-value-momentum-v7
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest: sha256:2626262626262626262626262626262626262626262626262626262626262626
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator: https://axiolune.ai/artifact/locator/strategy-value-momentum-v7
+    validFrom: '2026-01-01T00:00:00Z'
+    knowledgeFrom: '2026-01-02T00:00:00Z'
+    availableFrom: '2026-01-02T00:00:01Z'
+    revision: 0
+    source: https://axiolune.ai/source/research-governance
+
+  run-context: &run-context
+    iri: https://axiolune.ai/data/test/run/context-2026/version/1
+    type: https://axiolune.ai/ontology/finance/strategy-research/RunContext
+    runContextId: context-2026
+    runContextKind: https://axiolune.ai/ontology/finance/strategy-research/RunContextKind/value/backtest
+    runStartedAt: '2026-07-01T00:00:00Z'
+    parameterSnapshotRef: https://axiolune.ai/artifact/parameter/context-2026
+    parameterSnapshotDigest: sha256:3131313131313131313131313131313131313131313131313131313131313131
+    ontologyClosureDigest: sha256:3232323232323232323232323232323232323232323232323232323232323232
+    mappingClosureDigest: sha256:3333333333333333333333333333333333333333333333333333333333333333
+    calendarSnapshotRef: https://axiolune.ai/artifact/calendar/XNAS-2026
+    calendarSnapshotDigest: sha256:3434343434343434343434343434343434343434343434343434343434343434
+    compilerDigest: sha256:3535353535353535353535353535353535353535353535353535353535353535
+    inputContextRef: https://axiolune.ai/run/materialization/context-2026-06-30
+    inputContextRecordDigest: sha256:3636363636363636363636363636363636363636363636363636363636363636
+    pitRequestRef: https://axiolune.ai/run/pit/request/context-2026
+    pitRequestRecordDigest: sha256:3737373737373737373737373737373737373737373737373737373737373737
+    runAuthority: https://axiolune.ai/data/test/party/research-authority
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef: https://axiolune.ai/artifact/run/context-2026
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest: sha256:3838383838383838383838383838383838383838383838383838383838383838
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator: https://axiolune.ai/artifact/locator/context-2026
+    validFrom: '2026-01-01T00:00:00Z'
+    knowledgeFrom: '2026-07-01T00:00:00Z'
+    availableFrom: '2026-07-01T00:00:01Z'
+    revision: 0
+    source: https://axiolune.ai/source/backtest-engine
+
+  backtest: &backtest
+    iri: https://axiolune.ai/data/test/run/backtest-2026/version/1
+    type: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
+    runContextId: backtest-2026
+    runContextKind: https://axiolune.ai/ontology/finance/strategy-research/RunContextKind/value/backtest
+    runStartedAt: '2026-07-01T00:00:00Z'
+    parameterSnapshotRef: https://axiolune.ai/artifact/parameter/backtest-2026
+    parameterSnapshotDigest: sha256:4141414141414141414141414141414141414141414141414141414141414141
+    ontologyClosureDigest: sha256:4242424242424242424242424242424242424242424242424242424242424242
+    mappingClosureDigest: sha256:4343434343434343434343434343434343434343434343434343434343434343
+    calendarSnapshotRef: https://axiolune.ai/artifact/calendar/XNAS-2026
+    calendarSnapshotDigest: sha256:4444444444444444444444444444444444444444444444444444444444444444
+    compilerDigest: sha256:4545454545454545454545454545454545454545454545454545454545454545
+    inputContextRef: https://axiolune.ai/run/materialization/backtest-2026-input
+    inputContextRecordDigest: sha256:4646464646464646464646464646464646464646464646464646464646464646
+    pitRequestRef: https://axiolune.ai/run/pit/request/backtest-2026
+    pitRequestRecordDigest: sha256:4747474747474747474747474747474747474747474747474747474747474747
+    simulationFrom: '2026-01-01T00:00:00Z'
+    simulationTo: '2026-07-01T00:00:00Z'
+    initialCapital:
+      type: MonetaryAmount
+      amount: '1000000.00'
+      currency: USD
+      scale: 2
+    codeDefinitionDigest: sha256:4848484848484848484848484848484848484848484848484848484848484848
+    feeAssumptionRef: https://axiolune.ai/artifact/assumption/fee-v2
+    feeAssumptionDigest: sha256:4949494949494949494949494949494949494949494949494949494949494949
+    slippageAssumptionRef: https://axiolune.ai/artifact/assumption/slippage-v2
+    slippageAssumptionDigest: sha256:5050505050505050505050505050505050505050505050505050505050505050
+    fillAssumptionRef: https://axiolune.ai/artifact/assumption/fill-v3
+    fillAssumptionDigest: sha256:5151515151515151515151515151515151515151515151515151515151515151
+    benchmarkRef: https://axiolune.ai/artifact/benchmark/SPX-2026
+    benchmarkDigest: sha256:5252525252525252525252525252525252525252525252525252525252525252
+    deterministicSeed: 74219
+    runAuthority: https://axiolune.ai/data/test/party/research-authority
+    backtestStrategy: https://axiolune.ai/data/test/strategy/value-momentum/version/7
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef: https://axiolune.ai/artifact/run/backtest-2026
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest: sha256:5353535353535353535353535353535353535353535353535353535353535353
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator: https://axiolune.ai/artifact/locator/backtest-2026
+    validFrom: '2026-01-01T00:00:00Z'
+    validTo: '2026-07-01T00:00:00Z'
+    knowledgeFrom: '2026-07-01T00:00:00Z'
+    availableFrom: '2026-07-01T00:00:01Z'
+    revision: 0
+    source: https://axiolune.ai/source/backtest-engine
+
+  metric: &metric
+    iri: https://axiolune.ai/data/test/metric/sharpe/version/2
+    type: https://axiolune.ai/ontology/finance/strategy-research/MetricDefinition
+    metricDefinitionId: sharpe
+    metricName: Sharpe Ratio
+    metricValueKind: https://axiolune.ai/ontology/finance/strategy-research/MetricValueKind/value/quantity
+    formulaDigest: sha256:6161616161616161616161616161616161616161616161616161616161616161
+    implementationDigest: sha256:6262626262626262626262626262626262626262626262626262626262626262
+    inputContractDigest: sha256:6363636363636363636363636363636363636363636363636363636363636363
+    outputContractDigest: sha256:6464646464646464646464646464646464646464646464646464646464646464
+    toolLockRef: https://axiolune.ai/artifact/tool-lock/metric-runtime-v2
+    toolLockDigest: sha256:6565656565656565656565656565656565656565656565656565656565656565
+    runtimeDigest: sha256:6666666666666666666666666666666666666666666666666666666666666666
+    metricAuthority: https://axiolune.ai/data/test/party/research-authority
+    validFrom: '2026-01-01T00:00:00Z'
+    knowledgeFrom: '2026-01-02T00:00:00Z'
+    availableFrom: '2026-01-02T00:00:01Z'
+    revision: 0
+    source: https://axiolune.ai/source/research-governance
+
+  calculation: &calculation
+    iri: https://axiolune.ai/data/test/calculation/sharpe-daily/version/3
+    type: https://axiolune.ai/ontology/finance/strategy-research/CalculationContext
+    calculationContextId: sharpe-daily-252
+    calculationFrequency: https://axiolune.ai/ontology/finance/strategy-research/CalculationFrequency/value/daily
+    annualizationFactor:
+      type: QuantityValue
+      value: '252'
+      unit: https://axiolune.ai/units/one
+      rounding: half-even
+    riskFreeRate:
+      type: QuantityValue
+      value: '0.02'
+      unit: https://axiolune.ai/units/one
+      rounding: half-even
+    calculationWindow:
+      type: QuantityValue
+      value: '252'
+      unit: https://axiolune.ai/units/trading-day
+      rounding: half-even
+    calculationImplementationDigest: sha256:7171717171717171717171717171717171717171717171717171717171717171
+    calculationParameterSnapshotRef: https://axiolune.ai/data/test/artifact/calculation-parameters/daily-simple-compound-v1
+    calculationParameterSnapshotDigest: sha256:14a69f0e2c387a9a525a46baba344acce00e872915144610a63d43b8cb5f19c4
+    calculationParameterSnapshotLocator: https://axiolune.ai/data/test/locator/calculation-parameters/daily-simple-compound-v1
+    calculationAuthority: https://axiolune.ai/data/test/party/research-authority
+    validFrom: '2026-01-01T00:00:00Z'
+    knowledgeFrom: '2026-01-02T00:00:00Z'
+    availableFrom: '2026-01-02T00:00:01Z'
+    revision: 0
+    source: https://axiolune.ai/source/research-governance
+
+  signal-support: &signal-support
+    - *authority
+    - *factor
+    - *strategy
+    - *run-context
+    - *instrument
+    - *run-kind-backtest
+    - *direction-long
+    - *direction-short
+
+  backtest-support: &backtest-support
+    - *authority
+    - *factor
+    - *strategy
+    - *run-kind-backtest
+
+  performance-support: &performance-support
+    - *authority
+    - *factor
+    - *strategy
+    - *backtest
+    - *run-kind-backtest
+    - *metric
+    - *metric-kind-quantity
+    - *calculation
+    - *frequency-daily
+    - *calculation-parameter-artifact
+    - *calculation-parameter-locator
+
 fixtures:
   - id: strategy-positive-001
-    description: Signal generated by factor for instrument
+    description: Canonical signal generated by one exact StrategyDefinition version.
     type: https://axiolune.ai/ontology/finance/strategy-research/Signal
     instance:
-      iri: https://axiolune.ai/data/test/signal-001
+      iri: https://axiolune.ai/data/test/signal/001/version/0
       type: https://axiolune.ai/ontology/finance/strategy-research/Signal
-      generatedByFactor: https://axiolune.ai/data/test/factor-def-001
-      signalForInstrument: https://axiolune.ai/data/test/instrument-001
-      hasSignalDirection: Long
-      hasSignalStrength:
+      https://axiolune.ai/ontology/finance/strategy-research/Signal/role/signalGenerator: https://axiolune.ai/data/test/strategy/value-momentum/version/7
+      https://axiolune.ai/ontology/finance/strategy-research/Signal/role/signalInstrument: https://axiolune.ai/data/test/instrument/AAPL/version/2
+      https://axiolune.ai/ontology/finance/strategy-research/Signal/role/signalRunContext: https://axiolune.ai/data/test/run/context-2026/version/1
+      sourceSignalId: signal-001
+      signalDirection: https://axiolune.ai/ontology/finance/strategy-research/SignalDirection/value/long
+      signalStrength:
         type: QuantityValue
-        hasNumericAmount: '0.75'
-        hasUnitCode: ratio
+        value: '0.75'
+        unit: https://axiolune.ai/units/one
+        rounding: half-even
+      signalHorizon: P5D
       validFrom: '2026-07-25T09:30:00Z'
-      validTo: '2026-07-25T16:00:00Z'
-      knowledgeFrom: '2026-07-25T16:05:00Z'
-      availableFrom: '2026-07-25T16:06:00Z'
-      source: momentum-factor-calculator
-      sourceVersion: 1.0.0
+      validTo: '2026-07-30T09:30:00Z'
+      knowledgeFrom: '2026-07-25T09:30:01Z'
+      availableFrom: '2026-07-25T09:30:02Z'
+      revision: 0
+      source: https://axiolune.ai/source/signal-engine
+    supportNodes: *signal-support
     expectedResult: accepted
+
   - id: strategy-positive-002
-    description: Backtest run with complete parameters
+    description: Immutable backtest configuration with exact strategy and closed inputs.
     type: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
-    instance:
-      iri: https://axiolune.ai/data/test/backtest-run-001
-      type: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
-      backtestsStrategy: https://axiolune.ai/data/test/strategy-def-001
-      usedPortfolio: https://axiolune.ai/data/test/portfolio-001
-      hasBacktestStatus: Completed
-      hasStartDate: '2026-01-01T00:00:00Z'
-      hasEndDate: '2026-06-30T23:59:59Z'
-      hasInitialCapital:
-        type: MonetaryAmount
-        hasNumericAmount: '1000000.00'
-        hasCurrencyCode: USD
-      knowledgeFrom: '2026-07-01T10:00:00Z'
-      availableFrom: '2026-07-01T10:01:00Z'
-      source: backtest-engine
-      sourceVersion: 2.0.0
+    instance: *backtest
+    supportNodes: *backtest-support
     expectedResult: accepted
+
   - id: strategy-positive-003
-    description: Performance observation with key metrics
+    description: Performance value joined to exact metric, run, and calculation contexts.
     type: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
     instance:
-      iri: https://axiolune.ai/data/test/perf-obs-001
+      iri: https://axiolune.ai/data/test/performance/sharpe/full-run/version/0
       type: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
-      observedInBacktest: https://axiolune.ai/data/test/backtest-run-001
-      hasCumulativeReturn:
+      https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceMetric: https://axiolune.ai/data/test/metric/sharpe/version/2
+      https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceRunContext: https://axiolune.ai/data/test/run/backtest-2026/version/1
+      https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceCalculationContext: https://axiolune.ai/data/test/calculation/sharpe-daily/version/3
+      sourcePerformanceId: sharpe-full-run
+      performanceQuantityValue:
         type: QuantityValue
-        hasNumericAmount: '0.15'
-        hasUnitCode: ratio
-      hasMaxDrawdown:
-        type: QuantityValue
-        hasNumericAmount: '0.08'
-        hasUnitCode: ratio
-      hasSharpeRatio:
-        type: QuantityValue
-        hasNumericAmount: '1.8'
-        hasUnitCode: ratio
-      validFrom: '2026-06-30T23:59:59Z'
+        value: '1.80'
+        unit: https://axiolune.ai/units/one
+        rounding: half-even
+      validFrom: '2026-01-01T00:00:00Z'
+      validTo: '2026-07-01T00:00:00Z'
       knowledgeFrom: '2026-07-01T10:00:00Z'
-      availableFrom: '2026-07-01T10:01:00Z'
-      source: performance-analyzer
-      sourceVersion: 1.0.0
+      availableFrom: '2026-07-01T10:00:01Z'
+      revision: 0
+      source: https://axiolune.ai/source/performance-engine
+    supportNodes: *performance-support
     expectedResult: accepted
+
   - id: strategy-positive-004
-    description: Multiple signals from different factors for same instrument
+    description: Two canonical signals for the same instrument with distinct source identities.
     type: https://axiolune.ai/ontology/finance/strategy-research/Signal
     instances:
-      - iri: https://axiolune.ai/data/test/signal-002
+      - iri: https://axiolune.ai/data/test/signal/002/version/0
         type: https://axiolune.ai/ontology/finance/strategy-research/Signal
-        generatedByFactor: https://axiolune.ai/data/test/factor-def-002
-        signalForInstrument: https://axiolune.ai/data/test/instrument-001
-        hasSignalDirection: Long
-        hasSignalStrength:
-          type: QuantityValue
-          hasNumericAmount: '0.65'
-          hasUnitCode: ratio
+        https://axiolune.ai/ontology/finance/strategy-research/Signal/role/signalGenerator: https://axiolune.ai/data/test/strategy/value-momentum/version/7
+        https://axiolune.ai/ontology/finance/strategy-research/Signal/role/signalInstrument: https://axiolune.ai/data/test/instrument/AAPL/version/2
+        https://axiolune.ai/ontology/finance/strategy-research/Signal/role/signalRunContext: https://axiolune.ai/data/test/run/context-2026/version/1
+        sourceSignalId: signal-002
+        signalDirection: https://axiolune.ai/ontology/finance/strategy-research/SignalDirection/value/long
+        signalStrength: {type: QuantityValue, value: '0.65', unit: https://axiolune.ai/units/one, rounding: half-even}
+        signalHorizon: P5D
         validFrom: '2026-07-25T09:30:00Z'
-        knowledgeFrom: '2026-07-25T09:35:00Z'
-        availableFrom: '2026-07-25T09:36:00Z'
-        source: value-factor-calculator
-      - iri: https://axiolune.ai/data/test/signal-003
+        knowledgeFrom: '2026-07-25T09:30:01Z'
+        availableFrom: '2026-07-25T09:30:02Z'
+        revision: 0
+        source: https://axiolune.ai/source/signal-engine
+      - iri: https://axiolune.ai/data/test/signal/003/version/0
         type: https://axiolune.ai/ontology/finance/strategy-research/Signal
-        generatedByFactor: https://axiolune.ai/data/test/factor-def-003
-        signalForInstrument: https://axiolune.ai/data/test/instrument-001
-        hasSignalDirection: Short
-        hasSignalStrength:
-          type: QuantityValue
-          hasNumericAmount: '0.40'
-          hasUnitCode: ratio
+        https://axiolune.ai/ontology/finance/strategy-research/Signal/role/signalGenerator: https://axiolune.ai/data/test/strategy/value-momentum/version/7
+        https://axiolune.ai/ontology/finance/strategy-research/Signal/role/signalInstrument: https://axiolune.ai/data/test/instrument/AAPL/version/2
+        https://axiolune.ai/ontology/finance/strategy-research/Signal/role/signalRunContext: https://axiolune.ai/data/test/run/context-2026/version/1
+        sourceSignalId: signal-003
+        signalDirection: https://axiolune.ai/ontology/finance/strategy-research/SignalDirection/value/short
+        signalStrength: {type: QuantityValue, value: '0.40', unit: https://axiolune.ai/units/one, rounding: half-even}
+        signalHorizon: P2D
         validFrom: '2026-07-25T09:30:00Z'
-        knowledgeFrom: '2026-07-25T09:35:00Z'
-        availableFrom: '2026-07-25T09:36:00Z'
-        source: volatility-factor-calculator
+        knowledgeFrom: '2026-07-25T09:30:01Z'
+        availableFrom: '2026-07-25T09:30:02Z'
+        revision: 0
+        source: https://axiolune.ai/source/signal-engine
+    supportNodes: *signal-support
     expectedResult: accepted
+
   - id: strategy-positive-005
-    description: Performance observation revision scenario (knowledge-time versioning)
+    description: Performance correction points backward and closes the prior version separately.
     type: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
     instances:
-      - iri: https://axiolune.ai/data/test/perf-obs-002-v1
+      - iri: https://axiolune.ai/data/test/performance/sharpe/2026-03-31/version/0
         type: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
-        observedInBacktest: https://axiolune.ai/data/test/backtest-run-002
-        hasSharpeRatio:
-          type: QuantityValue
-          hasNumericAmount: '1.5'
-          hasUnitCode: ratio
-        validFrom: '2026-03-31T23:59:59Z'
+        https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceMetric: https://axiolune.ai/data/test/metric/sharpe/version/2
+        https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceRunContext: https://axiolune.ai/data/test/run/backtest-2026/version/1
+        https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceCalculationContext: https://axiolune.ai/data/test/calculation/sharpe-daily/version/3
+        sourcePerformanceId: sharpe-2026-03-31
+        performanceQuantityValue: {type: QuantityValue, value: '1.50', unit: https://axiolune.ai/units/one, rounding: half-even}
+        validFrom: '2026-03-31T00:00:00Z'
+        validTo: '2026-04-01T00:00:00Z'
         knowledgeFrom: '2026-04-01T10:00:00Z'
-        knowledgeTo: '2026-04-02T14:30:00Z'
-        availableFrom: '2026-04-01T10:01:00Z'
-        availableTo: '2026-04-02T14:31:00Z'
-        source: performance-analyzer
-      - iri: https://axiolune.ai/data/test/perf-obs-002-v2
+        availableFrom: '2026-04-01T10:00:01Z'
+        revision: 0
+        source: https://axiolune.ai/source/performance-engine
+      - iri: https://axiolune.ai/data/test/performance/sharpe/2026-03-31/version/1
         type: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
-        observedInBacktest: https://axiolune.ai/data/test/backtest-run-002
-        hasSharpeRatio:
-          type: QuantityValue
-          hasNumericAmount: '1.52'
-          hasUnitCode: ratio
-        validFrom: '2026-03-31T23:59:59Z'
+        https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceMetric: https://axiolune.ai/data/test/metric/sharpe/version/2
+        https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceRunContext: https://axiolune.ai/data/test/run/backtest-2026/version/1
+        https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceCalculationContext: https://axiolune.ai/data/test/calculation/sharpe-daily/version/3
+        https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/supersedesPerformanceVersion: https://axiolune.ai/data/test/performance/sharpe/2026-03-31/version/0
+        sourcePerformanceId: sharpe-2026-03-31
+        performanceQuantityValue: {type: QuantityValue, value: '1.52', unit: https://axiolune.ai/units/one, rounding: half-even}
+        validFrom: '2026-03-31T00:00:00Z'
+        validTo: '2026-04-01T00:00:00Z'
         knowledgeFrom: '2026-04-02T14:30:00Z'
         availableFrom: '2026-04-02T14:31:00Z'
-        source: performance-analyzer
-        sourceVersion: 1.0.1
+        revision: 1
+        source: https://axiolune.ai/source/performance-engine
+    closures:
+      - axis: knowledge
+        targetVersion: https://axiolune.ai/data/test/performance/sharpe/2026-03-31/version/0
+        closedAt: '2026-04-02T14:30:00Z'
+        causeKind: successor
+        causeVersion: https://axiolune.ai/data/test/performance/sharpe/2026-03-31/version/1
+        evidenceRef: https://axiolune.ai/data/test/performance/sharpe/2026-03-31/version/1
+        generatingContextRef: https://axiolune.ai/run/materialization/performance-correction
+      - axis: availability
+        targetVersion: https://axiolune.ai/data/test/performance/sharpe/2026-03-31/version/0
+        closedAt: '2026-04-02T14:31:00Z'
+        causeKind: successor
+        causeVersion: https://axiolune.ai/data/test/performance/sharpe/2026-03-31/version/1
+        evidenceRef: https://axiolune.ai/data/test/performance/sharpe/2026-03-31/version/1
+        generatingContextRef: https://axiolune.ai/run/materialization/performance-correction
+    supportNodes: *performance-support
     expectedResult: accepted
+
   - id: strategy-positive-006
-    description: Strategy-generated signals (not factor-generated)
-    type: https://axiolune.ai/ontology/finance/strategy-research/Signal
-    instance:
-      iri: https://axiolune.ai/data/test/signal-004
-      type: https://axiolune.ai/ontology/finance/strategy-research/Signal
-      generatedByStrategy: https://axiolune.ai/data/test/strategy-def-002
-      signalForInstrument: https://axiolune.ai/data/test/instrument-001
-      hasSignalDirection: Long
-      hasSignalStrength:
-        type: QuantityValue
-        hasNumericAmount: '0.82'
-        hasUnitCode: ratio
-      validFrom: '2026-07-26T09:30:00Z'
-      knowledgeFrom: '2026-07-26T09:30:05Z'
-      availableFrom: '2026-07-26T09:30:06Z'
-      source: composite-strategy-engine
+    description: Strategy definition exposes an exact-version factor dependency.
+    type: https://axiolune.ai/ontology/finance/strategy-research/StrategyDefinition
+    instance: *strategy
+    supportNodes:
+      - *authority
+      - *factor
     expectedResult: accepted
+
   - id: strategy-positive-007
-    description: Time series of performance observations during backtest
+    description: Ordered daily Sharpe trajectory with one observation per time point.
     type: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
     instances:
-      - iri: https://axiolune.ai/data/test/perf-obs-003-day1
+      - iri: https://axiolune.ai/data/test/performance/sharpe/day-1/version/0
         type: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
-        observedInBacktest: https://axiolune.ai/data/test/backtest-run-003
-        hasCumulativeReturn:
-          type: QuantityValue
-          hasNumericAmount: '0.01'
-          hasUnitCode: ratio
-        hasMaxDrawdown:
-          type: QuantityValue
-          hasNumericAmount: '0.005'
-          hasUnitCode: ratio
-        hasSharpeRatio:
-          type: QuantityValue
-          hasNumericAmount: '0.8'
-          hasUnitCode: ratio
-        validFrom: '2026-07-01T23:59:59Z'
-        knowledgeFrom: '2026-07-11T10:00:00Z'
-        availableFrom: '2026-07-11T10:01:00Z'
-        source: performance-analyzer
-      - iri: https://axiolune.ai/data/test/perf-obs-003-day5
+        https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceMetric: https://axiolune.ai/data/test/metric/sharpe/version/2
+        https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceRunContext: https://axiolune.ai/data/test/run/backtest-2026/version/1
+        https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceCalculationContext: https://axiolune.ai/data/test/calculation/sharpe-daily/version/3
+        sourcePerformanceId: sharpe-day-1
+        performanceQuantityValue: {type: QuantityValue, value: '0.80', unit: https://axiolune.ai/units/one, rounding: half-even}
+        validFrom: '2026-06-28T00:00:00Z'
+        validTo: '2026-06-29T00:00:00Z'
+        knowledgeFrom: '2026-07-01T10:00:00Z'
+        availableFrom: '2026-07-01T10:00:01Z'
+        revision: 0
+        source: https://axiolune.ai/source/performance-engine
+      - iri: https://axiolune.ai/data/test/performance/sharpe/day-2/version/0
         type: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
-        observedInBacktest: https://axiolune.ai/data/test/backtest-run-003
-        hasCumulativeReturn:
-          type: QuantityValue
-          hasNumericAmount: '0.03'
-          hasUnitCode: ratio
-        hasMaxDrawdown:
-          type: QuantityValue
-          hasNumericAmount: '0.01'
-          hasUnitCode: ratio
-        hasSharpeRatio:
-          type: QuantityValue
-          hasNumericAmount: '1.2'
-          hasUnitCode: ratio
-        validFrom: '2026-07-05T23:59:59Z'
-        knowledgeFrom: '2026-07-11T10:00:00Z'
-        availableFrom: '2026-07-11T10:01:00Z'
-        source: performance-analyzer
-      - iri: https://axiolune.ai/data/test/perf-obs-003-day10
+        https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceMetric: https://axiolune.ai/data/test/metric/sharpe/version/2
+        https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceRunContext: https://axiolune.ai/data/test/run/backtest-2026/version/1
+        https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceCalculationContext: https://axiolune.ai/data/test/calculation/sharpe-daily/version/3
+        sourcePerformanceId: sharpe-day-2
+        performanceQuantityValue: {type: QuantityValue, value: '1.20', unit: https://axiolune.ai/units/one, rounding: half-even}
+        validFrom: '2026-06-29T00:00:00Z'
+        validTo: '2026-06-30T00:00:00Z'
+        knowledgeFrom: '2026-07-01T10:00:00Z'
+        availableFrom: '2026-07-01T10:00:01Z'
+        revision: 0
+        source: https://axiolune.ai/source/performance-engine
+      - iri: https://axiolune.ai/data/test/performance/sharpe/day-3/version/0
         type: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
-        observedInBacktest: https://axiolune.ai/data/test/backtest-run-003
-        hasCumulativeReturn:
-          type: QuantityValue
-          hasNumericAmount: '0.05'
-          hasUnitCode: ratio
-        hasMaxDrawdown:
-          type: QuantityValue
-          hasNumericAmount: '0.015'
-          hasUnitCode: ratio
-        hasSharpeRatio:
-          type: QuantityValue
-          hasNumericAmount: '1.5'
-          hasUnitCode: ratio
-        validFrom: '2026-07-10T23:59:59Z'
-        knowledgeFrom: '2026-07-11T10:00:00Z'
-        availableFrom: '2026-07-11T10:01:00Z'
-        source: performance-analyzer
+        https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceMetric: https://axiolune.ai/data/test/metric/sharpe/version/2
+        https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceRunContext: https://axiolune.ai/data/test/run/backtest-2026/version/1
+        https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceCalculationContext: https://axiolune.ai/data/test/calculation/sharpe-daily/version/3
+        sourcePerformanceId: sharpe-day-3
+        performanceQuantityValue: {type: QuantityValue, value: '1.50', unit: https://axiolune.ai/units/one, rounding: half-even}
+        validFrom: '2026-06-30T00:00:00Z'
+        validTo: '2026-07-01T00:00:00Z'
+        knowledgeFrom: '2026-07-01T10:00:00Z'
+        availableFrom: '2026-07-01T10:00:01Z'
+        revision: 0
+        source: https://axiolune.ai/source/performance-engine
+    supportNodes: *performance-support
     expectedResult: accepted

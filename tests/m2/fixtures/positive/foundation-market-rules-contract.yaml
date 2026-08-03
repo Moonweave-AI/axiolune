@@ -1,0 +1,195 @@
+contract: FoundationMarketRulesRFC001
+fixtures:
+  - id: iso4217-and-scoped-executable-market-rules
+    expectedResult: accepted
+    instance:
+      foundation:
+        registryEntries:
+          - authorityLogicalIri: https://axiolune.ai/data/identifier-authorities/iso4217
+            alphaCode: USD
+            numericCode: "840"
+            minorUnit: 2
+            status: active
+            currencyLogicalIri: https://axiolune.ai/data/currencies/USD
+            sourceRef: https://axiolune.ai/evidence/iso4217/snapshot-2026-01
+            validFrom: "2026-01-01T00:00:00Z"
+            validTo: null
+          - authorityLogicalIri: https://axiolune.ai/data/identifier-authorities/iso4217
+            alphaCode: CNY
+            numericCode: "156"
+            minorUnit: 2
+            status: active
+            currencyLogicalIri: https://axiolune.ai/data/currencies/CNY
+            sourceRef: https://axiolune.ai/evidence/iso4217/snapshot-2026-01
+            validFrom: "2026-01-01T00:00:00Z"
+            validTo: null
+        currencyUsages:
+          - currencyLogicalIri: https://axiolune.ai/data/currencies/USD
+            jurisdictionLogicalIri: https://axiolune.ai/data/jurisdictions/US
+          - currencyLogicalIri: https://axiolune.ai/data/currencies/CNY
+            jurisdictionLogicalIri: https://axiolune.ai/data/jurisdictions/CN
+      marketRules:
+        rules:
+          - versionIri: https://axiolune.ai/data/rules/tick-primary/version/sha256-a
+            kind: tickSchedule
+            gapPolicy: reject
+          - versionIri: https://axiolune.ai/data/rules/tick-secondary/version/sha256-b
+            kind: tickSchedule
+            gapPolicy: reject
+          - versionIri: https://axiolune.ai/data/rules/settlement/version/sha256-c
+            kind: settlementCycle
+            gapPolicy: reject
+          - versionIri: https://axiolune.ai/data/rules/resale/version/sha256-d
+            kind: resaleRestriction
+            gapPolicy: reject
+          - versionIri: https://axiolune.ai/data/rules/corporate-action/version/sha256-e
+            kind: corporateActionSchedule
+            gapPolicy: reject
+            corporateActionKind: cashDividend
+            dateResolutionContractDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+            dateOrderingContractDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+            calendarCutoffContractDigest: sha256:3333333333333333333333333333333333333333333333333333333333333333
+            distributionPercentageLowerBound:
+              value: "0.25"
+              unit: https://axiolune.ai/units/dimensionless
+            distributionPercentageLowerInclusive: true
+            distributionAssessmentMethodVersionIri: https://axiolune.ai/data/corporate-action-assessment-methods/cash-reference-price/version/sha256-a
+        distributionAssessmentMethods:
+          - versionIri: https://axiolune.ai/data/corporate-action-assessment-methods/cash-reference-price/version/sha256-a
+            authorityVersionIri: https://axiolune.ai/data/parties/finra/version/sha256-a
+            methodId: cash-reference-price
+            inputKind: cashCalculated
+            priceSelection: latestStrictlyBefore
+            requiresMarketPrice: true
+            requiredPriceKindIri: https://axiolune.ai/ontology/finance/market-data/PriceKind/value/officialClose
+            precision: 8
+            roundingMode: halfEven
+            formulaDigest: sha256:4444444444444444444444444444444444444444444444444444444444444444
+            implementationDigest: sha256:5555555555555555555555555555555555555555555555555555555555555555
+        clauses:
+          - ruleVersionIri: https://axiolune.ai/data/rules/tick-primary/version/sha256-a
+            type: TickSizeClause
+            sequence: 0
+            lower: "0"
+            upper: "10"
+            tickSize:
+              value: "0.01"
+              unit: https://axiolune.ai/units/USD-per-share
+          - ruleVersionIri: https://axiolune.ai/data/rules/tick-primary/version/sha256-a
+            type: TickSizeClause
+            sequence: 1
+            lower: "10"
+            upper: "100"
+            tickSize:
+              value: "0.05"
+              unit: https://axiolune.ai/units/USD-per-share
+          - ruleVersionIri: https://axiolune.ai/data/rules/tick-secondary/version/sha256-b
+            type: TickSizeClause
+            sequence: 0
+            lower: "0"
+            upper: "100"
+            tickSize:
+              value: "0.01"
+              unit: https://axiolune.ai/units/USD-per-share
+          - ruleVersionIri: https://axiolune.ai/data/rules/settlement/version/sha256-c
+            type: SettlementCycleClause
+            sequence: 0
+            settlementCycle:
+              value: "1"
+              unit: https://axiolune.ai/units/business-day
+          - ruleVersionIri: https://axiolune.ai/data/rules/resale/version/sha256-d
+            type: ResaleRestrictionClause
+            sequence: 0
+            sameDayResaleAllowed: false
+            minimumResaleHoldingPeriod:
+              value: "1"
+              unit: https://axiolune.ai/units/business-day
+          - ruleVersionIri: https://axiolune.ai/data/rules/corporate-action/version/sha256-e
+            type: CorporateActionEntitlementClause
+            sequence: 0
+            entitlementMode: dueBillAdjusted
+            entitlementPivotDateField: recordDate
+            cumEntitlementTradeStartOffset:
+              value: "-5"
+              unit: https://axiolune.ai/units/business-day
+            cumEntitlementTradeEndOffset:
+              value: "1"
+              unit: https://axiolune.ai/units/business-day
+            settlementQualification: settlementEvidence
+          - ruleVersionIri: https://axiolune.ai/data/rules/corporate-action/version/sha256-e
+            type: CorporateActionDateResolutionClause
+            sequence: 1
+            resolvedDateRole: announcementDate
+            sourceEventDateField: announcementDate
+            dateResolutionOffset: {value: "0", unit: https://axiolune.ai/units/business-day}
+            dateBusinessDayAdjustment: unadjusted
+          - ruleVersionIri: https://axiolune.ai/data/rules/corporate-action/version/sha256-e
+            type: CorporateActionDateResolutionClause
+            sequence: 2
+            resolvedDateRole: recordDate
+            sourceEventDateField: recordDate
+            dateResolutionOffset: {value: "0", unit: https://axiolune.ai/units/business-day}
+            dateBusinessDayAdjustment: unadjusted
+          - ruleVersionIri: https://axiolune.ai/data/rules/corporate-action/version/sha256-e
+            type: CorporateActionDateResolutionClause
+            sequence: 3
+            resolvedDateRole: paymentDate
+            sourceEventDateField: paymentDate
+            dateResolutionOffset: {value: "0", unit: https://axiolune.ai/units/business-day}
+            dateBusinessDayAdjustment: unadjusted
+          - ruleVersionIri: https://axiolune.ai/data/rules/corporate-action/version/sha256-e
+            type: CorporateActionDateResolutionClause
+            sequence: 4
+            resolvedDateRole: exDate
+            sourceEventDateField: paymentDate
+            dateResolutionOffset: {value: "1", unit: https://axiolune.ai/units/business-day}
+            dateBusinessDayAdjustment: following
+          - ruleVersionIri: https://axiolune.ai/data/rules/corporate-action/version/sha256-e
+            type: CorporateActionDateOrderingClause
+            sequence: 5
+            orderingLeftDateRole: paymentDate
+            dateOrderingOperator: before
+            orderingRightDateRole: exDate
+        parameters:
+          - id: money-branch
+            money:
+              amount: "10.00"
+              currency: USD
+              scale: 2
+          - id: quantity-branch
+            quantity:
+              value: "100"
+              unit: https://axiolune.ai/units/share
+          - id: code-branch
+            code: enabled
+          - id: clause-reference-branch
+            clauseReference: https://axiolune.ai/data/rule-clauses/tick-primary-0/version/sha256-a
+        requests:
+          - versionIri: https://axiolune.ai/data/rule-requests/request-1/version/sha256-a
+            authorityVersionIri: https://axiolune.ai/data/parties/evaluator/version/sha256-a
+            requestId: request-1
+            asOfValid: "2026-07-01T00:00:00Z"
+            asOfKnowledge: "2026-07-01T00:00:00Z"
+            asOfAvailable: "2026-07-01T00:00:00Z"
+            inputContextRef: https://axiolune.ai/data/runs/input-1
+            scopes:
+              listing: https://axiolune.ai/data/listings/abc/version/sha256-a
+              instrument: https://axiolune.ai/data/instruments/abc/version/sha256-a
+              venue: https://axiolune.ai/data/facilities/xnas/version/sha256-a
+              accountType: cash
+              jurisdiction: https://axiolune.ai/data/jurisdictions/US/version/sha256-a
+        applicabilities:
+          - versionIri: https://axiolune.ai/data/rule-applicabilities/app-1/version/sha256-a
+            requestVersionIri: https://axiolune.ai/data/rule-requests/request-1/version/sha256-a
+            ruleVersionIri: https://axiolune.ai/data/rules/tick-primary/version/sha256-a
+            priority: 10
+            scopes:
+              listing: https://axiolune.ai/data/listings/abc/version/sha256-a
+              instrument: https://axiolune.ai/data/instruments/abc/version/sha256-a
+              venue: https://axiolune.ai/data/facilities/xnas/version/sha256-a
+              accountType: cash
+              jurisdiction: https://axiolune.ai/data/jurisdictions/US/version/sha256-a
+        precedence:
+          - higherRuleVersionIri: https://axiolune.ai/data/rules/tick-primary/version/sha256-a
+            lowerRuleVersionIri: https://axiolune.ai/data/rules/tick-secondary/version/sha256-b
+        conflicts: []

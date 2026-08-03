@@ -1,66 +1,190 @@
-# FactorObservation revision-chain fixtures (Qlib PIT: date, period, value, _next)
-# Gate: validate-pit.cjs via test-all-domain (filename matches factor|strategy)
+# FactorObservation v0.3 revision fixtures.
+# Qlib PIT is implementation evidence only: its publication/period/value/_next
+# layout is not a three-axis mapping and `_next` is never a domain relation.
+schemaVersion: '1.0'
+anchors:
+  authority: &authority
+    iri: https://axiolune.ai/data/party/research-governance
+    type: https://axiolune.ai/ontology/finance/foundation/Party
+  instrument: &instrument
+    iri: https://axiolune.ai/data/instrument/US0378331005/version/2
+    type: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+  run-kind-research: &run-kind-research
+    iri: https://axiolune.ai/ontology/finance/strategy-research/RunContextKind/value/research
+    type: https://axiolune.ai/ontology/finance/strategy-research/RunContextKind
+  generator-base: &generator-base
+    type: https://axiolune.ai/ontology/finance/strategy-research/FactorDefinition
+    implementationDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+    inputContractDigest: sha256:1212121212121212121212121212121212121212121212121212121212121212
+    outputContractDigest: sha256:1313131313131313131313131313131313131313131313131313131313131313
+    toolLockRef: https://axiolune.ai/artifact/tool-lock/factor-runtime
+    toolLockDigest: sha256:1414141414141414141414141414141414141414141414141414141414141414
+    runtimeDigest: sha256:1515151515151515151515151515151515151515151515151515151515151515
+    generatorAuthority: https://axiolune.ai/data/party/research-governance
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef: https://axiolune.ai/artifact/source/factor-definitions
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest: sha256:1616161616161616161616161616161616161616161616161616161616161616
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator: https://axiolune.ai/artifact/locator/research-generator-source
+    validFrom: '2024-01-01T00:00:00Z'
+    knowledgeFrom: '2024-01-02T00:00:00Z'
+    availableFrom: '2024-01-02T00:00:01Z'
+    revision: 0
+    source: https://axiolune.ai/source/research-governance
+  factor-roe: &factor-roe
+    <<: *generator-base
+    iri: https://axiolune.ai/data/factor/roe/version/4
+    generatorId: roe
+    generatorName: Return on Equity
+    factorExpressionRef: https://axiolune.ai/artifact/factor/roe-v4
+    factorExpressionDigest: sha256:1717171717171717171717171717171717171717171717171717171717171717
+  factor-momentum: &factor-momentum
+    <<: *generator-base
+    iri: https://axiolune.ai/data/factor/momentum-20d/version/1
+    generatorId: momentum-20d
+    generatorName: Momentum 20 Day
+    factorExpressionRef: https://axiolune.ai/artifact/factor/momentum-20d-v1
+    factorExpressionDigest: sha256:1818181818181818181818181818181818181818181818181818181818181818
+  run-base: &run-base
+    type: https://axiolune.ai/ontology/finance/strategy-research/RunContext
+    runContextKind: https://axiolune.ai/ontology/finance/strategy-research/RunContextKind/value/research
+    runStartedAt: '2024-04-15T07:00:00Z'
+    parameterSnapshotRef: https://axiolune.ai/artifact/parameter/factor-research
+    parameterSnapshotDigest: sha256:2121212121212121212121212121212121212121212121212121212121212121
+    ontologyClosureDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+    mappingClosureDigest: sha256:2323232323232323232323232323232323232323232323232323232323232323
+    calendarSnapshotRef: https://axiolune.ai/artifact/calendar/XNAS-2024
+    calendarSnapshotDigest: sha256:2424242424242424242424242424242424242424242424242424242424242424
+    compilerDigest: sha256:2525252525252525252525252525252525252525252525252525252525252525
+    inputContextRef: https://axiolune.ai/run/materialization/factor-input
+    inputContextRecordDigest: sha256:2626262626262626262626262626262626262626262626262626262626262626
+    pitRequestRef: https://axiolune.ai/run/pit/request/factor-research
+    pitRequestRecordDigest: sha256:2727272727272727272727272727272727272727272727272727272727272727
+    runAuthority: https://axiolune.ai/data/party/research-governance
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef: https://axiolune.ai/artifact/run/factor-research
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest: sha256:2828282828282828282828282828282828282828282828282828282828282828
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator: https://axiolune.ai/artifact/locator/factor-research
+    validFrom: '2024-01-01T00:00:00Z'
+    knowledgeFrom: '2024-04-15T07:00:00Z'
+    availableFrom: '2024-04-15T07:00:01Z'
+    revision: 0
+    source: https://axiolune.ai/source/research-engine
+  run-roe-v1: &run-roe-v1
+    <<: *run-base
+    iri: https://axiolune.ai/data/run/research-roe-revision/version/1
+    runContextId: research-roe-revision
+  run-roe-v2: &run-roe-v2
+    <<: *run-base
+    iri: https://axiolune.ai/data/run/research-roe-revision-2/version/1
+    runContextId: research-roe-revision-2
+    runStartedAt: '2024-05-10T07:00:00Z'
+    knowledgeFrom: '2024-05-10T07:00:00Z'
+    availableFrom: '2024-05-10T07:00:01Z'
+  run-momentum: &run-momentum
+    <<: *run-base
+    iri: https://axiolune.ai/data/run/research-momentum/version/1
+    runContextId: research-momentum
+    runStartedAt: '2024-07-01T15:00:00Z'
+    knowledgeFrom: '2024-07-01T15:00:00Z'
+    availableFrom: '2024-07-01T15:00:01Z'
 fixtures:
   - id: factor-obs-revision-chain-positive
     description: >-
-      Two revisions for same (instrument, period=2024Q1); v1.nextRevision→v2 (Qlib _next). Machine assertion of revision
-      selection is NOT done by validate-pit (axis-only). See tests/m2/competency-queries/cq-factor-revision.yaml +
-      scripts/domain/run-factor-revision-cq.cjs: CQ-F1 asOfKnowledge=2024-04-20 selects v1; CQ-F2
-      asOfKnowledge=2024-05-15 selects v2.
+      Two immutable versions for the same stable factor-observation identity.
+      The successor points backward to the prior exact version; independent
+      FactClosureAssertion records close knowledge and availability axes.
     type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
     instances:
-      - iri: https://axiolune.ai/data/factors/obs-roe-aapl-2024q1-v1
+      - iri: https://axiolune.ai/data/factor-observation/roe/AAPL/2024Q1/provider-roe/version/0
+        logicalIri: https://axiolune.ai/data/factor-observation/roe/AAPL/2024Q1/provider-roe
         type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
-        observesFactor: https://axiolune.ai/data/factors/def-roe
-        observedInstrument: https://axiolune.ai/data/instruments/AX-EQ-AAPL
-        nextRevision: https://axiolune.ai/data/factors/obs-roe-aapl-2024q1-v2
-        hasFactorPeriod: 2024Q1
-        hasFactorValue:
+        https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/observedFactor: https://axiolune.ai/data/factor/roe/version/4
+        https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/factorInstrument: https://axiolune.ai/data/instrument/US0378331005/version/2
+        https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/factorRunContext: https://axiolune.ai/data/run/research-roe-revision/version/1
+        sourceFactorId: provider-roe
+        reportingPeriodKey: 2024Q1
+        factorValue:
           type: QuantityValue
-          hasNumericAmount: '0.185'
-          hasUnitCode: share
+          value: '0.185'
+          unit: https://axiolune.ai/unit/one
+          rounding: half-even
         validFrom: '2024-01-01T00:00:00Z'
         validTo: '2024-04-01T00:00:00Z'
         knowledgeFrom: '2024-04-15T08:00:00Z'
-        knowledgeTo: '2024-05-10T08:00:00Z'
         availableFrom: '2024-04-15T08:05:00Z'
-        availableTo: '2024-05-10T08:05:00Z'
-        source: qlib-pit-synthetic
-        sourceRevision: v1
-      - iri: https://axiolune.ai/data/factors/obs-roe-aapl-2024q1-v2
+        revision: 0
+        source: https://axiolune.ai/source/qlib-pit-synthetic
+        sourceVersion: v1
+      - iri: https://axiolune.ai/data/factor-observation/roe/AAPL/2024Q1/provider-roe/version/1
+        logicalIri: https://axiolune.ai/data/factor-observation/roe/AAPL/2024Q1/provider-roe
         type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
-        observesFactor: https://axiolune.ai/data/factors/def-roe
-        observedInstrument: https://axiolune.ai/data/instruments/AX-EQ-AAPL
-        hasFactorPeriod: 2024Q1
-        hasFactorValue:
+        https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/observedFactor: https://axiolune.ai/data/factor/roe/version/4
+        https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/factorInstrument: https://axiolune.ai/data/instrument/US0378331005/version/2
+        https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/factorRunContext: https://axiolune.ai/data/run/research-roe-revision-2/version/1
+        https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/supersedesFactorVersion: https://axiolune.ai/data/factor-observation/roe/AAPL/2024Q1/provider-roe/version/0
+        sourceFactorId: provider-roe
+        reportingPeriodKey: 2024Q1
+        factorValue:
           type: QuantityValue
-          hasNumericAmount: '0.191'
-          hasUnitCode: share
+          value: '0.191'
+          unit: https://axiolune.ai/unit/one
+          rounding: half-even
         validFrom: '2024-01-01T00:00:00Z'
         validTo: '2024-04-01T00:00:00Z'
         knowledgeFrom: '2024-05-10T08:00:00Z'
         availableFrom: '2024-05-10T08:05:00Z'
-        source: qlib-pit-synthetic
-        sourceRevision: v2
-        note: terminal revision — nextRevision absent (Qlib NA_INDEX)
+        revision: 1
+        source: https://axiolune.ai/source/qlib-pit-synthetic
+        sourceVersion: v2
+    closures:
+      - axis: knowledge
+        targetVersion: https://axiolune.ai/data/factor-observation/roe/AAPL/2024Q1/provider-roe/version/0
+        closedAt: '2024-05-10T08:00:00Z'
+        causeKind: successor
+        causeVersion: https://axiolune.ai/data/factor-observation/roe/AAPL/2024Q1/provider-roe/version/1
+        evidenceRef: https://axiolune.ai/data/factor-observation/roe/AAPL/2024Q1/provider-roe/version/1
+        generatingContextRef: https://axiolune.ai/run/materialization/research-roe-revision-2
+      - axis: availability
+        targetVersion: https://axiolune.ai/data/factor-observation/roe/AAPL/2024Q1/provider-roe/version/0
+        closedAt: '2024-05-10T08:05:00Z'
+        causeKind: successor
+        causeVersion: https://axiolune.ai/data/factor-observation/roe/AAPL/2024Q1/provider-roe/version/1
+        evidenceRef: https://axiolune.ai/data/factor-observation/roe/AAPL/2024Q1/provider-roe/version/1
+        generatingContextRef: https://axiolune.ai/run/materialization/research-roe-revision-2
+    supportNodes:
+      - *authority
+      - *instrument
+      - *run-kind-research
+      - *factor-roe
+      - *run-roe-v1
+      - *run-roe-v2
     expectedResult: accepted
-    note: 'Round-3 regression: FactorObservation + nextRevision in gate'
+
   - id: factor-obs-single-terminal
-    description: Single FactorObservation with period+value and no nextRevision
+    description: Initial immutable FactorObservation with no successor or closure assertion.
     type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
     instance:
-      iri: https://axiolune.ai/data/factors/obs-mom-aapl-2024-06
+      iri: https://axiolune.ai/data/factor-observation/momentum/AAPL/2024-06/provider-momentum/version/0
+      logicalIri: https://axiolune.ai/data/factor-observation/momentum/AAPL/2024-06/provider-momentum
       type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
-      observesFactor: https://axiolune.ai/data/factors/def-momentum-20d
-      observedInstrument: https://axiolune.ai/data/instruments/AX-EQ-AAPL
-      hasFactorPeriod: 2024-06
-      hasFactorValue:
+      https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/observedFactor: https://axiolune.ai/data/factor/momentum-20d/version/1
+      https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/factorInstrument: https://axiolune.ai/data/instrument/US0378331005/version/2
+      https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/factorRunContext: https://axiolune.ai/data/run/research-momentum/version/1
+      sourceFactorId: provider-momentum
+      reportingPeriodKey: 2024-06
+      factorValue:
         type: QuantityValue
-        hasNumericAmount: '0.042'
-        hasUnitCode: share
+        value: '0.042'
+        unit: https://axiolune.ai/unit/one
+        rounding: half-even
       validFrom: '2024-06-01T00:00:00Z'
       validTo: '2024-07-01T00:00:00Z'
       knowledgeFrom: '2024-07-01T16:00:00Z'
       availableFrom: '2024-07-01T16:01:00Z'
-      source: qlib-pit-synthetic
+      revision: 0
+      source: https://axiolune.ai/source/qlib-pit-synthetic
+    supportNodes:
+      - *authority
+      - *instrument
+      - *run-kind-research
+      - *factor-momentum
+      - *run-momentum
     expectedResult: accepted

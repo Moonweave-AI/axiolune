@@ -1,0 +1,40 @@
+caseId: market-rules-v03-positive-precedence-reference-visible-closure
+extends: positive-cq-execution.yaml
+mutations:
+  - op: set
+    path: "precedence[1]"
+    value:
+      logicalIri: urn:precedence:price-secondary-over-primary
+      versionIri: urn:precedence:price-secondary-over-primary:version:0
+      versionOf: urn:precedence:price-secondary-over-primary
+      higherRuleVersionIri: urn:rule:price-secondary:version:1
+      lowerRuleVersionIri: urn:rule:price-primary:version:1
+      reason: reviewed precedence reversal after the prior edge knowledge closure
+      axes:
+        validFrom: "2026-01-01T00:00:00Z"
+        knowledgeFrom: "2026-06-01T00:00:00Z"
+        availableFrom: "2026-01-01T00:00:02Z"
+        revision: 0
+      provenance:
+        source: urn:authority:market-rulebook
+        sourceVersion: "2026-07"
+        sourceArtifactRef: {kind: iri, iri: urn:artifact:market-rulebook-2026-07}
+        sourceArtifactDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+        sourceLocator:
+          kind: wholeFile
+          path: synthetic/market-rulebook.json
+          mediaType: application/json
+          extractorProfileRef: {kind: iri, iri: urn:extractor:whole-file-v1}
+          extractorProfileDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+          selectionDigest: sha256:3333333333333333333333333333333333333333333333333333333333333333
+  - op: set
+    path: "closures[8]"
+    value:
+      id: https://axiolune.ai/data/fact-closure-assertion/sha256-8476d9f399b9aa59eb39ec4dd447a5e0e64418d5ba343f8481fda6e1df4febf4
+      targetVersionIri: urn:precedence:price-primary-over-secondary:version:1
+      axis: knowledge
+      closedAt: "2026-06-01T00:00:00Z"
+      causeKind: retraction
+      evidenceRef: urn:evidence:authority-b-source-withdrawal
+      generatingContextRef: urn:validation-run:market-rules-v03
+expected: {valid: true, requestId: mr2-alpha, kind: priceLimit, winner: urn:rule:price-secondary:version:1}

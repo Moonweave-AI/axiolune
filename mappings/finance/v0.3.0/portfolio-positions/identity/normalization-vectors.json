@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0",
+  "vectors": [
+    {
+      "id": "iri-positive",
+      "algorithmId": "absolute_iri_v1",
+      "input": "https://axiolune.ai/data/account/acct-1",
+      "expected": "<https://axiolune.ai/data/account/acct-1>"
+    },
+    {
+      "id": "iri-relative-rejected",
+      "algorithmId": "absolute_iri_v1",
+      "input": "../acct-1",
+      "expectedError": "IRI"
+    },
+    {
+      "id": "string-positive",
+      "algorithmId": "nfc_string_v1",
+      "input": "openingRemainder",
+      "expected": "\"openingRemainder\"^^<http://www.w3.org/2001/XMLSchema#string>"
+    },
+    {
+      "id": "string-empty-rejected",
+      "algorithmId": "nfc_string_v1",
+      "input": "",
+      "expectedError": "non-empty"
+    },
+    {
+      "id": "instant-positive",
+      "algorithmId": "utc_datetime_stamp_v1",
+      "input": "2026-07-31T08:00:00Z",
+      "expected": "\"2026-07-31T08:00:00Z\"^^<http://www.w3.org/2001/XMLSchema#dateTimeStamp>"
+    },
+    {
+      "id": "instant-offset-rejected",
+      "algorithmId": "utc_datetime_stamp_v1",
+      "input": "2026-07-31T16:00:00+08:00",
+      "expectedError": "UTC"
+    },
+    {
+      "id": "revision-positive",
+      "algorithmId": "non_negative_integer_v1",
+      "input": 0,
+      "expected": "\"0\"^^<http://www.w3.org/2001/XMLSchema#nonNegativeInteger>"
+    },
+    {
+      "id": "revision-negative-rejected",
+      "algorithmId": "non_negative_integer_v1",
+      "input": -1,
+      "expectedError": "non-negative"
+    }
+  ]
+}

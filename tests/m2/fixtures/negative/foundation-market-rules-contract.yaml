@@ -1,0 +1,288 @@
+contract: FoundationMarketRulesRFC001Mutations
+baseFixtureFile: ../positive/foundation-market-rules-contract.yaml
+cases:
+  - id: invalid-iso4217-alpha-code
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: iso4217-entry-integrity
+    mutation:
+      op: replace
+      path: /foundation/registryEntries/0/alphaCode
+      value: US
+  - id: invalid-iso4217-numeric-code-loses-leading-zero-contract
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: iso4217-entry-integrity
+    mutation:
+      op: replace
+      path: /foundation/registryEntries/0/numericCode
+      value: 840
+  - id: iso4217-invalid-nonleap-calendar-date
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: iso4217-entry-integrity
+    mutation:
+      op: replace
+      path: /foundation/registryEntries/0/validFrom
+      value: "2026-02-29T00:00:00Z"
+  - id: iso4217-noncanonical-timezone-offset
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: iso4217-entry-integrity
+    mutation:
+      op: replace
+      path: /foundation/registryEntries/0/validFrom
+      value: "2026-01-01T00:00:00+00:00"
+  - id: iso4217-validity-interval-is-inverted
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: iso4217-entry-integrity
+    mutation:
+      op: replace
+      path: /foundation/registryEntries/0/validTo
+      value: "2025-12-31T23:59:59.999999999Z"
+  - id: iso4217-source-iri-control-character
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: iso4217-entry-integrity
+    mutation:
+      op: replace
+      path: /foundation/registryEntries/0/sourceRef
+      value: "https://axiolune.ai/evidence/iso4217\u007fhidden"
+  - id: overlapping-duplicate-authority-alpha-entry
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: iso4217-pit-uniqueness
+    mutation:
+      op: replace
+      path: /foundation/registryEntries/1/alphaCode
+      value: USD
+  - id: currency-usage-without-jurisdiction
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: currency-usage-cardinality
+    mutation:
+      op: remove
+      path: /foundation/currencyUsages/0/jurisdictionLogicalIri
+  - id: rule-parameter-has-no-value-branch
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: rule-parameter-xone
+    mutation:
+      op: remove
+      path: /marketRules/parameters/0/money
+  - id: rule-parameter-has-two-value-branches
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: rule-parameter-xone
+    mutation:
+      op: add
+      path: /marketRules/parameters/0/quantity
+      value:
+        value: "1"
+        unit: https://axiolune.ai/units/share
+  - id: rule-parameter-quantity-rejects-json-number
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: rule-parameter-quantity
+    mutation:
+      op: replace
+      path: /marketRules/parameters/1/quantity/value
+      value: 100
+  - id: rule-parameter-money-rejects-json-number
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: rule-parameter-money
+    mutation:
+      op: replace
+      path: /marketRules/parameters/0/money/amount
+      value: 10
+  - id: rule-parameter-code-rejects-control-character
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: rule-parameter-code
+    mutation:
+      op: replace
+      path: /marketRules/parameters/2/code
+      value: "enabled\u0001"
+  - id: rule-parameter-clause-reference-must-be-iri
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: rule-parameter-clause-reference
+    mutation:
+      op: replace
+      path: /marketRules/parameters/3/clauseReference
+      value: tick-primary-0
+  - id: applicability-has-no-explicit-scope
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: rule-applicability-empty-scope
+    mutation:
+      op: replace
+      path: /marketRules/applicabilities/0/scopes
+      value: {}
+  - id: every-authored-scope-must-match-request
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: rule-applicability-scope-mismatch
+    mutation:
+      op: replace
+      path: /marketRules/applicabilities/0/scopes/listing
+      value: https://axiolune.ai/data/listings/other/version/sha256-b
+  - id: deferred-classifier-scope-is-rejected
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: rule-applicability-deferred-scope
+    mutation:
+      op: add
+      path: /marketRules/applicabilities/0/classifier
+      value: equity
+  - id: settlement-cycle-does-not-carry-resale-semantics
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: settlement-resale-conflation
+    mutation:
+      op: add
+      path: /marketRules/clauses/3/sameDayResaleAllowed
+      value: false
+  - id: settlement-cycle-rejects-exponent-lexical
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: settlement-cycle-quantity
+    mutation:
+      op: replace
+      path: /marketRules/clauses/3/settlementCycle/value
+      value: "1e0"
+  - id: price-limit-clause-requires-exactly-one-boundary
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: price-limit-boundary-xone
+    mutation:
+      op: replace
+      path: /marketRules/clauses/3/type
+      value: PriceLimitClause
+  - id: tick-size-rejects-json-number
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: tick-size-quantity
+    mutation:
+      op: replace
+      path: /marketRules/clauses/0/tickSize/value
+      value: 0.01
+  - id: tick-size-rejects-exponent-lexical
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: tick-size-quantity
+    mutation:
+      op: replace
+      path: /marketRules/clauses/0/tickSize/value
+      value: "1e-2"
+  - id: tick-size-must-be-positive
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: tick-size-quantity
+    mutation:
+      op: replace
+      path: /marketRules/clauses/0/tickSize/value
+      value: "0"
+  - id: clause-range-rejects-json-number
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: rule-clause-range
+    mutation:
+      op: replace
+      path: /marketRules/clauses/0/lower
+      value: 0
+  - id: ordered-clauses-must-not-overlap
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: rule-clause-overlap
+    mutation:
+      op: replace
+      path: /marketRules/clauses/1/lower
+      value: "9"
+  - id: clause-gap-must-be-explicitly-allowed
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: rule-clause-gap
+    mutation:
+      op: replace
+      path: /marketRules/clauses/1/lower
+      value: "11"
+  - id: rule-gap-policy-is-not-inferred
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: rule-gap-policy
+    mutation:
+      op: remove
+      path: /marketRules/rules/0/gapPolicy
+  - id: active-precedence-must-be-acyclic
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: rule-precedence-cycle
+    mutation:
+      op: add
+      path: /marketRules/precedence/-
+      value:
+        higherRuleVersionIri: https://axiolune.ai/data/rules/tick-secondary/version/sha256-b
+        lowerRuleVersionIri: https://axiolune.ai/data/rules/tick-primary/version/sha256-a
+  - id: percentage-interval-needs-exact-assessment-method-version
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: corporate-action-method-interval-iff
+    mutation:
+      op: remove
+      path: /marketRules/rules/4/distributionAssessmentMethodVersionIri
+  - id: schedule-rule-needs-entitlement-clause
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: corporate-action-entitlement-clause
+    mutation:
+      op: replace
+      path: /marketRules/clauses/5/type
+      value: RuleClause
+  - id: corporate-action-kind-is-frozen-to-three-members
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: corporate-action-schedule-integrity
+    mutation:
+      op: replace
+      path: /marketRules/rules/4/corporateActionKind
+      value: merger
+  - id: assessment-method-version-must-resolve
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: corporate-action-assessment-method-version
+    mutation:
+      op: replace
+      path: /marketRules/rules/4/distributionAssessmentMethodVersionIri
+      value: https://axiolune.ai/data/corporate-action-assessment-methods/missing/version/sha256-a
+  - id: method-price-fields-are-an-iff-contract
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: corporate-action-assessment-method-price-matrix
+    mutation:
+      op: replace
+      path: /marketRules/distributionAssessmentMethods/0/requiresMarketPrice
+      value: false
+  - id: lower-bound-needs-inclusivity
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: corporate-action-percentage-interval
+    mutation:
+      op: remove
+      path: /marketRules/rules/4/distributionPercentageLowerInclusive
+  - id: lower-bound-inclusivity-must-be-boolean
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: corporate-action-percentage-interval
+    mutation:
+      op: replace
+      path: /marketRules/rules/4/distributionPercentageLowerInclusive
+      value: "true"
+  - id: due-bill-interval-is-half-open-and-ordered
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: corporate-action-due-bill-interval
+    mutation:
+      op: replace
+      path: /marketRules/clauses/5/cumEntitlementTradeEndOffset/value
+      value: "-6"
+  - id: ordinary-mode-forbids-due-bill-fields
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: corporate-action-entitlement-mode
+    mutation:
+      op: replace
+      path: /marketRules/clauses/5/entitlementMode
+      value: ordinaryRecordPosition
+  - id: non-rights-rule-forbids-rights-only-contract
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: corporate-action-rights-v03-contract
+    mutation:
+      op: add
+      path: /marketRules/rules/4/nonTransferableDirectSubscription
+      value: true
+  - id: rule-kind-closes-its-legal-clause-subtypes
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: rule-subtype-clause-matrix
+    mutation:
+      op: replace
+      path: /marketRules/clauses/4/type
+      value: CorporateActionDateOrderingClause
+  - id: date-resolution-clause-requires-complete-adjustment
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: corporate-action-date-resolution-clause
+    mutation:
+      op: remove
+      path: /marketRules/clauses/6/dateBusinessDayAdjustment
+  - id: date-ordering-clause-requires-distinct-roles
+    baseFixtureId: iso4217-and-scoped-executable-market-rules
+    expectedViolation: corporate-action-date-ordering-clause
+    mutation:
+      op: replace
+      path: /marketRules/clauses/10/orderingRightDateRole
+      value: paymentDate

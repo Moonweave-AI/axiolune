@@ -1,0 +1,27 @@
+caseId: market-rules-v03-negative-logical-pit-overlap
+extends: positive-cq-execution.yaml
+mutations:
+  - op: set
+    path: "requestAuthorityVersions[1]"
+    value:
+      logicalIri: urn:party:resolver-client
+      versionIri: urn:party:resolver-client:version:evil
+      versionOf: urn:party:resolver-client
+      axes:
+        validFrom: "2026-01-01T00:00:00Z"
+        knowledgeFrom: "2026-01-01T00:00:01Z"
+        availableFrom: "2026-01-01T00:00:02Z"
+        revision: 0
+      provenance:
+        source: urn:party:attacker
+        sourceVersion: "2026-07"
+        sourceArtifactRef: {kind: iri, iri: urn:artifact:attacker}
+        sourceArtifactDigest: sha256:1818181818181818181818181818181818181818181818181818181818181818
+        sourceLocator:
+          kind: wholeFile
+          path: synthetic/attacker.json
+          mediaType: application/json
+          extractorProfileRef: {kind: iri, iri: urn:extractor:whole-file-v1}
+          extractorProfileDigest: sha256:1919191919191919191919191919191919191919191919191919191919191919
+          selectionDigest: sha256:2020202020202020202020202020202020202020202020202020202020202020
+expected: {valid: false, codes: [RULE_FACT_PIT_OVERLAP, RULE_REVISION_DUPLICATE]}

@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://axiolune.ai/schemas/m2/0.3.0/required-gates-manifest",
+  "title": "Axiolune M2 v0.3 required gates manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "gates"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "gates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/gate"
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "absoluteIri": {
+      "type": "string",
+      "format": "uri"
+    },
+    "artifactRef": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "iri"
+          ],
+          "properties": {
+            "kind": {
+              "const": "iri"
+            },
+            "iri": {
+              "$ref": "#/$defs/absoluteIri"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "root",
+            "path"
+          ],
+          "properties": {
+            "kind": {
+              "const": "path"
+            },
+            "root": {
+              "enum": [
+                "sourceTree",
+                "buildEvidence"
+              ]
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*\\\\).+$"
+            }
+          }
+        }
+      ]
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gateId",
+        "reportKind",
+        "criterionRefs",
+        "toolId",
+        "capabilityId",
+        "capabilityRef",
+        "capabilityDigest",
+        "entrypointRef",
+        "entrypointDigest",
+        "discoveryContractRef",
+        "discoveryContractDigest",
+        "evidenceSchemaRef",
+        "evidenceSchemaDigest",
+        "dependsOn"
+      ],
+      "properties": {
+        "gateId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        "reportKind": {
+          "enum": [
+            "meta",
+            "module",
+            "import",
+            "identity",
+            "term",
+            "reference",
+            "projection",
+            "owl",
+            "shacl",
+            "cq",
+            "mapping",
+            "batch",
+            "pit",
+            "replay",
+            "compatibility",
+            "mutation",
+            "release",
+            "aggregate"
+          ]
+        },
+        "criterionRefs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^https://axiolune\\.ai/conformance/m2/0\\.3\\.0/criteria/[1-6]$"
+          }
+        },
+        "toolId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        "capabilityId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        "capabilityRef": {
+          "$ref": "#/$defs/artifactRef"
+        },
+        "capabilityDigest": {
+          "$ref": "#/$defs/digest"
+        },
+        "entrypointRef": {
+          "$ref": "#/$defs/artifactRef"
+        },
+        "entrypointDigest": {
+          "$ref": "#/$defs/digest"
+        },
+        "discoveryContractRef": {
+          "$ref": "#/$defs/artifactRef"
+        },
+        "discoveryContractDigest": {
+          "$ref": "#/$defs/digest"
+        },
+        "evidenceSchemaRef": {
+          "$ref": "#/$defs/artifactRef"
+        },
+        "evidenceSchemaDigest": {
+          "$ref": "#/$defs/digest"
+        },
+        "dependsOn": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+          }
+        }
+      }
+    }
+  }
+}

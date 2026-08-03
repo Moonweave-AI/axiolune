@@ -1,131 +1,437 @@
-# Axiolune M2 Finance — Strategy & Research Negative Test Fixtures
-# Module: fin-strategy-research
-# Version: 0.1.0
-# Purpose: Invalid instances that should be rejected by validators
+# Strategy and Research v0.3 executable negative fixtures.
+# Every case is otherwise canonical so rejection is attributable to the named
+# contract violation rather than stale v0.2 vocabulary.
+
+schemaVersion: '1.0'
+anchors:
+  authority: &authority
+    iri: https://axiolune.ai/data/test/party/research-authority
+    type: https://axiolune.ai/ontology/finance/foundation/Party
+
+  instrument: &instrument
+    iri: https://axiolune.ai/data/test/instrument/AAPL/version/2
+    type: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+
+  run-kind-backtest: &run-kind-backtest
+    iri: https://axiolune.ai/ontology/finance/strategy-research/RunContextKind/value/backtest
+    type: https://axiolune.ai/ontology/finance/strategy-research/RunContextKind
+
+  direction-long: &direction-long
+    iri: https://axiolune.ai/ontology/finance/strategy-research/SignalDirection/value/long
+    type: https://axiolune.ai/ontology/finance/strategy-research/SignalDirection
+
+  metric-kind-quantity: &metric-kind-quantity
+    iri: https://axiolune.ai/ontology/finance/strategy-research/MetricValueKind/value/quantity
+    type: https://axiolune.ai/ontology/finance/strategy-research/MetricValueKind
+
+  frequency-daily: &frequency-daily
+    iri: https://axiolune.ai/ontology/finance/strategy-research/CalculationFrequency/value/daily
+    type: https://axiolune.ai/ontology/finance/strategy-research/CalculationFrequency
+
+  calculation-parameter-artifact: &calculation-parameter-artifact
+    iri: https://axiolune.ai/data/test/artifact/calculation-parameters/daily-simple-compound-v1
+    type: https://axiolune.ai/ontology/meta/data-binding/structures/ArtifactRef
+
+  calculation-parameter-locator: &calculation-parameter-locator
+    iri: https://axiolune.ai/data/test/locator/calculation-parameters/daily-simple-compound-v1
+    type: https://axiolune.ai/ontology/meta/data-binding/structures/SourceLocator
+
+  generator: &generator
+    iri: https://axiolune.ai/data/test/generator/momentum/version/3
+    type: https://axiolune.ai/ontology/finance/strategy-research/FactorDefinition
+    generatorId: momentum-generator
+    generatorName: Momentum Generator
+    implementationDigest: sha256:1111111111111111111111111111111111111111111111111111111111111111
+    inputContractDigest: sha256:1212121212121212121212121212121212121212121212121212121212121212
+    outputContractDigest: sha256:1313131313131313131313131313131313131313131313131313131313131313
+    toolLockRef: https://axiolune.ai/artifact/tool-lock/generator-v3
+    toolLockDigest: sha256:1414141414141414141414141414141414141414141414141414141414141414
+    runtimeDigest: sha256:1515151515151515151515151515151515151515151515151515151515151515
+    factorExpressionRef: https://axiolune.ai/artifact/factor/generator-momentum-v3
+    factorExpressionDigest: sha256:1717171717171717171717171717171717171717171717171717171717171717
+    generatorAuthority: https://axiolune.ai/data/test/party/research-authority
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef: https://axiolune.ai/artifact/source/generator-v3
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest: sha256:1616161616161616161616161616161616161616161616161616161616161616
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator: https://axiolune.ai/artifact/locator/generator-v3
+    validFrom: '2026-01-01T00:00:00Z'
+    knowledgeFrom: '2026-01-02T00:00:00Z'
+    availableFrom: '2026-01-02T00:00:01Z'
+    revision: 0
+    source: https://axiolune.ai/source/research-governance
+
+  factor: &factor
+    iri: https://axiolune.ai/data/test/factor/momentum/version/3
+    type: https://axiolune.ai/ontology/finance/strategy-research/FactorDefinition
+    generatorId: momentum-20d
+    generatorName: Momentum 20 Day
+    implementationDigest: sha256:2121212121212121212121212121212121212121212121212121212121212121
+    inputContractDigest: sha256:2222222222222222222222222222222222222222222222222222222222222222
+    outputContractDigest: sha256:2323232323232323232323232323232323232323232323232323232323232323
+    toolLockRef: https://axiolune.ai/artifact/tool-lock/factor-v3
+    toolLockDigest: sha256:2424242424242424242424242424242424242424242424242424242424242424
+    runtimeDigest: sha256:2525252525252525252525252525252525252525252525252525252525252525
+    factorExpressionRef: https://axiolune.ai/artifact/factor/momentum-20d-v3
+    factorExpressionDigest: sha256:2626262626262626262626262626262626262626262626262626262626262626
+    generatorAuthority: https://axiolune.ai/data/test/party/research-authority
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef: https://axiolune.ai/artifact/source/factor-v3
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest: sha256:2727272727272727272727272727272727272727272727272727272727272727
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator: https://axiolune.ai/artifact/locator/factor-v3
+    validFrom: '2026-01-01T00:00:00Z'
+    knowledgeFrom: '2026-01-02T00:00:00Z'
+    availableFrom: '2026-01-02T00:00:01Z'
+    revision: 0
+    source: https://axiolune.ai/source/research-governance
+
+  strategy: &strategy
+    iri: https://axiolune.ai/data/test/strategy/value-momentum/version/7
+    type: https://axiolune.ai/ontology/finance/strategy-research/StrategyDefinition
+    generatorId: value-momentum
+    generatorName: Value Momentum Strategy
+    implementationDigest: sha256:3131313131313131313131313131313131313131313131313131313131313131
+    inputContractDigest: sha256:3232323232323232323232323232323232323232323232323232323232323232
+    outputContractDigest: sha256:3333333333333333333333333333333333333333333333333333333333333333
+    toolLockRef: https://axiolune.ai/artifact/tool-lock/strategy-v7
+    toolLockDigest: sha256:3434343434343434343434343434343434343434343434343434343434343434
+    runtimeDigest: sha256:3535353535353535353535353535353535353535353535353535353535353535
+    generatorAuthority: https://axiolune.ai/data/test/party/research-authority
+    usesFactor: https://axiolune.ai/data/test/factor/momentum/version/3
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef: https://axiolune.ai/artifact/source/strategy-v7
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest: sha256:3636363636363636363636363636363636363636363636363636363636363636
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator: https://axiolune.ai/artifact/locator/strategy-v7
+    validFrom: '2026-01-01T00:00:00Z'
+    knowledgeFrom: '2026-01-02T00:00:00Z'
+    availableFrom: '2026-01-02T00:00:01Z'
+    revision: 0
+    source: https://axiolune.ai/source/research-governance
+
+  run-context: &run-context
+    iri: https://axiolune.ai/data/test/run/context-negative/version/1
+    type: https://axiolune.ai/ontology/finance/strategy-research/RunContext
+    runContextId: context-negative
+    runContextKind: https://axiolune.ai/ontology/finance/strategy-research/RunContextKind/value/backtest
+    runStartedAt: '2026-07-01T00:00:00Z'
+    parameterSnapshotRef: https://axiolune.ai/artifact/parameter/context-negative
+    parameterSnapshotDigest: sha256:4141414141414141414141414141414141414141414141414141414141414141
+    ontologyClosureDigest: sha256:4242424242424242424242424242424242424242424242424242424242424242
+    mappingClosureDigest: sha256:4343434343434343434343434343434343434343434343434343434343434343
+    calendarSnapshotRef: https://axiolune.ai/artifact/calendar/XNAS-2026
+    calendarSnapshotDigest: sha256:4444444444444444444444444444444444444444444444444444444444444444
+    compilerDigest: sha256:4545454545454545454545454545454545454545454545454545454545454545
+    inputContextRef: https://axiolune.ai/run/materialization/context-negative-input
+    inputContextRecordDigest: sha256:4646464646464646464646464646464646464646464646464646464646464646
+    pitRequestRef: https://axiolune.ai/run/pit/request/context-negative
+    pitRequestRecordDigest: sha256:4747474747474747474747474747474747474747474747474747474747474747
+    runAuthority: https://axiolune.ai/data/test/party/research-authority
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef: https://axiolune.ai/artifact/run/context-negative
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest: sha256:4848484848484848484848484848484848484848484848484848484848484848
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator: https://axiolune.ai/artifact/locator/context-negative
+    validFrom: '2026-01-01T00:00:00Z'
+    knowledgeFrom: '2026-07-01T00:00:00Z'
+    availableFrom: '2026-07-01T00:00:01Z'
+    revision: 0
+    source: https://axiolune.ai/source/backtest-engine
+
+  backtest: &backtest
+    iri: https://axiolune.ai/data/test/run/backtest-negative/version/1
+    type: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
+    runContextId: backtest-negative
+    runContextKind: https://axiolune.ai/ontology/finance/strategy-research/RunContextKind/value/backtest
+    runStartedAt: '2026-07-01T00:00:00Z'
+    parameterSnapshotRef: https://axiolune.ai/artifact/parameter/backtest-negative
+    parameterSnapshotDigest: sha256:5151515151515151515151515151515151515151515151515151515151515151
+    ontologyClosureDigest: sha256:5252525252525252525252525252525252525252525252525252525252525252
+    mappingClosureDigest: sha256:5353535353535353535353535353535353535353535353535353535353535353
+    calendarSnapshotRef: https://axiolune.ai/artifact/calendar/XNAS-2026
+    calendarSnapshotDigest: sha256:5454545454545454545454545454545454545454545454545454545454545454
+    compilerDigest: sha256:5555555555555555555555555555555555555555555555555555555555555555
+    inputContextRef: https://axiolune.ai/run/materialization/backtest-negative-input
+    inputContextRecordDigest: sha256:5656565656565656565656565656565656565656565656565656565656565656
+    pitRequestRef: https://axiolune.ai/run/pit/request/backtest-negative
+    pitRequestRecordDigest: sha256:5757575757575757575757575757575757575757575757575757575757575757
+    simulationFrom: '2026-01-01T00:00:00Z'
+    simulationTo: '2026-07-01T00:00:00Z'
+    initialCapital: {type: MonetaryAmount, amount: '1000000.00', currency: USD, scale: 2}
+    codeDefinitionDigest: sha256:5858585858585858585858585858585858585858585858585858585858585858
+    feeAssumptionRef: https://axiolune.ai/artifact/assumption/fee-v2
+    feeAssumptionDigest: sha256:5959595959595959595959595959595959595959595959595959595959595959
+    slippageAssumptionRef: https://axiolune.ai/artifact/assumption/slippage-v2
+    slippageAssumptionDigest: sha256:6060606060606060606060606060606060606060606060606060606060606060
+    fillAssumptionRef: https://axiolune.ai/artifact/assumption/fill-v3
+    fillAssumptionDigest: sha256:6161616161616161616161616161616161616161616161616161616161616161
+    benchmarkRef: https://axiolune.ai/artifact/benchmark/SPX-2026
+    benchmarkDigest: sha256:6262626262626262626262626262626262626262626262626262626262626262
+    deterministicSeed: 74219
+    runAuthority: https://axiolune.ai/data/test/party/research-authority
+    backtestStrategy: https://axiolune.ai/data/test/strategy/value-momentum/version/7
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef: https://axiolune.ai/artifact/run/backtest-negative
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest: sha256:6363636363636363636363636363636363636363636363636363636363636363
+    https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator: https://axiolune.ai/artifact/locator/backtest-negative
+    validFrom: '2026-01-01T00:00:00Z'
+    validTo: '2026-07-01T00:00:00Z'
+    knowledgeFrom: '2026-07-01T00:00:00Z'
+    availableFrom: '2026-07-01T00:00:01Z'
+    revision: 0
+    source: https://axiolune.ai/source/backtest-engine
+
+  metric: &metric
+    iri: https://axiolune.ai/data/test/metric/sharpe/version/2
+    type: https://axiolune.ai/ontology/finance/strategy-research/MetricDefinition
+    metricDefinitionId: sharpe
+    metricName: Sharpe Ratio
+    metricValueKind: https://axiolune.ai/ontology/finance/strategy-research/MetricValueKind/value/quantity
+    formulaDigest: sha256:7171717171717171717171717171717171717171717171717171717171717171
+    implementationDigest: sha256:7272727272727272727272727272727272727272727272727272727272727272
+    inputContractDigest: sha256:7373737373737373737373737373737373737373737373737373737373737373
+    outputContractDigest: sha256:7474747474747474747474747474747474747474747474747474747474747474
+    toolLockRef: https://axiolune.ai/artifact/tool-lock/metric-v2
+    toolLockDigest: sha256:7575757575757575757575757575757575757575757575757575757575757575
+    runtimeDigest: sha256:7676767676767676767676767676767676767676767676767676767676767676
+    metricAuthority: https://axiolune.ai/data/test/party/research-authority
+    validFrom: '2026-01-01T00:00:00Z'
+    knowledgeFrom: '2026-01-02T00:00:00Z'
+    availableFrom: '2026-01-02T00:00:01Z'
+    revision: 0
+    source: https://axiolune.ai/source/research-governance
+
+  calculation: &calculation
+    iri: https://axiolune.ai/data/test/calculation/sharpe-daily/version/3
+    type: https://axiolune.ai/ontology/finance/strategy-research/CalculationContext
+    calculationContextId: sharpe-daily-252
+    calculationFrequency: https://axiolune.ai/ontology/finance/strategy-research/CalculationFrequency/value/daily
+    annualizationFactor: {type: QuantityValue, value: '252', unit: https://axiolune.ai/units/one, rounding: half-even}
+    riskFreeRate: {type: QuantityValue, value: '0.02', unit: https://axiolune.ai/units/one, rounding: half-even}
+    calculationWindow: {type: QuantityValue, value: '252', unit: https://axiolune.ai/units/trading-day, rounding: half-even}
+    calculationImplementationDigest: sha256:7777777777777777777777777777777777777777777777777777777777777777
+    calculationParameterSnapshotRef: https://axiolune.ai/data/test/artifact/calculation-parameters/daily-simple-compound-v1
+    calculationParameterSnapshotDigest: sha256:14a69f0e2c387a9a525a46baba344acce00e872915144610a63d43b8cb5f19c4
+    calculationParameterSnapshotLocator: https://axiolune.ai/data/test/locator/calculation-parameters/daily-simple-compound-v1
+    calculationAuthority: https://axiolune.ai/data/test/party/research-authority
+    validFrom: '2026-01-01T00:00:00Z'
+    knowledgeFrom: '2026-01-02T00:00:00Z'
+    availableFrom: '2026-01-02T00:00:01Z'
+    revision: 0
+    source: https://axiolune.ai/source/research-governance
+
+  signal: &signal
+    iri: https://axiolune.ai/data/test/signal/negative/version/0
+    type: https://axiolune.ai/ontology/finance/strategy-research/Signal
+    https://axiolune.ai/ontology/finance/strategy-research/Signal/role/signalGenerator: https://axiolune.ai/data/test/generator/momentum/version/3
+    https://axiolune.ai/ontology/finance/strategy-research/Signal/role/signalInstrument: https://axiolune.ai/data/test/instrument/AAPL/version/2
+    https://axiolune.ai/ontology/finance/strategy-research/Signal/role/signalRunContext: https://axiolune.ai/data/test/run/context-negative/version/1
+    sourceSignalId: signal-negative
+    signalDirection: https://axiolune.ai/ontology/finance/strategy-research/SignalDirection/value/long
+    signalStrength: {type: QuantityValue, value: '0.75', unit: https://axiolune.ai/units/one, rounding: half-even}
+    signalHorizon: P5D
+    validFrom: '2026-07-25T09:30:00Z'
+    validTo: '2026-07-30T09:30:00Z'
+    knowledgeFrom: '2026-07-25T09:30:01Z'
+    availableFrom: '2026-07-25T09:30:02Z'
+    revision: 0
+    source: https://axiolune.ai/source/signal-engine
+
+  performance: &performance
+    iri: https://axiolune.ai/data/test/performance/negative/version/0
+    type: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
+    https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceMetric: https://axiolune.ai/data/test/metric/sharpe/version/2
+    https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceRunContext: https://axiolune.ai/data/test/run/context-negative/version/1
+    https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceCalculationContext: https://axiolune.ai/data/test/calculation/sharpe-daily/version/3
+    sourcePerformanceId: sharpe-negative
+    performanceQuantityValue: {type: QuantityValue, value: '1.80', unit: https://axiolune.ai/units/one, rounding: half-even}
+    validFrom: '2026-06-30T00:00:00Z'
+    validTo: '2026-07-01T00:00:00Z'
+    knowledgeFrom: '2026-07-01T10:00:00Z'
+    availableFrom: '2026-07-01T10:00:01Z'
+    revision: 0
+    source: https://axiolune.ai/source/performance-engine
+
+  signal-support: &signal-support
+    - *authority
+    - *generator
+    - *run-context
+    - *instrument
+    - *run-kind-backtest
+    - *direction-long
+
+  backtest-support: &backtest-support
+    - *authority
+    - *factor
+    - *strategy
+    - *run-kind-backtest
+
+  performance-support: &performance-support
+    - *authority
+    - *run-context
+    - *run-kind-backtest
+    - *metric
+    - *metric-kind-quantity
+    - *calculation
+    - *frequency-daily
+    - *calculation-parameter-artifact
+    - *calculation-parameter-locator
+
 fixtures:
   - id: strategy-neg-001
-    description: Signal missing availableFrom (must fail-closed per ADR-012 §2.5)
-    expectedViolation: Missing availableFrom in TemporalFact
+    description: Missing availableFrom must fail closed.
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/signal/negative/missing-availability/version/0
+      path: https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom
+      severity: http://www.w3.org/ns/shacl#Violation
     type: https://axiolune.ai/ontology/finance/strategy-research/Signal
     instance:
-      iri: https://axiolune.ai/data/test/signal-neg-001
-      type: https://axiolune.ai/ontology/finance/strategy-research/Signal
-      generatedByFactor: https://axiolune.ai/data/test/factor-def-001
-      signalForInstrument: https://axiolune.ai/data/test/instrument-001
-      hasSignalDirection: Long
-      validFrom: '2026-07-25T09:30:00Z'
-      knowledgeFrom: '2026-07-25T09:35:00Z'
+      <<: *signal
+      iri: https://axiolune.ai/data/test/signal/negative/missing-availability/version/0
+      availableFrom: null
+    supportNodes: *signal-support
     expectedResult: rejected
     violationType: missing-availability-time
+
   - id: strategy-neg-002
-    description: Signal with temporal constraint violation (validTo < validFrom)
-    expectedViolation: Temporal interval inversion
+    description: A half-open valid interval cannot end before it starts.
+    validationEngine: pit
+    violationType: interval-inversion
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#SPARQLConstraintComponent
+      focus: https://axiolune.ai/data/test/signal/negative/valid-inversion/version/0
+      severity: http://www.w3.org/ns/shacl#Violation
     type: https://axiolune.ai/ontology/finance/strategy-research/Signal
     instance:
-      iri: https://axiolune.ai/data/test/signal-neg-002
-      type: https://axiolune.ai/ontology/finance/strategy-research/Signal
-      generatedByFactor: https://axiolune.ai/data/test/factor-def-001
-      signalForInstrument: https://axiolune.ai/data/test/instrument-001
-      hasSignalDirection: Short
-      validFrom: '2026-07-25T16:00:00Z'
-      validTo: '2026-07-25T09:00:00Z'
-      knowledgeFrom: '2026-07-25T16:05:00Z'
-      availableFrom: '2026-07-25T16:06:00Z'
+      <<: *signal
+      iri: https://axiolune.ai/data/test/signal/negative/valid-inversion/version/0
+      validFrom: '2026-07-30T09:30:00Z'
+      validTo: '2026-07-25T09:30:00Z'
+    supportNodes: *signal-support
     expectedResult: rejected
-    violationType: temporal-inversion
+
   - id: strategy-neg-003
-    description: Signal missing required signalForInstrument participant
-    expectedViolation: SHACL minCount=1 violation for signalForInstrument
+    description: Signal must bind exactly one signalInstrument role.
+    violationType: missing-signal-instrument
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/signal/negative/missing-instrument/version/0
+      path: https://axiolune.ai/ontology/finance/strategy-research/Signal/role/signalInstrument
+      severity: http://www.w3.org/ns/shacl#Violation
     type: https://axiolune.ai/ontology/finance/strategy-research/Signal
     instance:
-      iri: https://axiolune.ai/data/test/signal-neg-003
-      type: https://axiolune.ai/ontology/finance/strategy-research/Signal
-      generatedByFactor: https://axiolune.ai/data/test/factor-def-001
-      hasSignalDirection: Long
-      validFrom: '2026-07-25T09:30:00Z'
-      knowledgeFrom: '2026-07-25T09:35:00Z'
-      availableFrom: '2026-07-25T09:36:00Z'
+      <<: *signal
+      iri: https://axiolune.ai/data/test/signal/negative/missing-instrument/version/0
+      https://axiolune.ai/ontology/finance/strategy-research/Signal/role/signalInstrument: null
+    supportNodes: *signal-support
     expectedResult: rejected
+
   - id: strategy-neg-004
-    description: Signal missing required hasSignalDirection attribute
-    expectedViolation: SHACL minCount=1 violation for hasSignalDirection
+    description: Signal must bind one reviewed SignalDirection member.
+    violationType: missing-signal-direction
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/signal/negative/missing-direction/version/0
+      path: https://axiolune.ai/ontology/finance/strategy-research/signalDirection
+      severity: http://www.w3.org/ns/shacl#Violation
     type: https://axiolune.ai/ontology/finance/strategy-research/Signal
     instance:
-      iri: https://axiolune.ai/data/test/signal-neg-004
-      type: https://axiolune.ai/ontology/finance/strategy-research/Signal
-      generatedByFactor: https://axiolune.ai/data/test/factor-def-001
-      signalForInstrument: https://axiolune.ai/data/test/instrument-001
-      validFrom: '2026-07-25T09:30:00Z'
-      knowledgeFrom: '2026-07-25T09:35:00Z'
-      availableFrom: '2026-07-25T09:36:00Z'
+      <<: *signal
+      iri: https://axiolune.ai/data/test/signal/negative/missing-direction/version/0
+      signalDirection: null
+    supportNodes: *signal-support
     expectedResult: rejected
+
   - id: strategy-neg-005
-    description: BacktestRun missing required backtestsStrategy participant
-    expectedViolation: SHACL minCount=1 violation for backtestsStrategy
+    description: BacktestRun must bind one exact StrategyDefinition version.
+    violationType: missing-backtest-strategy
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/run/backtest-negative/missing-strategy/version/1
+      path: https://axiolune.ai/ontology/finance/strategy-research/backtestStrategy
+      severity: http://www.w3.org/ns/shacl#Violation
     type: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
     instance:
-      iri: https://axiolune.ai/data/test/backtest-neg-001
-      type: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
-      hasBacktestStatus: Completed
-      hasStartDate: '2026-01-01T00:00:00Z'
-      hasEndDate: '2026-06-30T23:59:59Z'
-      knowledgeFrom: '2026-07-01T10:00:00Z'
-      availableFrom: '2026-07-01T10:01:00Z'
+      <<: *backtest
+      iri: https://axiolune.ai/data/test/run/backtest-negative/missing-strategy/version/1
+      backtestStrategy: null
+    supportNodes: *backtest-support
     expectedResult: rejected
+
   - id: strategy-neg-006
-    description: BacktestRun missing required hasStartDate
-    expectedViolation: SHACL minCount=1 violation for hasStartDate
+    description: BacktestRun must fix simulationFrom and simulationTo.
+    violationType: missing-simulation-from
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/run/backtest-negative/missing-start/version/1
+      path: https://axiolune.ai/ontology/finance/strategy-research/simulationFrom
+      severity: http://www.w3.org/ns/shacl#Violation
     type: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
     instance:
-      iri: https://axiolune.ai/data/test/backtest-neg-002
-      type: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
-      backtestsStrategy: https://axiolune.ai/data/test/strategy-def-001
-      hasBacktestStatus: Completed
-      hasEndDate: '2026-06-30T23:59:59Z'
-      knowledgeFrom: '2026-07-01T10:00:00Z'
-      availableFrom: '2026-07-01T10:01:00Z'
+      <<: *backtest
+      iri: https://axiolune.ai/data/test/run/backtest-negative/missing-start/version/1
+      simulationFrom: null
+    supportNodes: *backtest-support
     expectedResult: rejected
+
   - id: strategy-neg-007
-    description: BacktestRun missing required hasBacktestStatus
-    expectedViolation: SHACL minCount=1 violation for hasBacktestStatus
+    description: Fact versions cannot carry mutable inline knowledge endings.
+    violationType: inline-fact-closure
+    expectedViolations:
+      - component: http://www.w3.org/ns/shacl#MaxCountConstraintComponent
+        focus: https://axiolune.ai/data/test/run/backtest-negative/inline-closure/version/1
+        path: https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo
+        severity: http://www.w3.org/ns/shacl#Violation
+        sourceShape: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun/shape/immutable-version/af9bccfcc999a1901c9cfbc3
+      - component: http://www.w3.org/ns/shacl#MaxCountConstraintComponent
+        focus: https://axiolune.ai/data/test/run/backtest-negative/inline-closure/version/1
+        path: https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo
+        severity: http://www.w3.org/ns/shacl#Violation
+        sourceShape: https://axiolune.ai/ontology/finance/strategy-research/RunContext/shape/immutable-version/af9bccfcc999a1901c9cfbc3
     type: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
     instance:
-      iri: https://axiolune.ai/data/test/backtest-neg-003
-      type: https://axiolune.ai/ontology/finance/strategy-research/BacktestRun
-      backtestsStrategy: https://axiolune.ai/data/test/strategy-def-001
-      hasStartDate: '2026-01-01T00:00:00Z'
-      hasEndDate: '2026-06-30T23:59:59Z'
-      knowledgeFrom: '2026-07-01T10:00:00Z'
-      availableFrom: '2026-07-01T10:01:00Z'
+      <<: *backtest
+      iri: https://axiolune.ai/data/test/run/backtest-negative/inline-closure/version/1
+      knowledgeTo: '2026-07-02T00:00:00Z'
+    supportNodes: *backtest-support
     expectedResult: rejected
+
   - id: strategy-neg-008
-    description: PerformanceObservation missing availableFrom
-    expectedViolation: Missing availableFrom in TemporalFact
+    description: PerformanceObservation without availableFrom must fail closed.
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/performance/negative/missing-availability/version/0
+      path: https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom
+      severity: http://www.w3.org/ns/shacl#Violation
     type: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
     instance:
-      iri: https://axiolune.ai/data/test/perf-obs-neg-001
-      type: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
-      observedInBacktest: https://axiolune.ai/data/test/backtest-run-001
-      hasSharpeRatio:
-        type: QuantityValue
-        hasNumericAmount: '1.8'
-        hasUnitCode: ratio
-      validFrom: '2026-06-30T23:59:59Z'
-      knowledgeFrom: '2026-07-01T10:00:00Z'
+      <<: *performance
+      iri: https://axiolune.ai/data/test/performance/negative/missing-availability/version/0
+      availableFrom: null
+    supportNodes: *performance-support
     expectedResult: rejected
     violationType: missing-availability-time
+
   - id: strategy-neg-009
-    description: PerformanceObservation missing required observedInBacktest participant
-    expectedViolation: SHACL minCount=1 violation for observedInBacktest
+    description: PerformanceObservation requires an exact run context.
+    violationType: missing-performance-run-context
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/test/performance/negative/missing-run/version/0
+      path: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceRunContext
+      severity: http://www.w3.org/ns/shacl#Violation
     type: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
     instance:
-      iri: https://axiolune.ai/data/test/perf-obs-neg-002
-      type: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
-      hasSharpeRatio:
-        type: QuantityValue
-        hasNumericAmount: '1.8'
-        hasUnitCode: ratio
-      validFrom: '2026-06-30T23:59:59Z'
-      knowledgeFrom: '2026-07-01T10:00:00Z'
-      availableFrom: '2026-07-01T10:01:00Z'
+      <<: *performance
+      iri: https://axiolune.ai/data/test/performance/negative/missing-run/version/0
+      https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation/role/performanceRunContext: null
+    supportNodes: *performance-support
+    expectedResult: rejected
+
+  - id: strategy-neg-010
+    description: PerformanceObservation cannot carry both Money and Quantity branches.
+    violationType: metric-value-xone
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#XoneConstraintComponent
+      focus: https://axiolune.ai/data/test/performance/negative/both-values/version/0
+      severity: http://www.w3.org/ns/shacl#Violation
+    type: https://axiolune.ai/ontology/finance/strategy-research/PerformanceObservation
+    instance:
+      <<: *performance
+      iri: https://axiolune.ai/data/test/performance/negative/both-values/version/0
+      performanceMoneyValue: {type: MonetaryAmount, amount: '1.80', currency: USD, scale: 2}
+    supportNodes: *performance-support
     expectedResult: rejected
