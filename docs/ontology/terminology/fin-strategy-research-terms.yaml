@@ -3,6 +3,7 @@
 # Version: 0.1.0
 # Standard: ISO 704:2022 (Terminology work — Principles and methods)
 # Evidence sources: Qlib, nautilus_trader, Lean
+# Status: accepted — v1.1.0 sidecar evidence (v1.0.0 cards retained; v1.1.0 cards added per ADR-033)
 
 terms:
   - term: "Factor Definition"
@@ -186,4 +187,162 @@ terms:
         locator: "nautilus_trader/backtest/engine.py"
         retrievalDate: "2026-07-30"
         note: "BacktestEngine lifecycle (not explicitly enumerated but implied)"
+    status: accepted
+
+  - term: "Research Question"
+    canonicalIri: "https://axiolune.ai/ontology/finance/strategy-research/ResearchQuestion"
+    definition: "versioned specification of one falsifiable research question together with its hypothesis and protocol, with the artifact digest retained as evidence"
+    genus: "versioned research-question specification"
+    differentia:
+      - "exposes the research question as a queryable business object"
+      - "links to one or more Hypothesis objects"
+      - "links to an optional ResearchProtocol"
+    excludes:
+      - "a digest-locked artifact with no business semantics"
+      - "a research run (which evaluates the question)"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-033 D1"
+    status: accepted
+
+  - term: "Hypothesis"
+    canonicalIri: "https://axiolune.ai/ontology/finance/strategy-research/Hypothesis"
+    definition: "versioned specification of one falsifiable hypothesis linked to a research question with an effect direction and a statistical test plan"
+    genus: "versioned hypothesis specification"
+    differentia:
+      - "carries a hypothesized effect direction"
+      - "links to a falsifiability test plan"
+    excludes:
+      - "a research question (which poses the question)"
+      - "a statistical test result (which records the outcome)"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-033 D2"
+    status: accepted
+
+  - term: "Research Protocol"
+    canonicalIri: "https://axiolune.ai/ontology/finance/strategy-research/ResearchProtocol"
+    definition: "versioned specification of the research methodology covering sample partitioning, walk-forward plan, and model-selection criteria"
+    genus: "versioned research-methodology specification"
+    differentia:
+      - "makes the research process falsifiable, not only re-runnable"
+      - "carries model-selection criteria"
+    excludes:
+      - "a dataset snapshot (which is the input)"
+      - "a research finding (which is the conclusion)"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-033 D3"
+    status: accepted
+
+  - term: "Strategy Execution Package"
+    canonicalIri: "https://axiolune.ai/ontology/finance/strategy-research/StrategyExecutionPackage"
+    definition: "versioned specification binding one exact strategy version to its executable implementation, factor-dependency closure, and input contract"
+    genus: "versioned execution-package specification"
+    differentia:
+      - "ensures a backtest runs the strategy it declares"
+      - "closes the declare-strategy-A-run-digest-of-strategy-B gap"
+    excludes:
+      - "the strategy definition itself"
+      - "a backtest run (which consumes the package)"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-033 D13"
+    status: accepted
+
+  - term: "Simulated Order"
+    canonicalIri: "https://axiolune.ai/ontology/finance/strategy-research/SimulatedOrder"
+    definition: "temporal and provenanced fact recording one simulated order produced by a backtest decision under a MarketSimulationPolicy"
+    genus: "simulated trading-chain fact"
+    differentia:
+      - "records the Decision-to-order step"
+      - "references orders-execution order semantics without re-defining them"
+    excludes:
+      - "a live order (which is placed in a real market)"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-033 D14"
+    status: accepted
+
+  - term: "Market Simulation Policy"
+    canonicalIri: "https://axiolune.ai/ontology/finance/strategy-research/MarketSimulationPolicy"
+    definition: "versioned specification of the market-mechanics assumptions under which a backtest simulates trading, covering cash, financing, stock borrow, tax, FX, liquidity and capacity, suspension, and survivorship"
+    genus: "versioned market-mechanics policy"
+    differentia:
+      - "exposes market mechanics as a queryable policy"
+      - "not compressed into an unqueryable artifact digest"
+    excludes:
+      - "fee, slippage, and fill assumptions (which are retained as evidence but now also queryable)"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-033 D14"
+    status: accepted
+
+  - term: "Benchmark Specification"
+    canonicalIri: "https://axiolune.ai/ontology/finance/strategy-research/BenchmarkSpecification"
+    definition: "versioned specification of one benchmark used in performance comparison, covering return kind, currency, rebalance, availability, and its relation to an instrument, allowing a documented no-suitable-benchmark case"
+    genus: "versioned benchmark specification"
+    differentia:
+      - "unifies previously scattered and inconsistent benchmark references"
+      - "allows a no-suitable-benchmark case with a reason"
+    excludes:
+      - "a bare benchmark URI and digest with no semantics"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-033 D15"
+    status: accepted
+
+  - term: "Performance Measurement Period"
+    canonicalIri: "https://axiolune.ai/ontology/finance/strategy-research/PerformanceMeasurementPeriod"
+    definition: "versioned specification of the period over which a performance metric is measured, covering the period bounds and the measurement as-of"
+    genus: "versioned measurement-period specification"
+    differentia:
+      - "gives a performance observation an explicit measurement period"
+    excludes:
+      - "an implicit period derived from the run context"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-033 D15"
+    status: accepted
+
+  - term: "Attribution Method"
+    canonicalIri: "https://axiolune.ai/ontology/finance/strategy-research/AttributionMethod"
+    definition: "versioned specification of the attribution method used to decompose a performance result, covering component type, aggregation scope, and reconciliation and residual rule"
+    genus: "versioned attribution-method specification"
+    differentia:
+      - "makes an attribution explain a performance result"
+      - "carries a reconciliation and residual rule"
+    excludes:
+      - "an attribution contribution without a method"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-033 D15"
+    status: accepted
+
+  - term: "Strategy Deployment"
+    canonicalIri: "https://axiolune.ai/ontology/finance/strategy-research/StrategyDeployment"
+    definition: "versioned specification of one deployment of a strategy to live trading governed by promotion, monitoring, suspension, and rollback"
+    genus: "versioned strategy-deployment specification"
+    differentia:
+      - "backs the live run-context kind with a deployment lifecycle"
+      - "governed by PromotionDecision, MonitoringObservation, and RollbackDecision"
+    excludes:
+      - "a backtest run (which is not live)"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-033 D17"
+    status: accepted
+
+  - term: "Validated Reproducible Run"
+    canonicalIri: "https://axiolune.ai/ontology/finance/strategy-research/ValidatedReproducibleRun"
+    definition: "document-scoped profile marker downgrading audit-grade digest, contract, closure, and PIT-passed requirements to profile-Mandatory, core-optional"
+    genus: "reproducibility-evidence profile"
+    differentia:
+      - "keeps preliminary, failed, data-quality-limited, and streaming runs expressible"
+      - "core constraints stay Mandatory"
+    excludes:
+      - "a universal precondition for all run facts"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-033 D20"
     status: accepted

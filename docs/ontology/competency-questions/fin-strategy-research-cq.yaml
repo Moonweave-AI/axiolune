@@ -1,4 +1,4 @@
-# Axiolune M2 Finance �?Strategy & Research Competency Questions
+# Axiolune M2 Finance �?Strategy & Research Competency Questions
 # Module: fin-strategy-research
 # Version: 0.3.0 | Status: active (semantic approval)
 # Purpose: Validate strategy research query capabilities
@@ -206,3 +206,196 @@ cqs:
     riskLevel: high
     status: active
     note: Analogous to CQ-S5 and CQ-OE8. Critical for research reproducibility and detecting result tampering.
+  - id: CQ-SR9
+    question: What research question, hypothesis, and protocol did a research run evaluate, and what was its conclusion?
+    businessContext: Research lead wants to trace a research run to its falsifiable question, hypothesis, and concluded finding.
+    scope: Research-question-to-conclusion lineage
+    sparqlPattern: |
+      SELECT ?question ?hypothesis ?protocol ?finding ?conclusionType
+      WHERE {
+        ?run a fin-strategy:ResearchRun ;
+             fin-strategy:researchRunQuestion ?question .
+        OPTIONAL { ?question fin-strategy:researchQuestionHypothesis ?hypothesis }
+        OPTIONAL { ?question fin-strategy:researchQuestionProtocol ?protocol }
+        OPTIONAL { ?finding fin-strategy:findingResearchQuestion ?question ;
+                            fin-strategy:hasConclusionType ?conclusionType }
+        FILTER(?run = <run-iri>)
+      }
+    expectedResult: The research question, hypothesis, protocol, and finding with conclusion type for the run
+    dependsOn:
+      - ResearchQuestion Object
+      - Hypothesis Object
+      - ResearchProtocol Object
+      - ResearchFinding Association
+      - researchRunQuestion, researchQuestionHypothesis, researchQuestionProtocol relations
+    riskLevel: medium
+    status: active
+    note: v1.1.0 (ADR-033 D1–D8) — research business semantics exposed as queryable objects, not only digests.
+  - id: CQ-SR10
+    question: What is the strategy's mandate, universe, portfolio construction, rebalance, risk constraint, and execution intent?
+    businessContext: Compliance officer wants to confirm a strategy's full decision rule, not just its factor dependencies.
+    scope: Strategy business-semantic surface
+    sparqlPattern: |
+      SELECT ?mandate ?universe ?construction ?rebalance ?risk ?execution
+      WHERE {
+        ?strategy a fin-strategy:StrategyDefinition ;
+                  fin-strategy:hasStrategyMandateKind ?mandate .
+        OPTIONAL { ?strategy fin-strategy:strategyUniverse ?universe }
+        OPTIONAL { ?strategy fin-strategy:strategyPortfolioConstruction ?construction }
+        OPTIONAL { ?strategy fin-strategy:strategyRebalance ?rebalance }
+        OPTIONAL { ?strategy fin-strategy:strategyRiskConstraint ?risk }
+        OPTIONAL { ?strategy fin-strategy:strategyExecutionIntent ?execution }
+        FILTER(?strategy = <strategy-iri>)
+      }
+    expectedResult: The strategy's mandate and each optional policy object
+    dependsOn:
+      - StrategyDefinition Object
+      - UniverseDefinition, PortfolioConstructionPolicy, RebalancePolicy, RiskConstraintPolicy, ExecutionIntent Objects
+      - strategyUniverse, strategyPortfolioConstruction, strategyRebalance, strategyRiskConstraint, strategyExecutionIntent relations
+      - StrategyMandateKind code list
+    riskLevel: medium
+    status: active
+    note: v1.1.0 (ADR-033 D9) — strategy is a decision rule, not only a factor consumer; usesFactor is optional.
+  - id: CQ-SR11
+    question: Does a backtest run the strategy it declares, with a consistent execution package, factor-dependency closure, and input contract?
+    businessContext: Reproducibility auditor verifying that a backtest's declared strategy matches its executable implementation.
+    scope: Backtest execution-package closure
+    sparqlPattern: |
+      SELECT ?package ?strategy ?factorClosure ?inputContract
+      WHERE {
+        ?backtest a fin-strategy:BacktestRun ;
+                  fin-strategy:backtestExecutionPackage ?package ;
+                  fin-strategy:backtestsStrategy ?strategy .
+        ?package fin-strategy:executionPackageStrategy ?strategy ;
+                 fin-strategy:hasFactorDependencyClosureDigest ?factorClosure .
+        FILTER(?backtest = <backtest-iri>)
+      }
+    expectedResult: The execution package, its strategy, factor-dependency closure digest, confirming mutual consistency
+    dependsOn:
+      - StrategyExecutionPackage Object
+      - backtestExecutionPackage, executionPackageStrategy relations
+      - BacktestConfigurationContract executionPackageConsistentWith
+    riskLevel: medium
+    status: active
+    note: v1.1.0 (ADR-033 D13) — closes the declare-strategy-A-run-digest-of-strategy-B gap.
+  - id: CQ-SR12
+    question: What simulated orders, fills, portfolio states, and return series did a backtest produce under which market simulation policy?
+    businessContext: Researcher wants the full Decision-to-ReturnSeries chain of a backtest, not only a scalar result.
+    scope: Simulated trading chain
+    sparqlPattern: |
+      SELECT ?order ?fill ?portfolioState ?returnSeries ?policy
+      WHERE {
+        ?order a fin-strategy:SimulatedOrder ;
+               fin-strategy:simulatedOrderBacktest ?backtest .
+        OPTIONAL { ?fill a fin-strategy:SimulatedFill ;
+                         fin-strategy:simulatedFillOrder ?order }
+        OPTIONAL { ?portfolioState a fin-strategy:SimulatedPortfolioState ;
+                                  fin-strategy:simulatedPortfolioStateFill ?fill }
+        OPTIONAL { ?returnSeries a fin-strategy:SimulatedReturnSeries ;
+                                fin-strategy:simulatedReturnSeriesState ?portfolioState }
+        OPTIONAL { ?backtest fin-strategy:backtestSimulationPolicy ?policy }
+        FILTER(?backtest = <backtest-iri>)
+      }
+    expectedResult: The simulated order, fill, portfolio-state, return-series chain and the market simulation policy
+    dependsOn:
+      - SimulatedOrder, SimulatedFill, SimulatedPortfolioState, SimulatedReturnSeries Objects
+      - MarketSimulationPolicy Object
+      - simulatedOrderBacktest, simulatedFillOrder, simulatedPortfolioStateFill, simulatedReturnSeriesState, backtestSimulationPolicy relations
+      - orders-execution import
+    riskLevel: medium
+    status: active
+    note: v1.1.0 (ADR-033 D14) — in-module simulated trading chain; scalar return simulation remains the first profile.
+  - id: CQ-SR13
+    question: Over what measurement period, for what subject, under what valuation convention, against what benchmark is a performance number measured?
+    businessContext: GIPS analyst checking that a performance number's period, subject, net/gross convention, and benchmark are explicit.
+    scope: Performance measurement context
+    sparqlPattern: |
+      SELECT ?period ?subject ?convention ?benchmark
+      WHERE {
+        ?observation a fin-strategy:PerformanceObservation ;
+                    fin-strategy:performanceMeasurementPeriod ?period ;
+                    fin-strategy:performanceSubject ?subject ;
+                    fin-strategy:performanceValuationConvention ?convention ;
+                    fin-strategy:performanceBenchmark ?benchmark .
+        FILTER(?observation = <observation-iri>)
+      }
+    expectedResult: The measurement period, subject, valuation convention, and benchmark specification
+    dependsOn:
+      - PerformanceMeasurementPeriod, PerformanceSubject, ValuationConvention, BenchmarkSpecification Objects
+      - performanceMeasurementPeriod, performanceSubject, performanceValuationConvention, performanceBenchmark roles
+    riskLevel: medium
+    status: active
+    note: v1.1.0 (ADR-033 D15) — GIPS period/benchmark/fee/method consistency as queryable objects.
+  - id: CQ-SR14
+    question: What performance result does an attribution explain, by what method, with what residual and reconciliation status?
+    businessContext: Performance analyst verifying that attribution contributions reconcile against the explained result.
+    scope: Attribution-to-result with reconciliation
+    sparqlPattern: |
+      SELECT ?result ?method ?residual ?reconciliationStatus
+      WHERE {
+        ?attribution a fin-strategy:PositionAttribution ;
+                    fin-strategy:attributionForPerformance ?result ;
+                    fin-strategy:attributionMethod ?method .
+        OPTIONAL { ?attribution fin-strategy:hasAttributionResidual ?residual }
+        OPTIONAL { ?attribution fin-strategy:hasAttributionReconciliationStatus ?reconciliationStatus }
+        FILTER(?attribution = <attribution-iri>)
+      }
+    expectedResult: The explained performance result, attribution method, residual, and reconciliation status
+    dependsOn:
+      - attributionForPerformance, attributionMethod roles
+      - AttributionMethod Object
+      - attributionResidual, attributionReconciliationStatus attributes
+      - ReconciliationStatus code list
+    riskLevel: medium
+    status: active
+    note: v1.1.0 (ADR-033 D15) — attribution explains a result, not only carries a number.
+  - id: CQ-SR15
+    question: What is the deployment lifecycle of a live strategy — candidate, approved, deployed, monitored, suspended, rolled back — and who approved and rolled it back?
+    businessContext: Operations team auditing the governance chain of a live strategy deployment.
+    scope: Live deployment governance
+    sparqlPattern: |
+      SELECT ?deployment ?state ?approver ?rollbackApprover ?rollbackReason
+      WHERE {
+        ?deployment a fin-strategy:StrategyDeployment ;
+                   fin-strategy:hasDeploymentLifecycleState ?state ;
+                   fin-strategy:deploymentStrategy ?strategy .
+        OPTIONAL { ?promotion fin-strategy:promotionDeployment ?deployment ;
+                             fin-strategy:promotionApprover ?approver }
+        OPTIONAL { ?rollback fin-strategy:rollbackDeployment ?deployment ;
+                            fin-strategy:rollbackApprover ?rollbackApprover ;
+                            fin-strategy:hasRollbackReason ?rollbackReason }
+        FILTER(?strategy = <strategy-iri>)
+      }
+    expectedResult: The deployment lifecycle state, approver, and any rollback approver and reason
+    dependsOn:
+      - StrategyDeployment, LiveRun Objects
+      - PromotionDecision, MonitoringObservation, RollbackDecision Associations
+      - DeploymentLifecycleState code list
+      - deploymentStrategy, liveRunDeployment, promotionApprover, rollbackApprover roles
+    riskLevel: high
+    status: active
+    note: v1.1.0 (ADR-033 D17) — live run-context kind is backed by deployment governance.
+  - id: CQ-SR16
+    question: What factor subject (instrument, issuer, index, currency, market, sector, portfolio, universe) does a factor observation apply to?
+    businessContext: Researcher confirming that a macro factor observation is not force-fit to a FinancialInstrument.
+    scope: Generalized factor subject
+    sparqlPattern: |
+      SELECT ?subjectKind ?subject
+      WHERE {
+        ?observation a fin-strategy:FactorObservation ;
+                     fin-strategy:hasFactorSubjectKind ?subjectKind .
+        OPTIONAL { ?observation fin-strategy:factorMarket ?subject }
+        OPTIONAL { ?observation fin-strategy:factorSector ?subject }
+        OPTIONAL { ?observation fin-strategy:factorCurrency ?subject }
+        OPTIONAL { ?observation fin-strategy:factorInstrument ?subject }
+        FILTER(?observation = <observation-iri>)
+      }
+    expectedResult: The factor subject kind and the subject reference
+    dependsOn:
+      - FactorSubject role family
+      - FactorSubjectKind code list
+      - factorInstrument, factorListing, factorIssuer, factorIndex, factorCurrency, factorMarket, factorSector, factorPortfolio, factorUniverse roles
+      - market-structure import
+    riskLevel: medium
+    status: active
+    note: v1.1.0 (ADR-033 D11) — factor subject generalized beyond a single instrument.

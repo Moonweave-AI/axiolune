@@ -439,3 +439,339 @@ fixtures:
         source: https://axiolune.ai/source/performance-engine
     supportNodes: *performance-support
     expectedResult: accepted
+
+  - id: strategy-positive-008
+    description: v1.1.0 research question with hypothesis and protocol (research business semantics).
+    type: https://axiolune.ai/ontology/finance/strategy-research/ResearchQuestion
+    instance:
+      iri: https://axiolune.ai/data/test/research-question/roe-momentum/version/1
+      type: https://axiolune.ai/ontology/finance/strategy-research/ResearchQuestion
+      researchQuestionId: roe-momentum
+      researchQuestionText: Does ROE momentum predict one-month forward returns?
+      validFrom: '2026-01-01T00:00:00Z'
+      validTo: '2027-01-01T00:00:00Z'
+      knowledgeFrom: '2026-01-02T00:00:00Z'
+      availableFrom: '2026-01-03T00:00:00Z'
+      revision: 0
+      source: https://axiolune.ai/source/research-protocol
+    records:
+      - iri: https://axiolune.ai/data/test/hypothesis/roe-positive/version/1
+        type: https://axiolune.ai/ontology/finance/strategy-research/Hypothesis
+        hypothesisId: roe-positive
+        hypothesisStatement: High-ROE stocks outperform low-ROE stocks over one month.
+        hypothesisDirection: https://axiolune.ai/ontology/finance/strategy-research/HypothesisDirection/value/positive
+        validFrom: '2026-01-01T00:00:00Z'
+        validTo: '2027-01-01T00:00:00Z'
+        knowledgeFrom: '2026-01-02T00:00:00Z'
+        availableFrom: '2026-01-03T00:00:00Z'
+        revision: 0
+        source: https://axiolune.ai/source/research-protocol
+      - iri: https://axiolune.ai/data/test/research-protocol/walk-forward/version/1
+        type: https://axiolune.ai/ontology/finance/strategy-research/ResearchProtocol
+        researchProtocolId: walk-forward-2026
+        modelSelectionCriteria: Lowest out-of-sample MSE across walk-forward folds.
+        validFrom: '2026-01-01T00:00:00Z'
+        validTo: '2027-01-01T00:00:00Z'
+        knowledgeFrom: '2026-01-02T00:00:00Z'
+        availableFrom: '2026-01-03T00:00:00Z'
+        revision: 0
+        source: https://axiolune.ai/source/research-protocol
+      - iri: https://axiolune.ai/data/test/research-finding/roe-momentum/version/1
+        type: https://axiolune.ai/ontology/finance/strategy-research/ResearchFinding
+        https://axiolune.ai/ontology/finance/strategy-research/ResearchFinding/role/findingResearchQuestion: https://axiolune.ai/data/test/research-question/roe-momentum/version/1
+        https://axiolune.ai/ontology/finance/strategy-research/ResearchFinding/role/findingRunContext: https://axiolune.ai/data/test/run/research-roe-revision/version/1
+        researchFindingId: roe-momentum-finding
+        conclusionType: https://axiolune.ai/ontology/finance/strategy-research/ConclusionType/value/positive
+        findingNarrative: ROE momentum shows positive out-of-sample returns.
+        validFrom: '2026-03-01T00:00:00Z'
+        validTo: '2027-01-01T00:00:00Z'
+        knowledgeFrom: '2026-03-02T00:00:00Z'
+        availableFrom: '2026-03-03T00:00:00Z'
+        revision: 0
+        source: https://axiolune.ai/source/research-protocol
+    expectedResult: accepted
+
+  - id: strategy-positive-009
+    description: v1.1.0 strategy with mandate and optional policy objects (strategy business semantics).
+    type: https://axiolune.ai/ontology/finance/strategy-research/StrategyDefinition
+    instance:
+      iri: https://axiolune.ai/data/test/strategy/value-momentum/version/7
+      type: https://axiolune.ai/ontology/finance/strategy-research/StrategyDefinition
+      generatorId: value-momentum
+      generatorName: Value-Momentum
+      strategyObjective: Long high-ROE stocks with positive 12-1 momentum.
+      strategyMandateKind: https://axiolune.ai/ontology/finance/strategy-research/StrategyMandateKind/value/factorDriven
+      validFrom: '2026-01-01T00:00:00Z'
+      validTo: '2027-01-01T00:00:00Z'
+      knowledgeFrom: '2026-01-02T00:00:00Z'
+      availableFrom: '2026-01-03T00:00:00Z'
+      revision: 0
+      source: https://axiolune.ai/source/strategy-definition
+    records:
+      - iri: https://axiolune.ai/data/test/universe/us-large-cap/version/1
+        type: https://axiolune.ai/ontology/finance/strategy-research/UniverseDefinition
+        universeDefinitionId: us-large-cap
+        validFrom: '2026-01-01T00:00:00Z'
+        validTo: '2027-01-01T00:00:00Z'
+        knowledgeFrom: '2026-01-02T00:00:00Z'
+        availableFrom: '2026-01-03T00:00:00Z'
+        revision: 0
+        source: https://axiolune.ai/source/strategy-definition
+      - iri: https://axiolune.ai/data/test/rebalance/monthly/version/1
+        type: https://axiolune.ai/ontology/finance/strategy-research/RebalancePolicy
+        rebalancePolicyId: monthly-rebalance
+        rebalanceFrequency: https://axiolune.ai/ontology/finance/strategy-research/RebalanceFrequency/value/monthly
+        rebalanceTrigger: https://axiolune.ai/ontology/finance/strategy-research/RebalanceTrigger/value/scheduled
+        validFrom: '2026-01-01T00:00:00Z'
+        validTo: '2027-01-01T00:00:00Z'
+        knowledgeFrom: '2026-01-02T00:00:00Z'
+        availableFrom: '2026-01-03T00:00:00Z'
+        revision: 0
+        source: https://axiolune.ai/source/strategy-definition
+      - iri: https://axiolune.ai/data/test/execution-intent/scheduled/version/1
+        type: https://axiolune.ai/ontology/finance/strategy-research/ExecutionIntent
+        executionIntentId: scheduled-vwap
+        executionIntentKind: https://axiolune.ai/ontology/finance/strategy-research/ExecutionIntentKind/value/scheduled
+        validFrom: '2026-01-01T00:00:00Z'
+        validTo: '2027-01-01T00:00:00Z'
+        knowledgeFrom: '2026-01-02T00:00:00Z'
+        availableFrom: '2026-01-03T00:00:00Z'
+        revision: 0
+        source: https://axiolune.ai/source/strategy-definition
+    expectedResult: accepted
+
+  - id: strategy-positive-010
+    description: v1.1.0 strategy execution package binding strategy, implementation, and factor closure.
+    type: https://axiolune.ai/ontology/finance/strategy-research/StrategyExecutionPackage
+    instance:
+      iri: https://axiolune.ai/data/test/execution-package/value-momentum/version/1
+      type: https://axiolune.ai/ontology/finance/strategy-research/StrategyExecutionPackage
+      https://axiolune.ai/ontology/finance/strategy-research/StrategyExecutionPackage/executionPackageStrategy: https://axiolune.ai/data/test/strategy/value-momentum/version/7
+      strategyExecutionPackageId: value-momentum-package
+      factorDependencyClosureDigest: sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      validFrom: '2026-01-01T00:00:00Z'
+      validTo: '2027-01-01T00:00:00Z'
+      knowledgeFrom: '2026-01-02T00:00:00Z'
+      availableFrom: '2026-01-03T00:00:00Z'
+      revision: 0
+      source: https://axiolune.ai/source/execution-package
+    expectedResult: accepted
+
+  - id: strategy-positive-011
+    description: v1.1.0 simulated trading chain (order, fill, portfolio state, return series) under a market simulation policy.
+    type: https://axiolune.ai/ontology/finance/strategy-research/SimulatedOrder
+    instance:
+      iri: https://axiolune.ai/data/test/simulated-order/001/version/0
+      type: https://axiolune.ai/ontology/finance/strategy-research/SimulatedOrder
+      https://axiolune.ai/ontology/finance/strategy-research/SimulatedOrder/simulatedOrderBacktest: https://axiolune.ai/data/test/run/backtest-2026/version/1
+      simulatedOrderId: sim-order-001
+      validFrom: '2026-07-25T09:30:00Z'
+      validTo: '2026-07-25T16:00:00Z'
+      knowledgeFrom: '2026-07-25T16:00:01Z'
+      availableFrom: '2026-07-25T16:00:02Z'
+      revision: 0
+      source: https://axiolune.ai/source/simulation-engine
+    records:
+      - iri: https://axiolune.ai/data/test/simulated-fill/001/version/0
+        type: https://axiolune.ai/ontology/finance/strategy-research/SimulatedFill
+        https://axiolune.ai/ontology/finance/strategy-research/SimulatedFill/simulatedFillOrder: https://axiolune.ai/data/test/simulated-order/001/version/0
+        simulatedFillId: sim-fill-001
+        validFrom: '2026-07-25T09:30:05Z'
+        validTo: '2026-07-25T16:00:00Z'
+        knowledgeFrom: '2026-07-25T16:00:01Z'
+        availableFrom: '2026-07-25T16:00:02Z'
+        revision: 0
+        source: https://axiolune.ai/source/simulation-engine
+      - iri: https://axiolune.ai/data/test/simulated-portfolio-state/001/version/0
+        type: https://axiolune.ai/ontology/finance/strategy-research/SimulatedPortfolioState
+        https://axiolune.ai/ontology/finance/strategy-research/SimulatedPortfolioState/simulatedPortfolioStateFill: https://axiolune.ai/data/test/simulated-fill/001/version/0
+        simulatedPortfolioStateId: sim-state-001
+        validFrom: '2026-07-25T16:00:00Z'
+        validTo: '2026-07-26T00:00:00Z'
+        knowledgeFrom: '2026-07-25T16:00:01Z'
+        availableFrom: '2026-07-25T16:00:02Z'
+        revision: 0
+        source: https://axiolune.ai/source/simulation-engine
+      - iri: https://axiolune.ai/data/test/simulated-return-series/001/version/0
+        type: https://axiolune.ai/ontology/finance/strategy-research/SimulatedReturnSeries
+        https://axiolune.ai/ontology/finance/strategy-research/SimulatedReturnSeries/simulatedReturnSeriesState: https://axiolune.ai/data/test/simulated-portfolio-state/001/version/0
+        simulatedReturnSeriesId: sim-returns-001
+        validFrom: '2026-07-25T16:00:00Z'
+        validTo: '2026-07-26T00:00:00Z'
+        knowledgeFrom: '2026-07-25T16:00:01Z'
+        availableFrom: '2026-07-25T16:00:02Z'
+        revision: 0
+        source: https://axiolune.ai/source/simulation-engine
+      - iri: https://axiolune.ai/data/test/market-simulation-policy/standard/version/1
+        type: https://axiolune.ai/ontology/finance/strategy-research/MarketSimulationPolicy
+        marketSimulationPolicyId: standard-sim
+        validFrom: '2026-01-01T00:00:00Z'
+        validTo: '2027-01-01T00:00:00Z'
+        knowledgeFrom: '2026-01-02T00:00:00Z'
+        availableFrom: '2026-01-03T00:00:00Z'
+        revision: 0
+        source: https://axiolune.ai/source/simulation-engine
+    expectedResult: accepted
+
+  - id: strategy-positive-012
+    description: v1.1.0 performance measurement period, subject, valuation convention, and benchmark specification.
+    type: https://axiolune.ai/ontology/finance/strategy-research/PerformanceMeasurementPeriod
+    instance:
+      iri: https://axiolune.ai/data/test/measurement-period/2026h1/version/1
+      type: https://axiolune.ai/ontology/finance/strategy-research/PerformanceMeasurementPeriod
+      performanceMeasurementPeriodId: 2026h1
+      measurementPeriodFrom: '2026-01-01T00:00:00Z'
+      measurementPeriodTo: '2026-07-01T00:00:00Z'
+      measurementAsOf: '2026-07-01T00:00:00Z'
+      validFrom: '2026-07-01T00:00:00Z'
+      validTo: '2027-01-01T00:00:00Z'
+      knowledgeFrom: '2026-07-02T00:00:00Z'
+      availableFrom: '2026-07-03T00:00:00Z'
+      revision: 0
+      source: https://axiolune.ai/source/performance-engine
+    records:
+      - iri: https://axiolune.ai/data/test/performance-substrate/value-momentum/version/1
+        type: https://axiolune.ai/ontology/finance/strategy-research/PerformanceSubject
+        performanceSubjectId: value-momentum-subject
+        validFrom: '2026-01-01T00:00:00Z'
+        validTo: '2027-01-01T00:00:00Z'
+        knowledgeFrom: '2026-01-02T00:00:00Z'
+        availableFrom: '2026-01-03T00:00:00Z'
+        revision: 0
+        source: https://axiolune.ai/source/performance-engine
+      - iri: https://axiolune.ai/data/test/valuation-convention/net-of-fees/version/1
+        type: https://axiolune.ai/ontology/finance/strategy-research/ValuationConvention
+        valuationConventionId: net-of-fees
+        netGrossConvention: https://axiolune.ai/ontology/finance/strategy-research/NetGrossConvention/value/netOfFees
+        validFrom: '2026-01-01T00:00:00Z'
+        validTo: '2027-01-01T00:00:00Z'
+        knowledgeFrom: '2026-01-02T00:00:00Z'
+        availableFrom: '2026-01-03T00:00:00Z'
+        revision: 0
+        source: https://axiolune.ai/source/performance-engine
+      - iri: https://axiolune.ai/data/test/benchmark/spx-total-return/version/1
+        type: https://axiolune.ai/ontology/finance/strategy-research/BenchmarkSpecification
+        benchmarkSpecificationId: spx-total-return
+        benchmarkReturnKind: https://axiolune.ai/ontology/finance/strategy-research/BenchmarkReturnKind/value/totalReturn
+        benchmarkRebalance: https://axiolune.ai/ontology/finance/strategy-research/BenchmarkRebalance/value/periodic
+        validFrom: '2026-01-01T00:00:00Z'
+        validTo: '2027-01-01T00:00:00Z'
+        knowledgeFrom: '2026-01-02T00:00:00Z'
+        availableFrom: '2026-01-03T00:00:00Z'
+        revision: 0
+        source: https://axiolune.ai/source/performance-engine
+    expectedResult: accepted
+
+  - id: strategy-positive-013
+    description: v1.1.0 attribution linked to a performance result with method, residual, and reconciliation status.
+    type: https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution
+    instance:
+      iri: https://axiolune.ai/data/test/attribution/explained-001/version/0
+      type: https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution
+      https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution/role/attributionGenerator: https://axiolune.ai/data/test/strategy/value-momentum/version/7
+      https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution/role/attributionRunContext: https://axiolune.ai/data/test/run/backtest-2026/version/1
+      https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution/role/attributionMetric: https://axiolune.ai/data/test/metric/sharpe/version/2
+      https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution/role/attributionCalculationContext: https://axiolune.ai/data/test/calculation/sharpe-daily/version/3
+      https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution/role/attributionForPerformance: https://axiolune.ai/data/test/performance/sharpe/day-3/version/0
+      https://axiolune.ai/ontology/finance/strategy-research/PositionAttribution/role/attributionMethod: https://axiolune.ai/data/test/attribution-method/brinson/version/1
+      sourceAttributionId: attribution-explained-001
+      attributionQuantityValue: {type: QuantityValue, value: '0.80', unit: https://axiolune.ai/units/one, rounding: half-even}
+      attributionResidual: {type: QuantityValue, value: '0.00', unit: https://axiolune.ai/units/one, rounding: half-even}
+      attributionReconciliationStatus: https://axiolune.ai/ontology/finance/strategy-research/ReconciliationStatus/value/reconciled
+      validFrom: '2026-07-01T00:00:00Z'
+      validTo: '2026-07-02T00:00:00Z'
+      knowledgeFrom: '2026-07-02T00:00:00Z'
+      availableFrom: '2026-07-02T00:00:01Z'
+      revision: 0
+      source: https://axiolune.ai/source/attribution-engine
+    records:
+      - iri: https://axiolune.ai/data/test/attribution-method/brinson/version/1
+        type: https://axiolune.ai/ontology/finance/strategy-research/AttributionMethod
+        attributionMethodId: brinson
+        attributionComponentType: https://axiolune.ai/ontology/finance/strategy-research/AttributionComponentType/value/allocation
+        attributionAggregationScope: https://axiolune.ai/ontology/finance/strategy-research/AttributionAggregationScope/value/perPeriod
+        attributionReconciliationRule: Sum of allocation and selection effects equals total return within tolerance.
+        validFrom: '2026-01-01T00:00:00Z'
+        validTo: '2027-01-01T00:00:00Z'
+        knowledgeFrom: '2026-01-02T00:00:00Z'
+        availableFrom: '2026-01-03T00:00:00Z'
+        revision: 0
+        source: https://axiolune.ai/source/attribution-engine
+    expectedResult: accepted
+
+  - id: strategy-positive-014
+    description: v1.1.0 strategy deployment with promotion and rollback governance (live deployment lifecycle).
+    type: https://axiolune.ai/ontology/finance/strategy-research/StrategyDeployment
+    instance:
+      iri: https://axiolune.ai/data/test/deployment/value-momentum/version/1
+      type: https://axiolune.ai/ontology/finance/strategy-research/StrategyDeployment
+      https://axiolune.ai/ontology/finance/strategy-research/StrategyDeployment/deploymentStrategy: https://axiolune.ai/data/test/strategy/value-momentum/version/7
+      strategyDeploymentId: value-momentum-deployment
+      deploymentLifecycleState: https://axiolune.ai/ontology/finance/strategy-research/DeploymentLifecycleState/value/rolledBack
+      validFrom: '2026-04-01T00:00:00Z'
+      validTo: '2027-01-01T00:00:00Z'
+      knowledgeFrom: '2026-04-02T00:00:00Z'
+      availableFrom: '2026-04-03T00:00:00Z'
+      revision: 0
+      source: https://axiolune.ai/source/deployment-governance
+    records:
+      - iri: https://axiolune.ai/data/test/promotion/value-momentum/version/1
+        type: https://axiolune.ai/ontology/finance/strategy-research/PromotionDecision
+        https://axiolune.ai/ontology/finance/strategy-research/PromotionDecision/role/promotionCandidateStrategy: https://axiolune.ai/data/test/strategy/value-momentum/version/7
+        https://axiolune.ai/ontology/finance/strategy-research/PromotionDecision/role/promotionDeployment: https://axiolune.ai/data/test/deployment/value-momentum/version/1
+        https://axiolune.ai/ontology/finance/strategy-research/PromotionDecision/role/promotionApprover: https://axiolune.ai/data/party/research-governance
+        promotionDecisionId: promote-001
+        promotionCriteria: Out-of-sample Sharpe greater than 1.0 for two consecutive quarters.
+        validFrom: '2026-04-01T00:00:00Z'
+        validTo: '2027-01-01T00:00:00Z'
+        knowledgeFrom: '2026-04-02T00:00:00Z'
+        availableFrom: '2026-04-03T00:00:00Z'
+        revision: 0
+        source: https://axiolune.ai/source/deployment-governance
+      - iri: https://axiolune.ai/data/test/monitoring/value-momentum/version/2
+        type: https://axiolune.ai/ontology/finance/strategy-research/MonitoringObservation
+        https://axiolune.ai/ontology/finance/strategy-research/MonitoringObservation/role/monitoringDeployment: https://axiolune.ai/data/test/deployment/value-momentum/version/1
+        https://axiolune.ai/ontology/finance/strategy-research/MonitoringObservation/role/monitoringRunContext: https://axiolune.ai/data/test/run/live-2026q3/version/1
+        monitoringObservationId: monitor-002
+        monitoringMetricValue: {type: QuantityValue, value: '0.40', unit: https://axiolune.ai/units/one, rounding: half-even}
+        driftIndicator: https://axiolune.ai/ontology/finance/strategy-research/DriftIndicator/value/significantDrift
+        validFrom: '2026-08-01T00:00:00Z'
+        validTo: '2026-08-02T00:00:00Z'
+        knowledgeFrom: '2026-08-02T00:00:00Z'
+        availableFrom: '2026-08-02T00:00:01Z'
+        revision: 0
+        source: https://axiolune.ai/source/deployment-governance
+      - iri: https://axiolune.ai/data/test/rollback/value-momentum/version/1
+        type: https://axiolune.ai/ontology/finance/strategy-research/RollbackDecision
+        https://axiolune.ai/ontology/finance/strategy-research/RollbackDecision/role/rollbackDeployment: https://axiolune.ai/data/test/deployment/value-momentum/version/1
+        https://axiolune.ai/ontology/finance/strategy-research/RollbackDecision/role/rollbackApprover: https://axiolune.ai/data/party/research-governance
+        rollbackDecisionId: rollback-001
+        rollbackReason: Significant drift detected in live monitoring after Q3 deployment.
+        validFrom: '2026-08-02T00:00:00Z'
+        validTo: '2027-01-01T00:00:00Z'
+        knowledgeFrom: '2026-08-03T00:00:00Z'
+        availableFrom: '2026-08-03T00:00:01Z'
+        revision: 0
+        source: https://axiolune.ai/source/deployment-governance
+    expectedResult: accepted
+
+  - id: strategy-positive-015
+    description: v1.1.0 factor observation with a generalized market subject (not force-fit to FinancialInstrument).
+    type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
+    instance:
+      iri: https://axiolune.ai/data/test/factor-observation/market-breadth/version/0
+      type: https://axiolune.ai/ontology/finance/strategy-research/FactorObservation
+      https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/observedFactor: https://axiolune.ai/data/factor/market-breadth/version/1
+      https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/factorMarket: https://axiolune.ai/data/venue/XNYS/version/1
+      https://axiolune.ai/ontology/finance/strategy-research/FactorObservation/role/factorRunContext: https://axiolune.ai/data/test/run/research-roe-revision/version/1
+      sourceFactorId: market-breadth-001
+      reportingPeriodKey: 2026-06
+      factorSubjectKind: https://axiolune.ai/ontology/finance/strategy-research/FactorSubjectKind/value/market
+      factorValue: {type: QuantityValue, value: '0.62', unit: https://axiolune.ai/units/one, rounding: half-even}
+      validFrom: '2026-06-30T00:00:00Z'
+      validTo: '2026-07-01T00:00:00Z'
+      knowledgeFrom: '2026-07-01T10:00:00Z'
+      availableFrom: '2026-07-01T10:00:01Z'
+      revision: 0
+      source: https://axiolune.ai/source/factor-engine
+    expectedResult: accepted

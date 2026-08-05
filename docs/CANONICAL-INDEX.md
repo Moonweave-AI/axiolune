@@ -15,10 +15,12 @@
 | Prior v0.3.0 review | [docs/domain/decisions/M2-REVIEW-ROUND-11.md](domain/decisions/M2-REVIEW-ROUND-11.md) |
 | v1.0.0 completion + M1 handoff | [docs/domain/decisions/ADR-017-m2-v1-completion-and-m1-handoff.md](domain/decisions/ADR-017-m2-v1-completion-and-m1-handoff.md) |
 | Post-trade CQ matrix | [docs/domain/decisions/ADR-018-post-trade-cq-coverage-matrix.md](domain/decisions/ADR-018-post-trade-cq-coverage-matrix.md) |
+| Strategy & Research v1.1.0 revision | [docs/domain/decisions/ADR-033-strategy-research-architecture.md](domain/decisions/ADR-033-strategy-research-architecture.md) |
 | M1 handoff entry | [docs/domain/handoffs/M2-V1.0.0-M1-HANDOFF.md](domain/handoffs/M2-V1.0.0-M1-HANDOFF.md) |
 | v0.2.0 revocation | [docs/domain/decisions/ADR-015-revoke-v0.2.0-approval.md](domain/decisions/ADR-015-revoke-v0.2.0-approval.md) |
-| Exotic CA defer (P2) | [docs/domain/decisions/ADR-016-defer-exotic-corporate-actions.md](domain/decisions/ADR-016-defer-exotic-corporate-actions.md) |
-| Authoring profile | [docs/domain/decisions/ADR-013-m2-authoring-profile.md](domain/decisions/ADR-013-m2-authoring-profile.md) |
+| Exotic CA defer (P2) | [docs/domain/decisions/ADR-019-defer-exotic-corporate-actions.md](domain/decisions/ADR-019-defer-exotic-corporate-actions.md) |
+| Authoring profile (typed-container) | [docs/domain/decisions/ADR-016-typed-container-authoring-profile.md](domain/decisions/ADR-016-typed-container-authoring-profile.md) |
+| Authoring profile (superseded) | [docs/domain/decisions/ADR-013-m2-authoring-profile.md](domain/decisions/ADR-013-m2-authoring-profile.md) |
 | Release governance | [docs/domain/decisions/ADR-014-m2-release-governance.md](domain/decisions/ADR-014-m2-release-governance.md) |
 | Module gaps | [docs/domain/decisions/gap/](domain/decisions/gap/) |
 | Module alignments | [docs/ontology/alignments/](ontology/alignments/) |
