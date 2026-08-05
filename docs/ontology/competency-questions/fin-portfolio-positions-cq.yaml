@@ -1,268 +1,391 @@
-# Axiolune M2 Finance �?Portfolio & Positions Competency Questions
+# Axiolune M2 Finance — Portfolio & Positions Competency Questions
 # Module: fin-portfolio-positions
-# Version: 0.1.0
-# Reference: M2-PLAN.md §6.2 (Slice A CQs)
+# Version: 1.1.0
+# Reference: M2-PLAN.md §6.2 (Slice A CQs); ADR-029 (v1.1.0 architecture revision)
 # Method: Grüninger & Fox (1995) competency-question driven ontology design
+# Note: v0.1.0 CQs referenced types/predicates (Account, PositionSide, hasPositionSide,
+#   heldInPortfolio, hasAccountType) that do not exist in the v1.0.0+ module; this v1.1.0
+#   rewrite uses the actual predicates (foundation:FinancialAccount, positionQuantity,
+#   signed net, PortfolioAccountMembership, etc.) and adds CQs PP8–PP15 for the v1.1.0
+#   generic-core + profile layering.
 
 cqs:
   - id: CQ-PP1
-    question: What accounts exist in the system and what are their types?
-    businessContext: Account enumeration and classification for authorization, reporting, and reconciliation
+    question: >-
+      What portfolios exist, who is their identifying authority, and who manages them at a given three-axis as-of
+      time?
+    businessContext: Portfolio inventory and management authority for performance, risk, and governance reporting
     scopeConstraints:
-      - limited to accounts that have been materialized and are queryable
-      - account type must be from the controlled AccountType vocabulary
-    expectedResult: list of Account IRIs with their identifiers and account types
+      - limited to materialized Portfolios
+      - identifying authority and management mandate may be temporal
+    expectedResult: list of (Portfolio IRI, portfolioId, identifying authority, optional managing party) tuples
     queryPattern: |
-      SELECT ?account ?accountId ?accountType
-      WHERE {
-        ?account a fin-portfolio:Account ;
-                 fin-portfolio:hasAccountIdentifier ?accountId ;
-                 fin-portfolio:hasAccountType ?accountType .
-      }
-    dependsOnElements:
-      - https://axiolune.ai/ontology/finance/portfolio-positions/Account
-      - https://axiolune.ai/ontology/finance/portfolio-positions/hasAccountIdentifier
-      - https://axiolune.ai/ontology/finance/portfolio-positions/hasAccountType
-    riskLevel: low
-    status: active
-  - id: CQ-PP2
-    question: What portfolios exist and who manages them?
-    businessContext: Portfolio inventory for performance tracking, risk aggregation, and management reporting
-    scopeConstraints:
-      - limited to portfolios that have been materialized
-      - manager relationship may be absent if not yet modeled
-    expectedResult: list of Portfolio IRIs with their identifiers, names, and optional manager relationships
-    queryPattern: |
-      SELECT ?portfolio ?portfolioId ?portfolioName
+      SELECT ?portfolio ?portfolioId ?authority ?manager
       WHERE {
         ?portfolio a fin-portfolio:Portfolio ;
-                   fin-portfolio:hasPortfolioIdentifier ?portfolioId .
-        OPTIONAL { ?portfolio fin-portfolio:hasPortfolioName ?portfolioName . }
+                   fin-portfolio:portfolioIdentifyingAuthority ?authority ;
+                   fin-portfolio:portfolioId ?portfolioId .
+        OPTIONAL { ?mandate a fin-portfolio:PortfolioManagementMandate ;
+                   fin-portfolio:managedPortfolio ?portfolio ;
+                   fin-portfolio:managingParty ?manager . }
       }
     dependsOnElements:
       - https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
-      - https://axiolune.ai/ontology/finance/portfolio-positions/hasPortfolioIdentifier
-      - https://axiolune.ai/ontology/finance/portfolio-positions/hasPortfolioName
-    riskLevel: low
+      - https://axiolune.ai/ontology/finance/portfolio-positions/portfolioIdentifyingAuthority
+      - https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioManagementMandate
+    riskLevel: high
     status: active
+    mapsToP0: PP-P0-01
   - id: CQ-S3
     question: >-
-      At a specified three-axis as-of time (validTime, knowledgeTime, availabilityTime), what instruments does a
-      portfolio hold and in what quantities?
-    businessContext: >-
-      Point-in-time portfolio composition query for historical analysis, compliance reporting, and backtesting; must not
-      leak future knowledge or unavailable data
+      At a specified three-axis as-of time, what instruments does a portfolio hold and in what quantities, across
+      custody, accounting, economic, and regulatory views?
+    businessContext: Point-in-time portfolio composition with position scope distinction
     scopeConstraints:
       - must enforce all three temporal axes per ADR-012
-      - validFrom <= asOfValid < validTo (or validTo is unbounded)
-      - knowledgeFrom <= asOfKnowledge < knowledgeTo (or knowledgeTo is unbounded)
-      - availableFrom <= asOfAvailable (fail-closed if availableFrom missing)
-      - must reject snapshots that violate any temporal constraint
+      - positionScope distinguishes the view; balanceDimension the sub-balance bucket
     expectedResult: >-
-      list of (instrument IRI, quantity, position side, currency) tuples for holdings that satisfy all three-axis
-      constraints; empty list if no holdings satisfy constraints or if future data would leak
+      list of (instrument IRI, signed net quantity, optional grossLong, optional grossShort, positionScope,
+      balanceDimension, currency) tuples
     queryPattern: |
-      SELECT ?instrument ?quantity ?positionSide ?currency
+      SELECT ?instrument ?netQty ?grossLong ?grossShort ?scope ?bucket ?currency
       WHERE {
-        ?holding a fin-portfolio:HoldingSnapshot ;
-                 fin-portfolio:heldInPortfolio ?portfolio ;
-                 fin-portfolio:heldInstrument ?instrument ;
-                 fin-portfolio:hasQuantity ?quantity ;
-                 fin-portfolio:hasPositionSide ?positionSide .
-        OPTIONAL { ?holding fin-foundation:hasCurrencyCode ?currency . }
-
-        # TemporalFact pattern bindings (injected by pattern)
-        ?holding meta:validFrom ?validFrom ;
-                 meta:knowledgeFrom ?knowledgeFrom ;
-                 meta:availableFrom ?availableFrom .
-        OPTIONAL { ?holding meta:validTo ?validTo . }
-        OPTIONAL { ?holding meta:knowledgeTo ?knowledgeTo . }
-
-        # Three-axis PIT constraints (parameters: ?asOfValid, ?asOfKnowledge, ?asOfAvailable)
-        FILTER(?validFrom <= ?asOfValid && (!BOUND(?validTo) || ?asOfValid < ?validTo))
-        FILTER(?knowledgeFrom <= ?asOfKnowledge && (!BOUND(?knowledgeTo) || ?asOfKnowledge < ?knowledgeTo))
-        FILTER(?availableFrom <= ?asOfAvailable)
-
-        # Portfolio filter (parameter: ?portfolioIri)
-        FILTER(?portfolio = ?portfolioIri)
+        ?snap a fin-portfolio:PositionSnapshot ;
+              fin-portfolio:positionInstrument ?instrument ;
+              fin-portfolio:positionQuantity ?netQty .
+        OPTIONAL { ?snap fin-portfolio:positionScope ?scope . }
+        OPTIONAL { ?snap fin-portfolio:balanceDimension ?bucket . }
+        OPTIONAL { ?snap fin-portfolio:grossLongQuantity ?grossLong . }
+        OPTIONAL { ?snap fin-portfolio:grossShortQuantity ?grossShort . }
+        ?snap meta:validFrom ?validFrom ; meta:knowledgeFrom ?knowledgeFrom ; meta:availableFrom ?availableFrom .
+        FILTER(?validFrom <= ?asOfValid && ?knowledgeFrom <= ?asOfKnowledge && ?availableFrom <= ?asOfAvailable)
       }
     dependsOnElements:
-      - https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
-      - https://axiolune.ai/ontology/finance/portfolio-positions/heldInPortfolio
-      - https://axiolune.ai/ontology/finance/portfolio-positions/heldInstrument
-      - https://axiolune.ai/ontology/finance/portfolio-positions/hasQuantity
-      - https://axiolune.ai/ontology/finance/portfolio-positions/hasPositionSide
+      - https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshot
+      - https://axiolune.ai/ontology/finance/portfolio-positions/positionScope
+      - https://axiolune.ai/ontology/finance/portfolio-positions/balanceDimension
+      - https://axiolune.ai/ontology/finance/portfolio-positions/grossLongQuantity
+      - https://axiolune.ai/ontology/finance/portfolio-positions/grossShortQuantity
       - https://axiolune.ai/ontology/meta/patterns/TemporalFact
-    testFixtures:
-      - fixture: portfolio-positive-001
-        description: single holding snapshot within valid three-axis window
-        expectedOutcome: returns holding
-      - fixture: portfolio-negative-001
-        description: holding snapshot with asOfValid before validFrom
-        expectedOutcome: returns empty (temporal constraint violation)
-      - fixture: portfolio-negative-002
-        description: holding snapshot with asOfKnowledge before knowledgeFrom
-        expectedOutcome: returns empty (knowledge not yet available)
-      - fixture: portfolio-negative-003
-        description: holding snapshot with asOfAvailable before availableFrom
-        expectedOutcome: returns empty (data not yet available, prevents look-ahead bias)
     riskLevel: high
     status: active
-    mapsToSliceA: CQ-S3
+    mapsToP0: PP-P0-02
+  - id: CQ-PP3
+    question: >-
+      Can gross long, gross short, and net be reported separately for the same instrument and account when multiple
+      balance buckets (available, pledged, loaned, pending) coexist?
+    businessContext: Regulatory and risk exposure requiring gross reporting independent of net
+    scopeConstraints:
+      - grossLongQuantity and grossShortQuantity are absolute non-negative
+      - positionQuantity remains the signed net default
+    expectedResult: per-bucket (grossLong, grossShort, net) tuples verifying additivity
+    queryPattern: |
+      SELECT ?bucket ?grossLong ?grossShort ?netQty
+      WHERE {
+        ?snap a fin-portfolio:PositionSnapshot ;
+              fin-portfolio:balanceDimension ?bucket ;
+              fin-portfolio:grossLongQuantity ?grossLong ;
+              fin-portfolio:grossShortQuantity ?grossShort ;
+              fin-portfolio:positionQuantity ?netQty .
+      }
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/portfolio-positions/BalanceDimension
+      - https://axiolune.ai/ontology/finance/portfolio-positions/grossLongQuantity
+      - https://axiolune.ai/ontology/finance/portfolio-positions/grossShortQuantity
+    riskLevel: high
+    status: active
+    mapsToP0: PP-P0-02
   - id: CQ-S4
     question: >-
-      For a given portfolio valuation, which specific price observations were used to compute the market value of each
-      holding, and what is the full traceability chain from price to valuation?
-    businessContext: >-
-      Valuation audit trail for regulatory compliance, performance attribution, and dispute resolution; must demonstrate
-      that valuations used only historically-available prices
+      For a given portfolio valuation run, which valuation method family profile was used, and what is the full
+      traceability chain from price to valuation line?
+    businessContext: Valuation audit trail across multiple method families
     scopeConstraints:
-      - valuation must reference exactly one HoldingSnapshot
-      - valuation must reference exactly one PriceObservation via usedPriceObservation
-      - price observation's availableFrom must be <= valuation's asOfAvailable (no future price leakage)
-      - price observation's instrument must match holding's instrument
+      - valuation definition binds exactly one ValuationMethodFamily profile
+      - DirectUnitValuationProfile requires directUnitPriceTimesQuantity
     expectedResult: >-
-      list of (holding IRI, instrument IRI, price value, price currency, price availableFrom, valuation market value,
-      valuation currency, valuation method) tuples demonstrating complete price-to-valuation traceability
+      list of (valuation line, method family profile, valuation method, price observation, market value,
+      valuation finality, coverage status)
     queryPattern: |
-      SELECT ?holding ?instrument ?priceValue ?priceCurrency ?priceAvailableFrom
-             ?marketValue ?valuationCurrency ?valuationMethod
+      SELECT ?line ?profile ?method ?price ?marketValue ?finality ?coverage
       WHERE {
-        ?valuation a fin-portfolio:PositionValuation ;
-                   fin-portfolio:valuedHolding ?holding ;
-                   fin-portfolio:usedPriceObservation ?priceObs ;
-                   fin-portfolio:hasMarketValue ?marketValue ;
-                   fin-portfolio:hasValuationMethod ?valuationMethod ;
-                   fin-foundation:hasCurrencyCode ?valuationCurrency .
-
-        ?holding fin-portfolio:heldInstrument ?instrument .
-
-        ?priceObs fin-market-data:observedInstrument ?priceInstrument ;
-                  fin-market-data:hasPriceValue ?priceValue ;
-                  fin-foundation:hasCurrencyCode ?priceCurrency ;
-                  meta:availableFrom ?priceAvailableFrom .
-
-        ?valuation meta:availableFrom ?valuationAvailableFrom .
-
-        # Consistency checks
-        FILTER(?priceInstrument = ?instrument)  # price must be for the held instrument
-        FILTER(?priceAvailableFrom <= ?valuationAvailableFrom)  # no future price leakage
+        ?run a fin-portfolio:PortfolioValuation ;
+             fin-portfolio:valuationDefinition ?def .
+        ?def fin-portfolio:valuationDefinitionMethodFamily ?profile ;
+             fin-portfolio:valuationMethod ?method .
+        ?line a fin-portfolio:PositionValuation ;
+              fin-portfolio:valuationHeader ?run ;
+              fin-portfolio:valuationPrice ?price ;
+              fin-portfolio:marketValue ?marketValue .
+        OPTIONAL { ?line fin-portfolio:valuationFinality ?finality . }
+        OPTIONAL { ?summary a fin-portfolio:PortfolioValuationSummary ;
+                   fin-portfolio:valuedPortfolioRun ?run ;
+                   fin-portfolio:coverageStatus ?coverage . }
       }
     dependsOnElements:
+      - https://axiolune.ai/ontology/finance/portfolio-positions/ValuationMethodFamily
+      - https://axiolune.ai/ontology/finance/portfolio-positions/DirectUnitValuationProfile
+      - https://axiolune.ai/ontology/finance/portfolio-positions/valuationDefinitionMethodFamily
       - https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation
-      - https://axiolune.ai/ontology/finance/portfolio-positions/valuedHolding
-      - https://axiolune.ai/ontology/finance/portfolio-positions/usedPriceObservation
-      - https://axiolune.ai/ontology/finance/portfolio-positions/hasMarketValue
-      - https://axiolune.ai/ontology/finance/portfolio-positions/hasValuationMethod
-      - https://axiolune.ai/ontology/finance/market-data/PriceObservation
-      - https://axiolune.ai/ontology/finance/market-data/observedInstrument
-      - https://axiolune.ai/ontology/finance/market-data/hasPriceValue
-      - https://axiolune.ai/ontology/meta/patterns/TemporalFact
-    testFixtures:
-      - fixture: valuation-positive-001
-        description: valuation with valid price reference (price available before valuation)
-        expectedOutcome: returns complete traceability chain
-      - fixture: valuation-negative-001
-        description: valuation using price with availableFrom > valuation's asOfAvailable
-        expectedOutcome: returns empty or fails constraint (future price leakage detected)
-      - fixture: valuation-negative-002
-        description: valuation referencing price for different instrument
-        expectedOutcome: returns empty or fails constraint (instrument mismatch)
+      - https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuationSummary
     riskLevel: high
     status: active
-    mapsToSliceA: CQ-S4
+    mapsToP0: PP-P0-03
   - id: CQ-PP5
-    question: What is the aggregate market value of a portfolio at a given three-axis as-of time?
-    businessContext: Portfolio-level valuation for performance reporting, NAV calculation, and risk aggregation
+    question: What is the aggregate market value of a portfolio at a given three-axis as-of time, with coverage closure?
+    businessContext: Portfolio-level valuation with verified coverage
     scopeConstraints:
-      - must sum PositionValuation.hasMarketValue for all holdings in portfolio
-      - all valuations must satisfy three-axis temporal constraints
-      - valuations must all be in the same currency or be currency-converted (conversion out of scope for E4)
-    expectedResult: sum of market values in the portfolio's reporting currency, with count of holdings included
+      - PortfolioValuationSummary closes the valuation-line coverage
+      - coverageStatus records complete/partial/excludesMembers
+    expectedResult: total market value with line count and coverage status
     queryPattern: |
-      SELECT ?portfolio (SUM(?marketValue) AS ?totalValue) (COUNT(?valuation) AS ?holdingCount)
+      SELECT ?run ?total ?lineCount ?coverage
       WHERE {
-        ?valuation a fin-portfolio:PositionValuation ;
-                   fin-portfolio:valuedHolding ?holding ;
-                   fin-portfolio:hasMarketValue ?marketValue ;
-                   meta:validFrom ?validFrom ;
-                   meta:knowledgeFrom ?knowledgeFrom ;
-                   meta:availableFrom ?availableFrom .
-
-        ?holding fin-portfolio:heldInPortfolio ?portfolio .
-
-        OPTIONAL { ?valuation meta:validTo ?validTo . }
-        OPTIONAL { ?valuation meta:knowledgeTo ?knowledgeTo . }
-
-        # Three-axis PIT constraints
-        FILTER(?validFrom <= ?asOfValid && (!BOUND(?validTo) || ?asOfValid < ?validTo))
-        FILTER(?knowledgeFrom <= ?asOfKnowledge && (!BOUND(?knowledgeTo) || ?asOfKnowledge < ?knowledgeTo))
-        FILTER(?availableFrom <= ?asOfAvailable)
-
-        FILTER(?portfolio = ?portfolioIri)
+        ?summary a fin-portfolio:PortfolioValuationSummary ;
+                 fin-portfolio:valuedPortfolioRun ?run ;
+                 fin-portfolio:totalMarketValue ?total ;
+                 fin-portfolio:lineCount ?lineCount ;
+                 fin-portfolio:coverageStatus ?coverage .
       }
-      GROUP BY ?portfolio
     dependsOnElements:
-      - https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation
-      - https://axiolune.ai/ontology/finance/portfolio-positions/valuedHolding
-      - https://axiolune.ai/ontology/finance/portfolio-positions/hasMarketValue
-      - https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
-      - https://axiolune.ai/ontology/finance/portfolio-positions/heldInPortfolio
-      - https://axiolune.ai/ontology/meta/patterns/TemporalFact
+      - https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuationSummary
+      - https://axiolune.ai/ontology/finance/portfolio-positions/totalMarketValue
+      - https://axiolune.ai/ontology/finance/portfolio-positions/coverageStatus
     riskLevel: medium
     status: active
+    mapsToP0: PP-P0-03
   - id: CQ-PP6
-    question: What position lots exist for a given instrument in an account, and what are their cost bases?
-    businessContext: Tax lot tracking for capital gains calculation, wash sale detection, and accounting
+    question: >-
+      What position lots exist for a given instrument and account, what is each lot's source kind and cost basis, and
+      can transfers, opening balances, and corporate-action results be traced?
+    businessContext: Tax-lot tracking with non-execution lifecycle sources
     scopeConstraints:
-      - limited to lots for specified instrument and account
-      - lot may have optional cost basis (not all systems track it)
-    expectedResult: list of (lot IRI, quantity, cost basis, position side) tuples
+      - lotSourceKind distinguishes execution-derived from transfer/opening-balance/corporate-action/etc.
+      - optional derivedFromChange references the source PositionChange
+    expectedResult: list of (lot IRI, source kind, quantity, cost basis, optional derivedFromChange) tuples
     queryPattern: |
-      SELECT ?lot ?quantity ?costBasis ?positionSide
+      SELECT ?lot ?sourceKind ?qty ?basis ?change
       WHERE {
         ?lot a fin-portfolio:PositionLot ;
              fin-portfolio:lotForInstrument ?instrument ;
              fin-portfolio:lotInAccount ?account ;
-             fin-portfolio:hasQuantity ?quantity ;
-             fin-portfolio:hasPositionSide ?positionSide .
-        OPTIONAL { ?lot fin-portfolio:hasCostBasis ?costBasis . }
-
+             fin-portfolio:originalQuantity ?qty ;
+             fin-portfolio:openingCostBasis ?basis .
+        OPTIONAL { ?lot fin-portfolio:lotSourceKind ?sourceKind . }
+        OPTIONAL { ?lot fin-portfolio:derivedFromChange ?change . }
         FILTER(?instrument = ?instrumentIri && ?account = ?accountIri)
       }
     dependsOnElements:
       - https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot
-      - https://axiolune.ai/ontology/finance/portfolio-positions/lotForInstrument
-      - https://axiolune.ai/ontology/finance/portfolio-positions/lotInAccount
-      - https://axiolune.ai/ontology/finance/portfolio-positions/hasQuantity
-      - https://axiolune.ai/ontology/finance/portfolio-positions/hasCostBasis
-      - https://axiolune.ai/ontology/finance/portfolio-positions/hasPositionSide
+      - https://axiolune.ai/ontology/finance/portfolio-positions/lotSourceKind
+      - https://axiolune.ai/ontology/finance/portfolio-positions/derivedFromChange
+      - https://axiolune.ai/ontology/finance/portfolio-positions/PositionChange
     riskLevel: medium
     status: active
+    mapsToP0: PP-P0-04
   - id: CQ-PP7
-    question: What is the unrealized PnL for a valuation, and how is it derived from cost basis and market value?
-    businessContext: Performance measurement, margin calculation, and risk reporting
+    question: >-
+      What is the unrealized PnL for a valuation, and how is it derived from market value and remaining cost basis?
+    businessContext: Performance measurement and risk reporting
     scopeConstraints:
-      - unrealized PnL = market value - cost basis
-      - both market value and cost basis must be in same currency
-      - cost basis may be absent (in which case PnL cannot be computed)
-    expectedResult: list of (valuation IRI, market value, cost basis, unrealized PnL, currency) tuples
+      - unrealizedPnl = marketValue − remainingCostBasis
+      - both in the header reporting currency
+    expectedResult: (valuation IRI, market value, remaining basis, unrealized PnL, currency)
     queryPattern: |
-      SELECT ?valuation ?marketValue ?costBasis ?unrealizedPnL ?currency
+      SELECT ?valuation ?marketValue ?basis ?pnl
       WHERE {
-        ?valuation a fin-portfolio:PositionValuation ;
-                   fin-portfolio:hasMarketValue ?marketValue ;
-                   fin-foundation:hasCurrencyCode ?currency .
-        OPTIONAL {
-          ?valuation fin-portfolio:hasCostBasis ?costBasis ;
-                     fin-portfolio:hasUnrealizedPnL ?unrealizedPnL .
-        }
+        ?pnlObs a fin-portfolio:UnrealizedPnLObservation ;
+                fin-portfolio:pnlValuation ?valuation ;
+                fin-portfolio:marketValue ?marketValue ;
+                fin-portfolio:remainingCostBasis ?basis ;
+                fin-portfolio:unrealizedPnl ?pnl .
       }
     dependsOnElements:
-      - https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation
-      - https://axiolune.ai/ontology/finance/portfolio-positions/hasMarketValue
-      - https://axiolune.ai/ontology/finance/portfolio-positions/hasCostBasis
-      - https://axiolune.ai/ontology/finance/portfolio-positions/hasUnrealizedPnL
-      - https://axiolune.ai/ontology/finance/foundation/hasCurrencyCode
+      - https://axiolune.ai/ontology/finance/portfolio-positions/UnrealizedPnLObservation
+      - https://axiolune.ai/ontology/finance/portfolio-positions/unrealizedPnl
     riskLevel: medium
     status: active
+  - id: CQ-PP8
+    question: >-
+      When the same portfolioId is used by two different identifying authorities, can the portfolios still be
+      unambiguously identified?
+    businessContext: Cross-authority portfolio identity disambiguation
+    scopeConstraints:
+      - logical key is (identifyingAuthority, portfolioId)
+    expectedResult: two distinct Portfolio IRIs for the same portfolioId under different authorities
+    queryPattern: |
+      SELECT ?p1 ?p2 ?auth1 ?auth2 ?id
+      WHERE {
+        ?p1 a fin-portfolio:Portfolio ; fin-portfolio:portfolioIdentifyingAuthority ?auth1 ; fin-portfolio:portfolioId ?id .
+        ?p2 a fin-portfolio:Portfolio ; fin-portfolio:portfolioIdentifyingAuthority ?auth2 ; fin-portfolio:portfolioId ?id .
+        FILTER(?p1 != ?p2 && ?auth1 != ?auth2)
+      }
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/portfolio-positions/portfolioIdentifyingAuthority
+      - https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
+    riskLevel: high
+    status: active
+    mapsToP0: PP-P0-01
+  - id: CQ-PP9
+    question: >-
+      What non-execution lifecycle changes (transfer, opening balance, corporate-action result, exercise, manual
+      adjustment) have affected a position, and what source business event drove each?
+    businessContext: Lot/position lifecycle traceability beyond execution
+    scopeConstraints:
+      - PositionChange carries the non-execution lifecycle; sourceBusinessEvent is optional
+    expectedResult: list of (change IRI, changeKind, quantity, effectiveAt, source evidence) tuples
+    queryPattern: |
+      SELECT ?change ?kind ?qty ?effective ?evidence
+      WHERE {
+        ?change a fin-portfolio:PositionChange ;
+               fin-portfolio:changeKind ?kind ;
+               fin-portfolio:changeQuantity ?qty ;
+               fin-portfolio:changeEffectiveAt ?effective ;
+               fin-portfolio:changeEvidence ?evidence .
+      }
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/portfolio-positions/PositionChange
+      - https://axiolune.ai/ontology/finance/portfolio-positions/PositionChangeKind
+      - https://axiolune.ai/ontology/finance/portfolio-positions/changeKind
+    riskLevel: medium
+    status: active
+    mapsToP0: PP-P0-04
+  - id: CQ-PP10
+    question: >-
+      What lot transformations (splits, merges, restatements, corporate-action adjustments) have occurred, and how do
+      they adjust quantity and cost basis?
+    businessContext: Lot lifecycle transformation auditability
+    expectedResult: list of (adjustment IRI, kind, factor, basis adjustment, adjusted lot) tuples
+    queryPattern: |
+      SELECT ?adj ?kind ?factor ?basisAdj ?lot
+      WHERE {
+        ?adj a fin-portfolio:LotAdjustment ;
+             fin-portfolio:adjustmentKind ?kind ;
+             fin-portfolio:adjustedLot ?lot .
+        OPTIONAL { ?adj fin-portfolio:quantityAdjustmentFactor ?factor . }
+        OPTIONAL { ?adj fin-portfolio:basisAdjustment ?basisAdj . }
+      }
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/portfolio-positions/LotAdjustment
+      - https://axiolune.ai/ontology/finance/portfolio-positions/LotAdjustmentKind
+      - https://axiolune.ai/ontology/finance/portfolio-positions/quantityAdjustmentFactor
+    riskLevel: medium
+    status: active
+    mapsToP0: PP-P0-04
+  - id: CQ-PP11
+    question: >-
+      What realized PnL has been recorded for lot closures, and how is it decomposed into realized cost basis and
+      realized proceeds?
+    businessContext: Realized gains/losses accounting
+    expectedResult: list of (realization IRI, realized quantity, cost basis, proceeds, realized PnL) tuples
+    queryPattern: |
+      SELECT ?real ?qty ?cost ?proceeds ?pnl
+      WHERE {
+        ?real a fin-portfolio:LotRealization ;
+              fin-portfolio:realizedQuantity ?qty ;
+              fin-portfolio:realizedCostBasis ?cost ;
+              fin-portfolio:realizedProceeds ?proceeds ;
+              fin-portfolio:realizedPnl ?pnl .
+      }
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/portfolio-positions/LotRealization
+      - https://axiolune.ai/ontology/finance/portfolio-positions/realizedPnl
+    riskLevel: medium
+    status: active
+    mapsToP0: PP-P0-04
+  - id: CQ-PP12
+    question: >-
+      For a reconciliation between external and execution-derived evidence, what is the comparison result, and what
+      finding and resolution (if any) does it produce?
+    businessContext: Reconciliation with explicit comparison/finding/resolution separation
+    scopeConstraints:
+      - matched is a comparison result; findings require disposition
+    expectedResult: (comparison IRI, family, result, optional finding kind, optional resolution kind)
+    queryPattern: |
+      SELECT ?cmp ?family ?result ?findingKind ?resKind
+      WHERE {
+        ?cmp a fin-portfolio:ReconciliationComparison ;
+             fin-portfolio:comparisonFamily ?family ;
+             fin-portfolio:comparisonResult ?result .
+        OPTIONAL { ?finding a fin-portfolio:PortfolioPositionReconciliationFinding ;
+                   fin-portfolio:sourceComparison ?cmp ;
+                   fin-portfolio:findingKind ?findingKind . }
+        OPTIONAL { ?res a fin-portfolio:ReconciliationResolution ;
+                   fin-portfolio:resolvedFinding ?finding ;
+                   fin-portfolio:resolutionKind ?resKind . }
+      }
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationComparison
+      - https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationComparisonResult
+      - https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationResolution
+      - https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationFindingKind
+    riskLevel: high
+    status: active
+    mapsToP0: PP-P0-05
+  - id: CQ-PP13
+    question: >-
+      When the external party reports its own cost-basis method that differs from the internal calculation definition,
+      can the reconciliation legally proceed without fabricating an internal definition for the external source?
+    businessContext: External basis method independence
+    scopeConstraints:
+      - externalBasisDefinition is optional; externalBasisMethod and externalBasisMappingStatus carry the external method
+    expectedResult: external basis observations with mapped/unknown/unmapped status
+    queryPattern: |
+      SELECT ?obs ?method ?status ?def
+      WHERE {
+        ?obs a fin-portfolio:ExternalCostBasisObservation .
+        OPTIONAL { ?obs fin-portfolio:externalBasisMethod ?method . }
+        OPTIONAL { ?obs fin-portfolio:externalBasisMappingStatus ?status . }
+        OPTIONAL { ?obs fin-portfolio:externalBasisDefinition ?def . }
+      }
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/portfolio-positions/externalBasisMethod
+      - https://axiolune.ai/ontology/finance/portfolio-positions/externalBasisMappingStatus
+      - https://axiolune.ai/ontology/finance/portfolio-positions/ExternalBasisMappingStatus
+    riskLevel: high
+    status: active
+    mapsToP0: PP-P0-05
+  - id: CQ-PP14
+    question: >-
+      What are the constituents of a portfolio, and do they include accounts, sub-portfolios, sleeves, or explicit
+      allocations?
+    businessContext: Portfolio composition beyond account aggregation
+    expectedResult: list of (constituent IRI, kind, subject) tuples
+    queryPattern: |
+      SELECT ?const ?kind ?subject
+      WHERE {
+        ?const a fin-portfolio:PortfolioConstituent ;
+               fin-portfolio:constituentKind ?kind ;
+               fin-portfolio:constituentSubject ?subject .
+      }
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioConstituent
+      - https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioConstituentKind
+      - https://axiolune.ai/ontology/finance/portfolio-positions/Sleeve
+    riskLevel: medium
+    status: active
+    mapsToP0: PP-P0-07
+  - id: CQ-PP15
+    question: >-
+      For a cross-currency FX conversion, what is the rate source, quote time, rate finality, and optional
+      cross-rate path?
+    businessContext: FX rate-application auditability for cross-currency valuation
+    expectedResult: (conversion IRI, rate source, quote time, finality, cross-rate path) tuples
+    queryPattern: |
+      SELECT ?fx ?rateSource ?quoteTime ?finality ?crossPath
+      WHERE {
+        ?fx a fin-portfolio:FXConversion .
+        OPTIONAL { ?fx fin-portfolio:rateSource ?rateSource . }
+        OPTIONAL { ?fx fin-portfolio:quoteTime ?quoteTime . }
+        OPTIONAL { ?fx fin-portfolio:rateFinality ?finality . }
+        OPTIONAL { ?fx fin-portfolio:crossRatePath ?crossPath . }
+      }
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/portfolio-positions/FXConversion
+      - https://axiolune.ai/ontology/finance/portfolio-positions/rateSource
+      - https://axiolune.ai/ontology/finance/portfolio-positions/quoteTime
+      - https://axiolune.ai/ontology/finance/portfolio-positions/rateFinality
+      - https://axiolune.ai/ontology/finance/portfolio-positions/crossRatePath
+    riskLevel: low
+    status: active
+    mapsToP1: PP-P1-3

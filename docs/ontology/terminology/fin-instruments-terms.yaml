@@ -4,16 +4,18 @@ cards:
   - term: FinancialInstrument
     canonicalIri: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
     definition: >-
-      written contract that gives rise to both a financial asset of one entity and a financial liability of another
-      entity, as defined in IAS 32
-    genus: written contract
+      stable economic or legal instrument identity representing a financial contract
+      that can be issued, quoted, listed, traded, or valued, independent of any
+      particular listing
+    genus: instrument identity
     differentia:
-      - gives rise to a financial asset and a financial liability
-      - identified by a financial instrument identifier (e.g. ISIN)
-      - may be negotiable or non-negotiable
+      - represents a stable financial contract identity
+      - identified by a governed identifier (e.g., ISIN)
+      - identity is independent of any particular listing or venue
     excludes:
       - physical commodities (not contracts)
       - services (not contracts)
+      - a specific listing (venue-specific, not the instrument itself)
     sources:
       - reference: fibo-local-evidence
         locator: FIBO FBC/FinancialInstruments/FinancialInstruments/FinancialInstrument
@@ -22,14 +24,15 @@ cards:
     owner: axiolune-m2-team
   - term: Security
     canonicalIri: https://axiolune.ai/ontology/finance/instruments/Security
-    definition: financial instrument that can be bought or sold, as defined in the Securities Exchange Act 1934
+    definition: >-
+      financial instrument that is a security in the legal or regulatory sense,
+      including private placements, OTC, unlisted, and suspended securities
     genus: financial instrument
     differentia:
-      - can be bought or sold
-      - is legally recorded in a jurisdiction
+      - is a security in the legal or regulatory sense
+      - may or may not be admitted to trading on an exchange
     excludes:
-      - non-tradable contracts
-      - internal agreements
+      - non-security contracts (e.g., internal agreements)
     sources:
       - reference: fibo-local-evidence
         locator: FIBO FBC/FinancialInstruments/FinancialInstruments/Security
@@ -38,11 +41,14 @@ cards:
     owner: axiolune-m2-team
   - term: EquitySecurity
     canonicalIri: https://axiolune.ai/ontology/finance/instruments/EquitySecurity
-    definition: financial instrument representing an ownership interest in an entity or pool of assets, as defined in ISO 10962
+    definition: >-
+      security representing an ownership interest in an issuing entity or a pool of
+      assets, which may or may not confer voting or dividend rights depending on the
+      share class
     genus: security
     differentia:
-      - represents ownership interest
-      - confers voting and dividend rights
+      - represents an ownership interest
+      - rights (voting, dividend, liquidation) vary by share class
     excludes:
       - debt instruments (represent claims, not ownership)
       - derivatives (derive from underlying, not direct ownership)
@@ -55,56 +61,82 @@ cards:
   - term: InstrumentListing
     canonicalIri: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
     definition: >-
-      catalog entry for a securities offering managed by an exchange that provides the terms under which that security
-      is made available on that exchange
-    genus: catalog entry
+      versioned object recording the admission of a financial instrument to trading on
+      a specific trading facility, under a venue-listing identifier scheme and value,
+      with a business validity interval
+    genus: listing record
     differentia:
-      - managed by a specific exchange
-      - provides the terms for trading on that exchange
-      - has a listing date and optional delisting date
-      - may have tick size, lot size, and currency
+      - admits an instrument to a specific trading facility
+      - has a venue-listing identifier scheme and value
+      - has a business validity interval (from/to)
+      - is distinct from the financial instrument itself
     excludes:
-      - the financial instrument itself (a listing is the venue-specific admission, not the instrument)
-      - a market price observation
+      - the financial instrument itself (a listing is venue-specific admission)
+      - tick size or lot size (owned by fin-market-rules)
+      - a market price observation (owned by fin-market-data)
     sources:
       - reference: fibo-local-evidence
         locator: FIBO SEC/Securities/SecuritiesListings/Listing
     candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
-  - term: Issuer
-    canonicalIri: https://axiolune.ai/ontology/finance/instruments/Issuer
-    definition: role of a party that issues or proposes to issue in a formal filing one or more financial instruments
-    genus: role
+  - term: InstrumentIssuance
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/InstrumentIssuance
+    definition: >-
+      temporal association fact that links an exact Security version to its exact
+      issuer LegalEntity version, recording the historical issuance by which a security
+      is brought into existence
+    genus: association fact
     differentia:
-      - played by a party (typically a legal entity)
-      - issues financial instruments
-      - is the counterpart of the isIssuedBy relation
+      - links a Security to its issuer LegalEntity
+      - is a temporal, provenanced fact, not a bare attribute
+      - optionally links to an originating SecurityOffering
     excludes:
-      - market makers (facilitate trading, do not issue)
-      - brokers (intermediaries, do not issue)
+      - the issuer entity itself (owned by fin-foundation as LegalEntity)
+      - a listing (admission to trading, not creation)
     sources:
-      - reference: fibo-local-evidence
-        locator: FIBO FBC/FinancialInstruments/FinancialInstruments/Issuer; FND/Relations/Relations/isIssuedBy
+      - reference: axiolune-m2-plan
+        locator: M2-PLAN §5.2 fin-instruments core concept
+    candidateM3Type: AssociationTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: DirectUnitPriceQuotationContract
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+    definition: >-
+      versioned quotation application class expressing a quotation contract that prices
+      a single controlled quantity unit directly in a given quote currency, as a
+      subtype of the abstract QuotationConvention
+    genus: quotation convention
+    differentia:
+      - prices one denominator quantity unit directly in quote currency
+      - contract multiplier is constrained to one
+      - is a subtype of QuotationConvention
+    excludes:
+      - yield, par, clean/dirty, accrued, inverse, notional-scaled, and index-point
+        quotations (future QuotationConvention subtypes)
+    sources:
+      - reference: axiolune-m2-plan
+        locator: M2-PLAN §5.2 fin-instruments quotation contract
     candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
-  - term: SecuritiesOffering
-    canonicalIri: https://axiolune.ai/ontology/finance/instruments/SecuritiesOffering
+  - term: isAdmittedToTradingOn
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/isAdmittedToTradingOn
     definition: >-
-      offering of a security (or securities) for sale; distinct from the instrument contract and from an exchange
-      listing
-    genus: offering
+      derived convenience relation from a FinancialInstrument to a TradingFacility,
+      holding when the instrument has at least one point-in-time-eligible active
+      listing at the given as-of time; not stored as an independent truth
+    genus: derived relation
     differentia:
-      - an offering of securities for sale to investors
-      - distinct from the financial instrument contract
-      - distinct from an exchange listing (a listing lists an offering)
+      - derived from active, PIT-eligible InstrumentListings
+      - indicates admission to trading, not actual tradeability
+      - never stored as an independent truth
     excludes:
-      - the instrument contract itself
-      - an exchange listing
+      - actual tradeability (depends on segment, trading-status, calendar, market rules)
+      - a stored relation (this is always derived)
     sources:
-      - reference: fibo-local-evidence
-        locator: FIBO SEC/Securities/SecuritiesIssuance/SecuritiesOffering
-    candidateM3Type: ObjectTypeDefinition
+      - reference: axiolune-m2-plan
+        locator: M2-PLAN §5.2 fin-instruments derived relations
+    candidateM3Type: RelationTypeDefinition
     status: accepted
     owner: axiolune-m2-team

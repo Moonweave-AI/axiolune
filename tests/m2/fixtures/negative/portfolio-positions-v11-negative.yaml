@@ -1,0 +1,148 @@
+# Portfolio Positions v1.1.0 (ADR-029) negative staging fixtures.
+# Structural negatives exercising the v1.1.0 contracts. Each fixture states an
+# expectedViolation so validate-pit.cjs can confirm rejection. These use the
+# instances: dialect. Full SHACL enforcement via the generic fixture-to-TTL
+# converter is pending the runner's object-value handling; structural/
+# cardinality enforcement is verified by validate-m2-core --strict.
+
+fixtures:
+  # --- PositionChange missing changeKind (PositionChangeContract) ---
+  - id: pp-v11-neg-change-missing-kind
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/PositionChange
+    expectedResult: rejected
+    expectedViolation:
+      constraint: https://axiolune.ai/ontology/finance/portfolio-positions/PositionChangeContract
+      component: MinCount
+      message: changeKind is required
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-neg-change-no-kind/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/PositionChange
+        changeAccount: https://axiolune.ai/accounts/acct-001
+        changeInstrument: https://axiolune.ai/instruments/US0378331005
+        changeQuantity: '50'
+        changeEffectiveAt: '2026-07-15T10:00:00Z'
+        changeEvidence: https://axiolune.ai/evidence/transfer-note-002
+        validFrom: '2026-07-15T10:00:00Z'
+        knowledgeFrom: '2026-07-15T10:00:01Z'
+        availableFrom: '2026-07-15T10:00:02Z'
+
+  # --- LotAdjustment missing sourceLot on merge (LotAdjustmentContract) ---
+  - id: pp-v11-neg-merge-missing-source
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/LotAdjustment
+    expectedResult: rejected
+    expectedViolation:
+      constraint: https://axiolune.ai/ontology/finance/portfolio-positions/LotAdjustmentContract
+      component: Contract
+      message: merge requires at least one sourceLot
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-neg-merge-no-source/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/LotAdjustment
+        adjustedLot: https://axiolune.ai/data/portfolio/v11-lot-merged/version/v1
+        adjustmentChange: https://axiolune.ai/data/portfolio/v11-change-merge-1/version/v1
+        adjustmentKind: https://axiolune.ai/ontology/finance/portfolio-positions/LotAdjustmentKind/value/merge
+        validFrom: '2026-06-20T00:00:00Z'
+        knowledgeFrom: '2026-06-20T00:00:01Z'
+        availableFrom: '2026-06-20T00:00:02Z'
+
+  # --- ReconciliationComparison both families (ReconciliationComparisonContract) ---
+  - id: pp-v11-neg-comparison-both-families
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationComparison
+    expectedResult: rejected
+    expectedViolation:
+      constraint: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationComparisonContract
+      component: Contract
+      message: exactly one comparison family is present
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-neg-comparison-both/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationComparison
+        comparisonFamily: https://axiolune.ai/ontology/finance/portfolio-positions/ComparisonFamily/value/quantity
+        comparisonResult: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationComparisonResult/value/break
+        comparisonProfileRef: https://axiolune.ai/profiles/recon-both-v1
+        reconciliationSubjectDigest: 'sha256:eee123def4567890123456789012345678901234567890123456789012345678ij'
+        comparedExternalPositionSnapshot: https://axiolune.ai/data/portfolio/v11-snap-ext-AAPL/version/v1
+        comparedDerivedSnapshot: https://axiolune.ai/data/portfolio/v11-snap-AAPL-derived/version/v1
+        comparedExternalBasis: https://axiolune.ai/data/portfolio/v11-ext-basis-AAPL/version/v1
+        comparedDerivedBasis: https://axiolune.ai/data/portfolio/v11-lot-state-AAPL/version/v1
+        validFrom: '2026-08-01T17:00:00Z'
+        knowledgeFrom: '2026-08-01T17:00:01Z'
+        availableFrom: '2026-08-01T17:00:02Z'
+
+  # --- ReconciliationResolution missing resolvedFinding (ReconciliationResolutionContract) ---
+  - id: pp-v11-neg-resolution-missing-finding
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationResolution
+    expectedResult: rejected
+    expectedViolation:
+      constraint: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationResolutionContract
+      component: MinCount
+      message: resolvedFinding is required
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-neg-resolution-no-finding/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationResolution
+        resolvingParty: https://axiolune.ai/parties/ops-recon-team
+        resolutionKind: https://axiolune.ai/ontology/finance/portfolio-positions/ResolutionKind/value/corrected
+        resolutionEvidence: https://axiolune.ai/evidence/recon-resolution-002
+        validFrom: '2026-08-01T18:00:00Z'
+        knowledgeFrom: '2026-08-01T18:00:01Z'
+        availableFrom: '2026-08-01T18:00:02Z'
+
+  # --- PortfolioValuationSummary missing coverageDigest (PortfolioValuationSummaryContract) ---
+  - id: pp-v11-neg-summary-missing-digest
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuationSummary
+    expectedResult: rejected
+    expectedViolation:
+      constraint: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuationSummaryContract
+      component: MinCount
+      message: coverageDigest is required
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-neg-summary-no-digest/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuationSummary
+        valuedPortfolioRun: https://axiolune.ai/data/portfolio/v11-valuation-run-2/version/v1
+        totalMarketValue: '150000.00 USD'
+        lineCount: '3'
+        coverageStatus: https://axiolune.ai/ontology/finance/portfolio-positions/CoverageStatus/value/complete
+        validFrom: '2026-08-01T16:30:00Z'
+        knowledgeFrom: '2026-08-01T16:30:01Z'
+        availableFrom: '2026-08-01T16:30:02Z'
+
+  # --- PortfolioConstituent missing constituentKind (PortfolioConstituentContract) ---
+  - id: pp-v11-neg-constituent-missing-kind
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioConstituent
+    expectedResult: rejected
+    expectedViolation:
+      constraint: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioConstituentContract
+      component: MinCount
+      message: constituentKind is required
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-neg-constituent-no-kind/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioConstituent
+        constituentPortfolio: https://axiolune.ai/data/portfolio/v11-portfolio-A/version/v1
+        constituentSubject: https://axiolune.ai/data/portfolio/v11-sleeve-equity/version/v1
+        constituentAuthority: https://axiolune.ai/parties/asset-manager-alpha
+        membershipId: CONST-NO-KIND-001
+        authorityScope: equity-sleeve
+        approvalRef: https://axiolune.ai/approvals/sleeve-approval-002
+        approvalDigest: 'sha256:fff123def4567890123456789012345678901234567890123456789012345678kl'
+        validFrom: '2026-01-01T00:00:00Z'
+        knowledgeFrom: '2026-01-01T00:00:01Z'
+        availableFrom: '2026-01-01T00:00:02Z'
+
+  # --- PositionChange zero quantity (PositionChangeContract: changeQuantity.value != 0) ---
+  - id: pp-v11-neg-change-zero-quantity
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/PositionChange
+    expectedResult: rejected
+    expectedViolation:
+      constraint: https://axiolune.ai/ontology/finance/portfolio-positions/PositionChangeContract
+      component: Contract
+      message: changeQuantity must be non-zero
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-neg-change-zero/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/PositionChange
+        changeAccount: https://axiolune.ai/accounts/acct-001
+        changeInstrument: https://axiolune.ai/instruments/US0378331005
+        changeKind: https://axiolune.ai/ontology/finance/portfolio-positions/PositionChangeKind/value/transfer
+        changeQuantity: '0'
+        changeEffectiveAt: '2026-07-15T10:00:00Z'
+        changeEvidence: https://axiolune.ai/evidence/transfer-note-zero
+        validFrom: '2026-07-15T10:00:00Z'
+        knowledgeFrom: '2026-07-15T10:00:01Z'
+        availableFrom: '2026-07-15T10:00:02Z'

@@ -1,0 +1,207 @@
+module:
+  moduleIri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/
+  baseIri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/
+  preferredPrefix: fibo-sec-secsec
+  version: '20251201'
+  label: Securities Listings Ontology
+  definition: This ontology defines the fundamental concepts for listing securities, such as registered, listed, and exchange-traded
+    security, the notion of a securities exchange, and related services.
+  imports:
+  - moduleIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/
+    version: external
+  - moduleIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/InstrumentPricing/
+    version: external
+  - moduleIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/BusinessRegistries/
+    version: external
+  - moduleIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/Markets/
+    version: external
+  - moduleIri: https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/
+    version: external
+  - moduleIri: https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/
+    version: external
+  - moduleIri: https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/
+    version: external
+  - moduleIri: https://spec.edmcouncil.org/fibo/ontology/FND/ProductsAndServices/ProductsAndServices/
+    version: external
+  - moduleIri: https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/
+    version: external
+  - moduleIri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesIssuance/
+    version: external
+  - moduleIri: https://www.omg.org/spec/Commons/AnnotationVocabulary/
+    version: external
+  - moduleIri: https://www.omg.org/spec/Commons/DatesAndTimes/
+    version: external
+  - moduleIri: https://www.omg.org/spec/Commons/Organizations/
+    version: external
+  - moduleIri: https://www.omg.org/spec/Commons/RegistrationAuthorities/
+    version: external
+  - moduleIri: https://www.omg.org/spec/Commons/SitesAndFacilities/
+    version: external
+  exports: []
+  status: reference
+  governance:
+    ownerRef: urn:axiolune:authority:fibo-edmcouncil
+    status: reference
+  sourceArtifact: SecuritiesListings.rdf
+  sourceDigest: sha256:be2c77cb53ffbf2451b72c395587f08ca83f7f000f959b8c60b821421653a700
+  sourcePath: SEC/Securities/SecuritiesListings.rdf
+  fiboDomain: SEC
+domain:
+  objectTypes:
+    Exchange:
+      iri: https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/Markets/Exchange
+      namespace: fibo-sec-secsec
+      localName: Exchange
+      label: Exchange
+      definition: ''
+      superTypes: []
+      attributeUses: []
+      patternBindings: []
+    ListedSecurity:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/ListedSecurity
+      namespace: fibo-sec-secsec
+      localName: ListedSecurity
+      label: listed security
+      definition: registered security listed on at least one exchange
+      superTypes:
+      - https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/RegisteredSecurity
+      attributeUses: []
+      patternBindings: []
+    Listing:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/Listing
+      namespace: fibo-sec-secsec
+      localName: Listing
+      label: listing
+      definition: catalog entry for a securities offering managed by an exchange that provides the terms under which that
+        security is made available on that exchange
+      superTypes: []
+      attributeUses: []
+      patternBindings: []
+    ListingService:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/ListingService
+      namespace: fibo-sec-secsec
+      localName: ListingService
+      label: listing service
+      definition: service provided by an exchange to facilitate securities trading
+      superTypes:
+      - https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/FinancialService
+      attributeUses: []
+      patternBindings: []
+    RegisteredSecurity:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/RegisteredSecurity
+      namespace: fibo-sec-secsec
+      localName: RegisteredSecurity
+      label: registered security
+      definition: security that is registered with some registration authority
+      superTypes:
+      - https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/Security
+      attributeUses: []
+      patternBindings: []
+  associationTypes: {}
+  relationTypes:
+    hasHomeExchange:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/hasHomeExchange
+      namespace: fibo-sec-secsec
+      localName: hasHomeExchange
+      label: has home exchange
+      definition: indicates the exchange that is considered the primary market for a security; typically, but not always,
+        in the country in which the security was originally issued
+      domain: ''
+      range: https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/Markets/Exchange
+      inverseOf: ''
+      characteristics: []
+    hasLastTradingDateTime:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/hasLastTradingDateTime
+      namespace: fibo-sec-secsec
+      localName: hasLastTradingDateTime
+      label: has last trading date and time
+      definition: specifies the last date and time that the security was traded on the exchange
+      domain: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/Listing
+      range: https://www.omg.org/spec/Commons/DatesAndTimes/DateTime
+      inverseOf: ''
+      characteristics: []
+    hasOriginalPlaceOfListing:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/hasOriginalPlaceOfListing
+      namespace: fibo-sec-secsec
+      localName: hasOriginalPlaceOfListing
+      label: has original place of listing
+      definition: indicates the original exchange that listed the security
+      domain: ''
+      range: https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/Markets/Exchange
+      inverseOf: ''
+      characteristics: []
+    hasTickSize:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/hasTickSize
+      namespace: fibo-sec-secsec
+      localName: hasTickSize
+      label: has tick size
+      definition: specifies a minimum price movement for the security with respect to an exchange
+      domain: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/Listing
+      range: https://spec.edmcouncil.org/fibo/ontology/FND/Accounting/CurrencyAmount/MonetaryAmount
+      inverseOf: ''
+      characteristics: []
+    isListedVia:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/isListedVia
+      namespace: fibo-sec-secsec
+      localName: isListedVia
+      label: is listed via
+      definition: identifies the service responsible for listing the security
+      domain: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/ListedSecurity
+      range: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/Listing
+      inverseOf: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/lists
+      characteristics: []
+    isTradedOn:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/isTradedOn
+      namespace: fibo-sec-secsec
+      localName: isTradedOn
+      label: is traded on
+      definition: identifies the trading facility on which the security is traded
+      domain: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/ListedSecurity
+      range: https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/Markets/Exchange
+      inverseOf: ''
+      characteristics: []
+    lists:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/lists
+      namespace: fibo-sec-secsec
+      localName: lists
+      label: lists
+      definition: relates a given exchange-specific security listing to its issue
+      domain: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/Listing
+      range: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/ListedSecurity
+      inverseOf: ''
+      characteristics: []
+  attributeTypes:
+    hasDelistingDate:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/hasDelistingDate
+      namespace: fibo-sec-secsec
+      localName: hasDelistingDate
+      label: has delisting date
+      definition: specifies the date set by the exchange for delisting a security
+      valueType: https://www.omg.org/spec/Commons/DatesAndTimes/CombinedDateTime
+      defaultCardinality:
+        minCount: 0
+        maxCount: null
+    hasListingDate:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/hasListingDate
+      namespace: fibo-sec-secsec
+      localName: hasListingDate
+      label: has listing date
+      definition: indicates the date on which a security is listed
+      valueType: https://www.omg.org/spec/Commons/DatesAndTimes/CombinedDateTime
+      defaultCardinality:
+        minCount: 0
+        maxCount: null
+    isSeasoned:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/isSeasoned
+      namespace: fibo-sec-secsec
+      localName: isSeasoned
+      label: is seasoned
+      definition: indicates that the security has been publicly traded long enough to eliminate any short-term volume volatility
+        from its initial public offering
+      valueType: boolean
+      defaultCardinality:
+        minCount: 0
+        maxCount: null
+  identifierTypes: {}
+  codeLists: {}
+  constraints: {}

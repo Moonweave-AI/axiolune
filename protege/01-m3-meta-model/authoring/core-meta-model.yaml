@@ -1,0 +1,1554 @@
+module:
+  moduleIri: https://axiolune.ai/ontology/meta/core
+  baseIri: https://axiolune.ai/ontology/meta/core/
+  preferredPrefix: ax-meta
+  version: 0.6.0
+  imports: []
+  exports: []
+MetaModel:
+  version: 0.6.0
+  description: Semantic core meta-model defining ontology structure, types, and alignment
+  layer: 1
+  changes:
+    - "v0.6.0: Added an explicit boolean abstract flag for non-instantiable
+      ObjectTypeDefinition supertypes"
+    - "v0.6.0: Corrected CodeList-valued AttributeType projection to
+      owl:ObjectProperty and defined sourceEvidenceRef as a public annotation
+      property"
+    - "v0.6.0: Added strict CodeValueDefinition and evidence-locked code-list
+      members"
+    - "v0.6.0: Added AssociationTypeDefinition endpoints, Quantity rounding
+      projection, and removed availableAt"
+    - "v0.4.0: Added availableFrom/availableTo availability-axis attributes
+      (ADR-012)"
+    - "v0.4.0: Deprecated availableAt single-instant attribute (removed in
+      0.6.0)"
+    - "v0.3.0: Global rename to *Definition suffix (ADR-004)"
+    - "v0.3.0: Updated module system with moduleIri, baseIri, preferredPrefix"
+    - "v0.3.0: Added LocalizedTextDefinition"
+  OntologyModuleDefinition:
+    definition: a named collection of ontology elements with versioning and
+      dependency management
+    owlProjection:
+      kind: ontology
+    note: Updated in ADR-004 to support version-locked imports and symbol resolution
+    requiredFields:
+      moduleIri:
+        type: iri
+        unique: true
+        description: globally unique IRI for this module (identifies the module itself)
+        example: https://axiolune.ai/ontology/finance/instruments
+        note: Module IRI is distinct from baseIri
+      baseIri:
+        type: iri
+        required: true
+        description: base IRI for concepts defined in this module (used for symbol
+          resolution)
+        example: https://axiolune.ai/ontology/finance/instruments/
+        note: Note trailing slash; concatenated with localName to form concept IRIs
+      preferredPrefix:
+        type: string
+        unique: true
+        required: true
+        description: short prefix for this module (used in prefix:localName references)
+        example: fin-inst
+        pattern: ^[a-z][a-z0-9-]*$
+      version:
+        type: string
+        required: true
+        pattern: ^\d+\.\d+\.\d+$
+        example: 1.0.0
+        note: Semantic versioning
+      label:
+        type: string
+        required: true
+        example: Financial Instruments Ontology
+      definition:
+        type: string
+        required: true
+        constraint: ISO 704 genus-differentia structure
+    optionalFields:
+      imports:
+        type: list[ModuleImportDefinition]
+        description: version-locked imports of other modules
+      exports:
+        type: list[iri]
+        description: explicitly exported symbol IRIs (empty list = export all)
+      status:
+        type: enum
+        values:
+          - draft
+          - review
+          - approved
+          - deprecated
+        default: draft
+      governance:
+        type: GovernanceMetadata
+        description: owner, approvers, change history
+  ModuleImportDefinition:
+    definition: a version-locked import of another ontology module
+    note: Ensures deterministic symbol resolution and prevents breaking changes from
+      implicit updates
+    requiredFields:
+      moduleIri:
+        type: iri
+        required: true
+        description: IRI of the imported module
+        example: https://axiolune.ai/ontology/finance/core
+      version:
+        type: string
+        required: true
+        pattern: ^\d+\.\d+\.\d+$
+        description: locked version of the imported module
+        note: Prevents implicit breaking changes
+      artifactDigest:
+        type: string
+        required: true
+        pattern: ^sha256:[0-9a-f]{64}$
+        description: SHA-256 digest of the imported module file
+        note: Ensures integrity and enables reproducible builds
+      importMode:
+        type: enum
+        required: true
+        values:
+          - All
+          - Selective
+        description: All = import all exported symbols; Selective = import only
+          specified symbols
+    optionalFields:
+      importedSymbols:
+        type: list[SymbolImportSpec]
+        description: symbols to import (required if importMode=Selective)
+  SymbolImportSpec:
+    definition: specification of a single imported symbol with optional local alias
+    requiredFields:
+      symbolIri:
+        type: iri
+        required: true
+        description: complete IRI of the imported symbol
+        example: https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/isIssuedBy
+    optionalFields:
+      localAlias:
+        type: string
+        minLength: 1
+        description: optional non-empty Unicode NFC local alias for this symbol
+        example: isIssuedBy
+        note: Allows 'fibo:FinancialInstrument as Instrument' style imports
+  LocalizedTextDefinition:
+    definition: a value object for multi-language text with language tags
+    kind: StructuredValueType
+    owlProjection:
+      kind: rdfLangString
+      note: Projects to rdf:langString with @en, @zh, etc. language tags
+    requiredFields:
+      language:
+        type: string
+        required: true
+        pattern: ^[a-z]{2}(-[A-Z]{2})?$
+        description: language tag (ISO 639-1, optional ISO 3166-1)
+        example:
+          - en
+          - zh-CN
+          - ja
+          - en-US
+      text:
+        type: string
+        required: true
+        description: text content in the specified language
+    optionalFields:
+      defaultLanguage:
+        type: string
+        default: en
+        description: fallback language if requested language not available
+  ValueType:
+    definition: a meta-classifier for primitive value types used in attributes
+    owlProjection:
+      kind: datatype
+    builtinTypes:
+      - id: string
+        definition: Unicode character sequence
+        owlMapping: xsd:string
+      - id: decimal
+        definition: arbitrary-precision decimal number
+        owlMapping: xsd:decimal
+      - id: integer
+        definition: whole number
+        owlMapping: xsd:integer
+      - id: boolean
+        definition: truth value (true or false)
+        owlMapping: xsd:boolean
+      - id: date
+        definition: calendar date without time component
+        owlMapping: xsd:date
+      - id: instant
+        definition: point in time with timezone
+        owlMapping: xsd:dateTime
+      - id: duration
+        definition: time interval
+        owlMapping: xsd:duration
+      - id: uri
+        definition: uniform resource identifier
+        owlMapping: xsd:anyURI
+    note: Domain-specific types (ISIN, MoneyTypeDefinition, QuantityTypeDefinition)
+      defined as IdentifierTypeDefinition, MoneyTypeDefinition,
+      QuantityTypeDefinition
+  IdentifierTypeDefinition:
+    definition: a meta-classifier for standard identifiers with validation rules and
+      issuing authorities
+    owlProjection:
+      kind: datatype
+    requiredFields:
+      iri:
+        type: uri
+        unique: true
+      namespace:
+        type: string
+      localName:
+        type: string
+      label:
+        type: string
+        required: true
+      definition:
+        type: string
+        required: true
+        iso704: true
+      baseType:
+        type: ValueType
+        default: string
+      standard:
+        type: string
+        description: governing standard
+        example: ISO 6166
+      validatorRef:
+        type: uri
+        description: reference to ConstraintDefinition IRI
+    optionalFields:
+      issuingAuthority:
+        type: string
+        description: organization responsible for identifier issuance
+        example: ANNA (Association of National Numbering Agencies)
+      alignments:
+        type: list[Alignment]
+  MoneyTypeDefinition:
+    definition: a meta-classifier for monetary amounts with currency and scale
+    owlProjection:
+      kind: structuredValueClass
+      classIri: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      properties:
+        - predicateIri: https://axiolune.ai/ontology/meta/core/properties/hasAmount
+          range: xsd:decimal
+        - predicateIri: https://axiolune.ai/ontology/meta/core/properties/hasCurrency
+          range: xsd:string
+          pattern: ^[A-Z]{3}$
+        - predicateIri: https://axiolune.ai/ontology/meta/core/properties/hasScale
+          range: xsd:integer
+    note: MUST NOT use generic number or decimal for financial amounts. Projected as
+      a structured value class (not a simple datatype) to preserve currency,
+      amount, and scale independence.
+    structure:
+      amount:
+        type: decimal
+        required: true
+        description: numeric value
+      currency:
+        type: string
+        required: true
+        description: ISO 4217 currency code (3-letter code)
+        pattern: ^[A-Z]{3}$
+        example: USD
+      scale:
+        type: integer
+        default: 2
+        description: decimal places for rounding
+  QuantityTypeDefinition:
+    definition: a meta-classifier for measurements with units and precision
+    owlProjection:
+      kind: structuredValueClass
+      classIri: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      properties:
+        - predicateIri: https://axiolune.ai/ontology/meta/core/properties/hasNumericValue
+          range: xsd:decimal
+        - predicateIri: https://axiolune.ai/ontology/meta/core/properties/hasUnit
+          range: xsd:string
+        - predicateIri: https://axiolune.ai/ontology/meta/core/properties/hasPrecision
+          range: xsd:integer
+        - predicateIri: https://axiolune.ai/ontology/meta/core/properties/hasRounding
+          range: xsd:string
+          values:
+            - floor
+            - ceiling
+            - half-up
+            - half-even
+          default: half-even
+    note: Projected as a structured value class to preserve value, unit, precision,
+      and rounding independently. Unit should be a URI reference to a unit
+      ontology (e.g., QUDT) in production.
+    structure:
+      value:
+        type: decimal
+        required: true
+      unit:
+        type: string
+        required: true
+        description: unit of measurement (shares, contracts, kg, m³) - should be URI
+          reference in production
+        example: shares
+        note: In production, use controlled unit vocabulary or QUDT unit URIs
+      precision:
+        type: integer
+        description: significant digits or decimal places
+      rounding:
+        type: enum
+        values:
+          - floor
+          - ceiling
+          - half-up
+          - half-even
+        default: half-even
+  CodeListTypeDefinition:
+    definition: a meta-classifier for controlled vocabularies with versioning and
+      maintenance
+    owlProjection:
+      kind: class
+      stereotype: enumeration
+    requiredFields:
+      iri:
+        type: uri
+        unique: true
+      namespace:
+        type: string
+      localName:
+        type: string
+      label:
+        type: string
+        required: true
+      definition:
+        type: string
+        required: true
+      vocabulary:
+        type: string
+        description: name of the code list
+        example: ISO 10383 Market Identifier Codes
+      version:
+        type: string
+        required: true
+        example: 2026-Q1
+      maintainer:
+        type: string
+        description: organization maintaining the code list
+      sourceEvidenceRef:
+        type: uri
+        required: true
+        description: absolute IRI of the uniquely locked reference record that governs
+          this code-list snapshot
+    optionalFields:
+      values:
+        type: list[CodeValueDefinition]
+        description: enumerated values
+      alignments:
+        type: list[Alignment]
+  CodeValueDefinition:
+    definition: a stable member of one versioned CodeListTypeDefinition, identified
+      by an IRI and canonical notation
+    owlProjection:
+      kind: namedIndividual
+    requiredFields:
+      iri:
+        type: uri
+        unique: true
+      notation:
+        type: string
+        required: true
+      label:
+        type: string
+        required: true
+      definition:
+        type: string
+        required: true
+    optionalFields:
+      deprecated:
+        type: boolean
+        default: false
+      replacedBy:
+        type: uri
+      sourceEvidenceRef:
+        type: uri
+        description: optional evidence narrowing within the containing code-list snapshot
+  ObjectTypeDefinition:
+    definition: a meta-classifier that defines domain entity types with identity,
+      properties, and constraints
+    owlProjection:
+      kind: class
+    requiredFields:
+      iri:
+        type: uri
+        unique: true
+        constraint: "globally unique across all namespaces (FIBO hygiene rule #1)"
+        example: https://axiolune.ai/ontology/meta/core/finance/Equity
+        note: "IRI namespace strategy per ADR-002 (Accepted): CURIE prefixes ax-meta,
+          ax-pattern, fin are reserved; absolute IRIs are canonical, CURIEs are
+          convenience aliases expanded by the registry"
+      namespace:
+        type: string
+        required: true
+        description: module namespace prefix
+        example: fin
+      localName:
+        type: string
+        required: true
+        description: name within namespace
+        example: Equity
+        constraint: unique within namespace
+      label:
+        type: string
+        required: true
+        description: human-readable name
+        example: Equity Security
+      definition:
+        type: string
+        required: true
+        constraint: "ISO 704 genus-differentia structure: genus (broader class) +
+          differentia (distinguishing characteristics)"
+        example: financial instrument that represents an ownership position in a
+          publicly-traded corporation
+    optionalFields:
+      superTypes:
+        type: list[uri]
+        description: semantic parent classes (multiple inheritance for true semantic
+          subsumption)
+        example:
+          - fin:Instrument
+          - fin:TradableAsset
+        note: Replaces single baseClass; represents true semantic inheritance
+      attributeUses:
+        type: list[AttributeUse]
+        description: attributes applied to this type with contextual constraints
+      patternBindings:
+        type: list[PatternBinding]
+        description: cross-domain patterns bound to this type
+        example:
+          - pattern: fin:TemporalFact
+          - pattern: fin:ProvenancedFact
+      constraints:
+        type: list[ConstraintBinding]
+        description: validation rules applied to this type
+      alignments:
+        type: list[Alignment]
+        description: mappings to external ontologies (FIBO, industry standards)
+      governance:
+        type: GovernanceMetadata
+      abstract:
+        type: boolean
+        default: false
+        description: true only for a non-instantiable semantic supertype; abstract types
+          do not receive generated logical-identity companion classes
+  AttributeTypeDefinition:
+    definition: a meta-classifier for typed properties that attach literal values or
+      structured value objects to entities
+    owlProjection:
+      note: "Projection kind depends on valueType category: primitives and
+        IdentifierTypeDefinition project to datatype properties;
+        CodeListTypeDefinition and structured value types project to object
+        properties"
+      rules:
+        - IF valueType references a primitive (string, integer, decimal,
+          boolean, date, instant, duration, uri) THEN owl:DatatypeProperty
+        - IF valueType references IdentifierTypeDefinition THEN
+          owl:DatatypeProperty with range = identifier datatype IRI
+        - IF valueType references CodeListTypeDefinition THEN owl:ObjectProperty
+          with range = code-list class IRI
+        - IF valueType references MoneyTypeDefinition, QuantityTypeDefinition,
+          or other StructuredValueType THEN owl:ObjectProperty with range =
+          structured value class IRI
+    note: Renamed from PropertyType to clarify it represents literal-valued
+      attributes, not object relations. OWL projection is now conditional based
+      on valueType complexity.
+    requiredFields:
+      iri:
+        type: uri
+        unique: true
+      namespace:
+        type: string
+        required: true
+      localName:
+        type: string
+        required: true
+      label:
+        type: string
+        required: true
+        example: International Securities Identification Number
+      definition:
+        type: string
+        required: true
+        iso704: true
+        example: unique identifier for securities that conforms to ISO 6166 standard
+      valueType:
+        type: string
+        required: true
+        description: reference to ValueType, IdentifierTypeDefinition,
+          MoneyTypeDefinition, QuantityTypeDefinition, CodeListTypeDefinition,
+          or other structured value type
+        example: fin:ISIN
+        note: "Determines OWL projection: primitives and identifiers → datatypeProperty;
+          code lists and structured values → objectProperty"
+    optionalFields:
+      owlProjectionOverride:
+        type: enum
+        values:
+          - datatypeProperty
+          - objectProperty
+          - annotationProperty
+        description: explicit override of automatic OWL projection (use sparingly)
+        note: Only needed for edge cases where automatic projection is incorrect
+      defaultCardinality:
+        minCount:
+          type: integer
+          default: 0
+          description: 0=optional, 1=required
+        maxCount:
+          type: integer
+          default: 1
+          description: 1=single-valued, null=unbounded
+        note: Default cardinality; can be overridden in AttributeUse
+      enumValues:
+        type: list[string]
+        description: allowed values for enum types
+        example:
+          - BUY
+          - SELL
+      pattern:
+        type: string
+        description: regex validation pattern
+        example: "[A-Z]{2}[A-Z0-9]{9}[0-9]"
+      unit:
+        type: string
+        description: physical or financial unit for numeric types
+        example: USD, shares, bps
+      alignments:
+        type: list[Alignment]
+        description: evidence-locked external mappings; every authored row must satisfy
+          the complete Alignment contract
+    examples:
+      - description: Simple datatype property
+        iri: fin:hasISIN
+        valueType: fin:ISINType
+        owlProjection: owl:DatatypeProperty with range xsd:string + pattern constraint
+      - description: Structured value object property
+        iri: fin:quotedPrice
+        valueType: fin:MoneyTypeDefinition
+        owlProjection: owl:ObjectProperty with range fin:MonetaryAmount (class with
+          hasAmount, hasCurrency, hasScale properties)
+      - description: Code-list object property
+        iri: fin:hasStatus
+        valueType: fin:StatusCodeList
+        owlProjection: owl:ObjectProperty with range fin:StatusCodeList; values are
+          stable member IRIs
+  sourceEvidenceRef:
+    iri: https://axiolune.ai/ontology/meta/core/annotations/sourceEvidenceRef
+    namespace: ax-meta
+    localName: sourceEvidenceRef
+    label: Source Evidence Reference
+    definition: annotation property that links an ontology resource to the immutable
+      evidence resource supporting its authored meaning or controlled-vocabulary
+      membership
+    valueType: uri
+    owlProjectionOverride: annotationProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+  AttributeUse:
+    definition: a binding of an AttributeTypeDefinition to an ObjectTypeDefinition
+      with contextual constraints
+    note: Separates global attribute definition from context-specific usage
+    requiredFields:
+      attribute:
+        type: uri
+        required: true
+        description: reference to global AttributeTypeDefinition
+        example: fin:hasISIN
+    optionalFields:
+      minCount:
+        type: integer
+        description: override global minCount; 1 means required in this context
+        example: 1
+      maxCount:
+        type: integer
+        description: override global maxCount; null means unbounded
+        example: 1
+      label:
+        type: string
+        description: context-specific display label (does NOT change semantics)
+        example: Stock Identifier
+        note: Allows UI customization without altering attribute definition
+      defaultValue:
+        type: string
+        description: default value when not provided
+      constraints:
+        type: list[ConstraintBinding]
+        description: additional validation rules for this usage context
+  validFrom:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/validFrom
+    namespace: pattern
+    localName: validFrom
+    label: Valid From
+    definition: instant in time that marks the beginning of the business validity
+      period during which a fact is considered true in the real world
+    valueType: instant
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+  validTo:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/validTo
+    namespace: pattern
+    localName: validTo
+    label: Valid To
+    definition: instant in time that marks the end of the business validity period
+      during which a fact is considered true in the real world, or null if the
+      fact remains valid indefinitely
+    valueType: instant
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+  knowledgeFrom:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeFrom
+    namespace: pattern
+    localName: knowledgeFrom
+    label: Knowledge From
+    definition: instant in system time when the platform began to assert a
+      particular version of a fact as part of its knowledge base
+    valueType: instant
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: Distinct from validFrom; knowledgeFrom tracks when WE learned about the
+      fact, not when it became true in reality
+  knowledgeTo:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/knowledgeTo
+    namespace: pattern
+    localName: knowledgeTo
+    label: Knowledge To
+    definition: instant in system time when the platform ceased to assert a
+      particular version of a fact as current, either due to supersession by a
+      newer version or explicit retraction, or null if this version remains
+      current
+    valueType: instant
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: null value indicates current version; non-null indicates superseded or
+      retracted
+  observedAt:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
+    namespace: pattern
+    localName: observedAt
+    label: Observed At
+    definition: instant in time when a measurement, observation, or market data
+      reading was originally made or captured by the source system
+    valueType: instant
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: Used for market data and sensor readings; semantically distinct from
+      validFrom (observation instant vs validity period)
+  availableFrom:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/availableFrom
+    namespace: pattern
+    localName: availableFrom
+    label: Available From
+    definition: instant in time that marks the beginning of the availability period
+      during which data may be consumed by a specific downstream subject,
+      accounting for processing delays, authorization checks, and embargo
+      periods
+    valueType: instant
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: Canonical availability axis start (ADR-012); half-open interval
+      [availableFrom, availableTo). Critical for look-ahead bias prevention in
+      backtesting and compliance audits.
+  availableTo:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/availableTo
+    namespace: pattern
+    localName: availableTo
+    label: Available To
+    definition: instant in time that marks the end of the availability period during
+      which data may be consumed by a specific downstream subject, or null if
+      the data remains available indefinitely
+    valueType: instant
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: Canonical availability axis end (ADR-012); null = available indefinitely
+      once availableFrom is reached.
+  publishedAt:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/publishedAt
+    namespace: pattern
+    localName: publishedAt
+    label: Published At
+    definition: instant in time when the data provider or source system officially
+      published or released the information
+    valueType: instant
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: Source publication time; must be <= receivedAt if both present
+  receivedAt:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/receivedAt
+    namespace: pattern
+    localName: receivedAt
+    label: Received At
+    definition: instant in time when the platform's ingestion system received the
+      information from the external source
+    valueType: instant
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: Platform reception time; must be >= publishedAt if both present
+  source:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/source
+    namespace: pattern
+    localName: source
+    label: Source
+    definition: uniform resource identifier that designates the authoritative data
+      provider, system, or organization from which the information originated
+    valueType: uri
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+  sourceVersion:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/sourceVersion
+    namespace: pattern
+    localName: sourceVersion
+    label: Source Version
+    definition: string identifier that denotes the version, snapshot, or release of
+      the source system or dataset from which the information was obtained
+    valueType: string
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: Enables reproducibility by locking to specific source snapshots
+  confidence:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/confidence
+    namespace: pattern
+    localName: confidence
+    label: Confidence Score
+    definition: decimal number in the closed interval [0.0, 1.0] that quantifies the
+      assessed reliability, certainty, or probability that the asserted fact is
+      correct
+    valueType: decimal
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    pattern: ^(0(\.\d+)?|1(\.0+)?)$
+    note: 0.0 = no confidence, 1.0 = complete certainty; constraint validation
+      enforces [0.0, 1.0] range
+  revision:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/revision
+    namespace: pattern
+    localName: revision
+    label: Revision Number
+    definition: non-negative integer that increments monotonically with each update
+      or correction to a fact, enabling change tracking and audit history
+    valueType: integer
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: Starts at 0 for initial version; increments by 1 for each revision
+  derivedFrom:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/derivedFrom
+    namespace: pattern
+    localName: derivedFrom
+    label: Derived From
+    definition: list of uniform resource identifiers that reference the source facts
+      from which this fact was computed, transformed, or inferred, establishing
+      lineage for derived data
+    valueType: uri
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: null
+    note: Unbounded list; used for computed facts, aggregations, and transformations
+      to trace back to original sources
+  recordedAt:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/recordedAt
+    namespace: pattern
+    localName: recordedAt
+    label: Recorded At
+    definition: instant in time when an observation was captured and recorded into
+      the system
+    valueType: instant
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: Used by TemporalObservation pattern; distinct from knowledgeFrom which
+      marks when platform became aware
+  evidenceType:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/evidenceType
+    namespace: pattern
+    localName: evidenceType
+    label: Evidence Type
+    definition: categorical classification of the kind of evidence supporting a
+      claim or assertion
+    valueType: string
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "Enumerated values: document, measurement, testimony, calculation,
+      inference, etc."
+  evidenceRef:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/evidenceRef
+    namespace: pattern
+    localName: evidenceRef
+    label: Evidence Reference
+    definition: globally unique identifier or IRI pointing to the evidence artifact
+      that supports a claim
+    valueType: uri
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: Must be resolvable to the actual evidence document, dataset, or record
+  evidenceDigest:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/evidenceDigest
+    namespace: pattern
+    localName: evidenceDigest
+    label: Evidence Digest
+    definition: cryptographic hash of the evidence artifact ensuring integrity and
+      enabling tamper detection
+    valueType: string
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "Format: algorithm:hexdigest (e.g., sha256:abc123...); validated by
+      DigestFormat constraint"
+  evidenceTimestamp:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/evidenceTimestamp
+    namespace: pattern
+    localName: evidenceTimestamp
+    label: Evidence Timestamp
+    definition: instant in time when the evidence was captured or created
+    valueType: instant
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: Distinct from the timestamp of the claim itself; records provenance of
+      supporting evidence
+  evidenceDescription:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/evidenceDescription
+    namespace: pattern
+    localName: evidenceDescription
+    label: Evidence Description
+    definition: human-readable narrative explaining the nature and relevance of the
+      evidence
+    valueType: string
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: Should describe what the evidence shows and why it supports the claim
+  lifecycleState:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/lifecycleState
+    namespace: pattern
+    localName: lifecycleState
+    label: Lifecycle State
+    definition: enumerated value representing the current stage in the lifecycle of
+      an entity or fact
+    valueType: string
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "Common states: draft, active, deprecated, superseded, retired"
+  lifecycleVersion:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/lifecycleVersion
+    namespace: pattern
+    localName: lifecycleVersion
+    label: Lifecycle Version
+    definition: non-negative integer tracking the number of lifecycle state transitions
+    valueType: integer
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: Increments on each state change; enables audit trail of lifecycle evolution
+  createdAt:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/createdAt
+    namespace: pattern
+    localName: createdAt
+    label: Created At
+    definition: instant in time when an entity was first created in the system
+    valueType: instant
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: Immutable; distinct from validFrom (business time) and knowledgeFrom
+      (epistemology time)
+  updatedAt:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/updatedAt
+    namespace: pattern
+    localName: updatedAt
+    label: Updated At
+    definition: instant in time when an entity was last modified
+    valueType: instant
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: Updated on each mutation; tracks technical modification time, not business
+      validity time
+  deprecatedAt:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/deprecatedAt
+    namespace: pattern
+    localName: deprecatedAt
+    label: Deprecated At
+    definition: instant in time when an entity was marked as deprecated
+    valueType: instant
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: Optional; null if entity is not deprecated
+  semanticVersion:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/semanticVersion
+    namespace: pattern
+    localName: semanticVersion
+    label: Semantic Version
+    definition: string conforming to semantic versioning specification
+      (MAJOR.MINOR.PATCH) indicating compatibility level
+    valueType: string
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: "Pattern: ^\\d+\\.\\d+\\.\\d+$; validated by SemanticVersionFormat
+      constraint"
+  versionedIri:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/versionedIri
+    namespace: pattern
+    localName: versionedIri
+    label: Versioned IRI
+    definition: globally unique IRI that includes version information, enabling
+      precise identification of versioned resources
+    valueType: uri
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: Typically baseIri + localName + version separator + semanticVersion
+  priorVersion:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/priorVersion
+    namespace: pattern
+    localName: priorVersion
+    label: Prior Version
+    definition: IRI reference to the immediately preceding version of this entity
+    valueType: uri
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: Forms a linked version chain; null for initial version
+  incompatibleWith:
+    iri: https://axiolune.ai/ontology/meta/patterns/attributes/incompatibleWith
+    namespace: pattern
+    localName: incompatibleWith
+    label: Incompatible With
+    definition: IRI reference to a version that this version is known to be
+      incompatible with
+    valueType: uri
+    owlProjectionOverride: datatypeProperty
+    defaultCardinality:
+      minCount: 0
+      maxCount: 1
+    note: Used to declare breaking changes; multiple incompatibilities expressed via
+      cardinality > 1
+  RelationTypeDefinition:
+    definition: a meta-classifier for binary semantic relationships between entity types
+    owlProjection:
+      kind: objectProperty
+    note: For pure semantic relations; use AssociationTypeDefinition for relations
+      with context
+    requiredFields:
+      iri:
+        type: uri
+        unique: true
+      namespace:
+        type: string
+        required: true
+      localName:
+        type: string
+        required: true
+      label:
+        type: string
+        required: true
+        example: is issued by
+      definition:
+        type: string
+        required: true
+        iso704: true
+        example: relationship between a financial instrument and the legal entity that
+          issued it
+      domain:
+        type: union[ObjectTypeDefinition,AssociationTypeDefinition]
+        required: true
+        description: subject ObjectTypeDefinition or AssociationTypeDefinition IRI
+        example: fin:Equity
+      range:
+        type: union[ObjectTypeDefinition,AssociationTypeDefinition]
+        required: true
+        description: object ObjectTypeDefinition or AssociationTypeDefinition IRI
+        example: fin:Organization
+    optionalFields:
+      inverseOf:
+        type: uri
+        description: inverse RelationTypeDefinition IRI for bidirectional relations
+        example: fin:issues
+        note: Strong-typed reference; no text inverseName
+      characteristics:
+        type: list[enum]
+        values:
+          - functional
+          - inverseFunctional
+          - transitive
+          - symmetric
+          - asymmetric
+          - reflexive
+          - irreflexive
+        description: OWL property characteristics
+      alignments:
+        type: list[Alignment]
+  RelationUse:
+    definition: a contextual application of a RelationTypeDefinition with specific
+      cardinality constraints
+    note: Cardinality is contextual, not global, because subclasses may have
+      different constraints
+    requiredFields:
+      relation:
+        type: uri
+        required: true
+        description: reference to RelationTypeDefinition
+        example: fin:isIssuedBy
+      subjectType:
+        type: union[ObjectTypeDefinition,AssociationTypeDefinition]
+        required: true
+        description: subject ObjectTypeDefinition or AssociationTypeDefinition IRI
+        example: fin:Equity
+      objectType:
+        type: union[ObjectTypeDefinition,AssociationTypeDefinition]
+        required: true
+        description: object ObjectTypeDefinition or AssociationTypeDefinition IRI
+        example: fin:Organization
+    optionalFields:
+      outboundCardinality:
+        minCount:
+          type: integer
+          default: 0
+        maxCount:
+          type: integer
+          default: null
+          description: null=unbounded
+        description: how many targets one subject can have
+        note: one Equity → how many Organizations
+      inboundCardinality:
+        minCount:
+          type: integer
+          default: 0
+        maxCount:
+          type: integer
+          default: null
+        description: how many subjects can point to one target
+        note: one Organization ← how many Equities
+      constraints:
+        type: list[ConstraintBinding]
+  AssociationTypeDefinition:
+    definition: a meta-classifier for reifiable n-ary relations with identity,
+      context, and lifecycle
+    owlProjection:
+      kind: class
+      stereotype: association
+    note: Use for relations that need timestamp, source, confidence, quantity, or
+      state (e.g., PriceObservation, Holding, Execution)
+    reference: https://www.w3.org/TR/swbp-n-aryRelations/
+    requiredFields:
+      iri:
+        type: uri
+        unique: true
+      namespace:
+        type: string
+        required: true
+      localName:
+        type: string
+        required: true
+      label:
+        type: string
+        required: true
+      definition:
+        type: string
+        required: true
+        iso704: true
+      participantRoles:
+        type: list[ParticipantRole]
+        minCount: 2
+        description: typed participants in this association
+        example:
+          - id: observedInstrument
+            range: fin:Instrument
+            minCount: 1
+            maxCount: 1
+          - id: venue
+            range: fin:Market
+            minCount: 1
+            maxCount: 1
+    optionalFields:
+      attributeUses:
+        type: list[AttributeUse]
+        description: attributes of the association itself
+        example:
+          - attribute: fin:quotedPrice
+            minCount: 1
+            maxCount: 1
+      patternBindings:
+        type: list[PatternBinding]
+        description: cross-domain patterns (Temporal, Provenance) bound to this association
+        example:
+          - pattern: fin:TemporalFact
+          - pattern: fin:ProvenancedFact
+      projectedRelations:
+        type: list[uri]
+        description: convenience binary edges derived from this association (e.g.,
+          hasLatestPrice)
+        note: Projections are views, not independent truth sources
+      alignments:
+        type: list[Alignment]
+  ParticipantRole:
+    definition: a typed slot in an AssociationTypeDefinition specifying the role and
+      type of a participant
+    requiredFields:
+      id:
+        type: string
+        required: true
+        description: role identifier
+        example: observedInstrument
+      range:
+        type: union[ObjectTypeDefinition,AssociationTypeDefinition]
+        required: true
+        description: participant ObjectTypeDefinition or AssociationTypeDefinition IRI
+        example: fin:Instrument
+      minCount:
+        type: integer
+        default: 0
+        description: minimum number of participants in this role
+      maxCount:
+        type: integer
+        default: null
+        description: maximum number of participants in this role (null = unbounded)
+    optionalFields:
+      label:
+        type: string
+      definition:
+        type: string
+  PatternBinding:
+    definition: a declaration that an ObjectTypeDefinition or
+      AssociationTypeDefinition adheres to a cross-domain pattern
+    note: Patterns from Layer 2 (Temporal, Provenance, Evidence) inject attribute
+      requirements and constraints
+    requiredFields:
+      pattern:
+        type: uri
+        required: true
+        description: reference to cross-domain pattern IRI
+        example: fin:TemporalFact
+    optionalFields:
+      parameters:
+        type: dict
+        description: pattern-specific configuration
+        example:
+          granularity: instant
+          requireValidTo: false
+  Alignment:
+    definition: a documented mapping between a local ontology element and an
+      external standard
+    note: Supports audit, version control, and semantic interoperability without
+      requiring exactMatch for all concepts
+    requiredFields:
+      vocabulary:
+        type: string
+        required: true
+        description: external vocabulary name
+        example: FIBO
+      targetIri:
+        type: uri
+        required: true
+        description: IRI of the external concept (without version query parameters)
+        example: https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/isIssuedBy
+      relation:
+        type: enum
+        required: true
+        values:
+          - skos:exactMatch
+          - skos:closeMatch
+          - skos:broadMatch
+          - skos:narrowMatch
+          - rdfs:subClassOf
+          - rdfs:subPropertyOf
+          - owl:equivalentClass
+          - owl:equivalentProperty
+        description: type of alignment relationship
+        note: Use rdfs:subClassOf/subPropertyOf when local concept is narrower; reserve
+          owl:equivalent* for proven formal equivalence
+      sourceRelease:
+        vocabulary:
+          type: string
+        release:
+          type: string
+          example: 2026Q1
+        artifactDigest:
+          type: digest
+          example: sha256:...
+        description: mandatory version lock for the exact external vocabulary bytes
+      sourceLocator:
+        type: Layer4:SourceLocator
+        description: mandatory closed media-aware selector from the active M3 profile;
+          plain path or URL strings are forbidden
+      rationale:
+        type: string
+        description: mandatory justification covering local and target meaning, entity
+          kind, and relation direction
+        example: Direct semantic equivalence for issuer relationship
+      verification:
+        status:
+          type: enum
+          values:
+            - proposed
+            - reviewed
+            - approved
+            - deprecated
+        verifiedBy:
+          type: string
+          example: ontology-team
+        verifiedAt:
+          type: instant
+        notes:
+          type: string
+        description: mandatory review state; proposed is not approval
+  ConstraintDefinition:
+    definition: a meta-classifier for semantic validation rules that can be applied
+      to types, attributes, relations, or associations
+    owlProjection:
+      kind: class
+      stereotype: constraint
+    requiredFields:
+      iri:
+        type: uri
+        unique: true
+        description: globally unique IRI for this constraint
+        example: https://axiolune.ai/ontology/meta/core/constraints/ISINCheckDigit
+      namespace:
+        type: string
+        required: true
+        description: module namespace prefix
+      localName:
+        type: string
+        required: true
+        description: constraint name within namespace
+      label:
+        type: string
+        required: true
+        example: ISIN Check Digit Validation
+      definition:
+        type: string
+        required: true
+        iso704: true
+        example: validation rule that verifies the check digit of an ISIN code using the
+          Luhn algorithm
+      constraintType:
+        type: enum
+        required: true
+        values:
+          - Cardinality
+          - ValueRange
+          - Pattern
+          - Custom
+          - Logical
+          - Uniqueness
+          - Dependency
+        description: category of constraint
+      scope:
+        type: enum
+        required: true
+        values:
+          - Attribute
+          - Identifier
+          - CodeList
+          - Relation
+          - Object
+          - Association
+          - Pattern
+          - Module
+        description: what kind of element this constraint applies to
+      expression:
+        type: ConstraintExpression
+        required: true
+        description: formal expression of the constraint
+      severity:
+        type: enum
+        required: true
+        values:
+          - Error
+          - Warning
+          - Info
+        default: Error
+      message:
+        type: string
+        required: true
+        description: human-readable violation message template
+        example: ISIN check digit validation failed for value {value}
+    optionalFields:
+      targetElement:
+        type: uri
+        description: IRI of the primary element this constraint validates (pattern
+          extension; used by Layer 2 pattern constraints to specify the
+          attribute they constrain)
+        example: https://axiolune.ai/ontology/meta/patterns/attributes/confidence
+      note:
+        type: string
+        description: explanatory note for this constraint
+      parameters:
+        type: list[ConstraintParameter]
+        description: parameterized constraints
+      dependencies:
+        type: list[uri]
+        description: other constraints that must be satisfied first
+      alignments:
+        type: list[Alignment]
+  ConstraintExpression:
+    definition: the formal expression of a constraint rule
+    fields:
+      language:
+        type: enum
+        required: true
+        values:
+          - SHACL
+          - SPARQL
+          - JSONSchema
+          - Regex
+          - Custom
+        description: constraint expression language
+      expression:
+        type: string
+        required: true
+        description: the actual constraint expression
+        example: ^[A-Z]{2}[A-Z0-9]{9}[0-9]$
+      expressionDigest:
+        type: string
+        description: SHA256 hash of expression for versioning
+  ConstraintParameter:
+    definition: a parameter for parameterized constraints
+    fields:
+      name:
+        type: string
+        required: true
+      type:
+        type: string
+        required: true
+        description: parameter value type
+      required:
+        type: boolean
+        default: true
+      defaultValue:
+        type: any
+  ConstraintBinding:
+    definition: the application of a ConstraintDefinition to a specific ontology
+      element with parameter values
+    requiredFields:
+      constraintRef:
+        type: uri
+        required: true
+        description: IRI reference to ConstraintDefinition
+        example: https://axiolune.ai/ontology/meta/core/constraints/ISINCheckDigit
+      targetElement:
+        type: uri
+        required: true
+        description: IRI of the element being constrained (ObjectTypeDefinition,
+          AttributeUse, RelationUse, etc.)
+        example: https://axiolune.ai/ontology/meta/core/attributes/hasISIN
+    optionalFields:
+      parameters:
+        type: dict
+        description: parameter values for this constraint binding
+        example:
+          minLength: 12
+          maxLength: 12
+      enforcementLevel:
+        type: enum
+        values:
+          - Mandatory
+          - Advisory
+          - Disabled
+        default: Mandatory
+        description: whether this constraint must be enforced
+      enforcementContext:
+        type: enum
+        values:
+          - Write
+          - Read
+          - Query
+          - Import
+          - Export
+        description: when to enforce this constraint
+  ChangeRecord:
+    definition: a record of a change to an ontology element for audit and version control
+    requiredFields:
+      changeId:
+        type: string
+        unique: true
+        required: true
+        description: unique identifier for this change
+        example: CHG-20260728-001
+      timestamp:
+        type: instant
+        required: true
+        description: when this change was made
+      author:
+        type: string
+        required: true
+        description: who made this change
+        example: ontology-team
+      changeType:
+        type: enum
+        required: true
+        values:
+          - Addition
+          - Modification
+          - Deprecation
+          - Deletion
+          - Restoration
+        description: type of change
+      affectedElement:
+        type: uri
+        required: true
+        description: IRI of the element that was changed
+      description:
+        type: LocalizedTextDefinition
+        required: true
+        description: human-readable description of the change
+    optionalFields:
+      breakingChange:
+        type: boolean
+        default: false
+        description: whether this change breaks backward compatibility
+      previousValue:
+        type: any
+        description: the value before the change (for Modification)
+      newValue:
+        type: any
+        description: the value after the change (for Modification, Addition)
+      approvedBy:
+        type: string
+        description: who approved this change
+      relatedChanges:
+        type: list[string]
+        description: IDs of related changes
+  GovernanceMetadata:
+    definition: ownership, approval, and change tracking metadata for ontology elements
+    fields:
+      ownerRef:
+        type: string
+        description: team or role responsible for this element
+        example: fin:OntologyTeam
+      approvedBy:
+        type: string
+        example: fin:DataGovernanceRole
+      approvedAt:
+        type: instant
+      status:
+        type: enum
+        values:
+          - draft
+          - review
+          - approved
+          - deprecated
+      rationale:
+        type: string
+        description: business justification
+      changeHistory:
+        type: list[uri]
+        description: references to ChangeRecord IRIs
+  constraints:
+    ExactVersionReference:
+      iri: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      namespace: ax-meta
+      localName: ExactVersionReference
+      label: Exact Version Reference
+      definition: reference constraint that requires a participant or relation
+        endpoint to identify one immutable version node rather than its logical
+        identity anchor
+      constraintType: Logical
+      scope: Relation
+      expression:
+        language: Custom
+        expression: referenceMode == version
+      severity: Error
+      message: reference must resolve to one exact immutable fact version
+    LogicalReference:
+      iri: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      namespace: ax-meta
+      localName: LogicalReference
+      label: Logical Reference
+      definition: reference constraint that requires a participant or relation
+        endpoint to identify one stable logical identity anchor rather than a
+        mutable or exact version node
+      constraintType: Logical
+      scope: Relation
+      expression:
+        language: Custom
+        expression: referenceMode == logical
+      severity: Error
+      message: reference must resolve to one logical identity anchor
+  ValidationRules:
+    - All IRIs must be globally unique and dereferenceable
+    - All definitions must follow ISO 704 genus-differentia structure
+    - localName must be unique within namespace
+    - Alignment targetIri must reference valid external vocabulary URIs
+    - AttributeUse minCount/maxCount override global AttributeTypeDefinition
+      defaults
+    - AttributeUse.label can be overridden for display, but definition CANNOT be
+      changed
+    - RelationTypeDefinition.inverseOf must reference a valid
+      RelationTypeDefinition IRI
+    - AssociationTypeDefinition.participantRoles must have at least 2 roles
+    - OWL cardinality restrictions are axioms (reasoning); SHACL validates data
+      completeness
+    - "Use max: null (not -1) for unbounded cardinality"
+    - Financial amounts MUST use MoneyTypeDefinition, not generic number or
+      decimal
+    - Percentages, basis points, and quantities are distinct types
+  Notes:
+    - Layer 1 defines WHAT entities and relations exist (semantics)
+    - Layer 2 (cross-domain-patterns.yaml) defines HOW facts are timestamped,
+      sourced, evidenced
+    - Layer 3 (behavior-meta-model.yaml) defines WHAT OPERATIONS are available
+    - Layer 4 (data-binding-meta-model.yaml) defines HOW data maps to ontology
+    - "Removed deprecated 'required' field; use minCount: 1 instead"
+    - Removed redundant 'links' field from ObjectTypeDefinition; compiler
+      generates reverse index from RelationTypeDefinition
+    - AspectType removed; semantic inheritance uses superTypes, validation uses
+      patternBindings
+    - InterfaceType moved to Layer 3 (behavior-meta-model.yaml)

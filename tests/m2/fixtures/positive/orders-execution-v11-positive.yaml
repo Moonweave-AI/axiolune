@@ -1,0 +1,139 @@
+# Orders Execution v1.1.0 (ADR-025) positive staging fixtures.
+# These fixtures stage the new v1.1.0 association/object types so the CQ
+# honesty probes (CQ-OE12..OE17) report staged data rather than contract-only
+# guarantees. They use the events:/instances: dialect read by loadStaging()
+# in run-all-cq-probes.cjs (the order-lifecycle-valid.yaml precedent), with
+# typed predicates on each fact. Structural/cardinality enforcement of these
+# types is verified by validate-m2-core --all --strict; full SHACL enforcement
+# of the new association types via the generic fixture-to-TTL converter is
+# documented as pending the SHACL runner's object-value handling (see
+# traceability matrix).
+
+fixtures:
+  # --- OrderIntentLifecycleEvent (internal, no provider order/stream) ---
+  - id: oe-v11-pos-internal-initialized
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLifecycleEvent
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/orders/v11-internal-init-ev1
+        type: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLifecycleEvent
+        intentLifecycleOrderIntent: https://axiolune.ai/data/orders/v11-intent-A/version/v1
+        intentEventEmitter: https://axiolune.ai/parties/strategy-alpha
+        orderEventKind: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/Initialized
+        lifecycleState: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/Initialized
+        validFrom: '2026-08-01T09:00:00Z'
+        knowledgeFrom: '2026-08-01T09:00:01Z'
+        availableFrom: '2026-08-01T09:00:02Z'
+
+  - id: oe-v11-pos-internal-denied
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLifecycleEvent
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/orders/v11-internal-denied-ev1
+        type: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLifecycleEvent
+        intentLifecycleOrderIntent: https://axiolune.ai/data/orders/v11-intent-B/version/v1
+        intentEventEmitter: https://axiolune.ai/parties/risk-gate
+        orderEventKind: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/Denied
+        lifecycleState: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/Denied
+        eventReason: pre-submission risk gate rejection
+        validFrom: '2026-08-01T09:05:00Z'
+        knowledgeFrom: '2026-08-01T09:05:01Z'
+        availableFrom: '2026-08-01T09:05:02Z'
+
+  # --- OrderRoute (venue-neutral routing, parent intent -> child external order) ---
+  - id: oe-v11-pos-route-sor
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderRoute
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/orders/v11-route-sor-1/version/v1
+        type: https://axiolune.ai/ontology/finance/orders-execution/OrderRoute
+        routeParentIntent: https://axiolune.ai/data/orders/v11-sor-intent/version/v1
+        routeChildExternalOrder: https://axiolune.ai/data/orders/v11-sor-child-xnas/version/v1
+        routeDestination: https://axiolune.ai/venues/XNAS
+        routedQuantity: '100'
+        routeTime: '2026-08-01T09:30:00Z'
+        routeStatus: https://axiolune.ai/ontology/finance/orders-execution/RouteStatus/value/routed
+        validFrom: '2026-08-01T09:30:00Z'
+        knowledgeFrom: '2026-08-01T09:30:01Z'
+        availableFrom: '2026-08-01T09:30:02Z'
+
+  # --- ExecutionAllocation + AllocationLine (conserved) ---
+  - id: oe-v11-pos-allocation-block
+    type: https://axiolune.ai/ontology/finance/orders-execution/ExecutionAllocation
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/orders/v11-alloc-1/version/v1
+        type: https://axiolune.ai/ontology/finance/orders-execution/ExecutionAllocation
+        allocationSourceExecution: https://axiolune.ai/orders/executions/v11-block/version/v1
+        allocationStatus: https://axiolune.ai/ontology/finance/orders-execution/AllocationStatus/value/accepted
+        validFrom: '2026-08-01T10:00:00Z'
+        knowledgeFrom: '2026-08-01T10:00:01Z'
+        availableFrom: '2026-08-01T10:00:02Z'
+      - iri: https://axiolune.ai/data/orders/v11-alloc-1-line-A/version/v1
+        type: https://axiolune.ai/ontology/finance/orders-execution/AllocationLine
+        allocationQuantity: '60'
+        allocationStatus: https://axiolune.ai/ontology/finance/orders-execution/AllocationStatus/value/accepted
+        allocationTargetAccount: https://axiolune.ai/accounts/ACC-fund-A
+        validFrom: '2026-08-01T10:00:00Z'
+        knowledgeFrom: '2026-08-01T10:00:01Z'
+        availableFrom: '2026-08-01T10:00:02Z'
+      - iri: https://axiolune.ai/data/orders/v11-alloc-1-line-B/version/v1
+        type: https://axiolune.ai/ontology/finance/orders-execution/AllocationLine
+        allocationQuantity: '40'
+        allocationStatus: https://axiolune.ai/ontology/finance/orders-execution/AllocationStatus/value/accepted
+        allocationTargetAccount: https://axiolune.ai/accounts/ACC-fund-B
+        validFrom: '2026-08-01T10:00:00Z'
+        knowledgeFrom: '2026-08-01T10:00:01Z'
+        availableFrom: '2026-08-01T10:00:02Z'
+
+  # --- OrderRevision (cancel/replace chain) ---
+  - id: oe-v11-pos-revision-replace
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderRevision
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/orders/v11-revision-1/version/v1
+        type: https://axiolune.ai/ontology/finance/orders-execution/OrderRevision
+        revisionOrder: https://axiolune.ai/orders/external/v11-order-2/version/v1
+        revisionPreviousOrder: https://axiolune.ai/orders/external/v11-order-1/version/v1
+        revisionRootOrder: https://axiolune.ai/orders/external/v11-order-1/version/v1
+        revisionRequestId: req-replace-001
+        revisionKind: https://axiolune.ai/ontology/finance/orders-execution/RevisionKind/value/replace
+        replacedTerms: limitPrice 100 -> 101, quantity 100 -> 90
+        priorityPreserved: true
+        observedAt: '2026-08-01T09:45:00Z'
+        validFrom: '2026-08-01T09:45:00Z'
+        knowledgeFrom: '2026-08-01T09:45:01Z'
+        availableFrom: '2026-08-01T09:45:02Z'
+
+  # --- MatchedTrade (bilateral, both contra roles) ---
+  - id: oe-v11-pos-matched-trade
+    type: https://axiolune.ai/ontology/finance/orders-execution/MatchedTrade
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/orders/v11-matched-1/version/v1
+        type: https://axiolune.ai/ontology/finance/orders-execution/MatchedTrade
+        matchedExecution: https://axiolune.ai/orders/executions/v11-buy-1/version/v1
+        matchedContraParty: https://axiolune.ai/parties/contra-seller
+        matchedContraAccount: https://axiolune.ai/accounts/CONTRA-seller
+        disclosureStatus: https://axiolune.ai/ontology/finance/orders-execution/DisclosureStatus/value/disclosed
+        matchId: match-001
+        observedAt: '2026-08-01T10:15:00Z'
+        validFrom: '2026-08-01T10:15:00Z'
+        knowledgeFrom: '2026-08-01T10:15:01Z'
+        availableFrom: '2026-08-01T10:15:02Z'
+
+  # --- FillSnapshot (cumulative loop: Filled) ---
+  - id: oe-v11-pos-fill-snapshot-filled
+    type: https://axiolune.ai/ontology/finance/orders-execution/FillSnapshot
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/orders/v11-fill-snap-1/version/v1
+        type: https://axiolune.ai/ontology/finance/orders-execution/FillSnapshot
+        lastQty: '10'
+        cumQty: '10'
+        leavesQty: '0'
+        cancelledQty: '0'
+        averagePrice: '100'
+        validFrom: '2026-08-01T10:30:00Z'
+        knowledgeFrom: '2026-08-01T10:30:01Z'
+        availableFrom: '2026-08-01T10:30:02Z'

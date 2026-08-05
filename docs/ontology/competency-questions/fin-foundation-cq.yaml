@@ -1,54 +1,82 @@
-# fin-foundation â€?Competency Questions
-# Module: fin-foundation | Version: 0.3.0
+# fin-foundation Competency Questions
+# Module: fin-foundation | Version: 2.0.0
 
 cqs:
   - id: CQ-F1
-    question: Given an ISIN and a LEI, do they identify the same financial instrument and the same issuer?
-    businessContext: Identity resolution across identifier types at a point in time
+    question: >-
+      Given an ISIN and a LEI at a specified as-of time, does the issuer of the
+      instrument identified by that ISIN correspond to the legal entity identified
+      by that LEI?
+    businessContext: Cross-identifier issuer resolution at a point in time
     scopeConstraints:
       - ISIN checksum and scheme binding must validate
-      - LEI must identify LegalEntity, not conflated with instrument
-    expectedResult: matching Instrument and LegalEntity IRIs, or explicit no-match with reason
-    negativeExample: invalid ISIN checksum or LEI-instrument mismatch rejected
+      - LEI must identify a LegalEntity, not the instrument itself
+      - ISIN identifies a financial instrument; LEI identifies its issuer
+    expectedResult: >-
+      The LegalEntity IRI referenced by the ISIN-identified instrument's issuer
+      role matches the LEI-identified LegalEntity IRI, or explicit no-match with reason
+    negativeExample: invalid ISIN checksum or LEI-instrument conflation rejected
     dependsOnElements:
       - https://axiolune.ai/ontology/finance/foundation/IdentifierScheme
+      - https://axiolune.ai/ontology/finance/foundation/ISINValue
+      - https://axiolune.ai/ontology/finance/foundation/LEIValue
+      - https://axiolune.ai/ontology/finance/foundation/FinancialIdentifierAssignment
+      - https://axiolune.ai/ontology/finance/foundation/LegalEntity
       - https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
-      - https://axiolune.ai/ontology/finance/foundation/Party
     riskLevel: high
     status: active
 
   - id: CQ-F2
-    question: What currencies are valid for a given jurisdiction at a given valid time?
+    question: >-
+      What currencies are valid for a given jurisdiction at a given valid time,
+      according to ISO 4217 registry entries and currency-usage facts?
     businessContext: Currency eligibility for accounts, listings, and valuations
-    expectedResult: list of ISO 4217 currency codes valid for jurisdiction interval
-    negativeExample: expired or unknown currency code rejected
+    scopeConstraints:
+      - ISO 4217 registry entry must be active at the as-of time
+      - CurrencyUsage fact must cover the as-of valid time
+    expectedResult: >-
+      List of ISO 4217 currency codes whose registry entries are active and whose
+      CurrencyUsage facts cover the jurisdiction at the as-of time
+    negativeExample: expired, withdrawn, or unknown currency code rejected
     dependsOnElements:
       - https://axiolune.ai/ontology/finance/foundation/Currency
       - https://axiolune.ai/ontology/finance/foundation/Jurisdiction
+      - https://axiolune.ai/ontology/finance/foundation/CurrencyUsage
+      - https://axiolune.ai/ontology/finance/foundation/ISO4217RegistryEntry
     riskLevel: medium
     status: active
 
   - id: CQ-F3
-    question: Is a given MIC code active, and which trading venue does it identify?
+    question: >-
+      Is a given MIC code active at a specified as-of time, which trading venue
+      does it identify, and what is its registry status?
     businessContext: Venue identification for routing and rule applicability
-    expectedResult: TradingVenue IRI with market status for MIC at as-of
-    negativeExample: expired or malformed MIC rejected (ISO 10383 pattern)
+    scopeConstraints:
+      - MIC must satisfy the ISO 10383 four-character lexical pattern
+      - MIC registry entry must be active at the as-of time
+    expectedResult: >-
+      TradingVenue IRI with registry status (active/withdrawn) for the MIC at
+      the as-of time
+    negativeExample: expired, withdrawn, or malformed MIC rejected (ISO 10383 pattern)
     dependsOnElements:
       - https://axiolune.ai/ontology/finance/foundation/IdentifierScheme
+      - https://axiolune.ai/ontology/finance/foundation/MICValue
       - https://axiolune.ai/ontology/finance/market-structure/TradingVenue
     riskLevel: medium
     status: active
 
   - id: CQ-F4
     question: >-
-      Can two identifier assignments for the same scheme and subject coexist without violating
-      uniqueness scope?
-    businessContext: Flights-style identity integrity â€?one canonical identifier per scheme scope
+      Can two identifier assignments for the same scheme and subject coexist without
+      violating uniqueness scope?
+    businessContext: Flights-style identity integrity â€” one canonical identifier per scheme scope
     expectedResult: conflict report or confirmed single active assignment
     negativeExample: duplicate active ISIN assignment for different instruments rejected
     dependsOnElements:
-      - https://axiolune.ai/ontology/finance/foundation/IdentifierAssignment
+      - https://axiolune.ai/ontology/finance/foundation/FinancialIdentifierAssignment
       - https://axiolune.ai/ontology/finance/foundation/IdentifierScheme
+      - https://axiolune.ai/ontology/finance/foundation/IdentifierAssignmentConflict
+      - https://axiolune.ai/ontology/finance/foundation/IdentifierUniquenessScope
     testFixtures:
       - fixture: foundation-account-identity-positive
         expectedOutcome: single assignment

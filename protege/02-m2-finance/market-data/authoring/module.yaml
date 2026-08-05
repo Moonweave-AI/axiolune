@@ -1,0 +1,2176 @@
+module:
+  moduleIri: https://axiolune.ai/ontology/finance/market-data
+  baseIri: https://axiolune.ai/ontology/finance/market-data/
+  preferredPrefix: fin-market-data
+  version: 1.0.0
+  label: Market Data
+  definition: >-
+    Source-contract-bound price, quote, trade, bar, quality, and FX-rate facts with immutable version identity, exact
+    observation context, and fail-closed valid, knowledge, and availability time semantics.
+  imports:
+    - moduleIri: https://axiolune.ai/ontology/finance/foundation
+    - moduleIri: https://axiolune.ai/ontology/finance/market-structure
+    - moduleIri: https://axiolune.ai/ontology/finance/instruments
+    - moduleIri: https://axiolune.ai/ontology/finance/market-rules
+  exports: []
+  status: approved
+  governance:
+    ownerRef: urn:axiolune:principal:repository-owner
+    status: approved
+domain:
+  objectTypes:
+    MarketDataStream:
+      iri: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
+      namespace: fin-market-data
+      localName: MarketDataStream
+      label: Market Data Stream
+      definition: >-
+        Immutable version of one provider-owned market-data stream and its locked source contract. Its logical key is
+        the provider logical IRI, sourceContractRef, and providerStreamId; a bare provider-stream IRI is not a valid
+        observation reference.
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-data/providerStreamId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceContractRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceApiIdentifier
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceSchemaIdentifier
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceSchemaVersion
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/observationIdFieldLocator
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceRevisionFieldLocator
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/orderingTransformRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/orderingTransformDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/streamPurpose
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceRecordRevisionMode
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    BarSpecification:
+      iri: https://axiolune.ai/ontology/finance/market-data/BarSpecification
+      namespace: fin-market-data
+      localName: BarSpecification
+      label: Bar Specification
+      definition: >-
+        Versioned, source-locked aggregation contract for one stream. It selects one aggregation kind, one price basis,
+        one timestamp convention, one source time zone and calendar, and exactly one time-interval or non-time threshold
+        branch.
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-data/barSpecificationId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/barAggregation
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/barPriceBasis
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/barSourceTimeZone
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/barTimestampConvention
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/barInterval
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/barThreshold
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+  associationTypes:
+    PriceObservation:
+      iri: https://axiolune.ai/ontology/finance/market-data/PriceObservation
+      namespace: fin-market-data
+      localName: PriceObservation
+      label: Price Observation
+      definition: >-
+        Source-record-scoped observation of one non-FX instrument price. It names an exact stream, instrument,
+        listing-or-OTC context, and direct-unit quotation contract; Money carries the sole currency truth. VWAP and TWAP
+        observations additionally bind an exact calculation definition and an immutable calculation run whose
+        byte-locked input FactVersion set, selection window, input-set digest, output, and recalculation policy are
+        replayable.
+      participantRoles:
+        - id: observationStream
+          range: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
+          minCount: 1
+          maxCount: 1
+          label: observation stream
+          definition: exact MarketDataStream version that supplies and governs this observation
+        - id: observedInstrument
+          range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+          minCount: 1
+          maxCount: 1
+          label: observed instrument
+          definition: exact FinancialInstrument version whose price is observed
+        - id: observedListing
+          range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+          minCount: 0
+          maxCount: 1
+          label: observed listing
+          definition: exact listed-market context version used by the listed branch
+        - id: observedOtcContext
+          range: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
+          minCount: 0
+          maxCount: 1
+          label: observed OTC context
+          definition: exact OTCTradingContext version used by the OTC branch
+        - id: quotationContract
+          range: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+          minCount: 1
+          maxCount: 1
+          label: quotation contract
+          definition: exact direct-unit quotation contract governing instrument, context, currency, and quantity unit
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-data/priceValue
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/priceKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/calculationDefinitionRef
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/calculationDefinitionDigest
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/calculationRunRef
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/calculationRunDigest
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/calculationInputSetDigest
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/providerObservationId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceOrderKey
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceRevisionToken
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceRevisionOrder
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    QuoteObservation:
+      iri: https://axiolune.ai/ontology/finance/market-data/QuoteObservation
+      namespace: fin-market-data
+      localName: QuoteObservation
+      label: Quote Observation
+      definition: >-
+        Complete top-of-book observation containing paired bid price, bid size, ask price, and ask size. Bid and ask are
+        structural fields, never PriceKind members; a crossed quote is retained only with its required quality finding.
+      participantRoles:
+        - id: observationStream
+          range: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
+          minCount: 1
+          maxCount: 1
+          label: observation stream
+          definition: exact MarketDataStream version that supplies and governs this quote
+        - id: observedInstrument
+          range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+          minCount: 1
+          maxCount: 1
+          label: observed instrument
+          definition: exact FinancialInstrument version whose quote is observed
+        - id: observedListing
+          range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+          minCount: 0
+          maxCount: 1
+          label: observed listing
+          definition: exact listed-market context version used by the listed branch
+        - id: observedOtcContext
+          range: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
+          minCount: 0
+          maxCount: 1
+          label: observed OTC context
+          definition: exact OTCTradingContext version used by the OTC branch
+        - id: quotationContract
+          range: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+          minCount: 1
+          maxCount: 1
+          label: quotation contract
+          definition: exact direct-unit quotation contract governing both quote sides
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-data/bidPrice
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/bidSize
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/askPrice
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/askSize
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/providerObservationId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceOrderKey
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceRevisionToken
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceRevisionOrder
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    TradeObservation:
+      iri: https://axiolune.ai/ontology/finance/market-data/TradeObservation
+      namespace: fin-market-data
+      localName: TradeObservation
+      label: Trade Observation
+      definition: >-
+        Provider-declared trade event with an immutable source trade identifier, positive quantity, Last price kind,
+        exact direct-unit quotation contract, and deterministic canonical ordering tuple.
+      participantRoles:
+        - id: observationStream
+          range: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
+          minCount: 1
+          maxCount: 1
+          label: observation stream
+          definition: exact MarketDataStream version that supplies and governs this trade
+        - id: observedInstrument
+          range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+          minCount: 1
+          maxCount: 1
+          label: observed instrument
+          definition: exact FinancialInstrument version traded by the source event
+        - id: observedListing
+          range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+          minCount: 0
+          maxCount: 1
+          label: observed listing
+          definition: exact listed-market context version used by the listed branch
+        - id: observedOtcContext
+          range: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
+          minCount: 0
+          maxCount: 1
+          label: observed OTC context
+          definition: exact OTCTradingContext version used by the OTC branch
+        - id: quotationContract
+          range: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+          minCount: 1
+          maxCount: 1
+          label: quotation contract
+          definition: exact direct-unit quotation contract governing trade price and size
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-data/tradePrice
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/tradeSize
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/priceKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceTradeId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceOrderKey
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceRevisionToken
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceRevisionOrder
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    TradeBar:
+      iri: https://axiolune.ai/ontology/finance/market-data/TradeBar
+      namespace: fin-market-data
+      localName: TradeBar
+      label: Trade Bar
+      definition: >-
+        Trade-price OHLCV observation governed by one exact BarSpecification. Time bars use a half-open interval;
+        non-time bars use sequence and contributing event bounds. OHLC values and volume are never mixed with quote-side
+        bars.
+      participantRoles:
+        - id: observationStream
+          range: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
+          minCount: 1
+          maxCount: 1
+          label: observation stream
+          definition: exact MarketDataStream version that supplies and governs this bar
+        - id: observedInstrument
+          range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+          minCount: 1
+          maxCount: 1
+          label: observed instrument
+          definition: exact FinancialInstrument version aggregated by this trade bar
+        - id: observedListing
+          range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+          minCount: 0
+          maxCount: 1
+          label: observed listing
+          definition: exact listed-market context version used by the listed branch
+        - id: observedOtcContext
+          range: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
+          minCount: 0
+          maxCount: 1
+          label: observed OTC context
+          definition: exact OTCTradingContext version used by the OTC branch
+        - id: quotationContract
+          range: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+          minCount: 1
+          maxCount: 1
+          label: quotation contract
+          definition: exact direct-unit quotation contract governing all OHLC values and volume unit
+        - id: barSpecification
+          range: https://axiolune.ai/ontology/finance/market-data/BarSpecification
+          minCount: 1
+          maxCount: 1
+          label: bar specification
+          definition: exact BarSpecification version controlling aggregation, basis, calendar, and timestamp semantics
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-data/tradeOpenPrice
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/tradeHighPrice
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/tradeLowPrice
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/tradeClosePrice
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/tradeVolume
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/providerObservationId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceOrderKey
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceRevisionToken
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceRevisionOrder
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/intervalStart
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/intervalEnd
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/barSequence
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/firstContributingEventAt
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/lastContributingEventAt
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    QuoteBar:
+      iri: https://axiolune.ai/ontology/finance/market-data/QuoteBar
+      namespace: fin-market-data
+      localName: QuoteBar
+      label: Quote Bar
+      definition: >-
+        Quote-side bar preserving complete bid and ask OHLC series plus side sizes. It is distinct from TradeBar and has
+        no observation-level PriceKind.
+      participantRoles:
+        - id: observationStream
+          range: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
+          minCount: 1
+          maxCount: 1
+          label: observation stream
+          definition: exact MarketDataStream version that supplies and governs this bar
+        - id: observedInstrument
+          range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+          minCount: 1
+          maxCount: 1
+          label: observed instrument
+          definition: exact FinancialInstrument version aggregated by this quote bar
+        - id: observedListing
+          range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+          minCount: 0
+          maxCount: 1
+          label: observed listing
+          definition: exact listed-market context version used by the listed branch
+        - id: observedOtcContext
+          range: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
+          minCount: 0
+          maxCount: 1
+          label: observed OTC context
+          definition: exact OTCTradingContext version used by the OTC branch
+        - id: quotationContract
+          range: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+          minCount: 1
+          maxCount: 1
+          label: quotation contract
+          definition: exact direct-unit quotation contract governing both OHLC sides and size units
+        - id: barSpecification
+          range: https://axiolune.ai/ontology/finance/market-data/BarSpecification
+          minCount: 1
+          maxCount: 1
+          label: bar specification
+          definition: exact BarSpecification version controlling aggregation, basis, calendar, and timestamp semantics
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-data/bidOpenPrice
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/bidHighPrice
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/bidLowPrice
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/bidClosePrice
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/askOpenPrice
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/askHighPrice
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/askLowPrice
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/askClosePrice
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/lastBidSize
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/lastAskSize
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/providerObservationId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceOrderKey
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceRevisionToken
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceRevisionOrder
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/intervalStart
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/intervalEnd
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/barSequence
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/firstContributingEventAt
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/lastContributingEventAt
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    MarketDataQualityFinding:
+      iri: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFinding
+      namespace: fin-market-data
+      localName: MarketDataQualityFinding
+      label: Market Data Quality Finding
+      definition: >-
+        Immutable, generated finding over one exact stream and a kind-discriminated, sorted unique set of exact
+        observation versions. The closed kinds are crossed quote, duplicate source-record conflict, and canonical-order
+        collision.
+      participantRoles:
+        - id: findingStream
+          range: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
+          minCount: 1
+          maxCount: 1
+          label: finding stream
+          definition: exact MarketDataStream version whose policy and observations determine the finding
+        - id: affectedPriceObservation
+          range: https://axiolune.ai/ontology/finance/market-data/PriceObservation
+          minCount: 0
+          maxCount: null
+          label: affected price observation
+          definition: exact PriceObservation version included in the finding subject set
+        - id: affectedQuoteObservation
+          range: https://axiolune.ai/ontology/finance/market-data/QuoteObservation
+          minCount: 0
+          maxCount: null
+          label: affected quote observation
+          definition: exact QuoteObservation version included in the finding subject set
+        - id: affectedTradeObservation
+          range: https://axiolune.ai/ontology/finance/market-data/TradeObservation
+          minCount: 0
+          maxCount: null
+          label: affected trade observation
+          definition: exact TradeObservation version included in the finding subject set
+        - id: affectedTradeBar
+          range: https://axiolune.ai/ontology/finance/market-data/TradeBar
+          minCount: 0
+          maxCount: null
+          label: affected trade bar
+          definition: exact TradeBar version included in the finding subject set
+        - id: affectedQuoteBar
+          range: https://axiolune.ai/ontology/finance/market-data/QuoteBar
+          minCount: 0
+          maxCount: null
+          label: affected quote bar
+          definition: exact QuoteBar version included in the finding subject set
+        - id: affectedFxRateObservation
+          range: https://axiolune.ai/ontology/finance/market-data/FXRateObservation
+          minCount: 0
+          maxCount: null
+          label: affected FX rate observation
+          definition: exact FXRateObservation version included in the finding subject set
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-data/qualityFindingKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/affectedSubjectDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    FXRateObservation:
+      iri: https://axiolune.ai/ontology/finance/market-data/FXRateObservation
+      namespace: fin-market-data
+      localName: FXRateObservation
+      label: FX Rate Observation
+      definition: >-
+        Observation of quote-currency units equal to one base-currency unit. Base and quote currencies are different
+        logical Currency identities and the rate is a strictly positive dimensionless Quantity under the same stream,
+        revision, PIT, and context contracts as other market observations.
+      participantRoles:
+        - id: observationStream
+          range: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
+          minCount: 1
+          maxCount: 1
+          label: observation stream
+          definition: exact MarketDataStream version that supplies and governs this FX rate
+        - id: baseCurrency
+          range: https://axiolune.ai/ontology/finance/foundation/Currency
+          minCount: 1
+          maxCount: 1
+          label: base currency
+          definition: logical Currency for the one-unit left side of the FX equation
+        - id: quoteCurrency
+          range: https://axiolune.ai/ontology/finance/foundation/Currency
+          minCount: 1
+          maxCount: 1
+          label: quote currency
+          definition: logical Currency whose units are counted by the FX rate
+        - id: observedListing
+          range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+          minCount: 0
+          maxCount: 1
+          label: observed listing
+          definition: exact listed-market context version used by the listed branch
+        - id: observedOtcContext
+          range: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
+          minCount: 0
+          maxCount: 1
+          label: observed OTC context
+          definition: exact OTCTradingContext version used by the OTC branch
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-data/fxRate
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/providerObservationId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceOrderKey
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceRevisionToken
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceRevisionOrder
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+  relationTypes:
+    streamProvider:
+      iri: https://axiolune.ai/ontology/finance/market-data/streamProvider
+      namespace: fin-market-data
+      localName: streamProvider
+      label: Stream Provider
+      definition: relates a MarketDataStream version to the logical Party that provides and scopes the stream
+      domain: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
+      range: https://axiolune.ai/ontology/finance/foundation/Party
+      characteristics:
+        - functional
+    barSpecificationStream:
+      iri: https://axiolune.ai/ontology/finance/market-data/barSpecificationStream
+      namespace: fin-market-data
+      localName: barSpecificationStream
+      label: Bar Specification Stream
+      definition: relates a BarSpecification version to the exact MarketDataStream version whose source contract defines it
+      domain: https://axiolune.ai/ontology/finance/market-data/BarSpecification
+      range: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
+      characteristics:
+        - functional
+    barSpecificationCalendar:
+      iri: https://axiolune.ai/ontology/finance/market-data/barSpecificationCalendar
+      namespace: fin-market-data
+      localName: barSpecificationCalendar
+      label: Bar Specification Calendar
+      definition: relates a BarSpecification version to its exact source TradingCalendar version
+      domain: https://axiolune.ai/ontology/finance/market-data/BarSpecification
+      range: https://axiolune.ai/ontology/finance/market-structure/TradingCalendar
+      characteristics:
+        - functional
+  attributeTypes:
+    providerStreamId:
+      iri: https://axiolune.ai/ontology/finance/market-data/providerStreamId
+      namespace: fin-market-data
+      localName: providerStreamId
+      label: Provider Stream Identifier
+      definition: non-empty identifier unique for a stream within its provider and source contract
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    sourceContractRef:
+      iri: https://axiolune.ai/ontology/finance/market-data/sourceContractRef
+      namespace: fin-market-data
+      localName: sourceContractRef
+      label: Source Contract Reference
+      definition: absolute IRI of the immutable provider schema and normalization contract
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    sourceContractDigest:
+      iri: https://axiolune.ai/ontology/finance/market-data/sourceContractDigest
+      namespace: fin-market-data
+      localName: sourceContractDigest
+      label: Source Contract Digest
+      definition: lowercase SHA-256 digest recomputed from the exact immutable source-contract bytes
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    sourceApiIdentifier:
+      iri: https://axiolune.ai/ontology/finance/market-data/sourceApiIdentifier
+      namespace: fin-market-data
+      localName: sourceApiIdentifier
+      label: Source API Identifier
+      definition: provider-declared stable identifier for the API or delivery interface
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    sourceSchemaIdentifier:
+      iri: https://axiolune.ai/ontology/finance/market-data/sourceSchemaIdentifier
+      namespace: fin-market-data
+      localName: sourceSchemaIdentifier
+      label: Source Schema Identifier
+      definition: provider-declared stable identifier for the source record schema
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    sourceSchemaVersion:
+      iri: https://axiolune.ai/ontology/finance/market-data/sourceSchemaVersion
+      namespace: fin-market-data
+      localName: sourceSchemaVersion
+      label: Source Schema Version
+      definition: exact provider schema version interpreted by the locked source contract
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    observationIdFieldLocator:
+      iri: https://axiolune.ai/ontology/finance/market-data/observationIdFieldLocator
+      namespace: fin-market-data
+      localName: observationIdFieldLocator
+      label: Observation Identifier Field Locator
+      definition: closed SourceLocator selecting the exact raw source field mapped to the observation or event identifier
+      valueType: https://axiolune.ai/ontology/meta/data-binding/structures/SourceLocator
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    sourceRevisionFieldLocator:
+      iri: https://axiolune.ai/ontology/finance/market-data/sourceRevisionFieldLocator
+      namespace: fin-market-data
+      localName: sourceRevisionFieldLocator
+      label: Source Revision Field Locator
+      definition: closed SourceLocator selecting the raw revision field required only by revisioned-record streams
+      valueType: https://axiolune.ai/ontology/meta/data-binding/structures/SourceLocator
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    orderingTransformRef:
+      iri: https://axiolune.ai/ontology/finance/market-data/orderingTransformRef
+      namespace: fin-market-data
+      localName: orderingTransformRef
+      label: Ordering Transformation Reference
+      definition: absolute IRI of the lossless ordering tuple mapping or locked uniqueness-preserving transformation
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    orderingTransformDigest:
+      iri: https://axiolune.ai/ontology/finance/market-data/orderingTransformDigest
+      namespace: fin-market-data
+      localName: orderingTransformDigest
+      label: Ordering Transformation Digest
+      definition: lowercase SHA-256 digest of the exact ordering transformation bytes
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    streamPurpose:
+      iri: https://axiolune.ai/ontology/finance/market-data/streamPurpose
+      namespace: fin-market-data
+      localName: streamPurpose
+      label: Stream Purpose
+      definition: one closed MarketDataStreamPurpose member limiting record kinds accepted from the stream
+      valueType: https://axiolune.ai/ontology/finance/market-data/MarketDataStreamPurpose
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    sourceRecordRevisionMode:
+      iri: https://axiolune.ai/ontology/finance/market-data/sourceRecordRevisionMode
+      namespace: fin-market-data
+      localName: sourceRecordRevisionMode
+      label: Source Record Revision Mode
+      definition: closed immutable-record or revisioned-record policy selected by the exact source contract
+      valueType: https://axiolune.ai/ontology/finance/market-data/SourceRecordRevisionMode
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    providerObservationId:
+      iri: https://axiolune.ai/ontology/finance/market-data/providerObservationId
+      namespace: fin-market-data
+      localName: providerObservationId
+      label: Provider Observation Identifier
+      definition: non-empty raw observation or event identifier selected by the stream source contract
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    sourceTradeId:
+      iri: https://axiolune.ai/ontology/finance/market-data/sourceTradeId
+      namespace: fin-market-data
+      localName: sourceTradeId
+      label: Source Trade Identifier
+      definition: non-empty provider trade identifier used as the final canonical-order tiebreaker and logical-key component
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    sourceRevisionToken:
+      iri: https://axiolune.ai/ontology/finance/market-data/sourceRevisionToken
+      namespace: fin-market-data
+      localName: sourceRevisionToken
+      label: Source Revision Token
+      definition: normalized provider revision value required only under revisionedRecord policy
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    sourceRevisionOrder:
+      iri: https://axiolune.ai/ontology/finance/market-data/sourceRevisionOrder
+      namespace: fin-market-data
+      localName: sourceRevisionOrder
+      label: Source Revision Order
+      definition: non-negative provider revision order required only under revisionedRecord policy
+      valueType: integer
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    sourceOrderKey:
+      iri: https://axiolune.ai/ontology/finance/market-data/sourceOrderKey
+      namespace: fin-market-data
+      localName: sourceOrderKey
+      label: Source Order Key
+      definition: non-negative lossless provider sequence or output of the stream's locked uniqueness-preserving transformation
+      valueType: integer
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    priceValue:
+      iri: https://axiolune.ai/ontology/finance/market-data/priceValue
+      namespace: fin-market-data
+      localName: priceValue
+      label: Price Value
+      definition: Money value of one price observation, including the sole quote-currency truth
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    priceKind:
+      iri: https://axiolune.ai/ontology/finance/market-data/priceKind
+      namespace: fin-market-data
+      localName: priceKind
+      label: Price Kind
+      definition: one compatible PriceKind member; bid and ask are prohibited because they are quote structure
+      valueType: https://axiolune.ai/ontology/finance/market-data/PriceKind
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    calculationDefinitionRef:
+      iri: https://axiolune.ai/ontology/finance/market-data/calculationDefinitionRef
+      namespace: fin-market-data
+      localName: calculationDefinitionRef
+      label: Calculation Definition Reference
+      definition: absolute IRI of the exact immutable calculation definition used to derive a VWAP or TWAP observation
+      valueType: uri
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    calculationDefinitionDigest:
+      iri: https://axiolune.ai/ontology/finance/market-data/calculationDefinitionDigest
+      namespace: fin-market-data
+      localName: calculationDefinitionDigest
+      label: Calculation Definition Digest
+      definition: lowercase SHA-256 digest of the exact calculation-definition bytes selected by calculationDefinitionRef
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    calculationRunRef:
+      iri: https://axiolune.ai/ontology/finance/market-data/calculationRunRef
+      namespace: fin-market-data
+      localName: calculationRunRef
+      label: Calculation Run Reference
+      definition: >-
+        absolute IRI of the immutable calculation-run evidence that identifies the exact input FactVersions, selection
+        window, calculation definition, computed output, and append-only recalculation policy for a VWAP or TWAP
+        observation
+      valueType: uri
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    calculationRunDigest:
+      iri: https://axiolune.ai/ontology/finance/market-data/calculationRunDigest
+      namespace: fin-market-data
+      localName: calculationRunDigest
+      label: Calculation Run Digest
+      definition: lowercase SHA-256 digest of the exact calculation-run evidence bytes selected by calculationRunRef
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    calculationInputSetDigest:
+      iri: https://axiolune.ai/ontology/finance/market-data/calculationInputSetDigest
+      namespace: fin-market-data
+      localName: calculationInputSetDigest
+      label: Calculation Input Fact Set Digest
+      definition: >-
+        lowercase SHA-256 digest of the RFC 8785 canonical, semantically selected input FactVersion snapshots used by
+        the calculation run; any selected identity, payload, temporal-axis, context, or order change changes this digest
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    bidPrice:
+      iri: https://axiolune.ai/ontology/finance/market-data/bidPrice
+      namespace: fin-market-data
+      localName: bidPrice
+      label: Bid Price
+      definition: Money value of the bid side of a complete QuoteObservation
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    askPrice:
+      iri: https://axiolune.ai/ontology/finance/market-data/askPrice
+      namespace: fin-market-data
+      localName: askPrice
+      label: Ask Price
+      definition: Money value of the ask side of a complete QuoteObservation
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    bidSize:
+      iri: https://axiolune.ai/ontology/finance/market-data/bidSize
+      namespace: fin-market-data
+      localName: bidSize
+      label: Bid Size
+      definition: non-negative Quantity available at the observed bid price
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    askSize:
+      iri: https://axiolune.ai/ontology/finance/market-data/askSize
+      namespace: fin-market-data
+      localName: askSize
+      label: Ask Size
+      definition: non-negative Quantity available at the observed ask price
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    tradePrice:
+      iri: https://axiolune.ai/ontology/finance/market-data/tradePrice
+      namespace: fin-market-data
+      localName: tradePrice
+      label: Trade Price
+      definition: Money execution price reported by one TradeObservation
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    tradeSize:
+      iri: https://axiolune.ai/ontology/finance/market-data/tradeSize
+      namespace: fin-market-data
+      localName: tradeSize
+      label: Trade Size
+      definition: strictly positive Quantity reported by one TradeObservation
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    tradeOpenPrice:
+      iri: https://axiolune.ai/ontology/finance/market-data/tradeOpenPrice
+      namespace: fin-market-data
+      localName: tradeOpenPrice
+      label: Trade Open Price
+      definition: first trade Money price in a TradeBar aggregation window
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    tradeHighPrice:
+      iri: https://axiolune.ai/ontology/finance/market-data/tradeHighPrice
+      namespace: fin-market-data
+      localName: tradeHighPrice
+      label: Trade High Price
+      definition: greatest trade Money price in a TradeBar aggregation window
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    tradeLowPrice:
+      iri: https://axiolune.ai/ontology/finance/market-data/tradeLowPrice
+      namespace: fin-market-data
+      localName: tradeLowPrice
+      label: Trade Low Price
+      definition: least trade Money price in a TradeBar aggregation window
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    tradeClosePrice:
+      iri: https://axiolune.ai/ontology/finance/market-data/tradeClosePrice
+      namespace: fin-market-data
+      localName: tradeClosePrice
+      label: Trade Close Price
+      definition: last trade Money price in a TradeBar aggregation window
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    tradeVolume:
+      iri: https://axiolune.ai/ontology/finance/market-data/tradeVolume
+      namespace: fin-market-data
+      localName: tradeVolume
+      label: Trade Volume
+      definition: non-negative aggregate Quantity of trades contributing to one TradeBar
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    bidOpenPrice:
+      iri: https://axiolune.ai/ontology/finance/market-data/bidOpenPrice
+      namespace: fin-market-data
+      localName: bidOpenPrice
+      label: Bid Open Price
+      definition: first bid-side Money price in a QuoteBar aggregation window
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    bidHighPrice:
+      iri: https://axiolune.ai/ontology/finance/market-data/bidHighPrice
+      namespace: fin-market-data
+      localName: bidHighPrice
+      label: Bid High Price
+      definition: greatest bid-side Money price in a QuoteBar aggregation window
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    bidLowPrice:
+      iri: https://axiolune.ai/ontology/finance/market-data/bidLowPrice
+      namespace: fin-market-data
+      localName: bidLowPrice
+      label: Bid Low Price
+      definition: least bid-side Money price in a QuoteBar aggregation window
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    bidClosePrice:
+      iri: https://axiolune.ai/ontology/finance/market-data/bidClosePrice
+      namespace: fin-market-data
+      localName: bidClosePrice
+      label: Bid Close Price
+      definition: last bid-side Money price in a QuoteBar aggregation window
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    askOpenPrice:
+      iri: https://axiolune.ai/ontology/finance/market-data/askOpenPrice
+      namespace: fin-market-data
+      localName: askOpenPrice
+      label: Ask Open Price
+      definition: first ask-side Money price in a QuoteBar aggregation window
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    askHighPrice:
+      iri: https://axiolune.ai/ontology/finance/market-data/askHighPrice
+      namespace: fin-market-data
+      localName: askHighPrice
+      label: Ask High Price
+      definition: greatest ask-side Money price in a QuoteBar aggregation window
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    askLowPrice:
+      iri: https://axiolune.ai/ontology/finance/market-data/askLowPrice
+      namespace: fin-market-data
+      localName: askLowPrice
+      label: Ask Low Price
+      definition: least ask-side Money price in a QuoteBar aggregation window
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    askClosePrice:
+      iri: https://axiolune.ai/ontology/finance/market-data/askClosePrice
+      namespace: fin-market-data
+      localName: askClosePrice
+      label: Ask Close Price
+      definition: last ask-side Money price in a QuoteBar aggregation window
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    lastBidSize:
+      iri: https://axiolune.ai/ontology/finance/market-data/lastBidSize
+      namespace: fin-market-data
+      localName: lastBidSize
+      label: Last Bid Size
+      definition: non-negative representative bid Quantity preserved by a QuoteBar
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    lastAskSize:
+      iri: https://axiolune.ai/ontology/finance/market-data/lastAskSize
+      namespace: fin-market-data
+      localName: lastAskSize
+      label: Last Ask Size
+      definition: non-negative representative ask Quantity preserved by a QuoteBar
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    barSpecificationId:
+      iri: https://axiolune.ai/ontology/finance/market-data/barSpecificationId
+      namespace: fin-market-data
+      localName: barSpecificationId
+      label: Bar Specification Identifier
+      definition: source-stream-scoped non-empty logical identifier for a BarSpecification
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    barAggregation:
+      iri: https://axiolune.ai/ontology/finance/market-data/barAggregation
+      namespace: fin-market-data
+      localName: barAggregation
+      label: Bar Aggregation
+      definition: one closed BarAggregation member selecting time, tick, volume, notional, range, or renko aggregation
+      valueType: https://axiolune.ai/ontology/finance/market-data/BarAggregation
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    barPriceBasis:
+      iri: https://axiolune.ai/ontology/finance/market-data/barPriceBasis
+      namespace: fin-market-data
+      localName: barPriceBasis
+      label: Bar Price Basis
+      definition: one closed BarPriceBasis member distinguishing trade from paired bid-and-ask bars
+      valueType: https://axiolune.ai/ontology/finance/market-data/BarPriceBasis
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    barSourceTimeZone:
+      iri: https://axiolune.ai/ontology/finance/market-data/barSourceTimeZone
+      namespace: fin-market-data
+      localName: barSourceTimeZone
+      label: Bar Source Time Zone
+      definition: canonical IANA time-zone identifier used to derive source aggregation boundaries
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^[A-Za-z_+-]+(?:/[A-Za-z0-9_+.-]+)+$|^UTC$
+    barTimestampConvention:
+      iri: https://axiolune.ai/ontology/finance/market-data/barTimestampConvention
+      namespace: fin-market-data
+      localName: barTimestampConvention
+      label: Bar Timestamp Convention
+      definition: closed member stating whether observedAt denotes interval start or interval end
+      valueType: https://axiolune.ai/ontology/finance/market-data/BarTimestampConvention
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    barInterval:
+      iri: https://axiolune.ai/ontology/finance/market-data/barInterval
+      namespace: fin-market-data
+      localName: barInterval
+      label: Bar Interval
+      definition: strictly positive duration required only for time aggregation
+      valueType: duration
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    barThreshold:
+      iri: https://axiolune.ai/ontology/finance/market-data/barThreshold
+      namespace: fin-market-data
+      localName: barThreshold
+      label: Bar Threshold
+      definition: strictly positive Quantity required only for non-time aggregation
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    intervalStart:
+      iri: https://axiolune.ai/ontology/finance/market-data/intervalStart
+      namespace: fin-market-data
+      localName: intervalStart
+      label: Interval Start
+      definition: inclusive UTC instant at which a time bar aggregation window starts
+      valueType: instant
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    intervalEnd:
+      iri: https://axiolune.ai/ontology/finance/market-data/intervalEnd
+      namespace: fin-market-data
+      localName: intervalEnd
+      label: Interval End
+      definition: exclusive UTC instant at which a time bar aggregation window ends
+      valueType: instant
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    barSequence:
+      iri: https://axiolune.ai/ontology/finance/market-data/barSequence
+      namespace: fin-market-data
+      localName: barSequence
+      label: Bar Sequence
+      definition: non-negative source-stream sequence required only for a non-time bar
+      valueType: integer
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    firstContributingEventAt:
+      iri: https://axiolune.ai/ontology/finance/market-data/firstContributingEventAt
+      namespace: fin-market-data
+      localName: firstContributingEventAt
+      label: First Contributing Event At
+      definition: UTC occurrence instant of the first source event in a non-time bar
+      valueType: instant
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    lastContributingEventAt:
+      iri: https://axiolune.ai/ontology/finance/market-data/lastContributingEventAt
+      namespace: fin-market-data
+      localName: lastContributingEventAt
+      label: Last Contributing Event At
+      definition: UTC occurrence instant of the last source event in a non-time bar
+      valueType: instant
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    qualityFindingKind:
+      iri: https://axiolune.ai/ontology/finance/market-data/qualityFindingKind
+      namespace: fin-market-data
+      localName: qualityFindingKind
+      label: Quality Finding Kind
+      definition: one closed MarketDataQualityFindingKind member whose predicate must hold exactly
+      valueType: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFindingKind
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    affectedSubjectDigest:
+      iri: https://axiolune.ai/ontology/finance/market-data/affectedSubjectDigest
+      namespace: fin-market-data
+      localName: affectedSubjectDigest
+      label: Affected Subject Digest
+      definition: >-
+        section-5.8 framed iriSetDigest over the UTF-8-byte-sorted unique exact-version IRI set; finding kind is a
+        separate logical-key component
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    fxRate:
+      iri: https://axiolune.ai/ontology/finance/market-data/fxRate
+      namespace: fin-market-data
+      localName: fxRate
+      label: FX Rate
+      definition: strictly positive dimensionless Quantity meaning quote-currency units per one base-currency unit
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+  identifierTypes: {}
+  codeLists:
+    MarketDataStreamPurpose:
+      iri: https://axiolune.ai/ontology/finance/market-data/MarketDataStreamPurpose
+      namespace: fin-market-data
+      localName: MarketDataStreamPurpose
+      label: Market Data Stream Purpose
+      definition: closed event-kind contract for records admitted by one MarketDataStream version
+      vocabulary: Market Data Stream Purpose
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-data/MarketDataStreamPurpose/value/priceObservation
+          notation: priceObservation
+          label: Price Observation
+          definition: stream admits PriceObservation records only
+        - iri: https://axiolune.ai/ontology/finance/market-data/MarketDataStreamPurpose/value/quoteObservation
+          notation: quoteObservation
+          label: Quote Observation
+          definition: stream admits complete paired QuoteObservation records only
+        - iri: https://axiolune.ai/ontology/finance/market-data/MarketDataStreamPurpose/value/tradeObservation
+          notation: tradeObservation
+          label: Trade Observation
+          definition: stream admits TradeObservation records only
+        - iri: https://axiolune.ai/ontology/finance/market-data/MarketDataStreamPurpose/value/tradeBar
+          notation: tradeBar
+          label: Trade Bar
+          definition: stream admits TradeBar records only
+        - iri: https://axiolune.ai/ontology/finance/market-data/MarketDataStreamPurpose/value/quoteBar
+          notation: quoteBar
+          label: Quote Bar
+          definition: stream admits QuoteBar records only
+        - iri: https://axiolune.ai/ontology/finance/market-data/MarketDataStreamPurpose/value/fxRateObservation
+          notation: fxRateObservation
+          label: FX Rate Observation
+          definition: stream admits FXRateObservation records only
+    SourceRecordRevisionMode:
+      iri: https://axiolune.ai/ontology/finance/market-data/SourceRecordRevisionMode
+      namespace: fin-market-data
+      localName: SourceRecordRevisionMode
+      label: Source Record Revision Mode
+      definition: closed policy determining whether a provider record can form a declared correction chain
+      vocabulary: Source Record Revision Mode
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-data/SourceRecordRevisionMode/value/immutableRecord
+          notation: immutableRecord
+          label: Immutable Record
+          definition: provider record has no revision token, revision order, or supersession edge
+        - iri: https://axiolune.ai/ontology/finance/market-data/SourceRecordRevisionMode/value/revisionedRecord
+          notation: revisionedRecord
+          label: Revisioned Record
+          definition: provider records carry mapped revision tokens and orders in one linear chain
+    PriceKind:
+      iri: https://axiolune.ai/ontology/finance/market-data/PriceKind
+      namespace: fin-market-data
+      localName: PriceKind
+      label: Price Kind
+      definition: >-
+        Closed price semantics grouped by tick, reference, and derived member IRI paths. Bid and ask are deliberately
+        absent because quote side is structural.
+      vocabulary: Price Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-data/PriceKind/value/tick/last
+          notation: last
+          label: Last
+          definition: last executed trade price reported by a source
+        - iri: https://axiolune.ai/ontology/finance/market-data/PriceKind/value/derived/mid
+          notation: mid
+          label: Mid
+          definition: source-reported midpoint price; no local bid/ask derivation is inferred from this member alone
+        - iri: https://axiolune.ai/ontology/finance/market-data/PriceKind/value/reference/open
+          notation: open
+          label: Open
+          definition: reviewed source-defined opening reference price
+        - iri: https://axiolune.ai/ontology/finance/market-data/PriceKind/value/reference/high
+          notation: high
+          label: High
+          definition: reviewed source-defined high reference price
+        - iri: https://axiolune.ai/ontology/finance/market-data/PriceKind/value/reference/low
+          notation: low
+          label: Low
+          definition: reviewed source-defined low reference price
+        - iri: https://axiolune.ai/ontology/finance/market-data/PriceKind/value/reference/close
+          notation: close
+          label: Close
+          definition: reviewed source-defined close reference price
+        - iri: https://axiolune.ai/ontology/finance/market-data/PriceKind/value/reference/settlement
+          notation: settlement
+          label: Settlement
+          definition: reviewed source-defined settlement reference price
+        - iri: https://axiolune.ai/ontology/finance/market-data/PriceKind/value/derived/vwap
+          notation: vwap
+          label: VWAP
+          definition: value generated by an exact locked volume-weighted calculation definition
+        - iri: https://axiolune.ai/ontology/finance/market-data/PriceKind/value/derived/twap
+          notation: twap
+          label: TWAP
+          definition: value generated by an exact locked time-weighted calculation definition
+    BarAggregation:
+      iri: https://axiolune.ai/ontology/finance/market-data/BarAggregation
+      namespace: fin-market-data
+      localName: BarAggregation
+      label: Bar Aggregation
+      definition: closed aggregation branch selected by a BarSpecification
+      vocabulary: Bar Aggregation
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-data/BarAggregation/value/time
+          notation: time
+          label: Time
+          definition: half-open source-calendar interval aggregation
+        - iri: https://axiolune.ai/ontology/finance/market-data/BarAggregation/value/tick
+          notation: tick
+          label: Tick
+          definition: fixed positive contributing-event count aggregation
+        - iri: https://axiolune.ai/ontology/finance/market-data/BarAggregation/value/volume
+          notation: volume
+          label: Volume
+          definition: fixed positive quantity-volume threshold aggregation
+        - iri: https://axiolune.ai/ontology/finance/market-data/BarAggregation/value/notional
+          notation: notional
+          label: Notional
+          definition: fixed positive quote-currency notional threshold aggregation
+        - iri: https://axiolune.ai/ontology/finance/market-data/BarAggregation/value/range
+          notation: range
+          label: Range
+          definition: fixed positive price-range threshold aggregation
+        - iri: https://axiolune.ai/ontology/finance/market-data/BarAggregation/value/renko
+          notation: renko
+          label: Renko
+          definition: fixed positive brick threshold aggregation
+    BarPriceBasis:
+      iri: https://axiolune.ai/ontology/finance/market-data/BarPriceBasis
+      namespace: fin-market-data
+      localName: BarPriceBasis
+      label: Bar Price Basis
+      definition: closed discriminator between trade OHLCV and paired quote-side OHLC semantics
+      vocabulary: Bar Price Basis
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-data/BarPriceBasis/value/trade
+          notation: trade
+          label: Trade
+          definition: bar aggregates executed trade prices and volume
+        - iri: https://axiolune.ai/ontology/finance/market-data/BarPriceBasis/value/bidAsk
+          notation: bidAsk
+          label: Bid and Ask
+          definition: bar preserves separate bid and ask OHLC series and side sizes
+    BarTimestampConvention:
+      iri: https://axiolune.ai/ontology/finance/market-data/BarTimestampConvention
+      namespace: fin-market-data
+      localName: BarTimestampConvention
+      label: Bar Timestamp Convention
+      definition: closed rule identifying which boundary a time bar's observedAt value denotes
+      vocabulary: Bar Timestamp Convention
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-data/BarTimestampConvention/value/intervalStart
+          notation: intervalStart
+          label: Interval Start
+          definition: observedAt equals the inclusive interval start
+        - iri: https://axiolune.ai/ontology/finance/market-data/BarTimestampConvention/value/intervalEnd
+          notation: intervalEnd
+          label: Interval End
+          definition: observedAt equals the exclusive interval end
+    MarketDataQualityFindingKind:
+      iri: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFindingKind
+      namespace: fin-market-data
+      localName: MarketDataQualityFindingKind
+      label: Market Data Quality Finding Kind
+      definition: closed generated outcomes whose exact predicates and affected-version sets are executable
+      vocabulary: Market Data Quality Finding Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFindingKind/value/crossedQuote
+          notation: crossedQuote
+          label: Crossed Quote
+          definition: exactly one QuoteObservation has bid price greater than ask price
+        - iri: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFindingKind/value/duplicateConflict
+          notation: duplicateConflict
+          label: Duplicate Conflict
+          definition: at least two versions share one source-record collision key but have different canonical content
+        - iri: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFindingKind/value/orderingCollision
+          notation: orderingCollision
+          label: Ordering Collision
+          definition: at least two observations share the full canonical ordering tuple but have different canonical content
+  constraints:
+    MarketDataStreamIdentityContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/MarketDataStreamIdentityContract
+      namespace: fin-market-data
+      localName: MarketDataStreamIdentityContract
+      label: Market Data Stream Identity Contract
+      definition: >-
+        Fixes stream logical and immutable version identity and closes the source contract, purpose, revision policy,
+        identifier locator, and ordering contract.
+      constraintType: Logical
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          identityBaseIri=https://axiolune.ai/data/market-data-stream;
+          logicalKey(versionOf(streamProvider),sourceContractRef,providerStreamId);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision); sourceContractRef uniqueWithin
+          versionOf(streamProvider); digest(sourceContractBytes)=sourceContractDigest; exactlyOne(streamPurpose);
+          exactlyOne(sourceRecordRevisionMode); exactlyOne(observationIdFieldLocator);
+          exactlyOne(orderingTransformRef,orderingTransformDigest); immutableRecord =>
+          absent(sourceRevisionFieldLocator); revisionedRecord => exactlyOne(sourceRevisionFieldLocator)
+      severity: Error
+      message: stream identity, locked source contract, purpose, revision policy, or raw field mappings are invalid
+      targetElement: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
+    BarSpecificationContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/BarSpecificationContract
+      namespace: fin-market-data
+      localName: BarSpecificationContract
+      label: Bar Specification Contract
+      definition: >-
+        Fixes BarSpecification identity and requires exactly one valid time or non-time aggregation branch with an exact
+        stream and calendar.
+      constraintType: Logical
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          identityBaseIri=https://axiolune.ai/data/bar-specification;
+          logicalKey(versionOf(barSpecificationStream),barSpecificationId);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision);
+          exactlyOne(barAggregation,barPriceBasis,barSourceTimeZone,barTimestampConvention); barAggregation=time =>
+          exactlyOne(barInterval) and absent(barThreshold); barAggregation!=time => exactlyOne(barThreshold) and
+          absent(barInterval); barInterval>PT0S when present; barThreshold.numericValue>0 when present
+      severity: Error
+      message: bar specification identity, source context, or aggregation branch is invalid
+      targetElement: https://axiolune.ai/ontology/finance/market-data/BarSpecification
+    ObservationIdentityAndRevisionContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/ObservationIdentityAndRevisionContract
+      namespace: fin-market-data
+      localName: ObservationIdentityAndRevisionContract
+      label: Observation Identity and Revision Contract
+      definition: >-
+        Shared source-record identity, standard version key, source-revision mode, linear immediate-predecessor chain,
+        and non-negative deterministic order rule.
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          identityBaseIri=https://axiolune.ai/data/market-observation;
+          logicalKey(versionOf(observationStream),providerObservationId|sourceTradeId);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision); sourceOrderKey>=0; revision>=0; immutableRecord =>
+          absent(sourceRevisionToken,sourceRevisionOrder,supersedes); revisionedRecord =>
+          exactlyOne(sourceRevisionToken,sourceRevisionOrder) and sourceRevisionOrder>=0; revisioned initial =>
+          absent(supersedes); revisioned nonInitial => exactlyOne(immediatePredecessor supersedes) and
+            same(versionOf) and successor.sourceRevisionOrder>predecessor.sourceRevisionOrder and
+            successor.revision=predecessor.revision+1 and successor.knowledgeFrom>predecessor.knowledgeFrom;
+          predecessor hasAtMostOne directSuccessor
+      severity: Error
+      message: observation identity, source collision key, revision fields, or supersession chain is invalid
+    ObservationContextXoneContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/ObservationContextXoneContract
+      namespace: fin-market-data
+      localName: ObservationContextXoneContract
+      label: Observation Context Exclusive Choice Contract
+      definition: requires exactly one exact market context for price, quote, trade, and bar observations
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: SHACL
+        expression: sh:xone(observedListing,observedOtcContext)
+      severity: Error
+      message: exactly one of observedListing and observedOtcContext is required
+      targetElement: https://axiolune.ai/ontology/finance/market-data/PriceObservation
+    QuoteObservationContextXoneContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/QuoteObservationContextXoneContract
+      namespace: fin-market-data
+      localName: QuoteObservationContextXoneContract
+      label: Quote Observation Context Exclusive Choice Contract
+      definition: requires exactly one exact market context for a quote observation
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: SHACL
+        expression: sh:xone(observedListing,observedOtcContext)
+      severity: Error
+      message: exactly one of observedListing and observedOtcContext is required
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteObservation
+    TradeObservationContextXoneContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/TradeObservationContextXoneContract
+      namespace: fin-market-data
+      localName: TradeObservationContextXoneContract
+      label: Trade Observation Context Exclusive Choice Contract
+      definition: requires exactly one exact market context for a trade observation
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: SHACL
+        expression: sh:xone(observedListing,observedOtcContext)
+      severity: Error
+      message: exactly one of observedListing and observedOtcContext is required
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeObservation
+    TradeBarContextXoneContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/TradeBarContextXoneContract
+      namespace: fin-market-data
+      localName: TradeBarContextXoneContract
+      label: Trade Bar Context Exclusive Choice Contract
+      definition: requires exactly one exact market context for a trade bar
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: SHACL
+        expression: sh:xone(observedListing,observedOtcContext)
+      severity: Error
+      message: exactly one of observedListing and observedOtcContext is required
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeBar
+    QuoteBarContextXoneContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/QuoteBarContextXoneContract
+      namespace: fin-market-data
+      localName: QuoteBarContextXoneContract
+      label: Quote Bar Context Exclusive Choice Contract
+      definition: requires exactly one exact market context for a quote bar
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: SHACL
+        expression: sh:xone(observedListing,observedOtcContext)
+      severity: Error
+      message: exactly one of observedListing and observedOtcContext is required
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteBar
+    ObservationContextQuotationContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/ObservationContextQuotationContract
+      namespace: fin-market-data
+      localName: ObservationContextQuotationContract
+      label: Observation Context and Quotation Contract
+      definition: >-
+        Requires an exact observed instrument and an exact DirectUnitPriceQuotationContract matching instrument, the
+        selected market context, currency, and every price-applicable quantity unit.
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          listed => observedListing.listedInstrument=observedInstrument and
+            quotationContract.quotationListingContext=observedListing and
+            allMoney.currency=versionOf(observedListing.listingQuoteCurrency);
+          OTC => quotationContract.quotationOTCContext=observedOtcContext and
+            allMoney.currency=versionOf(observedOtcContext.otcQuoteCurrency);
+          quotationContract.quotationInstrument=versionOf(observedInstrument);
+          quotationContract.quotationQuoteCurrency=allMoney.currency; quotationContract.quotationKind=directUnitPrice
+          and quotationContract.contractMultiplier=1;
+          allPriceApplicableQuantity.unit=quotationContract.quotationDenominatorUnit
+      severity: Error
+      message: observation context, instrument, quotation contract, Money currency, or Quantity unit does not match
+    PriceKindCompatibilityContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/PriceKindCompatibilityContract
+      namespace: fin-market-data
+      localName: PriceKindCompatibilityContract
+      label: Price Kind Compatibility Contract
+      definition: >-
+        closed executable type-to-price-kind matrix with structural quote sides and a schema-locked, content-addressed,
+        PIT-safe calculation-run closure for derived prices
+      constraintType: CrossField
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          PriceObservation => exactlyOne(priceKind) and priceKind in
+            {last,mid,open,high,low,close,settlement,vwap,twap};
+          TradeObservation => priceKind=last; QuoteObservation|TradeBar|QuoteBar => absent(priceKind); bid|ask not
+          members PriceKind; vwap|twap => exactlyOne(calculationDefinitionRef,calculationDefinitionDigest,
+          calculationRunRef,calculationRunDigest,calculationInputSetDigest); other PriceKind =>
+          absent(calculationDefinitionRef,calculationDefinitionDigest,calculationRunRef,calculationRunDigest,
+          calculationInputSetDigest); digest(bytes(calculationRunRef))=calculationRunDigest;
+          calculationRun.schema=https://axiolune.ai/schemas/finance/market-data/calculation-run-evidence-v1#sha256:490f10b5923ba0e1190cb32c0e2ff49aeabc5a6f5123cfbfae10e1a074eda6d4;
+          calculationRun binds exact output FactVersion, definition digest, deterministic selection/window, explicit
+          output-axis PIT pivot, sorted input FactVersion set, and closureAssertionSetDigest;
+          digest(canonicalSelectedInputFactSnapshotsWithClosures)=calculationInputSetDigest; select exactly one input
+          FactVersion per logical identity whose half-open valid/knowledge/availability intervals contain the PIT pivot;
+          calculationDefinition binds exact-rational intermediate arithmetic and final-output half-even scale policy;
+          definition, selection, input-set, input payload, PIT, or relevant closure drift invalidates the run and
+          requires an append-only output revision
+      severity: Error
+      message: observation type and PriceKind are incompatible or replayable derived-price evidence is absent
+    QuoteObservationContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/QuoteObservationContract
+      namespace: fin-market-data
+      localName: QuoteObservationContract
+      label: Quote Observation Contract
+      definition: enforces a complete paired quote, non-negative sizes, common units, and crossed-quote finding semantics
+      constraintType: CrossField
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          exactlyOne(bidPrice,bidSize,askPrice,askSize); bidSize.numericValue>=0; askSize.numericValue>=0;
+          bidPrice.currency=askPrice.currency; bidSize.unit=askSize.unit=quotationContract.quotationDenominatorUnit;
+          bidPrice.amount>askPrice.amount <=> exactlyOne(crossedQuote finding over this exact version)
+      severity: Error
+      message: quote pair, sizes, units, currencies, or crossed-quote finding is invalid
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteObservation
+    TradeObservationContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/TradeObservationContract
+      namespace: fin-market-data
+      localName: TradeObservationContract
+      label: Trade Observation Contract
+      definition: enforces source trade ID, Last price, positive size, observedAt, and canonical order
+      constraintType: CrossField
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          exactlyOne(sourceTradeId,observedAt,sourceOrderKey); tradeSize.numericValue>0; priceKind=last;
+          canonicalOrder=(observedAt UTC,versionOf(observationStream) UTF8, sourceOrderKey integer,sourceTradeId NFC
+          UTF8); fullTupleTieWithDifferentContent => orderingCollision
+      severity: Error
+      message: trade price kind, quantity, source identity, event time, or canonical ordering is invalid
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeObservation
+    TradeBarContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/TradeBarContract
+      namespace: fin-market-data
+      localName: TradeBarContract
+      label: Trade Bar Contract
+      definition: enforces trade basis, OHLC bounds, non-negative volume, and time/non-time bar instance branches
+      constraintType: CrossField
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          barSpecification.barPriceBasis=trade; tradeLowPrice<=tradeOpenPrice<=tradeHighPrice and
+          tradeLowPrice<=tradeClosePrice<=tradeHighPrice and tradeVolume.numericValue>=0; apply
+          BarInstanceBranchContract
+      severity: Error
+      message: TradeBar basis, OHLCV values, or aggregation branch is invalid
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeBar
+    QuoteBarContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/QuoteBarContract
+      namespace: fin-market-data
+      localName: QuoteBarContract
+      label: Quote Bar Contract
+      definition: enforces paired quote-side OHLC bounds, side sizes, bidAsk basis, and bar branch semantics
+      constraintType: CrossField
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          barSpecification.barPriceBasis=bidAsk; bidLowPrice<=bidOpenPrice<=bidHighPrice and
+          bidLowPrice<=bidClosePrice<=bidHighPrice; askLowPrice<=askOpenPrice<=askHighPrice and
+          askLowPrice<=askClosePrice<=askHighPrice; lastBidSize.numericValue>=0 and lastAskSize.numericValue>=0; all
+          bid/ask Money currencies equal; apply BarInstanceBranchContract
+      severity: Error
+      message: QuoteBar basis, paired OHLC values, side sizes, currencies, or aggregation branch is invalid
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteBar
+    BarInstanceBranchContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/BarInstanceBranchContract
+      namespace: fin-market-data
+      localName: BarInstanceBranchContract
+      label: Bar Instance Branch Contract
+      definition: shared executable time-bar versus non-time-bar instance and timestamp semantics
+      constraintType: CrossField
+      scope: Association
+      expression:
+        language: Custom
+        expression: |-
+          barSpecification.barAggregation=time => exactlyOne(intervalStart,intervalEnd) and
+            intervalStart<intervalEnd and absent(barSequence,firstContributingEventAt,lastContributingEventAt) and
+            intervalEnd-intervalStart=barSpecification.barInterval and
+            (timestampConvention=intervalStart => observedAt=intervalStart) and
+            (timestampConvention=intervalEnd => observedAt=intervalEnd);
+          barSpecification.barAggregation!=time => absent(intervalStart,intervalEnd) and
+            exactlyOne(barSequence,firstContributingEventAt,lastContributingEventAt) and barSequence>=0 and
+            firstContributingEventAt<=lastContributingEventAt
+      severity: Error
+      message: bar interval, event bounds, sequence, or timestamp convention is invalid
+    MarketDataQualityFindingContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFindingContract
+      namespace: fin-market-data
+      localName: MarketDataQualityFindingContract
+      label: Market Data Quality Finding Contract
+      definition: executable closed predicate matrix and content-addressed identity for market-data findings
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          identityBaseIri=https://axiolune.ai/data/market-data-quality-finding;
+          affectedSet=sortedUniqueExactVersionIris(all affected roles); affectedSubjectDigest=iriSetDigest(affectedSet);
+          logicalKey(versionOf(findingStream),qualityFindingKind,affectedSubjectDigest);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision); crossedQuote => affectedSet exactlyOne
+          QuoteObservation with bidPrice>askPrice; duplicateConflict => affectedSet allAndOnly atLeastTwo versions
+          sharing sourceRecordCollisionKey with different canonical content; orderingCollision => affectedSet allAndOnly
+          atLeastTwo observations sharing complete canonicalOrder tuple with different canonical content; lawful linear
+          corrections with distinct sourceRevisionToken doNotProduce duplicateConflict
+      severity: Error
+      message: quality finding predicate, exact subject set, digest, or identity is invalid
+      targetElement: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFinding
+    FXObservationContextXoneContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/FXObservationContextXoneContract
+      namespace: fin-market-data
+      localName: FXObservationContextXoneContract
+      label: FX Observation Context Exclusive Choice Contract
+      definition: requires exactly one exact listed or OTC market context for an FX rate observation
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: SHACL
+        expression: sh:xone(observedListing,observedOtcContext)
+      severity: Error
+      message: exactly one of observedListing and observedOtcContext is required for an FX rate observation
+      targetElement: https://axiolune.ai/ontology/finance/market-data/FXRateObservation
+    FXRateObservationContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/FXRateObservationContract
+      namespace: fin-market-data
+      localName: FXRateObservationContract
+      label: FX Rate Observation Contract
+      definition: enforces FX dimensional equation, positive rate, distinct currencies, and inverse derivation discipline
+      constraintType: CrossField
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          baseCurrency!=quoteCurrency; fxRate.numericValue>0; fxRate.unit=quoteCurrencyUnitsPerOneBaseCurrencyUnit;
+          equation(1 baseCurrency = fxRate * quoteCurrency); inverse rate only deterministicDerivation(1/fxRate) with
+          exact source-version and transformation evidence
+      severity: Error
+      message: FX context, currencies, rate dimension, positivity, or inverse derivation is invalid
+      targetElement: https://axiolune.ai/ontology/finance/market-data/FXRateObservation
+    ThreeAxisPITContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/ThreeAxisPITContract
+      namespace: fin-market-data
+      localName: ThreeAxisPITContract
+      label: Three Axis PIT Contract
+      definition: fail-closed PIT eligibility and immutable closure rule shared by every materialized market-data fact
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          exactlyOne(validFrom,knowledgeFrom,availableFrom,revision,source); eligible iff
+          validFrom<=asOfValid<effectiveValidTo and
+            knowledgeFrom<=asOfKnowledge<effectiveKnowledgeTo and
+            availableFrom<=asOfAvailable<effectiveAvailableTo;
+          knowledgeFrom<=materializationContext.referenceTime; asOfKnowledge<=materializationContext.referenceTime;
+          asOfAvailable<=materializationContext.referenceTime; no implicit clock functions; knowledgeTo and availableTo
+          forbidden on FactVersion; effectiveKnowledgeTo and effectiveAvailableTo derive only from unique
+          FactClosureAssertion
+      severity: Error
+      message: fact lacks three-axis starts, uses implicit current time, leaks future data, or mutates closure onto a version
+    ThreeAxisObjectPITContract:
+      iri: https://axiolune.ai/ontology/finance/market-data/ThreeAxisObjectPITContract
+      namespace: fin-market-data
+      localName: ThreeAxisObjectPITContract
+      label: Three Axis Object PIT Contract
+      definition: fail-closed PIT eligibility and immutable closure rule for materialized Market Data objects
+      constraintType: Logical
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          exactlyOne(validFrom,knowledgeFrom,availableFrom,revision,source); eligible iff
+          validFrom<=asOfValid<effectiveValidTo and
+            knowledgeFrom<=asOfKnowledge<effectiveKnowledgeTo and
+            availableFrom<=asOfAvailable<effectiveAvailableTo;
+          knowledgeFrom<=materializationContext.referenceTime; asOfKnowledge<=materializationContext.referenceTime;
+          asOfAvailable<=materializationContext.referenceTime; no implicit clock functions; knowledgeTo and availableTo
+          forbidden on FactVersion; effectiveKnowledgeTo and effectiveAvailableTo derive only from unique
+          FactClosureAssertion
+      severity: Error
+      message: object lacks three-axis starts, uses implicit current time, leaks future data, or mutates closure onto a version
+  relationUses:
+    - relation: https://axiolune.ai/ontology/finance/market-data/streamProvider
+      subjectType: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
+      objectType: https://axiolune.ai/ontology/finance/foundation/Party
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/market-data/streamProvider
+    - relation: https://axiolune.ai/ontology/finance/market-data/barSpecificationStream
+      subjectType: https://axiolune.ai/ontology/finance/market-data/BarSpecification
+      objectType: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-data/barSpecificationStream
+    - relation: https://axiolune.ai/ontology/finance/market-data/barSpecificationCalendar
+      subjectType: https://axiolune.ai/ontology/finance/market-data/BarSpecification
+      objectType: https://axiolune.ai/ontology/finance/market-structure/TradingCalendar
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-data/barSpecificationCalendar
+  constraintBindings:
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/PriceObservation/role/observationStream
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/PriceObservation/role/observedInstrument
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/PriceObservation/role/observedListing
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/PriceObservation/role/observedOtcContext
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/PriceObservation/role/quotationContract
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteObservation/role/observationStream
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteObservation/role/observedInstrument
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteObservation/role/observedListing
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteObservation/role/observedOtcContext
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteObservation/role/quotationContract
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeObservation/role/observationStream
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeObservation/role/observedInstrument
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeObservation/role/observedListing
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeObservation/role/observedOtcContext
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeObservation/role/quotationContract
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeBar/role/observationStream
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeBar/role/observedInstrument
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeBar/role/observedListing
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeBar/role/observedOtcContext
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeBar/role/quotationContract
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeBar/role/barSpecification
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteBar/role/observationStream
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteBar/role/observedInstrument
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteBar/role/observedListing
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteBar/role/observedOtcContext
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteBar/role/quotationContract
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteBar/role/barSpecification
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFinding/role/findingStream
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFinding/role/affectedPriceObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFinding/role/affectedQuoteObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFinding/role/affectedTradeObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFinding/role/affectedTradeBar
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFinding/role/affectedQuoteBar
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFinding/role/affectedFxRateObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/FXRateObservation/role/observationStream
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/FXRateObservation/role/baseCurrency
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/FXRateObservation/role/quoteCurrency
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/FXRateObservation/role/observedListing
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-data/FXRateObservation/role/observedOtcContext
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/MarketDataStreamIdentityContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/BarSpecificationContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/BarSpecification
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ThreeAxisObjectPITContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ThreeAxisObjectPITContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/BarSpecification
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ObservationIdentityAndRevisionContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/PriceObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ObservationIdentityAndRevisionContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ObservationIdentityAndRevisionContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ObservationIdentityAndRevisionContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeBar
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ObservationIdentityAndRevisionContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteBar
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ObservationIdentityAndRevisionContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/FXRateObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ObservationContextXoneContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/PriceObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/QuoteObservationContextXoneContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/TradeObservationContextXoneContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/TradeBarContextXoneContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeBar
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/QuoteBarContextXoneContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteBar
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ObservationContextQuotationContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/PriceObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ObservationContextQuotationContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ObservationContextQuotationContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ObservationContextQuotationContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeBar
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ObservationContextQuotationContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteBar
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/PriceKindCompatibilityContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/PriceObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/PriceKindCompatibilityContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/PriceKindCompatibilityContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/PriceKindCompatibilityContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeBar
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/PriceKindCompatibilityContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteBar
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/QuoteObservationContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/TradeObservationContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/TradeBarContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeBar
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/BarInstanceBranchContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeBar
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/QuoteBarContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteBar
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/BarInstanceBranchContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteBar
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFindingContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFinding
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/FXObservationContextXoneContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/FXRateObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/FXRateObservationContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/FXRateObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ThreeAxisPITContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/PriceObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ThreeAxisPITContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ThreeAxisPITContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ThreeAxisPITContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/TradeBar
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ThreeAxisPITContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/QuoteBar
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ThreeAxisPITContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFinding
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-data/ThreeAxisPITContract
+      targetElement: https://axiolune.ai/ontology/finance/market-data/FXRateObservation
+      enforcementLevel: Mandatory

@@ -1,26 +1,41 @@
 module: fin-post-trade-operations
-version: 0.3.0
+version: 1.1.0
 alignments:
   - targetIri: https://spec.edmcouncil.org/fibo/ontology/SEC/CorporateActions/CorporateActions/CorporateAction
     relation: skos:closeMatch
     sourceRelease: FIBO 2026Q1
-    rationale: CorporateActionEvent aligns with FIBO corporate action taxonomy for entitlement processing.
+    rationale: CorporateActionEvent aligns with FIBO corporate action taxonomy for entitlement processing; v1.1.0 broadens to a core + Direct Rights Due-Bill profile and multi-option CorporateActionOption per ISO 15022 MT564/565/566/567.
     reviewStatus: accepted
     bibliographyRef: fibo-local
   - targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/Settlement
     relation: skos:closeMatch
     sourceRelease: FIBO 2026Q1
-    rationale: SettlementInstruction follows FIBO settlement lifecycle from execution to settled state.
+    rationale: SettlementInstruction follows FIBO settlement lifecycle from execution to settled state; v1.1.0 separates settled status from legal/system finality (SettlementFinalityEvent) and moves the DvP/FoP hard lock to the SimpleDvpFopSettlementProfile.
     reviewStatus: accepted
     bibliographyRef: fibo-local
   - targetIri: BIAN::Operations::Reconciliation
     relation: skos:closeMatch
     sourceRelease: BIAN
-    rationale: ReconciliationBreak maps to BIAN reconciliation service domain exception handling patterns.
+    rationale: ReconciliationFinding maps to BIAN reconciliation service domain exception handling patterns; v1.1.0 adds finding-level ReconciliationDisposition and multi-cardinality ReconciliationMatchGroup.
     reviewStatus: accepted
     bibliographyRef: bian-local
   - targetIri: ISO 15022:2022
     relation: skos:closeMatch
     sourceRelease: internal
-    rationale: Exotic corporate action kinds (tender, spin-off, exchange) align with ISO 15022 MT564 message taxonomy.
+    rationale: Exotic corporate action kinds (tender, spin-off, exchange) align with ISO 15022 MT564 message taxonomy; v1.1.0 adds MT548 settlement-status breadth, MT565 instruction, MT566 confirmation/reversal, and MT567 status for the CA option lifecycle.
+    reviewStatus: accepted
+  - targetIri: https://www.bis.org/cpmi/publ/d517.htm
+    relation: skos:relatedMatch
+    sourceRelease: BIS/CPMI-IOSCO PFMI
+    rationale: Principles of Financial Market Infrastructure inform settlement finality (SettlementFinalityKind: provisional/unconditional/irrevocable) and the DvP/DvD/PvP distinction underlying the Simple DvP/FoP Settlement Profile boundary.
+    reviewStatus: accepted
+  - targetIri: https://www.dtcc.com/settlement-clearing
+    relation: skos:relatedMatch
+    sourceRelease: DTCC
+    rationale: DTCC post-trade allocation, confirmation/matching, and affirmation distinction informs the confirmation/affirmation/clearing/netting out-of-scope boundary and traceability hooks (ADR-030 D4).
+    reviewStatus: accepted
+  - targetIri: https://www.sec.gov/about/divisions/corp-issues-t-plus-one
+    relation: skos:relatedMatch
+    sourceRelease: SEC T+1
+    rationale: SEC T+1 FAQ treats allocation, confirmation, and affirmation as distinct flows, supporting the out-of-scope boundary for confirmation/affirmation/clearing/netting.
     reviewStatus: accepted

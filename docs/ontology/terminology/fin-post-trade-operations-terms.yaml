@@ -1,5 +1,5 @@
-# Axiolune M2 Post-Trade Operations — Terminology Cards (stub)
-# Status: draft — required sidecar evidence (review M6).
+# Axiolune M2 Post-Trade Operations — Terminology Cards
+# Status: v1.1.0 (ADR-030 additive revision); v1.0.0 cards retained, new v1.1.0 types appended.
 
 terms:
   - term: "Corporate Action Event"
@@ -31,12 +31,12 @@ terms:
         locator: "M2-PLAN §5.2 fin-post-trade-operations"
     status: accepted
 
-  - term: "Reconciliation Break"
-    canonicalIri: "https://axiolune.ai/ontology/finance/post-trade-operations/ReconciliationBreak"
-    definition: "detected mismatch between internal books and an external statement or derived position that requires investigation"
+  - term: "Reconciliation Finding"
+    canonicalIri: "https://axiolune.ai/ontology/finance/post-trade-operations/ReconciliationFinding"
+    definition: "deterministic matched, value-mismatch, duplicate, or missing-side result for a canonical comparison-key bucket, carrying all exact internal and external versions"
     genus: "operations exception"
     differentia:
-      - "pairs two disagreed facts"
+      - "pairs internal and external facts by canonical key"
       - "is evidence-bound"
     excludes:
       - "a successful matched settlement"
@@ -47,7 +47,7 @@ terms:
 
   - term: "Tender Offer (deferred)"
     canonicalIri: "https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionEvent/kind/tenderOffer"
-    definition: "voluntary corporate action inviting holders to tender shares for cash or mixed consideration — deferred from v0.3.0 CQ matrix per ADR-016"
+    definition: "voluntary corporate action inviting holders to tender shares for cash or mixed consideration — deferred from v0.3.0 CQ matrix per ADR-019"
     genus: "corporate action event"
     differentia:
       - "voluntary holder election"
@@ -62,7 +62,7 @@ terms:
 
   - term: "Spin-Off (deferred)"
     canonicalIri: "https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionEvent/kind/spinOff"
-    definition: "distribution of subsidiary shares to parent holders creating separate listing — deferred per ADR-016"
+    definition: "distribution of subsidiary shares to parent holders creating separate listing — deferred per ADR-019"
     genus: "corporate action event"
     differentia:
       - "creates successor instrument"
@@ -76,7 +76,7 @@ terms:
 
   - term: "Exchange Offer (deferred)"
     canonicalIri: "https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionEvent/kind/exchangeOffer"
-    definition: "offer to exchange one security for another at a stated ratio — deferred per ADR-016"
+    definition: "offer to exchange one security for another at a stated ratio — deferred per ADR-019"
     genus: "corporate action event"
     differentia:
       - "two-legged security swap"
@@ -86,4 +86,132 @@ terms:
     sources:
       - reference: "iso15022-mt564"
         locator: "ISO 15022 voluntary CA message (terminology only)"
+    status: accepted
+
+  # --- v1.1.0 additive terminology (ADR-030) ---
+
+  - term: "Simple DvP/FoP Settlement Profile"
+    canonicalIri: "https://axiolune.ai/ontology/finance/post-trade-operations/SimpleDvpFopSettlementProfile"
+    definition: "optional implementation profile locking a settlement instruction to one security leg (FOP) or one reciprocal security and cash leg (DVP), the first concrete profile of the generic settlement core"
+    genus: "implementation profile"
+    differentia:
+      - "exactly one or two legs"
+      - "not a universal post-trade invariant"
+    excludes:
+      - "multi-leg, netted, PvP, or DvD structures (admitted by the generic core)"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-030 D2"
+    status: accepted
+
+  - term: "Strict Technical Settlement Reconciliation Profile"
+    canonicalIri: "https://axiolune.ai/ontology/finance/post-trade-operations/StrictTechnicalSettlementReconciliationProfile"
+    definition: "optional implementation profile locking the reconciliation comparator to zero tolerance, exact normalization, and one-to-one bucketing where any side count greater than one is a duplicate"
+    genus: "implementation profile"
+    differentia:
+      - "zero numeric tolerance"
+      - "forbids fuzzy reference matching"
+    excludes:
+      - "one-to-many, many-to-one, many-to-many match groups (admitted by the generic core)"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-030 D5"
+    status: accepted
+
+  - term: "Direct Rights Due-Bill Corporate Action Profile"
+    canonicalIri: "https://axiolune.ai/ontology/finance/post-trade-operations/DirectRightsDueBillCorporateActionProfile"
+    definition: "optional implementation profile locking a corporate action event to cash dividend, stock split, or non-transferable direct-rights kinds with exactly one consideration and the due-bill entitlement transfer chain"
+    genus: "implementation profile"
+    differentia:
+      - "single consideration per event"
+      - "non-transferable direct subscription"
+    excludes:
+      - "merger, redemption, conversion, tender, transferable rights, interest, tax withholding, cash-in-lieu (admitted by the generic core)"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-030 D8"
+    status: accepted
+
+  - term: "Settlement Finality Event"
+    canonicalIri: "https://axiolune.ai/ontology/finance/post-trade-operations/SettlementFinalityEvent"
+    definition: "immutable record of legal or system settlement finality for an instruction or leg, distinct from a source-reported settled status"
+    genus: "settlement event"
+    differentia:
+      - "carries finalityKind (provisional/unconditional/irrevocable)"
+      - "separates finality instant from observed and knowledge pivots"
+    excludes:
+      - "a source-reported settled status"
+    sources:
+      - reference: "bis-cpmi-iosco-pfmi"
+        locator: "BIS/CPMI-IOSCO PFMI finality"
+    status: accepted
+
+  - term: "Corporate Action Option"
+    canonicalIri: "https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionOption"
+    definition: "selectable outcome of a voluntary or default corporate action event, carrying the option kind, consideration, deadline, and allocation ratio"
+    genus: "corporate action lifecycle element"
+    differentia:
+      - "optionKind covers default/election/withdrawal/amendment/partial"
+      - "generalizes the single-choice rule into a multi-option lifecycle"
+    excludes:
+      - "the event itself"
+    sources:
+      - reference: "iso15022-mt564"
+        locator: "ISO 15022 MT564/565/566/567 lifecycle"
+    status: accepted
+
+  - term: "Settlement Leg Allocation"
+    canonicalIri: "https://axiolune.ai/ontology/finance/post-trade-operations/SettlementLegAllocation"
+    definition: "generalization of trade settlement allocation that allocates any settlement leg (cash, security, fee, or tax) to an economic account with basis, residual, and FX conversion"
+    genus: "settlement allocation"
+    differentia:
+      - "applies to cash/fee/tax legs, not only security"
+      - "carries residual and FX conversion"
+    excludes:
+      - "the security-only execution-driven allocation (retained as the first profile)"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-030 D9"
+    status: accepted
+
+  - term: "Reconciliation Match Group"
+    canonicalIri: "https://axiolune.ai/ontology/finance/post-trade-operations/ReconciliationMatchGroup"
+    definition: "optional grouping of one or more internal projections and one or more external statement lines determined to represent the same logical business fact under a non-strict profile"
+    genus: "reconciliation grouping"
+    differentia:
+      - "matchCardinality one-to-one/one-to-many/many-to-one/many-to-many"
+      - "admitted only by the generic core, not the strict profile"
+    excludes:
+      - "a strict-profile one-to-one bucket"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-030 D5"
+    status: accepted
+
+  - term: "Incomplete Source Coverage Assertion"
+    canonicalIri: "https://axiolune.ai/ontology/finance/post-trade-operations/IncompleteSourceCoverageAssertion"
+    definition: "assertion that a reconciliation query returned no rows for a side but source coverage is unknown or incomplete, so a business absence cannot be concluded"
+    genus: "reconciliation coverage assertion"
+    differentia:
+      - "prevents promoting a no-result query into a MissingSideAssertion"
+      - "distinct from a proven business absence"
+    excludes:
+      - "a deterministic side absence"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-030 D6"
+    status: accepted
+
+  - term: "Reconciliation Disposition"
+    canonicalIri: "https://axiolune.ai/ontology/finance/post-trade-operations/ReconciliationDisposition"
+    definition: "finding-level disposition carrying the disposition kind, responsible party, remedial action, and waiver reference, distinct from the case-level reconciliation status"
+    genus: "reconciliation resolution"
+    differentia:
+      - "dispositionKind accepted/investigated/corrected/waived/escalated/reopened/externalPending"
+      - "does not overwrite case-level status transitions"
+    excludes:
+      - "the case-level ReconciliationStatusEvent"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-030 D10 P1-f"
     status: accepted

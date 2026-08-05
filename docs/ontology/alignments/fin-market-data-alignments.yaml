@@ -1,5 +1,5 @@
 module: fin-market-data
-version: 0.3.0
+version: 2.0.0
 alignments:
   - targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/InstrumentPricing/SecurityPrice
     relation: skos:closeMatch
@@ -10,18 +10,17 @@ alignments:
   - targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/InstrumentPricing/CollectionOfSecurityPrices
     relation: skos:closeMatch
     sourceRelease: FIBO 2026Q1
-    rationale: Bar aggregates map to FIBO price collections while preserving OHLCV interval semantics.
+    rationale: Bar specifications and TradeBar/QuoteBar aggregates map to FIBO price collections while preserving OHLCV interval and bar-price-basis semantics.
     reviewStatus: accepted
     bibliographyRef: fibo-local
-  - targetIri: FIX::Quote
-    relation: skos:closeMatch
-    sourceRelease: internal
-    rationale: QuoteObservation bid/ask structure aligns with FIX quote message fields for market data interop.
-    reviewStatus: accepted
-    bibliographyRef: nautilus-trader
   - targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/Trade
     relation: skos:closeMatch
     sourceRelease: FIBO 2026Q1
-    rationale: TradeObservation records executed market trades distinct from platform Execution in orders-execution.
+    rationale: >-
+      TradeObservation is a provider observation of a reported trade event, whereas FIBO Trade is a
+      situation that realizes an agreement between parties in a voluntary exchange. The two are
+      close matches because both describe trade facts, but they are not equivalent: TradeObservation
+      is a market-data observation scoped to a provider stream and carries observation identity,
+      ordering, and revision provenance, not the economic agreement itself.
     reviewStatus: accepted
     bibliographyRef: fibo-local

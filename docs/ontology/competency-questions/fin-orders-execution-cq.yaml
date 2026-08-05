@@ -1,14 +1,20 @@
-# fin-orders-execution â€?Competency Questions (CQ)
+# fin-orders-execution Competency Questions (CQ)
 # M2-PLAN Â§6.3: Slice B order lifecycle CQ with state machine validation
+# v1.1.0 (ADR-025): CQ-OE1..OE10 retained; CQ-OE11..OE17 added for the P0/P1
+# architecture revision (identity authority, internal-vs-external event,
+# event-execution-cumulative loop, bilateral disclosure, venue-neutral routing,
+# allocation, cancel/replace chain). New-type fixture staging is SME-gated
+# (OE-A7/A9/A10 follow-ups); probes report honestly â€” pass for structurally
+# verifiable contract guarantees, pending where staging is not yet present.
 
 cqs:
   - id: "CQ-OE1"
     question: "Given an order intent ID, what is the complete lifecycle event sequence in temporal order?"
     scope: "Order lifecycle audit trail"
-    expectedResult: "returns all OrderLifecycleEvent instances for the order, ordered by validFrom (or knowledgeFrom if validFrom identical), showing state transitions: Initialized â†?Submitted â†?Accepted â†?PartiallyFilled â†?Filled (or other terminal states)"
+    expectedResult: "returns all OrderLifecycleEvent instances for the order, ordered by validFrom (or knowledgeFrom if validFrom identical), showing state transitions: Initialized ï¿½?Submitted ï¿½?Accepted ï¿½?PartiallyFilled ï¿½?Filled (or other terminal states)"
     negativeExamples:
       - "events out of temporal order are flagged"
-      - "events with invalid state transitions (e.g., Initialized â†?Filled without Accepted) are rejected"
+      - "events with invalid state transitions (e.g., Initialized ï¿½?Filled without Accepted) are rejected"
       - "events with missing previousState (except Initialized) are rejected"
     dependsOn: ["OrderIntent", "OrderLifecycleEvent", "TemporalFact"]
     riskLevel: "high"
@@ -37,7 +43,7 @@ cqs:
     dependsOn: ["OrderIntent", "Execution", "OrderLifecycleEvent"]
     riskLevel: "high"
     status: active
-    note: "Enables position derivation from execution stream. M2-PLAN Â§6.3: Execution â†?Position derivation."
+    note: "Enables position derivation from execution stream. M2-PLAN Â§6.3: Execution ï¿½?Position derivation."
 
   - id: "CQ-OE4"
     question: "Given an execution, can I trace back to the originating order intent and its lifecycle events?"
@@ -69,9 +75,9 @@ cqs:
     scope: "State machine validation"
     expectedResult: "validates that each OrderLifecycleEvent.previousState matches the prior event's lifecycleState, and that transitions follow valid paths (e.g., Initializedâ†’Submittedâ†’Accepted, not Initializedâ†’Filled)"
     negativeExamples:
-      - "Initialized â†?Filled without intermediate Accepted is rejected"
-      - "Filled â†?PartiallyFilled (backward transition) is rejected"
-      - "Canceled â†?Accepted (terminal to active) is rejected"
+      - "Initialized ï¿½?Filled without intermediate Accepted is rejected"
+      - "Filled ï¿½?PartiallyFilled (backward transition) is rejected"
+      - "Canceled ï¿½?Accepted (terminal to active) is rejected"
       - "event with previousState mismatch is rejected"
     dependsOn: ["OrderLifecycleEvent", "OrderLifecycleState"]
     riskLevel: "high"
@@ -110,7 +116,7 @@ cqs:
     dependsOn: ["Execution", "LiquiditySide"]
     riskLevel: "medium"
     status: active
-    note: "Enables accurate position cost basis tracking. M2-PLAN Â§6.3: Execution â†?Position derivation."
+    note: "Enables accurate position cost basis tracking. M2-PLAN Â§6.3: Execution ï¿½?Position derivation."
 
   - id: "CQ-OE8"
     question: "Can historical order lifecycle queries at a fixed knowledge-time reproduce past order states?"
@@ -148,3 +154,89 @@ cqs:
     riskLevel: "high"
     status: active
     note: "M2-PLAN Â§6.3: handles out-of-order, duplicates, missing acknowledgments. Nautilus_trader OrderEvent.reconciliation field."
+
+  # --- v1.1.0 (ADR-025) additions: P0/P1 architecture revision CQs ---
+
+  - id: "CQ-OE11"
+    question: "Given two strategies using the same clientIntentId, can they be distinguished as distinct order intents?"
+    scope: "Identity authority disambiguation (P0-01)"
+    expectedResult: "returns distinct OrderIntent facts keyed by (intentIdentifierAuthority, clientIntentId); two intents with the same clientIntentId under different authorities are not conflated; an intent without intentIssuer or intentIdentifierAuthority is rejected by OrderIntentContract"
+    negativeExamples:
+      - "an intent using clientIntentId alone (no authority) is rejected as having no real logical key"
+      - "an account substituted for intentIssuer or intentIdentifierAuthority is rejected"
+    dependsOn: ["OrderIntent", "OrderIntentContract", "intentIssuer", "intentIdentifierAuthority"]
+    riskLevel: "high"
+    status: active
+    note: "ADR-025 D1 (OE-A1). FIX does not assume a single global ClOrdID namespace; authority scoping prevents cross-strategy collision."
+
+  - id: "CQ-OE12"
+    question: "Can a pre-submission internal lifecycle event (Initialized/Denied/Emulated/Released) be recorded without a provider order or event stream?"
+    scope: "Internal vs external lifecycle event separation (P0-02)"
+    expectedResult: "an OrderIntentLifecycleEvent binds only an OrderIntent and an intentEventEmitter and carries no providerEventId, sourceOrderKey, rawProviderStatusCode, appliedStatusMapping, or appliedTransitionProfile; an external OrderLifecycleEvent that omits its ExternalOrder/OrderEventStream binding is rejected"
+    negativeExamples:
+      - "an internal event carrying a providerEventId or appliedStatusMapping is rejected by OrderIntentLifecycleEventContract"
+      - "an external event using an internal-only event kind (Initialized/Denied/Emulated/Released) without an external order is rejected"
+    dependsOn: ["OrderIntentLifecycleEvent", "OrderLifecycleEvent", "OrderIntentLifecycleEventContract"]
+    riskLevel: "high"
+    status: active
+    note: "ADR-025 D2 (OE-A2). Pre-submission intents cannot honestly own a provider order or provider event."
+
+  - id: "CQ-OE13"
+    question: "Given a fill-kind lifecycle event, can Filled/PartiallyFilled be audited against the effective net executed quantity without recomputation?"
+    scope: "Event-execution-cumulative-quantity-state closed loop (P0-04)"
+    expectedResult: "the event's FillSnapshot cumQty equals the sum of executionQuantity over the stream's executions for that order up to and including the reported execution; leavesQty = orderQuantity - cumQty - cancelledQty and is non-negative; Filled iff leavesQty = 0; PartiallyFilled iff leavesQty > 0 and cumQty > 0; the event's reportsExecution points to the exact Execution it records"
+    negativeExamples:
+      - "a FillSnapshot whose cumQty disagrees with the summed executions is rejected by FillSnapshotConsistencyContract"
+      - "a fill-kind event with no reportsExecution relation is flagged as breaking the closed loop"
+    dependsOn: ["OrderLifecycleEvent", "FillSnapshot", "Execution", "reportsExecution", "FillSnapshotConsistencyContract"]
+    riskLevel: "high"
+    status: active
+    note: "ADR-025 D4 (OE-A4). FIX ExecutionReport carries CumQty/LeavesQty/AvgPx; the snapshot makes the loop auditable rather than recomputed."
+
+  - id: "CQ-OE14"
+    question: "Can an anonymous order-book fill be recorded as a single-sided Execution without fabricating a counterparty?"
+    scope: "Account-side fill vs bilateral disclosure (P0-05)"
+    expectedResult: "an Execution with disclosureStatus=anonymous omits contraParty and contraAccount; a 'unknown Party'/'unknown Account' placeholder is forbidden; a MatchedTrade (when bilateral evidence suffices) requires matchedContraParty and matchedContraAccount and a disclosureStatus"
+    negativeExamples:
+      - "an anonymous Execution carrying a contraParty or contraAccount is rejected by ExecutionContract"
+      - "a MatchedTrade missing matchedContraParty/matchedContraAccount, or using an 'unknown' placeholder, is rejected by MatchedTradeContract"
+    dependsOn: ["Execution", "MatchedTrade", "disclosureStatus", "ExecutionContract", "MatchedTradeContract"]
+    riskLevel: "high"
+    status: active
+    note: "ADR-025 D5 (OE-A5). FIX contra group is optional; bilateral facts are asserted only when evidence is sufficient."
+
+  - id: "CQ-OE15"
+    question: "Can a venue-neutral / SOR / broker-decides-venue intent produce multiple child external orders without binding a single listing or OTC context?"
+    scope: "Venue-neutral routing (P0-08)"
+    expectedResult: "an OrderIntent with an acceptableVenueSet (one or more TradingFacility) or a routingPolicy and no intentListing/intentOtcContext is admitted by OrderIntentRoutingPolicy; OrderRoute facts connect the parent intent to child ExternalOrders (or child intents) with routedQuantity, routeTime, routeStatus; the actual venue lands on the route/external-order/execution, not the intent"
+    negativeExamples:
+      - "an intent with no context binding at all (no listing/OTC, no acceptableVenueSet, no routingPolicy) is rejected"
+      - "an intent mixing a single intentListing with an acceptableVenueSet is rejected (the three context modes are mutually exclusive)"
+    dependsOn: ["OrderIntent", "OrderRoute", "acceptableVenueSet", "routingPolicy", "OrderIntentRoutingPolicy", "OrderRouteContract"]
+    riskLevel: "high"
+    status: active
+    note: "ADR-025 D8 (OE-A8). SOR/best-execution/multi-child delegation without forcing a pre-acceptance single venue."
+
+  - id: "CQ-OE16"
+    question: "Can a single source execution be allocated across multiple target accounts with quantity conservation?"
+    scope: "Post-execution allocation (P0-09)"
+    expectedResult: "an ExecutionAllocation references one source Execution and one or more AllocationLines; the sum of AllocationLine.allocationQuantity equals the source executionQuantity (ExecutionAllocationConservationContract); executionAccount may differ from intentAccount when an allocation is present; detailed allocation/clearing semantics remain in post-trade-operations via a stable cross-module reference"
+    negativeExamples:
+      - "an ExecutionAllocation whose line quantities do not sum to the source executionQuantity is rejected"
+      - "an ExecutionAllocation with no AllocationLine is rejected"
+    dependsOn: ["ExecutionAllocation", "AllocationLine", "ExecutionAllocationConservationContract", "allocationTargetAccount"]
+    riskLevel: "medium"
+    status: active
+    note: "ADR-025 D9 (OE-A9). Allocation boundary detail is SME-gated on post-trade-operations; v1.1.0 adds the stable scaffold with conservation."
+
+  - id: "CQ-OE17"
+    question: "Can a cancel/replace chain be expressed with distinct request IDs and previous/root order links rather than a single fixed order ID updated in place?"
+    scope: "Cancel/replace chain (P1)"
+    expectedResult: "an OrderRevision carries a revisionRequestId, revisionKind (replace/cancel/cancelReplace), optional previousOrder and rootOrder exact ExternalOrder versions, replacedTerms (present only for replace/cancelReplace), and priorityPreserved; the existing OrderEventKind/Updated is retained and does not conflate the chain"
+    negativeExamples:
+      - "an OrderRevision with revisionKind=cancel carrying replacedTerms is rejected by OrderRevisionContract"
+      - "an OrderRevision missing revisionRequestId is rejected"
+    dependsOn: ["OrderRevision", "OrderRevisionContract", "RevisionKind", "ExternalOrder"]
+    riskLevel: "medium"
+    status: active
+    note: "ADR-025 D11. FIX uses ClOrdID/OrigClOrdID for the order chain, not a single mutable order ID."

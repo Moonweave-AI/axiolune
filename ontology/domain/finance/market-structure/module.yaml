@@ -2,11 +2,10 @@ module:
   moduleIri: https://axiolune.ai/ontology/finance/market-structure
   baseIri: https://axiolune.ai/ontology/finance/market-structure/
   preferredPrefix: fin-market-structure
-  version: 1.0.0
+  version: 1.1.0
   label: Market Structure
-  definition: >-
-    market-structure vocabulary for versioned trading facilities, MIC registry entries, calendars, session schedules,
-    exceptions, and non-listing trading contexts
+  definition: Market Structure, is a domain module in ontology engineering that defines market infrastructure identified by MIC, trading venues and their operating entities, trading sessions, trading calendars, and pre-announced schedule overrides, used to provide typed definitions for the stable organizational structure and temporal scheduling of trading. It does not carry one-off venue rules, tickers, real-time market status, OTC counterparty pairs, or provider source contracts, which belong to market-rules, instruments, market-data, orders-execution, or Layer 4 respectively.
+  cnNote: 市场结构模块，是本体工程中定义由 MIC 标识的市场基础设施、交易场所及其运营实体、交易时段、交易日历与预公布日程变更的领域模块，旨在为交易的组织结构与时间安排提供类型化定义。本模块不承载一时规则、ticker、实时市场状态、场外对手方对或数据源契约，这些分别归 market-rules、instruments、market-data、orders-execution 或 Layer 4。
   imports:
     - moduleIri: https://axiolune.ai/ontology/finance/foundation
   exports: []
@@ -16,16 +15,41 @@ module:
     status: approved
 domain:
   objectTypes:
+    MICIdentifiedMarketInfrastructure:
+      iri: https://axiolune.ai/ontology/finance/market-structure/MICIdentifiedMarketInfrastructure
+      namespace: fin-market-structure
+      localName: MICIdentifiedMarketInfrastructure
+      label: MIC-Identified Market Infrastructure
+      definition: MIC-Identified Market Infrastructure, is the abstract base class for any operating or reporting market infrastructure entity identifiable by an ISO 10383 Market Identifier Code, used to broaden the MIC target taxonomy beyond trading venues to include trade reporting facilities, approved publication arrangements, approved reporting mechanisms, and similar infrastructure while preserving a common reference range.
+      cnNote: MIC 标识的市场基础设施，是任何可由 ISO 10383 市场标识符代码标识的运营或报告市场基础设施实体的抽象基类，用于将 MIC 目标分类从交易场所拓宽至交易报告设施、获批发布安排、获批报告机制等基础设施，同时保留公共参照范围。
+      superTypes:
+        - https://axiolune.ai/ontology/finance/foundation/IdentifiableSubject
+      attributeUses: []
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    MarketInfrastructureComponent:
+      iri: https://axiolune.ai/ontology/finance/market-structure/MarketInfrastructureComponent
+      namespace: fin-market-structure
+      localName: MarketInfrastructureComponent
+      label: Market Infrastructure Component
+      definition: Market Infrastructure Component, is the abstract base class for a section or component of an operating market infrastructure entity, used to model the ISO 10383 "section" semantics (a part of a market, exchange, or reporting facility) as a component rather than as an independent facility, while allowing concrete components to share a facility supertype for reference range where useful.
+      cnNote: 市场基础设施组成部分，是某一运营中市场基础设施实体的板块或组成部分的抽象基类，用于将 ISO 10383 "section" 语义（市场、交易所或报告设施的一部分）建模为组成部分而非独立设施，同时允许具体组成部分在需要时共享设施超类以获得参照范围。
+      superTypes:
+        - https://axiolune.ai/ontology/finance/foundation/IdentifiableSubject
+      attributeUses: []
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
     TradingFacility:
       iri: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
       namespace: fin-market-structure
       localName: TradingFacility
       label: Trading Facility
-      definition: >-
-        identifiable market facility that provides a common reference range for an operating trading venue or one of its
-        market segments
+      definition: Trading Facility, is an identifiable market facility concept that provides a common reference range for an operating trading venue or one of its market segments, used as the base class for venue identity in the market-structure ontology.
+      cnNote: 交易设施，是可标识的市场设施类概念，用于为某一运营交易场所或其市场板块提供公共参照范围，构成市场结构本体中场所标识的基类。
       superTypes:
-        - https://axiolune.ai/ontology/finance/foundation/IdentifiableSubject
+        - https://axiolune.ai/ontology/finance/market-structure/MICIdentifiedMarketInfrastructure
       attributeUses: []
       patternBindings:
         - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
@@ -35,9 +59,23 @@ domain:
       namespace: fin-market-structure
       localName: TradingVenue
       label: Trading Venue
-      definition: TradingFacility that operates a market on which financial instruments may be admitted to trading
+      definition: Trading Venue, is a trading facility that constitutes, maintains, or provides a market system on which financial instruments may be admitted to trading, used to identify a market system or venue (a regulated market, multilateral trading facility, organized trading facility, or comparable trading platform) distinct from the legal entity that operates it. The operator and the regulatory category of the venue are modeled separately as temporal, evidenced facts via VenueOperation rather than as part of the venue identity.
+      cnNote: 交易场所，是构成、维护或提供可接纳金融工具上市交易之市场系统的交易设施，用于在市场结构中标识一个市场系统或场所（受监管市场、多边交易设施、有组织交易设施或可比交易平台），与运营它的法人实体相区分。场所的运营者与监管类别作为带时间与证据的事实经 VenueOperation 单独建模，而非场所身份的一部分。
       superTypes:
         - https://axiolune.ai/ontology/finance/market-structure/TradingFacility
+      attributeUses: []
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    TradeReportingFacility:
+      iri: https://axiolune.ai/ontology/finance/market-structure/TradeReportingFacility
+      namespace: fin-market-structure
+      localName: TradeReportingFacility
+      label: Trade Reporting Facility
+      definition: Trade Reporting Facility, is a market infrastructure entity to which trade reports are made but which does not itself operate a trading market, used to identify an approved publication arrangement, approved reporting mechanism, trade reporting facility, or comparable non-trading reporting infrastructure that an ISO 10383 Operating MIC may identify.
+      cnNote: 交易报告设施，是接收交易报告但自身不运营交易市场的市场基础设施实体，用于标识获批发布安排、获批报告机制、交易报告设施或可比非交易报告基础设施，这些设施可由 ISO 10383 运营 MIC 标识。
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-structure/MICIdentifiedMarketInfrastructure
       attributeUses: []
       patternBindings:
         - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
@@ -47,9 +85,11 @@ domain:
       namespace: fin-market-structure
       localName: MarketSegment
       label: Market Segment
-      definition: TradingFacility that is a separately identified segment of exactly one operating trading venue
+      definition: Market Segment, is a section or component of an operating market infrastructure entity (a trading venue or a trade reporting facility), modeled as a TradingFacility subtype for shared reference range but carrying its part-of semantics through the componentOf relation, used to characterize a subdomain divided by instrument type, regulation, or reporting section within the parent entity. The MarketSegment is a section, not an independent facility; it belongs to exactly one operating entity identified by the segment's marketSegmentVenue or componentOf relation.
+      cnNote: 市场板块，是某一运营中市场基础设施实体（交易场所或交易报告设施）的板块或组成部分，为共享参照范围而建模为 TradingFacility 子类，但其归属语义通过 componentOf 关系承载，用于刻画父实体内部按品种、规则或报告板块划分的子域。市场板块是一个 section 而非独立设施；它属于且仅属于一个运营实体，该实体由板块的 marketSegmentVenue 或 componentOf 关系标识。
       superTypes:
         - https://axiolune.ai/ontology/finance/market-structure/TradingFacility
+        - https://axiolune.ai/ontology/finance/market-structure/MarketInfrastructureComponent
       attributeUses: []
       patternBindings:
         - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
@@ -59,13 +99,24 @@ domain:
       namespace: fin-market-structure
       localName: MICRegistryEntry
       label: MIC Registry Entry
-      definition: >-
-        temporal registry fact that binds one four-character MIC value and one OPRT or SGMT entry kind to the exact
-        TradingFacility version identified by that registry record
+      definition: MIC Registry Entry, is a timestamped minimal MIC identity slice that binds a four-character MIC value and its entry kind to the exact market infrastructure version identified by that registry record, used to anchor the registration record to the underlying facility version. The entry carries optional ISO 10383 lifecycle fields (operational status, effective/expiry dates, replacement, market category) when available; it is an identity anchor, not a full ISO 10383 registry mirror.
+      cnNote: MIC 注册条目，是带时间戳的最小 MIC 身份切片，用于把一个四位 MIC 值及其条目种类绑定到该注册记录所标识的确切市场基础设施版本。条目在可用时携带可选的 ISO 10383 生命周期字段（运营状态、生效/到期日期、替换、市场类别）；它是身份锚点，而非完整的 ISO 10383 注册表镜像。
       superTypes: []
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/market-structure/micEntryType
           minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/micOperationalStatus
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/micEffectiveFrom
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/micEffectiveTo
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/marketCategory
+          minCount: 0
           maxCount: 1
         - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
           minCount: 1
@@ -84,7 +135,8 @@ domain:
       namespace: fin-market-structure
       localName: TradingCalendar
       label: Trading Calendar
-      definition: immutable version of an authority-maintained calendar for one trading facility, jurisdiction, and IANA time zone
+      definition: Trading Calendar, is an immutable calendar version maintained by an authority for one trading facility, jurisdiction, and IANA time zone, used to characterize the trading-day and non-trading-day arrangements of that facility under a specific time zone. It is the concrete specialization of the foundation BusinessCalendar interface for a trading facility and pins an optional IANA tzdb release together with a DST overlap policy for deterministic local-to-UTC materialization.
+      cnNote: 交易日历，是由权威机构为某一交易设施、司法辖区与 IANA 时区维护的不可变日历版本，用于刻画该设施在特定时区下的交易日与非交易日安排。它是 foundation BusinessCalendar 接口针对交易设施的具体特化，并锁定可选的 IANA tzdb 发行版本与夏令时重叠策略以支持确定性的本地到 UTC 物化。
       superTypes: []
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/market-structure/authorityCalendarId
@@ -92,6 +144,12 @@ domain:
           maxCount: 1
         - attribute: https://axiolune.ai/ontology/finance/market-structure/ianaTimeZone
           minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/tzdbRelease
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/dstOverlapPolicy
+          minCount: 0
           maxCount: 1
         - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
           minCount: 1
@@ -110,17 +168,30 @@ domain:
       namespace: fin-market-structure
       localName: TradingSessionTemplate
       label: Trading Session Template
-      definition: recurring local-clock session specification attached to one exact TradingCalendar version
+      definition: Trading Session Template, is a local-clock recurring session specification attached to one exact TradingCalendar version, used to define repeatedly applicable session start, end, phase, and recurrence rules that deterministically materialize into UTC half-open occurrence intervals under the calendar's IANA time zone.
+      cnNote: 交易时段模板，是附加于某一确切交易日历版本的按本地时钟重复的时段规范，用于定义可反复套用且可在日历 IANA 时区下确定性物化为 UTC 半开实例区间的交易时段起止、阶段与复发规则。
       superTypes: []
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/market-structure/sessionRecurrence
           minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/recurrenceRule
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/authoritySessionId
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/scheduledTradingPhase
+          minCount: 0
           maxCount: 1
         - attribute: https://axiolune.ai/ontology/finance/market-structure/localSessionStart
           minCount: 1
           maxCount: 1
         - attribute: https://axiolune.ai/ontology/finance/market-structure/localSessionEnd
           minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/endDayOffset
+          minCount: 0
           maxCount: 1
         - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
           minCount: 1
@@ -139,9 +210,8 @@ domain:
       namespace: fin-market-structure
       localName: TradingSessionOccurrence
       label: Trading Session Occurrence
-      definition: >-
-        dated UTC half-open trading interval materialized from one exact session template and calendar version for one
-        exact facility version
+      definition: Trading Session Occurrence, is a dated scheduled session window materialized from one exact session template and calendar version for one exact facility version and represented as a UTC half-open interval, used to denote a concrete scheduled time window. Whether the window is effectively tradable is a derived result expressed by the optional effectiveSessionStartUtc and effectiveSessionEndUtc attributes after applying any TradingScheduleOverrideNotice facts; a window removed by a holiday or closure has no effective tradable interval rather than losing its scheduled identity.
+      cnNote: 交易时段实例，是由某一确切时段模板与日历版本为某一确切设施版本物化出的以 UTC 半开区间表示的带日期计划时段窗口，用于表示一个具体的计划时间窗。该窗口是否实际可交易是派生结果，由应用 TradingScheduleOverrideNotice 事实后的可选 effectiveSessionStartUtc 与 effectiveSessionEndUtc 属性表达；被节假日或停市移除的窗口没有有效可交易区间，而非失去其计划身份。
       superTypes: []
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/market-structure/sessionBusinessDate
@@ -153,6 +223,12 @@ domain:
         - attribute: https://axiolune.ai/ontology/finance/market-structure/sessionEndUtc
           minCount: 1
           maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/effectiveSessionStartUtc
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/effectiveSessionEndUtc
+          minCount: 0
+          maxCount: 1
       patternBindings:
         - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
         - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
@@ -161,9 +237,8 @@ domain:
       namespace: fin-market-structure
       localName: TradingCalendarException
       label: Trading Calendar Exception
-      definition: >-
-        temporal exception fact that deterministically closes or changes one exact session occurrence without mutating
-        its session template
+      definition: Trading Calendar Exception, is a timestamped exception fact, used to deterministically close or adjust one exact session occurrence without mutating its session template, characterizing holidays, temporary closures, or early and late session openings and closings.
+      cnNote: 交易日历例外，是带时间戳的例外事实，用于在不改动原时段模板的前提下确定性地关闭或调整某一确切时段实例，刻画节假日、临时停市或提前延后开收盘。
       superTypes: []
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/market-structure/calendarExceptionKind
@@ -195,9 +270,8 @@ domain:
       namespace: fin-market-structure
       localName: OTCTradingContext
       label: OTC Trading Context
-      definition: >-
-        non-listing trading context whose logical identity is the source-provider logical IRI, immutable source-contract
-        IRI, and provider-scoped context identifier
+      definition: OTC Trading Context, is a non-listing trading context whose logical identity is determined by the source-provider logical IRI, the immutable source-contract IRI, and a provider-scoped context identifier, used to characterize the market-convention environment for over-the-counter quotes and executions. This type is deprecated as of v1.1.0 because it mixes provider source contract, quote/settlement currency, reporting facility, concrete counterparty pair, and execution semantics that are not stable market structure; it is replaced by NonVenueMarketContext for the stable non-venue structure, while the provider contract moves to Layer 4, currencies/convention to instruments, and counterparty/execution/reporting to orders-execution or post-trade-operations. The type is retained for IRI stability because market-data, instruments, and orders-execution reference it as an association range; its cross-module migration is deferred to a follow-up ADR.
+      cnNote: 场外交易上下文，是非上市交易语境，其逻辑身份由数据源提供方逻辑 IRI、不可变源契约 IRI 与提供方作用域内上下文标识共同确定，用于刻画场外报价与成交的市场约定环境。该类型自 v1.1.0 起弃用，因其混合了数据源契约、报价/结算币种、报告设施、具体对手方对与成交语义，并非稳定市场结构；其稳定非场所结构由 NonVenueMarketContext 取代，数据源契约归 Layer 4，币种/约定归 instruments，对手方/成交/报告归 orders-execution 或 post-trade-operations。因 market-data、instruments 与 orders-execution 以其为关联 range，该类型为 IRI 稳定性而保留；其跨模块迁移延后至后续 ADR。
       superTypes: []
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/market-structure/providerContextId
@@ -224,15 +298,41 @@ domain:
       patternBindings:
         - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
         - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    NonVenueMarketContext:
+      iri: https://axiolune.ai/ontology/finance/market-structure/NonVenueMarketContext
+      namespace: fin-market-structure
+      localName: NonVenueMarketContext
+      label: Non-Venue Market Context
+      definition: Non-Venue Market Context, is a stable non-venue market context that characterizes the market-convention orientation of over-the-counter quoting without carrying provider source contracts, concrete currencies, counterparty pairs, or execution/reporting semantics, used to express only the stable structure that belongs in market-structure. Its logical identity is determined by the non-venue context identity and its market-convention orientation; provider attribution is a logical reference to a Party. Provider contract and source mapping belong to Layer 4, currencies and quotation convention to instruments, and counterparty/execution/reporting to orders-execution or post-trade-operations.
+      cnNote: 非场所市场上下文，是刻画场外报价市场约定取向的稳定非场所市场上下文，不承载数据源契约、具体币种、对手方对或成交/报告语义，用于表达仅属于市场结构的稳定结构。其逻辑身份由非场所上下文身份及其市场约定取向确定；提供方归属是对 Party 的逻辑引用。数据源契约与映射归 Layer 4，币种与报价约定归 instruments，对手方/成交/报告归 orders-execution 或 post-trade-operations。
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/providerContextId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/marketConvention
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
   associationTypes:
     JurisdictionCalendarBinding:
       iri: https://axiolune.ai/ontology/finance/market-structure/JurisdictionCalendarBinding
       namespace: fin-market-structure
       localName: JurisdictionCalendarBinding
       label: Jurisdiction Calendar Binding
-      definition: >-
-        explicit temporal binding between one logical Jurisdiction identity and one exact TradingCalendar version,
-        materializing calendarJurisdiction for audit and mapping slices
+      definition: Jurisdiction Calendar Binding, is an explicit temporal binding between one logical Jurisdiction identity and one exact TradingCalendar version, used to materialize the relationship between a calendar and its governing jurisdiction to support audit and mapping slices.
+      cnNote: 司法辖区日历绑定，是某一逻辑司法辖区身份与某一确切交易日历版本之间的显式时态绑定，用于将日历与所辖司法辖区关系实例化以支持审计与映射切片。
       participantRoles:
         - id: bindingJurisdiction
           range: https://axiolune.ai/ontology/finance/foundation/Jurisdiction
@@ -250,13 +350,104 @@ domain:
       patternBindings:
         - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
         - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    VenueOperation:
+      iri: https://axiolune.ai/ontology/finance/market-structure/VenueOperation
+      namespace: fin-market-structure
+      localName: VenueOperation
+      label: Venue Operation
+      definition: Venue Operation, is a temporal provenance-bearing association that records one logical Party operating one logical TradingVenue over a validity interval together with an optional regulatory venue category, used to separate the market system/venue from the legal entity that operates it and to model operator history without conflating venue identity with its operator.
+      cnNote: 场所运营，是带时间与来源的关联，记录某一逻辑参与方在某一有效区间内运营某一逻辑交易场所及可选监管场所类别，用于将市场系统/场所与运营它的法人实体分离，并建模运营方历史而不把场所身份与运营方混淆。
+      participantRoles:
+        - id: operatedVenue
+          range: https://axiolune.ai/ontology/finance/market-structure/TradingVenue
+          minCount: 1
+          maxCount: 1
+          label: operated venue
+          definition: logical TradingVenue identity operated by the party
+        - id: operatingParty
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 1
+          maxCount: 1
+          label: operating party
+          definition: logical Party identity that operates the venue
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/venueCategory
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/venueOperationValidFrom
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/venueOperationValidTo
+          minCount: 0
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    TradingScheduleOverrideNotice:
+      iri: https://axiolune.ai/ontology/finance/market-structure/TradingScheduleOverrideNotice
+      namespace: fin-market-structure
+      localName: TradingScheduleOverrideNotice
+      label: Trading Schedule Override Notice
+      definition: Trading Schedule Override Notice, is a temporal provenance-bearing n-ary association that records one pre-announced schedule override applying to one or more exact TradingSessionOccurrence versions under one exact calendar and one exact facility, carrying an announcement order and a supersession order together with an optional replacement interval, used to separate the planned schedule from real-time status and to deterministically synthesize a single final effective interval or cancellation across multiple affected sessions.
+      cnNote: 交易日程变更公告，是带时间与来源的 n 元关联，记录某一预公布的日程变更作用于某一确切日历与设施下的一个或多个确切交易时段实例版本，携带公告顺序与覆盖顺序及可选替换区间，用于将计划日程与实时状态分离，并跨多个受影响时段确定性合成单一最终有效区间或取消结果。
+      participantRoles:
+        - id: overrideForCalendar
+          range: https://axiolune.ai/ontology/finance/market-structure/TradingCalendar
+          minCount: 1
+          maxCount: 1
+          label: override calendar
+          definition: exact TradingCalendar version under which the override applies
+        - id: overrideForFacility
+          range: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
+          minCount: 1
+          maxCount: 1
+          label: override facility
+          definition: exact TradingFacility version whose sessions are overridden
+        - id: overrideAppliesToOccurrence
+          range: https://axiolune.ai/ontology/finance/market-structure/TradingSessionOccurrence
+          minCount: 1
+          maxCount: null
+          label: overridden occurrence
+          definition: one or more exact TradingSessionOccurrence versions affected by the notice
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/calendarExceptionKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/exceptionBusinessDate
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/overrideAnnouncementOrder
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/overrideSupersessionOrder
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/overrideReplacementStartUtc
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-structure/overrideReplacementEndUtc
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
   relationTypes:
     marketSegmentVenue:
       iri: https://axiolune.ai/ontology/finance/market-structure/marketSegmentVenue
       namespace: fin-market-structure
       localName: marketSegmentVenue
       label: Market Segment Venue
-      definition: relates a market segment to its one operating trading venue
+      definition: Market Segment Venue, is a functional relation that associates a market segment with the unique operating trading venue it belongs to, used to characterize the ownership structure between segments and venues.
+      cnNote: 市场板块场所关系，是将某一市场板块关联到其所隶属的唯一运营交易场所的功能性关系，用于刻画板块与场所的归属结构。
       domain: https://axiolune.ai/ontology/finance/market-structure/MarketSegment
       range: https://axiolune.ai/ontology/finance/market-structure/TradingVenue
       characteristics:
@@ -266,7 +457,8 @@ domain:
       namespace: fin-market-structure
       localName: registryMICValue
       label: Registry MIC Value
-      definition: relates a MIC registry entry to its one four-character MIC logical identity
+      definition: Registry MIC Value, is a functional relation that associates a MIC registry entry with the unique four-character MIC logical identity it represents, used to link registry entries to their ISO 10383 MIC identifiers.
+      cnNote: 注册 MIC 值关系，是将某一 MIC 注册条目关联到其所代表的唯一四位 MIC 逻辑身份的功能性关系，用于把注册条目与 ISO 10383 MIC 标识挂钩。
       domain: https://axiolune.ai/ontology/finance/market-structure/MICRegistryEntry
       range: https://axiolune.ai/ontology/finance/foundation/MICValue
       characteristics:
@@ -276,7 +468,8 @@ domain:
       namespace: fin-market-structure
       localName: registryAuthority
       label: Registry Authority
-      definition: relates a MIC registry entry to the logical identifier authority that maintains it
+      definition: Registry Authority, is a functional relation that associates a MIC registry entry with the logical identifier authority that maintains it, used to characterize the maintenance responsibility for MIC registry.
+      cnNote: 注册权威关系，是将某一 MIC 注册条目关联到维护该条目的逻辑标识符权威的功能性关系，用于刻画 MIC 注册的维护责任归属。
       domain: https://axiolune.ai/ontology/finance/market-structure/MICRegistryEntry
       range: https://axiolune.ai/ontology/finance/foundation/IdentifierAuthority
       characteristics:
@@ -286,7 +479,8 @@ domain:
       namespace: fin-market-structure
       localName: registryFacility
       label: Registry Facility
-      definition: relates a MIC registry entry to the exact TradingFacility version identified by that entry
+      definition: Registry Facility, is a functional relation that associates a MIC registry entry with the exact TradingFacility version it identifies, used to bind MIC registry facts to a concrete venue version.
+      cnNote: 注册设施关系，是将某一 MIC 注册条目关联到该条目所标识的确切交易设施版本的功能性关系，用于把 MIC 注册事实与具体场所版本绑定。
       domain: https://axiolune.ai/ontology/finance/market-structure/MICRegistryEntry
       range: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
       characteristics:
@@ -296,7 +490,8 @@ domain:
       namespace: fin-market-structure
       localName: operatingMICEntry
       label: Operating MIC Entry
-      definition: relates a segment MIC entry to the exact operating MIC entry for its trading venue
+      definition: Operating MIC Entry, is a functional relation that associates a segment MIC entry with the exact operating MIC entry of its trading venue, used to characterize the correspondence between a segment and its venue's operating-level MIC.
+      cnNote: 运营 MIC 条目关系，是将某一板块 MIC 条目关联到其交易场所对应的确切运营 MIC 条目的功能性关系，用于刻画板块与其场所运营级 MIC 的对应关系。
       domain: https://axiolune.ai/ontology/finance/market-structure/MICRegistryEntry
       range: https://axiolune.ai/ontology/finance/market-structure/MICRegistryEntry
       characteristics:
@@ -306,7 +501,8 @@ domain:
       namespace: fin-market-structure
       localName: calendarFacility
       label: Calendar Facility
-      definition: relates a trading calendar to the stable logical identity of its trading facility
+      definition: Calendar Facility, is a functional relation that associates a trading calendar with the stable logical identity of its trading facility, used to characterize the venue that the calendar serves.
+      cnNote: 日历设施关系，是将某一交易日历关联到其交易设施的稳定逻辑身份的功能性关系，用于刻画日历所服务的场所逻辑归属。
       domain: https://axiolune.ai/ontology/finance/market-structure/TradingCalendar
       range: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
       characteristics:
@@ -316,7 +512,8 @@ domain:
       namespace: fin-market-structure
       localName: calendarAuthority
       label: Calendar Authority
-      definition: relates a trading calendar to the Party logical identity of its maintaining authority
+      definition: Calendar Authority, is a functional relation that associates a trading calendar with the Party logical identity of its maintaining authority, used to characterize the institutional responsibility for the calendar.
+      cnNote: 日历权威关系，是将某一交易日历关联到其维护权威的参与方逻辑身份的功能性关系，用于刻画日历的机构责任归属。
       domain: https://axiolune.ai/ontology/finance/market-structure/TradingCalendar
       range: https://axiolune.ai/ontology/finance/foundation/Party
       characteristics:
@@ -326,7 +523,8 @@ domain:
       namespace: fin-market-structure
       localName: calendarJurisdiction
       label: Calendar Jurisdiction
-      definition: relates a trading calendar to its one governing jurisdiction logical identity
+      definition: Calendar Jurisdiction, is a functional relation that associates a trading calendar with its unique governing jurisdiction logical identity, used to characterize the regulatory and territorial attribution of the calendar.
+      cnNote: 日历司法辖区关系，是将某一交易日历关联到其所辖唯一司法辖区逻辑身份的功能性关系，用于刻画日历的法规地域归属。
       domain: https://axiolune.ai/ontology/finance/market-structure/TradingCalendar
       range: https://axiolune.ai/ontology/finance/foundation/Jurisdiction
       characteristics:
@@ -336,7 +534,8 @@ domain:
       namespace: fin-market-structure
       localName: templateCalendar
       label: Template Calendar
-      definition: relates a session template to the exact trading-calendar version it specializes
+      definition: Template Calendar, is a functional relation that associates a session template with the exact trading-calendar version it specializes, used to attach a session specification to a concrete calendar version.
+      cnNote: 模板日历关系，是将某一交易时段模板关联到其所特化的确切交易日历版本的功能性关系，用于把时段规范挂接到具体日历版本。
       domain: https://axiolune.ai/ontology/finance/market-structure/TradingSessionTemplate
       range: https://axiolune.ai/ontology/finance/market-structure/TradingCalendar
       characteristics:
@@ -346,7 +545,8 @@ domain:
       namespace: fin-market-structure
       localName: occurrenceTemplate
       label: Occurrence Template
-      definition: relates a session occurrence to the exact template version that generated it
+      definition: Occurrence Template, is a functional relation that associates a session occurrence with the exact template version that generated it, used to trace the template source of an occurrence.
+      cnNote: 实例模板关系，是将某一交易时段实例关联到生成它的确切时段模板版本的功能性关系，用于追溯实例的模板来源。
       domain: https://axiolune.ai/ontology/finance/market-structure/TradingSessionOccurrence
       range: https://axiolune.ai/ontology/finance/market-structure/TradingSessionTemplate
       characteristics:
@@ -356,7 +556,8 @@ domain:
       namespace: fin-market-structure
       localName: occurrenceCalendar
       label: Occurrence Calendar
-      definition: relates a session occurrence to the exact calendar version applied to it
+      definition: Occurrence Calendar, is a functional relation that associates a session occurrence with the exact calendar version applied to it, used to characterize the calendar version on which an occurrence is based.
+      cnNote: 实例日历关系，是将某一交易时段实例关联到应用于它的确切日历版本的功能性关系，用于刻画实例所依据的日历版本。
       domain: https://axiolune.ai/ontology/finance/market-structure/TradingSessionOccurrence
       range: https://axiolune.ai/ontology/finance/market-structure/TradingCalendar
       characteristics:
@@ -366,7 +567,8 @@ domain:
       namespace: fin-market-structure
       localName: occurrenceFacility
       label: Occurrence Facility
-      definition: relates a session occurrence to the exact TradingFacility version whose interval it controls
+      definition: Occurrence Facility, is a functional relation that associates a session occurrence with the exact TradingFacility version whose interval it controls, used to bind a tradable time window to a concrete venue version.
+      cnNote: 实例设施关系，是将某一交易时段实例关联到其时段所控制的确切交易设施版本的功能性关系，用于把可交易时间窗绑定到具体场所版本。
       domain: https://axiolune.ai/ontology/finance/market-structure/TradingSessionOccurrence
       range: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
       characteristics:
@@ -376,7 +578,8 @@ domain:
       namespace: fin-market-structure
       localName: exceptionOccurrence
       label: Exception Occurrence
-      definition: relates a calendar exception to the exact session occurrence it deterministically alters
+      definition: Exception Occurrence, is a functional relation that associates a calendar exception with the exact session occurrence it deterministically alters, used to attach an exception fact to the affected session occurrence.
+      cnNote: 例外实例关系，是将某一交易日历例外关联到其确定性地修改的确切交易时段实例的功能性关系，用于把例外事实挂接到被影响的时段实例。
       domain: https://axiolune.ai/ontology/finance/market-structure/TradingCalendarException
       range: https://axiolune.ai/ontology/finance/market-structure/TradingSessionOccurrence
       characteristics:
@@ -386,7 +589,8 @@ domain:
       namespace: fin-market-structure
       localName: otcSourceProvider
       label: OTC Source Provider
-      definition: relates an OTC trading context to its exact source-provider Party version
+      definition: OTC Source Provider, is a functional relation that associates an OTC trading context with its exact source-provider Party version, used to characterize the data-source attribution of an over-the-counter context. Deprecated as of v1.1.0 with OTCTradingContext; provider attribution for the stable context is the logical nonVenueContextProvider, and the source contract moves to Layer 4.
+      cnNote: 场外数据源提供方关系，是将某一场外交易上下文关联到其确切数据源提供方参与方版本的功能性关系，用于刻画场外语境的数据来源归属。自 v1.1.0 起随 OTCTradingContext 弃用；稳定上下文的提供方归属为逻辑 nonVenueContextProvider，源契约归 Layer 4。
       domain: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
       range: https://axiolune.ai/ontology/finance/foundation/Party
       characteristics:
@@ -396,7 +600,8 @@ domain:
       namespace: fin-market-structure
       localName: otcQuoteCurrency
       label: OTC Quote Currency
-      definition: relates an OTC trading context to its one quote Currency logical identity
+      definition: OTC Quote Currency, is a functional relation that associates an OTC trading context with its unique quote Currency logical identity, used to characterize the pricing currency of over-the-counter quotes. Deprecated as of v1.1.0 with OTCTradingContext; quote currency and quotation convention belong to instruments.
+      cnNote: 场外报价货币关系，是将某一场外交易上下文关联到其唯一报价货币逻辑身份的功能性关系，用于刻画场外报价的计价货币。自 v1.1.0 起随 OTCTradingContext 弃用；报价币种与报价约定归 instruments。
       domain: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
       range: https://axiolune.ai/ontology/finance/foundation/Currency
       characteristics:
@@ -406,7 +611,8 @@ domain:
       namespace: fin-market-structure
       localName: otcSettlementCurrency
       label: OTC Settlement Currency
-      definition: relates an OTC trading context to its optional settlement Currency logical identity
+      definition: OTC Settlement Currency, is a functional relation that associates an OTC trading context with its optional settlement Currency logical identity, used to characterize the settlement currency of over-the-counter executions. Deprecated as of v1.1.0 with OTCTradingContext; settlement currency belongs to instruments or post-trade-operations.
+      cnNote: 场外结算货币关系，是将某一场外交易上下文关联到其可选结算货币逻辑身份的功能性关系，用于刻画场外成交的结算货币。自 v1.1.0 起随 OTCTradingContext 弃用；结算币种归 instruments 或 post-trade-operations。
       domain: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
       range: https://axiolune.ai/ontology/finance/foundation/Currency
       characteristics:
@@ -416,7 +622,8 @@ domain:
       namespace: fin-market-structure
       localName: otcReportingFacility
       label: OTC Reporting Facility
-      definition: relates an OTC trading context to its optional exact reporting-facility version
+      definition: OTC Reporting Facility, is a functional relation that associates an OTC trading context with its optional exact reporting-facility version, used to characterize the reporting venue on which an over-the-counter context relies. Deprecated as of v1.1.0 with OTCTradingContext; reporting obligation belongs to orders-execution or post-trade-operations.
+      cnNote: 场外报告设施关系，是将某一场外交易上下文关联到其可选确切报告设施版本的功能性关系，用于刻画场外语境所挂靠的报告场所。自 v1.1.0 起随 OTCTradingContext 弃用；报告义务归 orders-execution 或 post-trade-operations。
       domain: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
       range: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
       characteristics:
@@ -426,7 +633,8 @@ domain:
       namespace: fin-market-structure
       localName: otcCounterpartyA
       label: OTC Counterparty A
-      definition: relates an OTC trading context to the lexically first exact Party version in its optional counterparty pair
+      definition: OTC Counterparty A, is a functional relation that associates an OTC trading context with the lexically first exact Party version in its optional counterparty pair, used to record one party of an over-the-counter execution in canonical form. Deprecated as of v1.1.0 with OTCTradingContext; counterparty semantics belong to orders-execution or post-trade-operations.
+      cnNote: 场外对手方甲关系，是将某一场外交易上下文关联到其可选对手方对中按词典序居首的确切参与方版本的功能性关系，用于规范化记录场外成交的一方。自 v1.1.0 起随 OTCTradingContext 弃用；对手方语义归 orders-execution 或 post-trade-operations。
       domain: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
       range: https://axiolune.ai/ontology/finance/foundation/Party
       characteristics:
@@ -436,8 +644,75 @@ domain:
       namespace: fin-market-structure
       localName: otcCounterpartyB
       label: OTC Counterparty B
-      definition: relates an OTC trading context to the lexically second exact Party version in its optional counterparty pair
+      definition: OTC Counterparty B, is a functional relation that associates an OTC trading context with the lexically second exact Party version in its optional counterparty pair, used to record the other party of an over-the-counter execution in canonical form. This relation is deprecated as of v1.1.0 together with OTCTradingContext; counterparty semantics belong to orders-execution or post-trade-operations.
+      cnNote: 场外对手方乙关系，是将某一场外交易上下文关联到其可选对手方对中按词典序居次的确切参与方版本的功能性关系，用于规范化记录场外成交的另一方。该关系自 v1.1.0 起随 OTCTradingContext 一并弃用；对手方语义归 orders-execution 或 post-trade-operations。
       domain: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
+      range: https://axiolune.ai/ontology/finance/foundation/Party
+      characteristics:
+        - functional
+    operatedBy:
+      iri: https://axiolune.ai/ontology/finance/market-structure/operatedBy
+      namespace: fin-market-structure
+      localName: operatedBy
+      label: Operated By
+      definition: Operated By, is a functional relation that associates a TradingVenue with the logical Party identity that operates it, used to separate the market system/venue from its operator. The temporal validity and regulatory category of the operation are carried by VenueOperation; this relation is the logical-reference projection of the currently active operator.
+      cnNote: 运营方关系，是将某一交易场所关联到运营它的逻辑参与方身份的功能性关系，用于将市场系统/场所与运营方分离。运营的时间有效性与监管类别由 VenueOperation 承载；该关系是当前生效运营方的逻辑引用投影。
+      domain: https://axiolune.ai/ontology/finance/market-structure/TradingVenue
+      range: https://axiolune.ai/ontology/finance/foundation/Party
+      characteristics:
+        - functional
+    venueRegulatoryClassification:
+      iri: https://axiolune.ai/ontology/finance/market-structure/venueRegulatoryClassification
+      namespace: fin-market-structure
+      localName: venueRegulatoryClassification
+      label: Venue Regulatory Classification
+      definition: Venue Regulatory Classification, is a functional relation that associates a TradingVenue with its regulatory venue category (regulated market, multilateral trading facility, organized trading facility, or comparable category), used to model regulatory categorization as a temporal evidenced fact rather than a hardcoded global supertree. The temporal validity is carried by VenueOperation.
+      cnNote: 场所监管分类关系，是将某一交易场所关联到其监管场所类别（受监管市场、多边交易设施、有组织交易设施或可比类别）的功能性关系，用于将监管分类建模为带时间与证据的事实而非硬编码全局超类树。时间有效性由 VenueOperation 承载。
+      domain: https://axiolune.ai/ontology/finance/market-structure/TradingVenue
+      range: https://axiolune.ai/ontology/finance/market-structure/VenueCategory
+      characteristics:
+        - functional
+    componentOf:
+      iri: https://axiolune.ai/ontology/finance/market-structure/componentOf
+      namespace: fin-market-structure
+      localName: componentOf
+      label: Component Of
+      definition: Component Of, is a functional relation that associates a MarketInfrastructureComponent with the unique operating market infrastructure entity it is a section or component of, used to carry the ISO 10383 "section" part-of semantics independently of any facility supertype shared for reference range.
+      cnNote: 组成归属关系，是将某一市场基础设施组成部分关联到其所构成板块或组成部分所属的唯一运营中市场基础设施实体的功能性关系，用于独立于任何为参照范围共享的设施超类来承载 ISO 10383 "section" 归属语义。
+      domain: https://axiolune.ai/ontology/finance/market-structure/MarketInfrastructureComponent
+      range: https://axiolune.ai/ontology/finance/market-structure/MICIdentifiedMarketInfrastructure
+      characteristics:
+        - functional
+    micReplacedBy:
+      iri: https://axiolune.ai/ontology/finance/market-structure/micReplacedBy
+      namespace: fin-market-structure
+      localName: micReplacedBy
+      label: MIC Replaced By
+      definition: MIC Replaced By, is a functional relation that associates a MIC registry entry with the MIC registry entry that replaces it when the entry has been superseded, used to model the ISO 10383 replacement chain as a logical reference.
+      cnNote: MIC 替换关系，是将某一 MIC 注册条目关联到在其被取代后替换它的 MIC 注册条目的功能性关系，用于将 ISO 10383 替换链建模为逻辑引用。
+      domain: https://axiolune.ai/ontology/finance/market-structure/MICRegistryEntry
+      range: https://axiolune.ai/ontology/finance/market-structure/MICRegistryEntry
+      characteristics:
+        - functional
+    nonVenueContextConvention:
+      iri: https://axiolune.ai/ontology/finance/market-structure/nonVenueContextConvention
+      namespace: fin-market-structure
+      localName: nonVenueContextConvention
+      label: Non-Venue Context Convention
+      definition: Non-Venue Context Convention, is a functional relation that associates a NonVenueMarketContext with its market-convention orientation, used to characterize the quoting orientation of a stable non-venue market context without carrying concrete currencies or execution semantics.
+      cnNote: 非场所上下文约定关系，是将某一非场所市场上下文关联到其市场约定取向的功能性关系，用于刻画稳定非场所市场上下文的报价取向而不承载具体币种或成交语义。
+      domain: https://axiolune.ai/ontology/finance/market-structure/NonVenueMarketContext
+      range: https://axiolune.ai/ontology/finance/market-structure/MarketConvention
+      characteristics:
+        - functional
+    nonVenueContextProvider:
+      iri: https://axiolune.ai/ontology/finance/market-structure/nonVenueContextProvider
+      namespace: fin-market-structure
+      localName: nonVenueContextProvider
+      label: Non-Venue Context Provider
+      definition: Non-Venue Context Provider, is a functional relation that associates a NonVenueMarketContext with the logical Party identity of its provider, used to characterize the data-source attribution of a stable non-venue context as a logical reference rather than an exact-version source contract.
+      cnNote: 非场所上下文提供方关系，是将某一非场所市场上下文关联到其提供方的逻辑参与方身份的功能性关系，用于将稳定非场所上下文的数据来源归属刻画为逻辑引用而非确切版本源契约。
+      domain: https://axiolune.ai/ontology/finance/market-structure/NonVenueMarketContext
       range: https://axiolune.ai/ontology/finance/foundation/Party
       characteristics:
         - functional
@@ -447,7 +722,8 @@ domain:
       namespace: fin-market-structure
       localName: micEntryType
       label: MIC Entry Type
-      definition: closed OPRT or SGMT classification carried by one MIC registry entry
+      definition: MIC Entry Type, is a closed classification attribute carried by one MIC registry entry, used to distinguish whether the entry is an operating-level or segment-level registry record.
+      cnNote: MIC 条目类型，是某一 MIC 注册条目携带的封闭分类属性，用于区分该条目是运营级还是板块级注册记录。
       valueType: https://axiolune.ai/ontology/finance/market-structure/MICEntryType
       defaultCardinality:
         minCount: 1
@@ -457,7 +733,8 @@ domain:
       namespace: fin-market-structure
       localName: authorityCalendarId
       label: Authority Calendar Identifier
-      definition: non-empty NFC identifier assigned to a calendar by its maintaining authority
+      definition: Authority Calendar Identifier, is a non-empty NFC string identifier assigned to a trading calendar by its maintaining authority, used to uniquely denote that calendar within the scope of (authority, facility). The calendar logical key is the three-component (calendarFacility, calendarAuthority, authorityCalendarId) per TradingCalendarIdentityContract, so the identifier is unique within each authority-and-facility pair, not within the authority alone.
+      cnNote: 权威日历标识符，是由维护权威分配给某一交易日历的非空 NFC 字符串标识，用于在（权威，设施）范围内唯一指代该日历。日历逻辑键为三分量（calendarFacility、calendarAuthority、authorityCalendarId），见 TradingCalendarIdentityContract，因此该标识在每个权威与设施配对范围内唯一，而非仅在权威范围内唯一。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -468,7 +745,8 @@ domain:
       namespace: fin-market-structure
       localName: ianaTimeZone
       label: IANA Time Zone
-      definition: canonical IANA time-zone identifier used to interpret a trading calendar's local-clock sessions
+      definition: IANA Time Zone, is a canonical IANA time-zone identifier, used to interpret the local-clock sessions of a trading calendar and anchor local sessions to a specific geographical time zone.
+      cnNote: IANA 时区，是用于解释交易日历本地时钟时段的规范 IANA 时区标识符，用于把本地时段锚定到具体地理时区。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -479,7 +757,8 @@ domain:
       namespace: fin-market-structure
       localName: sessionRecurrence
       label: Session Recurrence
-      definition: deterministic recurrence expression selecting the business dates to which a session template applies
+      definition: Session Recurrence, is a deterministic recurrence expression, used to select the business dates to which a session template applies and bind a session specification to a concrete set of dates. Deprecated as of v1.1.0 in favor of the formal recurrenceRule attribute which is bounded and materializable; retained for compatibility.
+      cnNote: 时段复发规则，是确定性地选取某一时段模板所适用营业日期的复发表达式，用于把时段规范与具体日期集合挂钩。自 v1.1.0 起弃用，改用有界且可物化的形式化 recurrenceRule 属性；为兼容性保留。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -490,7 +769,8 @@ domain:
       namespace: fin-market-structure
       localName: localSessionStart
       label: Local Session Start
-      definition: ISO local-clock time at which a recurring session interval begins
+      definition: Local Session Start, is the ISO local-clock time at which a recurring session interval begins, used to define the opening of a trading session in local time.
+      cnNote: 本地时段开始，是某一重复时段区间开始的 ISO 本地时钟时刻，用于以本地时间定义交易时段的开端。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -501,7 +781,8 @@ domain:
       namespace: fin-market-structure
       localName: localSessionEnd
       label: Local Session End
-      definition: ISO local-clock time at which a recurring half-open session interval ends
+      definition: Local Session End, is the ISO local-clock time at which a recurring half-open session interval ends, used to define the closing of a trading session in local time.
+      cnNote: 本地时段结束，是某一重复半开时段区间结束的 ISO 本地时钟时刻，用于以本地时间定义交易时段的收尾。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -512,7 +793,8 @@ domain:
       namespace: fin-market-structure
       localName: sessionBusinessDate
       label: Session Business Date
-      definition: local calendar date to which a concrete trading-session occurrence belongs
+      definition: Session Business Date, is the local calendar date to which a concrete trading-session occurrence belongs, used to assign an occurrence to a business day.
+      cnNote: 时段营业日期，是某一具体交易时段实例所属的本地日历日期，用于把时段实例归属到一个营业日。
       valueType: date
       defaultCardinality:
         minCount: 1
@@ -522,7 +804,8 @@ domain:
       namespace: fin-market-structure
       localName: sessionStartUtc
       label: Session Start UTC
-      definition: inclusive UTC instant at which a concrete trading-session occurrence starts
+      definition: Session Start UTC, is the inclusive UTC instant at which a concrete trading-session occurrence starts, used to bound the start of a trading session in absolute time.
+      cnNote: 时段 UTC 开始，是某一具体交易时段实例开始时刻的含端 UTC 瞬时，用于以绝对时间界定交易时段起点。
       valueType: instant
       defaultCardinality:
         minCount: 1
@@ -532,7 +815,8 @@ domain:
       namespace: fin-market-structure
       localName: sessionEndUtc
       label: Session End UTC
-      definition: exclusive UTC instant at which a concrete trading-session occurrence ends
+      definition: Session End UTC, is the exclusive UTC instant at which a concrete trading-session occurrence ends, used to bound the end of a trading session in absolute time.
+      cnNote: 时段 UTC 结束，是某一具体交易时段实例结束时刻的不含端 UTC 瞬时，用于以绝对时间界定交易时段终点。
       valueType: instant
       defaultCardinality:
         minCount: 1
@@ -542,7 +826,8 @@ domain:
       namespace: fin-market-structure
       localName: calendarExceptionKind
       label: Calendar Exception Kind
-      definition: closed holiday, closure, early-session, or late-session classification of a calendar exception
+      definition: Calendar Exception Kind, is a closed classification attribute of a calendar exception, used to distinguish holidays, closures, early closings, late openings, and similar exceptional circumstances.
+      cnNote: 日历例外类型，是对某一日历例外的封闭分类属性，用于区分节假日、临时停市、提前收盘或延后开盘等例外情形。
       valueType: https://axiolune.ai/ontology/finance/market-structure/CalendarExceptionKind
       defaultCardinality:
         minCount: 1
@@ -552,7 +837,8 @@ domain:
       namespace: fin-market-structure
       localName: exceptionBusinessDate
       label: Exception Business Date
-      definition: local business date on which a trading-calendar exception applies
+      definition: Exception Business Date, is the local business date on which a trading-calendar exception applies, used to attach an exception fact to a specific date.
+      cnNote: 例外营业日期，是某一交易日历例外所作用的本地营业日期，用于把例外事实挂接到具体日期。
       valueType: date
       defaultCardinality:
         minCount: 1
@@ -562,7 +848,8 @@ domain:
       namespace: fin-market-structure
       localName: replacementSessionStartUtc
       label: Replacement Session Start UTC
-      definition: optional inclusive replacement start instant supplied by an early or late session exception
+      definition: Replacement Session Start UTC, is an optional inclusive replacement start instant supplied by an early or late session exception, used to override the opening instant of the original session occurrence.
+      cnNote: 替换时段 UTC 开始，是由提前或延后开盘例外提供的可选含端替换开始瞬时，用于覆盖原时段实例的开盘时刻。
       valueType: instant
       defaultCardinality:
         minCount: 0
@@ -572,7 +859,8 @@ domain:
       namespace: fin-market-structure
       localName: replacementSessionEndUtc
       label: Replacement Session End UTC
-      definition: optional exclusive replacement end instant supplied by an early or late session exception
+      definition: Replacement Session End UTC, is an optional exclusive replacement end instant supplied by an early closing exception, used to override the closing instant of the original session occurrence.
+      cnNote: 替换时段 UTC 结束，是由提前收盘例外提供的可选不含端替换结束瞬时，用于覆盖原时段实例的收盘时刻。
       valueType: instant
       defaultCardinality:
         minCount: 0
@@ -582,7 +870,8 @@ domain:
       namespace: fin-market-structure
       localName: providerContextId
       label: Provider Context Identifier
-      definition: non-empty NFC business identifier scoped by one source provider and immutable source contract
+      definition: Provider Context Identifier, is a non-empty NFC business identifier scoped by one source provider and its immutable source contract, used to uniquely denote a context within an over-the-counter setting.
+      cnNote: 提供方上下文标识，是由某一数据源提供方与不可变源契约共同作用域的非空 NFC 业务标识，用于在场外语境中唯一指代一个上下文。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -593,7 +882,8 @@ domain:
       namespace: fin-market-structure
       localName: marketConvention
       label: Market Convention
-      definition: reviewed convention member that fixes the orientation and application semantics of one OTC context
+      definition: Market Convention, is a reviewed convention member, used to fix the orientation and application semantics of one OTC context and characterize the pricing and unit orientation of over-the-counter quotes.
+      cnNote: 市场约定，是用于确定某一场外上下文报价方向与应用语义的经审核约定成员，用于刻画场外报价的计价与单位取向。
       valueType: https://axiolune.ai/ontology/finance/market-structure/MarketConvention
       defaultCardinality:
         minCount: 1
@@ -603,7 +893,8 @@ domain:
       namespace: fin-market-structure
       localName: sourceContractRef
       label: Source Contract Reference
-      definition: absolute IRI of the immutable provider schema or contract that defines providerContextId extraction
+      definition: Source Contract Reference, is the absolute IRI of the immutable provider schema or contract that defines the extraction of the provider context identifier, used to anchor the data-contract source of an over-the-counter context. Deprecated as of v1.1.0 with OTCTradingContext; the source contract belongs to Layer 4 SemanticMappingDefinition.
+      cnNote: 源契约引用，是定义提供方上下文标识抽取规则的不可变提供方模式或契约的绝对 IRI，用于锚定场外语境的数据契约来源。自 v1.1.0 起随 OTCTradingContext 弃用；源契约归 Layer 4 SemanticMappingDefinition。
       valueType: uri
       defaultCardinality:
         minCount: 1
@@ -613,12 +904,225 @@ domain:
       namespace: fin-market-structure
       localName: sourceContractDigest
       label: Source Contract Digest
-      definition: lowercase SHA-256 digest authenticating the exact bytes of the referenced source contract
+      definition: Source Contract Digest, is a lowercase SHA-256 digest, used to authenticate the exact bytes of the referenced source contract and verify that the contract content has not been tampered with. Deprecated as of v1.1.0 with OTCTradingContext; source-contract authentication belongs to Layer 4.
+      cnNote: 源契约摘要，是认证所引用源契约确切字节的小写 SHA-256 摘要，用于校验源契约内容未被篡改。自 v1.1.0 起随 OTCTradingContext 弃用；源契约鉴权归 Layer 4。
       valueType: string
       defaultCardinality:
         minCount: 1
         maxCount: 1
       pattern: ^sha256:[0-9a-f]{64}$
+    venueCategory:
+      iri: https://axiolune.ai/ontology/finance/market-structure/venueCategory
+      namespace: fin-market-structure
+      localName: venueCategory
+      label: Venue Category
+      definition: Venue Category, is a closed classification attribute carried by a VenueOperation, used to record the regulatory category of a trading venue (regulated market, multilateral trading facility, organized trading facility, or comparable category) as a temporal evidenced fact.
+      cnNote: 场所类别，是某一 VenueOperation 携带的封闭分类属性，用于将交易场所的监管类别（受监管市场、多边交易设施、有组织交易设施或可比类别）记录为带时间与证据的事实。
+      valueType: https://axiolune.ai/ontology/finance/market-structure/VenueCategory
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    venueOperationValidFrom:
+      iri: https://axiolune.ai/ontology/finance/market-structure/venueOperationValidFrom
+      namespace: fin-market-structure
+      localName: venueOperationValidFrom
+      label: Venue Operation Valid From
+      definition: Venue Operation Valid From, is the inclusive instant from which a VenueOperation is valid, used to bound the operator history of a trading venue.
+      cnNote: 场所运营生效起始，是某一 VenueOperation 生效的含端瞬时，用于界定交易场所运营方历史的起点。
+      valueType: instant
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    venueOperationValidTo:
+      iri: https://axiolune.ai/ontology/finance/market-structure/venueOperationValidTo
+      namespace: fin-market-structure
+      localName: venueOperationValidTo
+      label: Venue Operation Valid To
+      definition: Venue Operation Valid To, is the exclusive instant at which a VenueOperation ends, used to bound the operator history of a trading venue.
+      cnNote: 场所运营生效结束，是某一 VenueOperation 结束的不含端瞬时，用于界定交易场所运营方历史的终点。
+      valueType: instant
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    authoritySessionId:
+      iri: https://axiolune.ai/ontology/finance/market-structure/authoritySessionId
+      namespace: fin-market-structure
+      localName: authoritySessionId
+      label: Authority Session Identifier
+      definition: Authority Session Identifier, is a non-empty NFC string identifier assigned to a session template by its maintaining authority, used to uniquely denote that session within the authority-and-calendar scope.
+      cnNote: 权威时段标识符，是由维护权威分配给某一时段模板的非空 NFC 字符串标识，用于在权威与日历范围内唯一指代该时段。
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    scheduledTradingPhase:
+      iri: https://axiolune.ai/ontology/finance/market-structure/scheduledTradingPhase
+      namespace: fin-market-structure
+      localName: scheduledTradingPhase
+      label: Scheduled Trading Phase
+      definition: Scheduled Trading Phase, is a closed classification attribute carried by a session template, used to distinguish preOpen, openingAuction, continuousTrading, closingAuction, postClose, maintenance, and reportingOnly phases of a trading session.
+      cnNote: 计划交易阶段，是某一时段模板携带的封闭分类属性，用于区分交易时段的 preOpen、openingAuction、continuousTrading、closingAuction、postClose、maintenance 与 reportingOnly 阶段。
+      valueType: https://axiolune.ai/ontology/finance/market-structure/ScheduledTradingPhase
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    endDayOffset:
+      iri: https://axiolune.ai/ontology/finance/market-structure/endDayOffset
+      namespace: fin-market-structure
+      localName: endDayOffset
+      label: End Day Offset
+      definition: End Day Offset, is a signed integer day offset between the local start date and the local end date of a session, used to model cross-midnight sessions where the end falls on a later calendar day than the start.
+      cnNote: 结束日期偏移，是某一时段本地开始日期与本地结束日期之间的有符号整数日偏移，用于建模结束日期晚于开始日期的跨午夜时段。
+      valueType: integer
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    recurrenceRule:
+      iri: https://axiolune.ai/ontology/finance/market-structure/recurrenceRule
+      namespace: fin-market-structure
+      localName: recurrenceRule
+      label: Recurrence Rule
+      definition: Recurrence Rule, is a bounded RFC 5545 RRULE-style recurrence expression that selects the business dates to which a session template applies, used to deterministically materialize occurrences under the calendar's IANA time zone. This attribute is the formal, materializable companion to the retained sessionRecurrence string.
+      cnNote: 复发规则，是选取某一时段模板所适用营业日的有界 RFC 5545 RRULE 风格复发表达式，用于在日历 IANA 时区下确定性物化实例。该属性是保留的 sessionRecurrence 字符串的形式化、可物化伴随项。
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+      pattern: ^RRULE:.*$
+    effectiveSessionStartUtc:
+      iri: https://axiolune.ai/ontology/finance/market-structure/effectiveSessionStartUtc
+      namespace: fin-market-structure
+      localName: effectiveSessionStartUtc
+      label: Effective Session Start UTC
+      definition: Effective Session Start UTC, is an optional inclusive UTC instant at which a session occurrence becomes effectively tradable after applying any TradingScheduleOverrideNotice facts, used to separate the scheduled window from the effective tradable interval. When absent and no cancellation applies, the effective interval equals the scheduled interval.
+      cnNote: 有效时段 UTC 开始，是某一时段实例在应用任意 TradingScheduleOverrideNotice 事实后实际可交易的含端 UTC 瞬时，用于将计划窗口与有效可交易区间分离。当其缺席且未发生取消时，有效区间等于计划区间。
+      valueType: instant
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    effectiveSessionEndUtc:
+      iri: https://axiolune.ai/ontology/finance/market-structure/effectiveSessionEndUtc
+      namespace: fin-market-structure
+      localName: effectiveSessionEndUtc
+      label: Effective Session End UTC
+      definition: Effective Session End UTC, is an optional exclusive UTC instant at which a session occurrence stops being effectively tradable after applying any TradingScheduleOverrideNotice facts, used to separate the scheduled window from the effective tradable interval.
+      cnNote: 有效时段 UTC 结束，是某一时段实例在应用任意 TradingScheduleOverrideNotice 事实后停止实际可交易的不含端 UTC 瞬时，用于将计划窗口与有效可交易区间分离。
+      valueType: instant
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    overrideAnnouncementOrder:
+      iri: https://axiolune.ai/ontology/finance/market-structure/overrideAnnouncementOrder
+      namespace: fin-market-structure
+      localName: overrideAnnouncementOrder
+      label: Override Announcement Order
+      definition: Override Announcement Order, is a non-negative integer recording the publication order of a TradingScheduleOverrideNotice within its calendar and facility scope, used to sequence notices by their announcement time.
+      cnNote: 变更公告顺序，是记录某一 TradingScheduleOverrideNotice 在其日历与设施范围内发布顺序的非负整数，用于按公告时间排列公告。
+      valueType: integer
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    overrideSupersessionOrder:
+      iri: https://axiolune.ai/ontology/finance/market-structure/overrideSupersessionOrder
+      namespace: fin-market-structure
+      localName: overrideSupersessionOrder
+      label: Override Supersession Order
+      definition: Override Supersession Order, is a non-negative integer recording the precedence of a TradingScheduleOverrideNotice when multiple notices affect the same occurrence, used together with the announcement order to synthesize a single final effective interval or cancellation.
+      cnNote: 变更覆盖顺序，是当多个公告影响同一时段实例时记录某一 TradingScheduleOverrideNotice 优先级的非负整数，与公告顺序共同用于合成单一最终有效区间或取消结果。
+      valueType: integer
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    overrideReplacementStartUtc:
+      iri: https://axiolune.ai/ontology/finance/market-structure/overrideReplacementStartUtc
+      namespace: fin-market-structure
+      localName: overrideReplacementStartUtc
+      label: Override Replacement Start UTC
+      definition: Override Replacement Start UTC, is an optional inclusive replacement start instant supplied by a TradingScheduleOverrideNotice, used to override the opening instant of the affected scheduled occurrence when synthesizing the effective interval.
+      cnNote: 变更替换 UTC 开始，是由某一 TradingScheduleOverrideNotice 提供的可选含端替换开始瞬时，用于在合成有效区间时覆盖受影响计划实例的开盘时刻。
+      valueType: instant
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    overrideReplacementEndUtc:
+      iri: https://axiolune.ai/ontology/finance/market-structure/overrideReplacementEndUtc
+      namespace: fin-market-structure
+      localName: overrideReplacementEndUtc
+      label: Override Replacement End UTC
+      definition: Override Replacement End UTC, is an optional exclusive replacement end instant supplied by a TradingScheduleOverrideNotice, used to override the closing instant of the affected scheduled occurrence when synthesizing the effective interval.
+      cnNote: 变更替换 UTC 结束，是由某一 TradingScheduleOverrideNotice 提供的可选不含端替换结束瞬时，用于在合成有效区间时覆盖受影响计划实例的收盘时刻。
+      valueType: instant
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    micOperationalStatus:
+      iri: https://axiolune.ai/ontology/finance/market-structure/micOperationalStatus
+      namespace: fin-market-structure
+      localName: micOperationalStatus
+      label: MIC Operational Status
+      definition: MIC Operational Status, is a closed classification attribute carried by a MIC registry entry, used to record the ISO 10383 lifecycle status (active, updated, expired) of the entry.
+      cnNote: MIC 运营状态，是某一 MIC 注册条目携带的封闭分类属性，用于记录该条目的 ISO 10383 生命周期状态（active、updated、expired）。
+      valueType: https://axiolune.ai/ontology/finance/market-structure/MICOperationalStatus
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    micEffectiveFrom:
+      iri: https://axiolune.ai/ontology/finance/market-structure/micEffectiveFrom
+      namespace: fin-market-structure
+      localName: micEffectiveFrom
+      label: MIC Effective From
+      definition: MIC Effective From, is the optional inclusive instant from which a MIC registry entry is effective per ISO 10383, used to record the entry lifecycle.
+      cnNote: MIC 生效起始，是某一 MIC 注册条目按 ISO 10383 生效的可选含端瞬时，用于记录条目生命周期。
+      valueType: instant
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    micEffectiveTo:
+      iri: https://axiolune.ai/ontology/finance/market-structure/micEffectiveTo
+      namespace: fin-market-structure
+      localName: micEffectiveTo
+      label: MIC Effective To
+      definition: MIC Effective To, is the optional exclusive instant at which a MIC registry entry expires per ISO 10383, used to record the entry lifecycle.
+      cnNote: MIC 生效结束，是某一 MIC 注册条目按 ISO 10383 到期的可选不含端瞬时，用于记录条目生命周期。
+      valueType: instant
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    marketCategory:
+      iri: https://axiolune.ai/ontology/finance/market-structure/marketCategory
+      namespace: fin-market-structure
+      localName: marketCategory
+      label: MIC Market Category
+      definition: MIC Market Category, is a closed classification attribute carried by a MIC registry entry, used to record the ISO 10383 market category of the identified infrastructure.
+      cnNote: MIC 市场类别，是某一 MIC 注册条目携带的封闭分类属性，用于记录所标识基础设施的 ISO 10383 市场类别。
+      valueType: https://axiolune.ai/ontology/finance/market-structure/MICMarketCategory
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    tzdbRelease:
+      iri: https://axiolune.ai/ontology/finance/market-structure/tzdbRelease
+      namespace: fin-market-structure
+      localName: tzdbRelease
+      label: IANA tzdb Release
+      definition: IANA tzdb Release, is an optional versioned IANA time-zone database release identifier, used to pin the tzdb revision under which a trading calendar's local-clock sessions are materialized to UTC for deterministic replay.
+      cnNote: IANA tzdb 发行版本，是可选的版本化 IANA 时区数据库发行标识，用于锁定交易日历本地时钟时段物化为 UTC 所依据的 tzdb 修订以支持确定性回放。
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    dstOverlapPolicy:
+      iri: https://axiolune.ai/ontology/finance/market-structure/dstOverlapPolicy
+      namespace: fin-market-structure
+      localName: dstOverlapPolicy
+      label: DST Overlap Policy
+      definition: DST Overlap Policy, is a closed classification attribute carried by a trading calendar, used to declare how local-clock instants that fall inside a DST gap or fold are interpreted during local-to-UTC materialization.
+      cnNote: 夏令时重叠策略，是某一交易日历携带的封闭分类属性，用于声明本地到 UTC 物化时落在夏令时 gap 或 fold 内的本地时钟瞬时的解释方式。
+      valueType: https://axiolune.ai/ontology/finance/market-structure/DstOverlapPolicy
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
   identifierTypes: {}
   codeLists:
     MICEntryType:
@@ -626,7 +1130,8 @@ domain:
       namespace: fin-market-structure
       localName: MICEntryType
       label: MIC Entry Type
-      definition: closed ISO 10383 registry-entry discriminator distinguishing operating MICs from segment MICs
+      definition: MIC Entry Type, is a closed controlled vocabulary based on ISO 10383 that distinguishes operating-level MICs from segment-level MICs, used to provide a standard enumeration of entry kinds for MIC registry entries.
+      cnNote: MIC 条目类型表，是依据 ISO 10383 区分运营级 MIC 与板块级 MIC 的封闭受控词汇，用于为 MIC 注册条目提供条目种类的标准枚举。
       vocabulary: MIC Entry Type
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -635,19 +1140,20 @@ domain:
         - iri: https://axiolune.ai/ontology/finance/market-structure/MICEntryType/value/OPRT
           notation: OPRT
           label: Operating MIC
-          definition: registry entry that identifies an operating-level TradingVenue
+          definition: registry entry that identifies an operating-level MICIdentifiedMarketInfrastructure, which may be a TradingVenue or a TradeReportingFacility
         - iri: https://axiolune.ai/ontology/finance/market-structure/MICEntryType/value/SGMT
           notation: SGMT
           label: Segment MIC
-          definition: registry entry that identifies a MarketSegment and refers to its operating MIC entry
+          definition: registry entry that identifies a MarketSegment (a section of a TradingVenue or a TradeReportingFacility) and refers to its operating MIC entry
     CalendarExceptionKind:
       iri: https://axiolune.ai/ontology/finance/market-structure/CalendarExceptionKind
       namespace: fin-market-structure
       localName: CalendarExceptionKind
       label: Calendar Exception Kind
-      definition: closed classification of deterministic changes to scheduled session occurrences
+      definition: Calendar Exception Kind, is a closed classification controlled vocabulary of deterministic changes to scheduled session occurrences, used to provide a standard enumeration of holidays, closures, early and late opens and closes, extra sessions, and segmented interruptions and resumptions for calendar exceptions and schedule override notices.
+      cnNote: 日历例外类型表，是对已计划时段实例进行确定性变更的封闭分类受控词汇，用于为日历例外与日程变更公告提供节假日、停市、提前/延后开收盘、额外时段、分段中断与恢复等标准枚举。
       vocabulary: Calendar Exception Kind
-      version: 1.0.0
+      version: 1.1.0
       maintainer: Axiolune ontology maintainers
       sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
       values:
@@ -659,20 +1165,49 @@ domain:
           notation: closure
           label: Closure
           definition: calendar exception that removes the affected session occurrence for a non-holiday closure
+        - iri: https://axiolune.ai/ontology/finance/market-structure/CalendarExceptionKind/value/earlyClose
+          notation: earlyClose
+          label: Early Close
+          definition: calendar exception that shortens an occurrence by replacing its exclusive end instant with an earlier instant
+        - iri: https://axiolune.ai/ontology/finance/market-structure/CalendarExceptionKind/value/lateOpen
+          notation: lateOpen
+          label: Late Open
+          definition: calendar exception that delays an occurrence by replacing its inclusive start instant with a later instant
+        - iri: https://axiolune.ai/ontology/finance/market-structure/CalendarExceptionKind/value/earlyOpen
+          notation: earlyOpen
+          label: Early Open
+          definition: calendar exception that advances an occurrence by replacing its inclusive start instant with an earlier instant
+        - iri: https://axiolune.ai/ontology/finance/market-structure/CalendarExceptionKind/value/lateClose
+          notation: lateClose
+          label: Late Close
+          definition: calendar exception that extends an occurrence by replacing its exclusive end instant with a later instant
+        - iri: https://axiolune.ai/ontology/finance/market-structure/CalendarExceptionKind/value/extraSession
+          notation: extraSession
+          label: Extra Session
+          definition: calendar exception that adds a session occurrence not present in the template schedule
+        - iri: https://axiolune.ai/ontology/finance/market-structure/CalendarExceptionKind/value/segmentedInterrupt
+          notation: segmentedInterrupt
+          label: Segmented Interrupt
+          definition: calendar exception that interrupts a session occurrence for a sub-interval, used with a matching segmentedResume to model a trading halt within the session
+        - iri: https://axiolune.ai/ontology/finance/market-structure/CalendarExceptionKind/value/segmentedResume
+          notation: segmentedResume
+          label: Segmented Resume
+          definition: calendar exception that resumes a previously interrupted session occurrence after a matching segmentedInterrupt
         - iri: https://axiolune.ai/ontology/finance/market-structure/CalendarExceptionKind/value/earlySession
           notation: earlySession
-          label: Early Session
-          definition: calendar exception that shortens an occurrence by replacing its exclusive end instant
+          label: Early Session (deprecated)
+          definition: legacy alias for earlyClose; retained for compatibility, replaced by earlyClose
         - iri: https://axiolune.ai/ontology/finance/market-structure/CalendarExceptionKind/value/lateSession
           notation: lateSession
-          label: Late Session
-          definition: calendar exception that delays an occurrence by replacing its inclusive start instant
+          label: Late Session (deprecated)
+          definition: legacy alias for lateOpen; retained for compatibility, replaced by lateOpen
     MarketConvention:
       iri: https://axiolune.ai/ontology/finance/market-structure/MarketConvention
       namespace: fin-market-structure
       localName: MarketConvention
       label: Market Convention
-      definition: closed convention classification used to orient direct quote-per-unit OTC contexts
+      definition: Market Convention, is a closed convention classification controlled vocabulary, used to orient direct quote-per-unit OTC contexts and provide a standard enumeration of over-the-counter quoting methods.
+      cnNote: 市场约定表，是用于为按单位直接报价的场外上下文定向的封闭约定分类受控词汇，用于为场外报价方式提供标准枚举。
       vocabulary: Market Convention
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -682,6 +1217,146 @@ domain:
           notation: directQuotePerUnit
           label: Direct Quote Per Unit
           definition: convention in which one instrument unit is valued directly in the context quote currency
+    VenueCategory:
+      iri: https://axiolune.ai/ontology/finance/market-structure/VenueCategory
+      namespace: fin-market-structure
+      localName: VenueCategory
+      label: Venue Category
+      definition: Venue Category, is a closed controlled vocabulary of regulatory trading-venue categories, used to classify a TradingVenue as a temporal evidenced fact rather than a global supertree.
+      cnNote: 场所类别表，是监管交易场所类别的封闭受控词汇，用于将交易场所分类为带时间与证据的事实而非全局超类树。
+      vocabulary: Venue Category
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-structure/VenueCategory/value/regulatedMarket
+          notation: regulatedMarket
+          label: Regulated Market
+          definition: venue authorized as a regulated market (e.g. EU RM)
+        - iri: https://axiolune.ai/ontology/finance/market-structure/VenueCategory/value/multilateralTradingFacility
+          notation: multilateralTradingFacility
+          label: Multilateral Trading Facility
+          definition: venue authorized as a multilateral trading facility (e.g. EU MTF)
+        - iri: https://axiolune.ai/ontology/finance/market-structure/VenueCategory/value/organizedTradingFacility
+          notation: organizedTradingFacility
+          label: Organized Trading Facility
+          definition: venue authorized as an organized trading facility (e.g. EU OTF)
+        - iri: https://axiolune.ai/ontology/finance/market-structure/VenueCategory/value/otherTradingVenue
+          notation: otherTradingVenue
+          label: Other Trading Venue
+          definition: venue authorized under another comparable trading-venue regime (e.g. ATS, exchange)
+    ScheduledTradingPhase:
+      iri: https://axiolune.ai/ontology/finance/market-structure/ScheduledTradingPhase
+      namespace: fin-market-structure
+      localName: ScheduledTradingPhase
+      label: Scheduled Trading Phase
+      definition: Scheduled Trading Phase, is a closed controlled vocabulary of the scheduled phases of a trading session, used to distinguish pre-open, opening auction, continuous trading, closing auction, post-close, maintenance, and reporting-only phases.
+      cnNote: 计划交易阶段表，是交易时段计划阶段的封闭受控词汇，用于区分 preOpen、openingAuction、continuousTrading、closingAuction、postClose、maintenance 与 reportingOnly 阶段。
+      vocabulary: Scheduled Trading Phase
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-structure/ScheduledTradingPhase/value/preOpen
+          notation: preOpen
+          label: Pre-Open
+          definition: phase in which orders may be accepted but not matched
+        - iri: https://axiolune.ai/ontology/finance/market-structure/ScheduledTradingPhase/value/openingAuction
+          notation: openingAuction
+          label: Opening Auction
+          definition: phase in which opening auction matching occurs
+        - iri: https://axiolune.ai/ontology/finance/market-structure/ScheduledTradingPhase/value/continuousTrading
+          notation: continuousTrading
+          label: Continuous Trading
+          definition: phase in which orders match continuously
+        - iri: https://axiolune.ai/ontology/finance/market-structure/ScheduledTradingPhase/value/closingAuction
+          notation: closingAuction
+          label: Closing Auction
+          definition: phase in which closing auction matching occurs
+        - iri: https://axiolune.ai/ontology/finance/market-structure/ScheduledTradingPhase/value/postClose
+          notation: postClose
+          label: Post-Close
+          definition: phase after the trading session in which post-close processing occurs
+        - iri: https://axiolune.ai/ontology/finance/market-structure/ScheduledTradingPhase/value/maintenance
+          notation: maintenance
+          label: Maintenance
+          definition: phase reserved for venue maintenance, not open for trading
+        - iri: https://axiolune.ai/ontology/finance/market-structure/ScheduledTradingPhase/value/reportingOnly
+          notation: reportingOnly
+          label: Reporting Only
+          definition: phase in which the venue accepts reports but does not operate a trading market
+    MICOperationalStatus:
+      iri: https://axiolune.ai/ontology/finance/market-structure/MICOperationalStatus
+      namespace: fin-market-structure
+      localName: MICOperationalStatus
+      label: MIC Operational Status
+      definition: MIC Operational Status, is a closed controlled vocabulary of the ISO 10383 lifecycle status of a MIC registry entry, used to record whether an entry is active, updated, or expired.
+      cnNote: MIC 运营状态表，是某一 MIC 注册条目 ISO 10383 生命周期状态的封闭受控词汇，用于记录条目是 active、updated 还是 expired。
+      vocabulary: MIC Operational Status
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-structure/MICOperationalStatus/value/active
+          notation: active
+          label: Active
+          definition: MIC registry entry is currently active
+        - iri: https://axiolune.ai/ontology/finance/market-structure/MICOperationalStatus/value/updated
+          notation: updated
+          label: Updated
+          definition: MIC registry entry has been updated and the update is recorded
+        - iri: https://axiolune.ai/ontology/finance/market-structure/MICOperationalStatus/value/expired
+          notation: expired
+          label: Expired
+          definition: MIC registry entry has expired and is no longer active
+    MICMarketCategory:
+      iri: https://axiolune.ai/ontology/finance/market-structure/MICMarketCategory
+      namespace: fin-market-structure
+      localName: MICMarketCategory
+      label: MIC Market Category
+      definition: MIC Market Category, is a closed controlled vocabulary of the ISO 10383 market category of the infrastructure identified by a MIC registry entry, used to record whether the identified infrastructure operates a trading market, reports trades, or performs another market function.
+      cnNote: MIC 市场类别表，是某一 MIC 注册条目所标识基础设施 ISO 10383 市场类别的封闭受控词汇，用于记录所标识基础设施是运营交易市场、报告交易还是执行其他市场功能。
+      vocabulary: MIC Market Category
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-structure/MICMarketCategory/value/operating
+          notation: operating
+          label: Operating
+          definition: the MIC identifies an operating-level market infrastructure
+        - iri: https://axiolune.ai/ontology/finance/market-structure/MICMarketCategory/value/segment
+          notation: segment
+          label: Segment
+          definition: the MIC identifies a segment-level section of an operating market infrastructure
+        - iri: https://axiolune.ai/ontology/finance/market-structure/MICMarketCategory/value/reporting
+          notation: reporting
+          label: Reporting
+          definition: the MIC identifies a trade reporting facility or reporting arrangement
+    DstOverlapPolicy:
+      iri: https://axiolune.ai/ontology/finance/market-structure/DstOverlapPolicy
+      namespace: fin-market-structure
+      localName: DstOverlapPolicy
+      label: DST Overlap Policy
+      definition: DST Overlap Policy, is a closed controlled vocabulary of the interpretation policy for local-clock instants that fall inside a DST gap or fold, used to make local-to-UTC materialization deterministic.
+      cnNote: 夏令时重叠策略表，是落在夏令时 gap 或 fold 内的本地时钟瞬时解释策略的封闭受控词汇，用于使本地到 UTC 物化具有确定性。
+      vocabulary: DST Overlap Policy
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-structure/DstOverlapPolicy/value/earlierTime
+          notation: earlierTime
+          label: Earlier Time
+          definition: ambiguous local instant is interpreted as the earlier of the two UTC instants
+        - iri: https://axiolune.ai/ontology/finance/market-structure/DstOverlapPolicy/value/laterTime
+          notation: laterTime
+          label: Later Time
+          definition: ambiguous local instant is interpreted as the later of the two UTC instants
+        - iri: https://axiolune.ai/ontology/finance/market-structure/DstOverlapPolicy/value/invalid
+          notation: invalid
+          label: Invalid
+          definition: local instant inside a DST gap is invalid and rejected
   constraints:
     MICRegistryEntryContract:
       iri: https://axiolune.ai/ontology/finance/market-structure/MICRegistryEntryContract
@@ -689,19 +1364,23 @@ domain:
       localName: MICRegistryEntryContract
       label: MIC Registry Entry Contract
       definition: >-
-        logical constraint requiring OPRT entries to identify TradingVenue versions and SGMT entries to identify
-        MarketSegment versions with one exact operating OPRT entry for that segment's venue
+        logical constraint requiring OPRT entries to identify an operating-level MICIdentifiedMarketInfrastructure
+        (a TradingVenue or a TradeReportingFacility) and SGMT entries to identify a MarketSegment section of such
+        an operating entity, with the logical/exact version bridge comparing registryFacility.marketSegmentVenue or
+        componentOf against versionOf(operatingMICEntry.registryFacility)
       constraintType: Logical
       scope: Object
       expression:
         language: Custom
         expression: >-
           logicalKey(registryAuthority,registryMICValue.micLexicalValue); registryMICValue.micLexicalValue matches
-          ^[A-Z0-9]{4}$; OPRT => facility is TradingVenue and operatingMICEntry absent; SGMT => facility is
-          MarketSegment and exactlyOne(operatingMICEntry) and operatingMICEntry.type = OPRT and
-          facility.marketSegmentVenue = operatingMICEntry.facility
+          ^[A-Z0-9]{4}$; OPRT => facility is MICIdentifiedMarketInfrastructure (TradingVenue or TradeReportingFacility)
+          and operatingMICEntry absent; SGMT => facility is MarketSegment and exactlyOne(operatingMICEntry) and
+          operatingMICEntry.type = OPRT and versionOf(operatingMICEntry.registryFacility) =
+          facility.marketSegmentVenue (or facility.componentOf) so the segment's logical parent equals the logical
+          identity of the operating MIC's exact facility version
       severity: Error
-      message: MIC registry entry violates its OPRT or SGMT facility contract
+      message: MIC registry entry violates its OPRT or SGMT facility contract or its logical/exact version bridge
       targetElement: https://axiolune.ai/ontology/finance/market-structure/MICRegistryEntry
     TradingCalendarIdentityContract:
       iri: https://axiolune.ai/ontology/finance/market-structure/TradingCalendarIdentityContract
@@ -725,31 +1404,39 @@ domain:
       localName: TradingSessionOccurrenceContract
       label: Trading Session Occurrence Contract
       definition: >-
-        interval and join constraint requiring exact template, calendar, and facility versions and a non-empty half-open
-        UTC interval
+        interval, join, and materialization consistency constraint requiring exact template, calendar, and facility
+        versions, a non-empty half-open scheduled UTC interval, and consistency between the occurrence UTC interval
+        and the template recurrence rule, local start/end, endDayOffset, and calendar IANA time zone and tzdb release
       constraintType: Logical
       scope: Object
       expression:
         language: Custom
         expression: >-
           occurrenceTemplate.templateCalendar = occurrenceCalendar and occurrenceCalendar.calendarFacility =
-          versionOf(occurrenceFacility) and sessionStartUtc < sessionEndUtc
+          versionOf(occurrenceFacility) and sessionStartUtc < sessionEndUtc and materializeUtc(
+          occurrenceTemplate.recurrenceRule|sessionRecurrence, occurrenceTemplate.localSessionStart,
+          occurrenceTemplate.localSessionEnd, occurrenceTemplate.endDayOffset, occurrenceCalendar.ianaTimeZone,
+          occurrenceCalendar.tzdbRelease, occurrenceCalendar.dstOverlapPolicy) = (sessionStartUtc, sessionEndUtc)
+          for sessionBusinessDate
       severity: Error
-      message: session occurrence is inconsistent with its exact template, calendar, facility, or UTC interval
+      message: session occurrence is inconsistent with its exact template, calendar, facility, UTC interval, or materialization
       targetElement: https://axiolune.ai/ontology/finance/market-structure/TradingSessionOccurrence
     TradingCalendarExceptionContract:
       iri: https://axiolune.ai/ontology/finance/market-structure/TradingCalendarExceptionContract
       namespace: fin-market-structure
       localName: TradingCalendarExceptionContract
       label: Trading Calendar Exception Contract
-      definition: deterministic exception constraint that changes an occurrence rather than mutating a reusable session template
+      definition: deterministic exception constraint that changes an occurrence rather than mutating a reusable session template, covering the v1.1.0 extended exception kinds
       constraintType: Logical
       scope: Object
       expression:
         language: Custom
         expression: >-
-          holiday|closure => no replacement interval; earlySession => replacementSessionEndUtc present and earlier;
-          lateSession => replacementSessionStartUtc present and later
+          holiday|closure => no replacement interval; earlyClose|earlySession => replacementSessionEndUtc present and
+          earlier; lateOpen|lateSession => replacementSessionStartUtc present and later; earlyOpen =>
+          replacementSessionStartUtc present and earlier; lateClose => replacementSessionEndUtc present and later;
+          extraSession => replacement interval present; segmentedInterrupt|segmentedResume => paired and within the
+          scheduled interval
       severity: Error
       message: calendar exception does not deterministically alter its exact occurrence
       targetElement: https://axiolune.ai/ontology/finance/market-structure/TradingCalendarException
@@ -760,7 +1447,8 @@ domain:
       label: OTC Trading Context Contract
       definition: >-
         executable pair constraint for provider-scoped non-listing contexts whose optional exact-version counterparties
-        must be absent together or present as two distinct IRIs in canonical lexical order
+        must be absent together or present as two distinct IRIs in canonical lexical order. Deprecated as of v1.1.0
+        with OTCTradingContext; counterparty semantics move to orders-execution or post-trade-operations.
       constraintType: Logical
       scope: Object
       expression:
@@ -786,7 +1474,7 @@ domain:
       namespace: fin-market-structure
       localName: OTCTradingContextReferenceContract
       label: OTC Trading Context Reference Contract
-      definition: three-axis reference and authority-registry constraint for provider-scoped non-listing market contexts
+      definition: three-axis reference and authority-registry constraint for provider-scoped non-listing market contexts. Deprecated as of v1.1.0 with OTCTradingContext; the source contract moves to Layer 4 and currency evidence to instruments.
       constraintType: Logical
       scope: Object
       expression:
@@ -801,6 +1489,124 @@ domain:
       severity: Error
       message: OTC context identity, exact references, Currency registry evidence, or source contract is invalid
       targetElement: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
+    VenueOperationIntegrity:
+      iri: https://axiolune.ai/ontology/finance/market-structure/VenueOperationIntegrity
+      namespace: fin-market-structure
+      localName: VenueOperationIntegrity
+      label: Venue Operation Integrity
+      definition: >-
+        integrity constraint requiring a VenueOperation to bind one logical TradingVenue to one logical Party over a
+        non-empty validity interval, with venueOperationValidFrom < venueOperationValidTo when the end is present,
+        and at most one active VenueOperation per venue at any valid time
+      constraintType: Logical
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          exactlyOne(operatedVenue) and exactlyOne(operatingParty) and venueOperationValidFrom present and
+          (venueOperationValidTo absent or venueOperationValidFrom < venueOperationValidTo) and
+          atMostOneActiveVenueOperationFor(operatedVenue, self.validFrom)
+      severity: Error
+      message: venue operation is inconsistent in its venue, party, validity interval, or active uniqueness
+      targetElement: https://axiolune.ai/ontology/finance/market-structure/VenueOperation
+    CalendarExceptionSupersession:
+      iri: https://axiolune.ai/ontology/finance/market-structure/CalendarExceptionSupersession
+      namespace: fin-market-structure
+      localName: CalendarExceptionSupersession
+      label: Calendar Exception Supersession
+      definition: >-
+        supersession constraint requiring that when multiple TradingScheduleOverrideNotice facts affect the same
+        occurrence, the notice with the greatest overrideSupersessionOrder (tie-broken by overrideAnnouncementOrder)
+        determines the single final effective interval or cancellation, and that the final effective interval is
+        consistent with all applied notices
+      constraintType: Logical
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          for each occurrence, the final effective interval or cancellation is synthesized from the notice with
+          max(overrideSupersessionOrder, overrideAnnouncementOrder); holiday|closure => no effective interval;
+          earlyClose|lateOpen|earlyOpen|lateClose|extraSession => effective interval derived from the scheduled
+          interval and the notice replacement instants; segmentedInterrupt|segmentedResume => effective interval
+          excludes the interrupted sub-interval
+      severity: Error
+      message: multiple schedule override notices do not synthesize a single consistent final effective interval
+      targetElement: https://axiolune.ai/ontology/finance/market-structure/TradingScheduleOverrideNotice
+    CalendarExceptionDateConsistency:
+      iri: https://axiolune.ai/ontology/finance/market-structure/CalendarExceptionDateConsistency
+      namespace: fin-market-structure
+      localName: CalendarExceptionDateConsistency
+      label: Calendar Exception Date Consistency
+      definition: >-
+        date consistency constraint requiring that a calendar exception's exceptionBusinessDate equals the
+        sessionBusinessDate of the exact session occurrence it alters
+      constraintType: Logical
+      scope: Object
+      expression:
+        language: Custom
+        expression: exceptionBusinessDate = exceptionOccurrence.sessionBusinessDate
+      severity: Error
+      message: calendar exception business date does not match the affected occurrence session business date
+      targetElement: https://axiolune.ai/ontology/finance/market-structure/TradingCalendarException
+    CalendarJurisdictionConsistency:
+      iri: https://axiolune.ai/ontology/finance/market-structure/CalendarJurisdictionConsistency
+      namespace: fin-market-structure
+      localName: CalendarJurisdictionConsistency
+      label: Calendar Jurisdiction Consistency
+      definition: >-
+        consistency constraint requiring that the direct calendarJurisdiction logical identity of a TradingCalendar
+        matches the jurisdiction of the active JurisdictionCalendarBinding for the same calendar version, so the
+        direct relation and the association are a single source of truth
+      constraintType: Logical
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          calendarJurisdiction = bindingJurisdiction of the JurisdictionCalendarBinding whose bindingCalendar =
+          versionOf(self) and whose TemporalFact interval contains self.validFrom
+      severity: Error
+      message: calendar direct jurisdiction does not match the active jurisdiction calendar binding
+      targetElement: https://axiolune.ai/ontology/finance/market-structure/TradingCalendar
+    ScheduleOverrideNoticeIntegrity:
+      iri: https://axiolune.ai/ontology/finance/market-structure/ScheduleOverrideNoticeIntegrity
+      namespace: fin-market-structure
+      localName: ScheduleOverrideNoticeIntegrity
+      label: Schedule Override Notice Integrity
+      definition: >-
+        integrity constraint requiring a TradingScheduleOverrideNotice to bind one exact calendar, one exact
+        facility, and one or more exact session occurrences under that calendar and facility, with a positive
+        announcement order and supersession order
+      constraintType: Logical
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          exactlyOne(overrideForCalendar) and exactlyOne(overrideForFacility) and atLeastOne(overrideAppliesToOccurrence)
+          and overrideAnnouncementOrder >= 0 and overrideSupersessionOrder >= 0 and for each occurrence:
+          occurrenceCalendar = overrideForCalendar and versionOf(occurrenceFacility) = overrideForFacility
+      severity: Error
+      message: schedule override notice is inconsistent in its calendar, facility, occurrences, or order fields
+      targetElement: https://axiolune.ai/ontology/finance/market-structure/TradingScheduleOverrideNotice
+    NonVenueMarketContextContract:
+      iri: https://axiolune.ai/ontology/finance/market-structure/NonVenueMarketContextContract
+      namespace: fin-market-structure
+      localName: NonVenueMarketContextContract
+      label: Non-Venue Market Context Contract
+      definition: >-
+        identity constraint for a stable non-venue market context whose logical key is the provider-scoped context
+        identifier and market-convention orientation, carrying no counterparty pair, no concrete currencies, and no
+        source contract
+      constraintType: Logical
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(providerContextId, marketConvention); no otcCounterpartyA, no otcCounterpartyB, no
+          otcQuoteCurrency, no otcSettlementCurrency, no sourceContractRef, no sourceContractDigest;
+          nonVenueContextProvider when present is a logical Party reference
+      severity: Error
+      message: non-venue market context carries disallowed counterparty, currency, or source-contract fields
+      targetElement: https://axiolune.ai/ontology/finance/market-structure/NonVenueMarketContext
   relationUses:
     - relation: https://axiolune.ai/ontology/finance/market-structure/marketSegmentVenue
       subjectType: https://axiolune.ai/ontology/finance/market-structure/MarketSegment
@@ -973,6 +1779,60 @@ domain:
       constraints:
         - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
           targetElement: https://axiolune.ai/ontology/finance/market-structure/otcCounterpartyB
+    - relation: https://axiolune.ai/ontology/finance/market-structure/operatedBy
+      subjectType: https://axiolune.ai/ontology/finance/market-structure/TradingVenue
+      objectType: https://axiolune.ai/ontology/finance/foundation/Party
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/market-structure/operatedBy
+    - relation: https://axiolune.ai/ontology/finance/market-structure/venueRegulatoryClassification
+      subjectType: https://axiolune.ai/ontology/finance/market-structure/TradingVenue
+      objectType: https://axiolune.ai/ontology/finance/market-structure/VenueCategory
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/market-structure/venueRegulatoryClassification
+    - relation: https://axiolune.ai/ontology/finance/market-structure/componentOf
+      subjectType: https://axiolune.ai/ontology/finance/market-structure/MarketInfrastructureComponent
+      objectType: https://axiolune.ai/ontology/finance/market-structure/MICIdentifiedMarketInfrastructure
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/market-structure/componentOf
+    - relation: https://axiolune.ai/ontology/finance/market-structure/micReplacedBy
+      subjectType: https://axiolune.ai/ontology/finance/market-structure/MICRegistryEntry
+      objectType: https://axiolune.ai/ontology/finance/market-structure/MICRegistryEntry
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/market-structure/micReplacedBy
+    - relation: https://axiolune.ai/ontology/finance/market-structure/nonVenueContextConvention
+      subjectType: https://axiolune.ai/ontology/finance/market-structure/NonVenueMarketContext
+      objectType: https://axiolune.ai/ontology/finance/market-structure/MarketConvention
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/market-structure/nonVenueContextConvention
+    - relation: https://axiolune.ai/ontology/finance/market-structure/nonVenueContextProvider
+      subjectType: https://axiolune.ai/ontology/finance/market-structure/NonVenueMarketContext
+      objectType: https://axiolune.ai/ontology/finance/foundation/Party
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/market-structure/nonVenueContextProvider
   constraintBindings:
     - constraintRef: https://axiolune.ai/ontology/finance/market-structure/MICRegistryEntryContract
       targetElement: https://axiolune.ai/ontology/finance/market-structure/MICRegistryEntry
@@ -991,4 +1851,22 @@ domain:
       enforcementLevel: Mandatory
     - constraintRef: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContextReferenceContract
       targetElement: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-structure/VenueOperationIntegrity
+      targetElement: https://axiolune.ai/ontology/finance/market-structure/VenueOperation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-structure/CalendarExceptionSupersession
+      targetElement: https://axiolune.ai/ontology/finance/market-structure/TradingScheduleOverrideNotice
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-structure/CalendarExceptionDateConsistency
+      targetElement: https://axiolune.ai/ontology/finance/market-structure/TradingCalendarException
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-structure/CalendarJurisdictionConsistency
+      targetElement: https://axiolune.ai/ontology/finance/market-structure/TradingCalendar
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-structure/ScheduleOverrideNoticeIntegrity
+      targetElement: https://axiolune.ai/ontology/finance/market-structure/TradingScheduleOverrideNotice
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-structure/NonVenueMarketContextContract
+      targetElement: https://axiolune.ai/ontology/finance/market-structure/NonVenueMarketContext
       enforcementLevel: Mandatory

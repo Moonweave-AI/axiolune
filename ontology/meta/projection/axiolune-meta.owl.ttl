@@ -148,8 +148,284 @@
 <https://axiolune.ai/ontology/meta/patterns/Versioning> a owl:Class;
     rdfs:label "Semantic Versioning Pattern";
     rdfs:comment "pattern for tracking semantic versions of ontology artifacts (not business fact revisions)".
+<https://axiolune.ai/ontology/meta/core/OntologyModuleDefinition> a owl:Class;
+    rdfs:label "OntologyModuleDefinition";
+    rdfs:comment "a named collection of ontology elements with versioning and dependency management, intended to provide naming and boundaries for reusable, composable ontology fragments; every finance domain module is an instance of it".
+<https://axiolune.ai/ontology/meta/core/ModuleImportDefinition> a owl:Class;
+    rdfs:label "ModuleImportDefinition";
+    rdfs:comment "a version-locked import of another ontology module, intended to ensure reproducible symbol resolution and prevent implicit upstream upgrades from breaking existing ontologies".
+<https://axiolune.ai/ontology/meta/core/SymbolImportSpec> a owl:Class;
+    rdfs:label "SymbolImportSpec";
+    rdfs:comment "a specification for selectively importing a single symbol with an optional local alias, used to precisely control the import scope and avoid naming collisions".
+<https://axiolune.ai/ontology/meta/core/LocalizedTextDefinition> a owl:DatatypeProperty;
+    rdfs:label "LocalizedTextDefinition";
+    rdfs:comment "a value object for multi-language text with language tags, intended to let ontology definitions and change records support multilingual expression; it is the foundation for cross-language ontology governance".
+<https://axiolune.ai/ontology/meta/core/ValueType> a owl:DatatypeProperty;
+    rdfs:label "ValueType";
+    rdfs:comment "a meta-classifier for primitive value types used in attributes, intended to provide the standard mapping from ontology properties to XML Schema primitives; it is the base layer for building complex value types".
+<https://axiolune.ai/ontology/meta/core/IdentifierTypeDefinition> a owl:DatatypeProperty;
+    rdfs:label "IdentifierTypeDefinition";
+    rdfs:comment "a meta-classifier for standard identifiers with validation rules and issuing authorities, intended to provide verifiable, traceable typed definitions for finance-domain standard codes such as ISIN and LEI".
+<https://axiolune.ai/ontology/meta/core/MoneyTypeDefinition> a owl:Class;
+    rdfs:label "MoneyTypeDefinition";
+    rdfs:comment "a meta-classifier for monetary amounts with currency and scale, intended to preserve amount, currency, and scale independently so that financial amounts are never represented as bare numbers".
+<https://axiolune.ai/ontology/meta/core/QuantityTypeDefinition> a owl:Class;
+    rdfs:label "QuantityTypeDefinition";
+    rdfs:comment "a meta-classifier for measurements with units and precision, intended to preserve value, unit, precision, and rounding independently for non-monetary quantities such as share counts".
+<https://axiolune.ai/ontology/meta/core/CodeListTypeDefinition> a owl:Class;
+    rdfs:label "CodeListTypeDefinition";
+    rdfs:comment "a meta-classifier for controlled vocabularies with versioning and maintenance, intended to provide versionable, auditable typed definitions for finance-domain standard code tables such as exchange codes".
+<https://axiolune.ai/ontology/meta/core/CodeValueDefinition> a owl:Class;
+    rdfs:label "CodeValueDefinition";
+    rdfs:comment "a stable member of a controlled vocabulary, intended to give each code a canonical notation, a definition, and deprecation tracking; it is the basic unit of a code-list type".
+<https://axiolune.ai/ontology/meta/core/ObjectTypeDefinition> a owl:Class;
+    rdfs:label "ObjectTypeDefinition";
+    rdfs:comment "a meta-classifier for domain entity types with identity, properties, and constraints, intended to provide typed definitions for independently identifiable, describable things such as securities, accounts, and orders; it is the core construct of the entire domain ontology".
+<https://axiolune.ai/ontology/meta/core/AttributeTypeDefinition> a owl:Class;
+    rdfs:label "AttributeTypeDefinition";
+    rdfs:comment "a meta-classifier for typed properties that attach literal or structured values to entities, intended to provide globally reusable property definitions; it is separated from attribute use to distinguish definition from contextual usage".
+<https://axiolune.ai/ontology/meta/core/AttributeUse> a owl:Class;
+    rdfs:label "AttributeUse";
+    rdfs:comment "a binding of an AttributeTypeDefinition to a specific ObjectTypeDefinition with contextual constraints, intended to let the same property have different requiredness and constraints on different types; it bridges attribute definition and contextual usage".
+<https://axiolune.ai/ontology/meta/core/RelationTypeDefinition> a owl:ObjectProperty;
+    rdfs:label "RelationTypeDefinition";
+    rdfs:comment "a meta-classifier for binary semantic relationships between entity types, intended to provide concise relation definitions without context for associations such as \"is issued by\"".
+<https://axiolune.ai/ontology/meta/core/RelationUse> a owl:Class;
+    rdfs:label "RelationUse";
+    rdfs:comment "a contextual application of a RelationTypeDefinition with specific cardinality constraints, intended to declare context-dependent cardinality for relations; it bridges relation definition and contextual usage".
+<https://axiolune.ai/ontology/meta/core/AssociationTypeDefinition> a owl:Class;
+    rdfs:label "AssociationTypeDefinition";
+    rdfs:comment "a meta-classifier for reifiable n-ary relations with identity, context, and lifecycle, intended to provide reifiable association definitions for relations that themselves need timestamps, provenance, or quantities, such as price observations and holdings".
+<https://axiolune.ai/ontology/meta/core/ParticipantRole> a owl:Class;
+    rdfs:label "ParticipantRole";
+    rdfs:comment "a typed slot in an AssociationTypeDefinition specifying the role and type of a participant, intended to declare a role name and type constraint for each party in an n-ary association; it is the basic unit of an association type".
+<https://axiolune.ai/ontology/meta/core/PatternBinding> a owl:Class;
+    rdfs:label "PatternBinding";
+    rdfs:comment "a declaration that an ObjectTypeDefinition or AssociationTypeDefinition adheres to a cross-domain pattern, intended to let capabilities such as time, provenance, and evidence be automatically injected into types without redefining them in each domain".
+<https://axiolune.ai/ontology/meta/core/Alignment> a owl:Class;
+    rdfs:label "Alignment";
+    rdfs:comment "a documented mapping between a local ontology element and an external standard, intended to support audit, version control, and semantic interoperability; it requires version locking, byte-level location, and human review rather than a simple link".
+<https://axiolune.ai/ontology/meta/core/ConstraintDefinition> a owl:Class;
+    rdfs:label "ConstraintDefinition";
+    rdfs:comment "a meta-classifier for semantic validation rules that can be applied to types, attributes, relations, or associations, intended to provide formal, reusable validation logic for ontology elements".
+<https://axiolune.ai/ontology/meta/core/ConstraintExpression> a owl:Class;
+    rdfs:label "ConstraintExpression";
+    rdfs:comment "the formal expression of a constraint rule, intended to precisely describe validation logic in languages such as SHACL, SPARQL, or regex, with an optional digest for tamper resistance".
+<https://axiolune.ai/ontology/meta/core/ConstraintParameter> a owl:Class;
+    rdfs:label "ConstraintParameter";
+    rdfs:comment "a parameter for parameterized constraints, intended to let constraints such as look-ahead-bias time thresholds be bound at runtime by the validator, enabling context-dependent validation".
+<https://axiolune.ai/ontology/meta/core/ConstraintBinding> a owl:Class;
+    rdfs:label "ConstraintBinding";
+    rdfs:comment "the application of a ConstraintDefinition to a specific ontology element with parameter values, intended to declare the enforcement level and timing of validation; it bridges constraint definition and contextual usage".
+<https://axiolune.ai/ontology/meta/core/ChangeRecord> a owl:Class;
+    rdfs:label "ChangeRecord";
+    rdfs:comment "a record of a change to an ontology element for audit and version control, intended to provide a traceable change chain for ontology evolution, recording change type, breakingness, and approval state".
+<https://axiolune.ai/ontology/meta/core/GovernanceMetadata> a owl:Class;
+    rdfs:label "GovernanceMetadata";
+    rdfs:comment "ownership, approval, and change tracking metadata for ontology elements, intended to provide standardized governance tracking of ownership, approval status, and change history for any element".
+<https://axiolune.ai/ontology/meta/patterns/PatternDefinition> a owl:Class;
+    rdfs:label "PatternDefinition";
+    rdfs:comment "a meta-classifier for reusable cross-domain semantic patterns that can be bound to ObjectTypes and AssociationTypes, intended to formalize cross-cutting concerns such as time, provenance, and evidence as first-class ontology elements for reuse across domains".
+<https://axiolune.ai/ontology/meta/patterns/PatternParameter> a owl:Class;
+    rdfs:label "PatternParameter";
+    rdfs:comment "a configuration parameter for customizing pattern behavior, intended to let the same pattern take effect on different types with different precision or configuration, improving reuse flexibility".
+<https://axiolune.ai/ontology/meta/patterns/PatternOWLProjection> a owl:Class;
+    rdfs:label "PatternOWLProjection";
+    rdfs:comment "a specification of how a pattern maps to OWL constructs, intended to describe which OWL axioms a pattern contributes when bound, so that pattern semantics can be understood by reasoners".
+<https://axiolune.ai/ontology/meta/patterns/OWLRestriction> a owl:Class;
+    rdfs:label "OWLRestriction";
+    rdfs:comment "a closed OWL restriction emitted when a pattern is projected onto a bound domain type, intended to solidify pattern semantics into inferable axioms such as cardinality and existential restrictions".
+<https://axiolune.ai/ontology/meta/patterns/PatternSHACLShape> a owl:Class;
+    rdfs:label "PatternSHACLShape";
+    rdfs:comment "a SHACL shape for validating instances that use this pattern, intended to make pattern-conforming instances machine-verifiable; it is the executable side of a pattern".
+<https://axiolune.ai/ontology/meta/patterns/SHACLPropertyShape> a owl:Class;
+    rdfs:label "SHACLPropertyShape";
+    rdfs:comment "a closed property-level SHACL projection contributed by one cross-domain pattern, intended to solidify the cardinality and type constraints of pattern-injected properties into verifiable shapes".
+<https://axiolune.ai/ontology/meta/patterns/PatternExample> a owl:Class;
+    rdfs:label "PatternExample";
+    rdfs:comment "an example of how this pattern is used, intended to help understand how a pattern applies to concrete types; it is part of pattern documentation".
+<https://axiolune.ai/ontology/meta/behavior/CallableParameterDefinition> a owl:Class;
+    rdfs:label "CallableParameterDefinition";
+    rdfs:comment "a meta-classifier for parameters used by queries, functions, and actions, intended to avoid redefining parameters across the three callable meta-types and to annotate the semantic role of each parameter in an operation".
+<https://axiolune.ai/ontology/meta/behavior/QueryTypeDefinition> a owl:Class;
+    rdfs:label "QueryTypeDefinition";
+    rdfs:comment "a meta-classifier for read-only data access operations with typed parameters and return values, intended to provide typed definitions for queryable capabilities without side effects; point-in-time queries must pass three time axes explicitly".
+<https://axiolune.ai/ontology/meta/behavior/FunctionTypeDefinition> a owl:Class;
+    rdfs:label "FunctionTypeDefinition";
+    rdfs:comment "a meta-classifier for side-effect-free computational operations, intended to provide reusable, testable pure-function definitions for deterministic calculations such as valuations and yield computations".
+<https://axiolune.ai/ontology/meta/behavior/ActionTypeDefinition> a owl:Class;
+    rdfs:label "ActionTypeDefinition";
+    rdfs:comment "a meta-classifier for stateful operations that modify system state or interact with external systems, intended to provide fully governed definitions for trading actions and workflow operations with idempotency, compensation, approval, and risk classification".
+<https://axiolune.ai/ontology/meta/behavior/ExecutionRecordDefinition> a owl:Class;
+    rdfs:label "ExecutionRecordDefinition";
+    rdfs:comment "a meta-classifier for durable records of action execution attempts, intended to leave an immutable audit trail for each action execution, used for audit, recovery, and external reconciliation".
+<https://axiolune.ai/ontology/meta/behavior/PolicyType> a owl:Class;
+    rdfs:label "PolicyType";
+    rdfs:comment "a meta-classifier for authorization, compliance, and governance rules, intended to provide definitions for access control, risk limits, compliance constraints, and approval workflows that bind to action execution pipelines".
+<https://axiolune.ai/ontology/meta/data-binding/ArtifactRef> a owl:Class;
+    rdfs:label "ArtifactRef";
+    rdfs:comment "a closed reference to either an absolute artifact IRI or one path below an explicitly named build root, intended to provide the verifiable, reproducible basic unit of reference for all build-artifact evidence locking in Layer 4".
+<https://axiolune.ai/ontology/meta/data-binding/SourceLocator> a owl:Class;
+    rdfs:label "SourceLocator";
+    rdfs:comment "a closed media-aware selector for one canonical non-empty byte selection inside a locked source artifact, intended to make \"which exact bytes the evidence came from\" reproducible and auditable".
+<https://axiolune.ai/ontology/meta/data-binding/SemanticValueDefinition> a owl:Class;
+    rdfs:label "SemanticValueDefinition";
+    rdfs:comment "a closed semantic locator for one visible ontology value used by an identity component or derivation, intended to provide the semantic input for identity contracts and derivations".
+<https://axiolune.ai/ontology/meta/data-binding/IdentityComponentDefinition> a owl:Class;
+    rdfs:label "IdentityComponentDefinition";
+    rdfs:comment "one ordered semantic component of a target logical or version identity, intended to provide composable bricks for constructing a fact's stable IRI".
+<https://axiolune.ai/ontology/meta/data-binding/IdentityTermContractDefinition> a owl:Class;
+    rdfs:label "IdentityTermContractDefinition";
+    rdfs:comment "a versioned closed RDF-term contract used by identity components, intended to prescribe how identity components frame into canonical RDF terms, ensuring identity reproducibility".
+<https://axiolune.ai/ontology/meta/data-binding/IdentityNormalizationRuleDefinition> a owl:Class;
+    rdfs:label "IdentityNormalizationRuleDefinition";
+    rdfs:comment "a versioned deterministic normalization rule applied before identity-term framing, intended to convert input terms into output terms, ensuring identity normalization is reproducible".
+<https://axiolune.ai/ontology/meta/data-binding/IdentityDerivationDefinition> a owl:Class;
+    rdfs:label "IdentityDerivationDefinition";
+    rdfs:comment "a versioned deterministic derivation from declared semantic inputs to one or more named identity outputs, intended to prescribe \"how to compute an IRI from semantics\", making identity construction auditable".
+<https://axiolune.ai/ontology/meta/data-binding/ControlledIriSetDefinition> a owl:Class;
+    rdfs:label "ControlledIriSetDefinition";
+    rdfs:comment "a versioned non-empty canonical set of IRIs authorized for controlled identity components, intended to provide a versionable, evidence-locked IRI whitelist for controlled identity".
+<https://axiolune.ai/ontology/meta/data-binding/TargetIdentityContractDefinition> a owl:Class;
+    rdfs:label "TargetIdentityContractDefinition";
+    rdfs:comment "a static contract that determines stable logical and immutable version identity for one materialized target type, intended to provide the authoritative basis for identity specs".
+<https://axiolune.ai/ontology/meta/data-binding/ReferenceIdentityBinding> a owl:Class;
+    rdfs:label "ReferenceIdentityBinding";
+    rdfs:comment "a mapping binding that resolves a referenced target through its accepted identity contract, intended to declare \"which identity a reference follows\", supporting both logical and version reference modes".
+<https://axiolune.ai/ontology/meta/data-binding/DataSource> a owl:Class;
+    rdfs:label "DataSource";
+    rdfs:comment "a meta-classifier for external or internal data providers with connection and authentication metadata, intended to provide typed definitions for where data originates and how to access it".
+<https://axiolune.ai/ontology/meta/data-binding/DatasetDefinition> a owl:Class;
+    rdfs:label "DatasetDefinition";
+    rdfs:comment "a meta-classifier for logical collections of data within a data source, intended to provide a logical view of physical data with schema, partitioning, and update patterns".
+<https://axiolune.ai/ontology/meta/data-binding/FieldDefinition> a owl:Class;
+    rdfs:label "FieldDefinition";
+    rdfs:comment "a meta-classifier for physical field definitions in dataset schemas, intended to describe the physical structure of fields; it contains no semantic annotations, as all semantics are expressed by SemanticMappingDefinition".
+<https://axiolune.ai/ontology/meta/data-binding/IndexDefinition> a owl:Class;
+    rdfs:label "IndexDefinition";
+    rdfs:comment "a meta-classifier for physical index structures in datasets, intended to provide typed definitions of index structures for query performance optimization".
+<https://axiolune.ai/ontology/meta/data-binding/SourceBinding> a owl:Class;
+    rdfs:label "SourceBinding";
+    rdfs:comment "a specification of physical data sources and row-set operations for semantic mapping, intended to declare \"which tables and how to read rows from them\", supporting multi-table joins and aggregation".
+<https://axiolune.ai/ontology/meta/data-binding/RowSetSpec> a owl:Class;
+    rdfs:label "RowSetSpec";
+    rdfs:comment "a specification of row-level operations applied before slot mapping, intended to express multi-table joins, filters, and grouping logic that field-level mapping cannot express".
+<https://axiolune.ai/ontology/meta/data-binding/IdentitySpec> a owl:Class;
+    rdfs:label "IdentitySpec";
+    rdfs:comment "a contract-bound specification that maps physical values to the ordered components of one accepted TargetIdentityContractDefinition, intended to prevent independent mappings from inventing incompatible identity keys, enforcing a unified contract".
+<https://axiolune.ai/ontology/meta/data-binding/ValueBinding> a owl:Class;
+    rdfs:label "ValueBinding";
+    rdfs:comment "a specification of value computation for slot population, intended to declare \"how to fill this slot\" via a closed union of direct field, transformation, literal, runtime context, and reference identity".
+<https://axiolune.ai/ontology/meta/data-binding/SlotMapping> a owl:Class;
+    rdfs:label "SlotMapping";
+    rdfs:comment "a specification of target slot population, intended to support mapping to attributes, participant roles, relations, and pattern fields".
+<https://axiolune.ai/ontology/meta/data-binding/TransformationDefinition> a owl:Class;
+    rdfs:label "TransformationDefinition";
+    rdfs:comment "a versioned reusable transformation logic for data mapping, intended to provide reproducible transformations with typed inputs, outputs, an implementation digest, and test cases".
+<https://axiolune.ai/ontology/meta/data-binding/TargetSlot> a owl:Class;
+    rdfs:label "TargetSlot";
+    rdfs:comment "a union type representing different kinds of mapping targets, intended to let SemanticMappingDefinition map to not just attributes but also participant roles, relations, and pattern fields".
+<https://axiolune.ai/ontology/meta/data-binding/TimeAxisBinding> a owl:Class;
+    rdfs:label "TimeAxisBinding";
+    rdfs:comment "a binding specification for one temporal axis (from/to interval), intended to declare the start, end, and close policy for each of the three axes in a temporal mapping spec".
+<https://axiolune.ai/ontology/meta/data-binding/ProvenanceBinding> a owl:Class;
+    rdfs:label "ProvenanceBinding";
+    rdfs:comment "a specification of data provenance metadata capture, intended to map physical fields to Layer 2 provenance pattern fields, capturing source, acquisition time, and responsible agent".
+<https://axiolune.ai/ontology/meta/data-binding/TemporalMappingSpec> a owl:Class;
+    rdfs:label "TemporalMappingSpec";
+    rdfs:comment "a specification of three-axis temporal semantics mapping, intended to explicitly bind sources for valid time, knowledge time, and availability time simultaneously, preventing look-ahead bias".
+<https://axiolune.ai/ontology/meta/data-binding/SemanticMappingDefinition> a owl:Class;
+    rdfs:label "SemanticMappingDefinition";
+    rdfs:comment "the canonical specification of mapping between physical data and ontology concepts, intended to unify all mapping capabilities into a single truth source; it is the bridge from physical data to semantics".
+<https://axiolune.ai/ontology/meta/data-binding/MaterializationBatchDefinition> a owl:Class;
+    rdfs:label "MaterializationBatchDefinition";
+    rdfs:comment "a static atomic composition of multiple module-scoped MaterializationPlanDefinitions over one source snapshot and one temporal context, intended to guarantee transactional consistency across plans".
+<https://axiolune.ai/ontology/meta/data-binding/MaterializationRun> a owl:Class;
+    rdfs:label "MaterializationRun";
+    rdfs:comment "an immutable standalone control record for one completed or failed module-scoped materialization, intended to provide explicit time context and input evidence locking for reproducible queries".
+<https://axiolune.ai/ontology/meta/data-binding/MaterializationPlanDefinition> a owl:Class;
+    rdfs:label "MaterializationPlanDefinition";
+    rdfs:comment "a declarative specification of ontology instance materialization from physical data sources, intended to define \"what to materialize and how data maps to the ontology\" as static configuration only; runtime state and orchestration are separated".
+<https://axiolune.ai/ontology/meta/data-binding/DataLineage> a owl:Class;
+    rdfs:label "DataLineage";
+    rdfs:comment "a meta-classifier for tracking data flow and transformation chains, intended to provide a traceable link from sources through transformations to ontology instances for impact analysis and debugging".
+<https://axiolune.ai/ontology/meta/data-binding/PITValidationRequest> a owl:Class;
+    rdfs:label "PITValidationRequest";
+    rdfs:comment "an immutable standalone request that binds exact materialization evidence, RDF bytes, explicit three-axis pivots, and a locked PIT validator, intended to authorize point-in-time consumption and prevent look-ahead bias".
+<https://axiolune.ai/ontology/meta/data-binding/MaterializationBatchRun> a owl:Class;
+    rdfs:label "MaterializationBatchRun";
+    rdfs:comment "an immutable standalone control record for one completed or failed atomic materialization batch, intended to provide the member list and output digest for batch execution".
+<https://axiolune.ai/ontology/meta/data-binding/ValidationReport> a owl:Class;
+    rdfs:label "ValidationReport";
+    rdfs:comment "an immutable common machine-evidence envelope for one actually executed validation gate, intended to provide reproducible evidence with canonicalization and digest locking for validation results".
+<https://axiolune.ai/ontology/meta/data-binding/FailureReport> a owl:Class;
+    rdfs:label "FailureReport";
+    rdfs:comment "an immutable standalone evidence record for a failed execution stage, intended to provide the stage, inputs, and error list for failure diagnosis".
+<https://axiolune.ai/ontology/meta/data-binding/ReplayReport> a owl:Class;
+    rdfs:label "ReplayReport";
+    rdfs:comment "an immutable standalone comparison of original and replayed semantic artifacts, intended to verify deterministic reproducibility; it is the foundation of data-pipeline trust".
+<https://axiolune.ai/ontology/meta/data-binding/EvidenceLedger> a owl:Class;
+    rdfs:label "EvidenceLedger";
+    rdfs:comment "a detached immutable root that indexes every finalized standalone control record except itself, intended to provide a content-addressed directory for the entire evidence system".
+<https://axiolune.ai/ontology/meta/data-binding/BuildEvidenceBinding> a owl:Class;
+    rdfs:label "BuildEvidenceBinding";
+    rdfs:comment "the exact build identity and immutable control-plan bindings shared by every control record, intended to bind an immutable build provenance to all control records".
+<https://axiolune.ai/ontology/meta/data-binding/ArtifactBinding> a owl:Class;
+    rdfs:label "ArtifactBinding";
+    rdfs:comment "a named immutable artifact input with explicit media type and digest, intended to provide typed, digested bindings for the input manifests of validation reports and similar records".
+<https://axiolune.ai/ontology/meta/data-binding/MappingClosureEntry> a owl:Class;
+    rdfs:label "MappingClosureEntry";
+    rdfs:comment "one semantic mapping and its complete transformation closure inside a materialization run, intended to lock the full transformation dependency for each mapping".
+<https://axiolune.ai/ontology/meta/data-binding/MaterializationResult> a owl:Class;
+    rdfs:label "MaterializationResult";
+    rdfs:comment "a closed final outcome of one immutable MaterializationRun, intended to distinguish \"completed evidence\" from \"in-flight orchestration state\"".
+<https://axiolune.ai/ontology/meta/data-binding/CompletedBatchMember> a owl:Class;
+    rdfs:label "CompletedBatchMember";
+    rdfs:comment "one completed plan/run/graph member of an atomic materialization batch, intended to record the run and output digest of each successful member".
+<https://axiolune.ai/ontology/meta/data-binding/AttemptedBatchMember> a owl:Class;
+    rdfs:label "AttemptedBatchMember";
+    rdfs:comment "one attempted plan member recorded by a failed materialization batch, intended to preserve partial execution evidence upon failure".
+<https://axiolune.ai/ontology/meta/data-binding/MaterializationContext> a owl:Class;
+    rdfs:label "MaterializationContext";
+    rdfs:comment "a closed PIT binding to either one completed materialization graph or one completed batch dataset, intended to precisely lock the materialized product being validated for point-in-time checks".
+<https://axiolune.ai/ontology/meta/data-binding/KindEvidenceBinding> a owl:Class;
+    rdfs:label "KindEvidenceBinding";
+    rdfs:comment "a gate-kind-specific strict schema and machine result artifact, intended to bind the corresponding schema and result for each validation kind".
+<https://axiolune.ai/ontology/meta/data-binding/GateCounts> a owl:Class;
+    rdfs:label "GateCounts";
+    rdfs:comment "recomputed non-negative counts over the complete gate subject inventory and result, intended to provide reproducible passed, failed, and skipped statistics for validation results".
+<https://axiolune.ai/ontology/meta/data-binding/GateCheck> a owl:Class;
+    rdfs:label "GateCheck";
+    rdfs:comment "one actually executed capability check for one independently discovered semantic subject, intended to leave input-and-output evidence for each checked subject".
+<https://axiolune.ai/ontology/meta/data-binding/GateViolation> a owl:Class;
+    rdfs:label "GateViolation";
+    rdfs:comment "one deterministically sortable semantic violation produced by a failed gate check, intended to provide severity, message, and location for each violation".
+<https://axiolune.ai/ontology/meta/data-binding/GateResult> a owl:Class;
+    rdfs:label "GateResult";
+    rdfs:comment "a closed final result of one machine-executed validation gate, intended to distinguish passed, failed, and engine-failure outcomes".
+<https://axiolune.ai/ontology/meta/data-binding/ReplayComparison> a owl:Class;
+    rdfs:label "ReplayComparison";
+    rdfs:comment "one named original-versus-replay artifact digest comparison, intended to leave a per-artifact verdict for the reproducibility of each product".
+<https://axiolune.ai/ontology/meta/data-binding/ReplayResult> a owl:Class;
+    rdfs:label "ReplayResult";
+    rdfs:comment "a closed final result of deterministic replay comparison, intended to distinguish identical, mismatch, and engine-failure outcomes".
+<https://axiolune.ai/ontology/meta/data-binding/EvidenceSlotSelection> a owl:Class;
+    rdfs:label "EvidenceSlotSelection";
+    rdfs:comment "the one active control-record alternative selected for an evidence-ledger slot, intended to bind the currently effective record for each evidence slot".
+<https://axiolune.ai/ontology/meta/data-binding/EvidenceLedgerEntry> a owl:Class;
+    rdfs:label "EvidenceLedgerEntry";
+    rdfs:comment "a content-addressed index entry for one finalized standalone control record, intended to provide an immutable index with digest and canonicalization for each record".
+<https://axiolune.ai/ontology/meta/data-binding/ExecutionError> a owl:Class;
+    rdfs:label "ExecutionError";
+    rdfs:comment "a deterministically sortable execution failure diagnostic embedded in a failed control record, intended to provide error code, stage, and message for execution failures".
+<https://axiolune.ai/ontology/meta/data-binding/InputDatasetSnapshot> a owl:Class;
+    rdfs:label "InputDatasetSnapshot";
+    rdfs:comment "an immutable embedded binding of one input dataset to exact snapshot bytes, intended to lock the bytes, schema, and snapshot time of inputs for reproducibility".
+<https://axiolune.ai/ontology/meta/data-binding/IngestionPipelineDefinition> a owl:Class;
+    rdfs:label "IngestionPipelineDefinition";
+    rdfs:comment "a deprecated meta-classifier for ETL/ELT workflows that materialize ontology instances, superseded by MaterializationPlanDefinition and external orchestration tools because it mixed declarative mapping with runtime orchestration".
 <https://axiolune.ai/ontology/meta/core/values/MonetaryAmount> a owl:Class;
-    rdfs:comment "a meta-classifier for monetary amounts with currency and scale".
+    rdfs:comment "a meta-classifier for monetary amounts with currency and scale, intended to preserve amount, currency, and scale independently so that financial amounts are never represented as bare numbers".
 <https://axiolune.ai/ontology/meta/core/properties/hasAmount> a owl:DatatypeProperty;
     rdfs:domain <https://axiolune.ai/ontology/meta/core/values/MonetaryAmount>;
     rdfs:range xsd:decimal.
@@ -161,7 +437,7 @@
     rdfs:domain <https://axiolune.ai/ontology/meta/core/values/MonetaryAmount>;
     rdfs:range xsd:integer.
 <https://axiolune.ai/ontology/meta/core/values/QuantityValue> a owl:Class;
-    rdfs:comment "a meta-classifier for measurements with units and precision".
+    rdfs:comment "a meta-classifier for measurements with units and precision, intended to preserve value, unit, precision, and rounding independently for non-monetary quantities such as share counts".
 <https://axiolune.ai/ontology/meta/core/properties/hasNumericValue> a owl:DatatypeProperty;
     rdfs:domain <https://axiolune.ai/ontology/meta/core/values/QuantityValue>;
     rdfs:range xsd:decimal.
@@ -176,9 +452,9 @@
     rdfs:range xsd:string;
     rdfs:comment "allowed values: floor, ceiling, half-up, half-even".
 <https://axiolune.ai/ontology/meta/data-binding/structures/ArtifactRef> a owl:Class;
-    rdfs:comment "closed reference to either an absolute artifact IRI or one path below an explicitly named build root".
+    rdfs:comment "a closed reference to either an absolute artifact IRI or one path below an explicitly named build root, intended to provide the verifiable, reproducible basic unit of reference for all build-artifact evidence locking in Layer 4".
 <https://axiolune.ai/ontology/meta/data-binding/structures/SourceLocator> a owl:Class;
-    rdfs:comment "closed media-aware selector for one canonical non-empty byte selection inside a locked source artifact".
+    rdfs:comment "a closed media-aware selector for one canonical non-empty byte selection inside a locked source artifact, intended to make \"which exact bytes the evidence came from\" reproducible and auditable".
 <https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef> a owl:ObjectProperty;
     rdfs:range <https://axiolune.ai/ontology/meta/data-binding/structures/ArtifactRef>;
     rdfs:label "Source Artifact Reference";
@@ -192,11 +468,11 @@
     rdfs:label "Source Locator";
     rdfs:comment "closed media-aware source selector whose locked extraction identifies the exact supporting bytes".
 <https://axiolune.ai/ontology/meta/data-binding/FactIdentity> a owl:Class;
-    rdfs:comment "generic stable logical identity anchor for one versioned materialized object or association".
+    rdfs:comment "a generic stable logical identity anchor for one versioned materialized object or association, intended to unify \"different versions of the same fact\" under one logical identity".
 <https://axiolune.ai/ontology/meta/data-binding/FactVersion> a owl:Class;
-    rdfs:comment "generic marker class for one immutable materialized fact version".
+    rdfs:comment "a generic marker class for one immutable materialized fact version, intended to serve as the actual data carrier, forming a version chain through the supersedes relation".
 <https://axiolune.ai/ontology/meta/data-binding/FactClosureAssertion> a owl:Class;
-    rdfs:comment "immutable evidence that closes one knowledge-time or availability-time interval without mutating the older fact version".
+    rdfs:comment "immutable evidence that closes one knowledge-time or availability-time interval without mutating the older fact version, intended to support the audit semantics of \"append closure without rewriting the old version\"".
 <https://axiolune.ai/ontology/meta/data-binding/properties/versionOf> a owl:ObjectProperty, owl:FunctionalProperty;
     rdfs:domain <https://axiolune.ai/ontology/meta/data-binding/FactVersion>;
     rdfs:range <https://axiolune.ai/ontology/meta/data-binding/FactIdentity>;

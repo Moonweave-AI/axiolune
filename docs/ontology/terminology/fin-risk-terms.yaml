@@ -1,5 +1,5 @@
 # Axiolune M2 Risk Module — Terminology Cards
-# Status: accepted — v1.0.0 sidecar evidence
+# Status: accepted — v1.1.0 sidecar evidence (v1.0.0 cards retained; v1.1.0 cards added per ADR-032)
 
 terms:
   - term: "Risk Measure Definition"
@@ -73,4 +73,215 @@ terms:
     sources:
       - reference: "internal-axiolune"
         locator: "M2-PLAN §5.2 fin-risk"
+    status: accepted
+
+  - term: "Risk Category"
+    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskCategory"
+    definition: "classification of the kind of risk (market, credit, liquidity, operational, concentration, model, other)"
+    genus: "classification"
+    differentia:
+      - "categorizes measures, limits, exposures, factors, and scenarios"
+      - "full regulatory frameworks per category are out of scope"
+    excludes:
+      - "a regulatory rule set"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-032 D1"
+    status: accepted
+
+  - term: "Risk Factor"
+    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskFactor"
+    definition: "identifiable risk driver a risk measure is sensitive to, distinct from a strategy-research FactorDefinition"
+    genus: "risk driver"
+    differentia:
+      - "drives a risk result"
+      - "optionally cross-links a research factor via riskFactorResearchRef"
+    excludes:
+      - "a research signal generator (strategy-research FactorDefinition)"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-032 D1"
+    status: accepted
+
+  - term: "Risk Exposure"
+    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskExposure"
+    definition: "risk an institution bears at a scope to a factor or category with a magnitude kind"
+    genus: "exposure"
+    differentia:
+      - "first-class concept of what risk is borne"
+      - "not a by-product of a measurement"
+    excludes:
+      - "the measurement itself"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-032 D1"
+    status: accepted
+
+  - term: "Risk Scope Definition"
+    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskScopeDefinition"
+    definition: "policy or business scope (desk, strategy, entity, fund, counterparty, netting set, asset class) a limit is anchored to"
+    genus: "scope"
+    differentia:
+      - "stable governance object"
+      - "distinct from a RiskScopeSnapshot"
+    excludes:
+      - "a frozen member set at an as-of"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-032 D4"
+    status: accepted
+
+  - term: "Risk Appetite"
+    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskAppetite"
+    definition: "governance statement of the total amount and type of risk an institution is willing to bear"
+    genus: "governance statement"
+    differentia:
+      - "carries quantitative and qualitative statements"
+      - "anchors risk tolerance and limits"
+    excludes:
+      - "a single limit threshold"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-032 D1; FSB Risk Appetite Framework (terminology)"
+    status: accepted
+
+  - term: "Risk Measure Specification"
+    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskMeasureSpecification"
+    definition: "business semantics of a risk measure (kind, model purpose, loss convention, aggregation, factor universe, valuation)"
+    genus: "measure specification"
+    differentia:
+      - "anchors limits to stable business concept"
+      - "survives implementation upgrades"
+    excludes:
+      - "the executable implementation"
+      - "the calculation method profile"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-032 D2"
+    status: accepted
+
+  - term: "Calculation Profile"
+    canonicalIri: "https://axiolune.ai/ontology/finance/risk/CalculationProfile"
+    definition: "abstract parent of calculation-method profiles fixing method, parameters, and assumptions"
+    genus: "method profile"
+    differentia:
+      - "binds a specification to an implementation"
+      - "generic core so a method is one profile"
+    excludes:
+      - "the business semantics (specification)"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-032 D2"
+    status: accepted
+
+  - term: "Implementation Version"
+    canonicalIri: "https://axiolune.ai/ontology/finance/risk/ImplementationVersion"
+    definition: "versioned executable implementation of a calculation method with its content digest"
+    genus: "implementation"
+    differentia:
+      - "separates executable from methodology"
+      - "supports PIT reproducibility"
+    excludes:
+      - "the methodology (methodDigest)"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-032 D2"
+    status: accepted
+
+  - term: "Risk Input Set"
+    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskInputSet"
+    definition: "collection of inputs a risk calculation used (positions, market data, curves, parameters, FX/valuation policy, data quality)"
+    genus: "input collection"
+    differentia:
+      - "decompresses opaque input context"
+      - "records valuation as-of and data quality"
+    excludes:
+      - "the calculation run"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-032 D3"
+    status: accepted
+
+  - term: "Risk Limit Rule"
+    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskLimitRule"
+    definition: "governed rule a limit enforces (operator, thresholds, severity, lifecycle) generalizing the single upper bound"
+    genus: "limit rule"
+    differentia:
+      - "supports bounds, bands, absolute-value, two-sided"
+      - "carries warning/soft/hard severity and lifecycle"
+    excludes:
+      - "the single upper threshold (retained as first profile)"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-032 D6"
+    status: accepted
+
+  - term: "Risk Limit Comparison Policy"
+    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskLimitComparisonPolicy"
+    definition: "policy governing how a bucketed or scalar measurement is compared to a bucketed or scalar limit"
+    genus: "comparison policy"
+    differentia:
+      - "defines bucket mode, missing-bucket handling, tolerance, conversion"
+      - "replaces scalar value<=threshold for bucket sets"
+    excludes:
+      - "the limit threshold"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-032 D5"
+    status: accepted
+
+  - term: "Risk Limit Breach Case"
+    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskLimitBreachCase"
+    definition: "governance case opened for a LimitBreach carrying magnitude, duration, responsible, and workflow status"
+    genus: "governance case"
+    differentia:
+      - "layers governance over the immutable breach fact"
+      - "has acknowledgements, waivers, remediation, escalations"
+    excludes:
+      - "the immutable computational LimitBreach"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-032 D7"
+    status: accepted
+
+  - term: "Scenario Shock"
+    canonicalIri: "https://axiolune.ai/ontology/finance/risk/ScenarioShock"
+    definition: "typed shock applied to a target within a scenario (type, magnitude, unit, propagation)"
+    genus: "shock"
+    differentia:
+      - "decompresses opaque shock digest"
+      - "targets a RiskFactor"
+    excludes:
+      - "the stress test run"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-032 D8"
+    status: accepted
+
+  - term: "Scenario Application Evidence"
+    canonicalIri: "https://axiolune.ai/ontology/finance/risk/ScenarioApplicationEvidence"
+    definition: "evidence that a stress-test output's input context was actually shocked by the run's exact scenario"
+    genus: "application evidence"
+    differentia:
+      - "binds scenario, input set, and output"
+      - "proves the scenario acted, not merely referenced"
+    excludes:
+      - "the output measurement"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-032 D8"
+    status: accepted
+
+  - term: "Risk Report"
+    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskReport"
+    definition: "lightweight report view over risk results (as-of, audience, sections)"
+    genus: "report view"
+    differentia:
+      - "expresses the BCBS 239 reporting dimension"
+      - "full aggregation infrastructure out of scope"
+    excludes:
+      - "the underlying computed results"
+    sources:
+      - reference: "internal-axiolune"
+        locator: "ADR-032 D10 P1-8; BCBS 239 (terminology)"
     status: accepted

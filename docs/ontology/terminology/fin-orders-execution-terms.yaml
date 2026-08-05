@@ -1,19 +1,27 @@
 # fin-orders-execution — Terminology Cards (ISO 704)
 # M2-PLAN §3.2, §3.3: ISO 704 genus/differentia definitions for order and execution concepts
+# v1.1.0 (ADR-025): added cards for OrderIntentLifecycleEvent, MatchedTrade,
+# OrderRoute, ExecutionAllocation, AllocationLine, OrderRevision, FillSnapshot,
+# OrderLeg, ExecutionLeg; corrected LiquiditySide -> LiquidityRole (the v1.0.0
+# codelist was renamed to LiquidityRole); OrderEventStream-as-live-feed reading
+# deprecated in-note (it is a single-external-order event sequence, not a FIX
+# feed).
 
 terms:
   - term: "Order Intent"
     canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderIntent"
-    definition: "trader or strategy desired trade instruction specifying instrument, side, quantity, type, time-in-force, and price constraints, representing the business intent before venue submission"
+    definition: "stable trade intent issued by a client, strategy, or authorized routing process, specifying instrument, side, quantity, type, time-in-force, and price constraints, and fixed under a two-component logical key (intentIdentifierAuthority, clientIntentId) before provider acceptance"
     genus: "trade instruction"
     differentia:
       - "specifies a financial instrument to trade"
       - "specifies side (buy or sell)"
       - "specifies quantity and order type"
       - "specifies time-in-force and optional price constraints"
+      - "is issued by an intentIssuer and scoped by an intentIdentifierAuthority; the account does not substitute for the issuer or authority"
+      - "may bind a single listing/OTC context, or specify an acceptableVenueSet / routingPolicy as a venue-neutral alternative"
       - "represents business intent, not external venue order"
     excludes:
-      - "external venue order (bridged via ExternalOrderStatusMapping)"
+      - "external venue order (bridged via ExternalOrder)"
       - "execution (the actual fill)"
       - "order lifecycle event (the state transition)"
     sources:
@@ -30,18 +38,19 @@ terms:
 
   - term: "Order Lifecycle Event"
     canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent"
-    definition: "immutable state transition fact recording a change in order status, with previous state, resulting state, timestamp, reason, and external identifiers, forming an event-sourced audit trail"
-    genus: "state transition fact"
+    definition: "immutable external provider event bound to an exact ExternalOrder and OrderEventStream, recording the resulting canonical lifecycle state, the event kind, and the raw provider status code plus the exact applied status mapping and transition profile versions; pre-submission internal events are modeled by OrderIntentLifecycleEvent instead"
+    genus: "external state transition fact"
     differentia:
-      - "records a change in order status"
-      - "includes previous and resulting canonical states"
-      - "includes timestamp, reason, and external identifiers"
+      - "occurs in one exact event stream version and is bound to an exact ExternalOrder"
+      - "records the event kind (what happened) distinct from the resulting lifecycle state (what state it caused)"
+      - "carries the raw provider status code and exact applied status mapping / transition profile for auditability"
       - "is immutable (event-sourced, append-only)"
-      - "forms an audit trail for order lifecycle"
+      - "forms the external audit trail for an order lifecycle"
     excludes:
+      - "pre-submission internal events (Initialized/Denied/Emulated/Released without a provider order) — these are OrderIntentLifecycleEvent"
       - "the order intent itself (OrderIntent is the subject)"
-      - "execution (the actual trade fill)"
-      - "current order state (derived from event stream, not stored)"
+      - "execution (the actual trade fill; linked via reportsExecution)"
+      - "current order state (derived from the event stream, not stored)"
     sources:
       - reference: "nautilus-trader"
         locator: "nautilus_trader/model/events/order.pyx::OrderEvent"
@@ -56,15 +65,17 @@ terms:
 
   - term: "Execution"
     canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/Execution"
-    definition: "trade execution fact recording actual fill of an order or part thereof, with executed price, quantity, venue, commission, liquidity side, and trade identifier, enabling position derivation"
+    definition: "immutable account-side fill or fill-report fact recording the real economic content of a trade from the execution-account perspective, with executed price, quantity, optional contra roles, disclosure status, and venue/timing identity; bilateral facts are asserted via a MatchedTrade only when evidence suffices"
     genus: "trade execution fact"
     differentia:
-      - "records actual fill of an order"
-      - "includes executed price and quantity"
-      - "includes venue, commission, and liquidity side"
-      - "includes trade identifier for reconciliation"
-      - "enables position derivation from execution stream"
+      - "records the account-side fill of an order"
+      - "includes executed price and quantity interpreted through the exact direct-unit quotation contract"
+      - "carries optional contraAccount/contraParty (absent for anonymous fills; a 'unknown' placeholder is forbidden) and a disclosureStatus"
+      - "distinguishes executedAt, providerReportedAt, observedAt, and tradeDate, plus venueTradeId/providerReportId/matchId"
+      - "references the execution venue (TradingFacility), distinct from the execution listing"
+      - "enables position derivation from the execution stream"
     excludes:
+      - "the bilateral trade itself (a MatchedTrade when bilateral evidence suffices)"
       - "order intent (the instruction, not the fill)"
       - "order lifecycle event (state transition, not fill)"
       - "price observation (market data, not execution)"
@@ -77,7 +88,7 @@ terms:
         note: "OrderEvent with Status=Filled, FillPrice, FillQuantity, OrderFee"
       - reference: "fibo-2026Q1"
         locator: "FBC/ProductsAndServices/FinancialProductsAndServices::Trade"
-        note: "FIBO Trade is transaction between parties; Axiolune Execution is order fill with venue/commission context"
+        note: "FIBO Trade is transaction between parties; Axiolune Execution is the account-side fill; the bilateral trade is a MatchedTrade"
     status: accepted
 
   - term: "External Order Status Mapping"
@@ -174,48 +185,244 @@ terms:
 
   - term: "Order Lifecycle State"
     canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState"
-    definition: "controlled vocabulary of canonical order states in the lifecycle state machine"
+    definition: "controlled vocabulary of canonical resulting order states in the lifecycle state machine, independent of provider raw codes"
     genus: "order state"
     differentia:
-      - "represents a canonical state in order lifecycle"
-      - "forms a state machine with valid transitions"
-      - "Initialized: order created locally"
-      - "Submitted: order sent to venue"
-      - "Accepted: order accepted by venue"
-      - "PartiallyFilled: order partially executed"
-      - "Filled: order fully executed"
-      - "Canceled: order canceled"
-      - "Rejected: order rejected by venue"
-      - "Expired: order expired per time-in-force"
+      - "represents a canonical resulting state in the order lifecycle, stored on an immutable event"
+      - "distinct from the event kind (OrderEventKind) that caused it; an event carries both"
+      - "Initialized/Denied/Emulated/Released: pre-submission internal states (OrderIntentLifecycleEvent)"
+      - "Submitted/Accepted/Rejected/PendingNew/PendingUpdate/PendingCancel/PendingReplace: active and pending states"
+      - "PartiallyFilled/Filled: fill states auditable against the effective net executed quantity"
+      - "Canceled/Expired/Triggered/DoneForDay/Stopped/Suspended/Calculated/Restated: terminal or FIX-aligned states"
     excludes:
       - "venue-specific status codes (mapped via ExternalOrderStatusMapping)"
-      - "order lifecycle event (the transition, not the state)"
+      - "the event kind (the transition type, not the resulting state)"
     sources:
       - reference: "nautilus-trader"
         locator: "nautilus_trader/model/orders/base.pyx::OrderStatus"
-        note: "OrderStatus enum derived from 10 event types"
+        note: "OrderStatus enum derived from event types"
       - reference: "lean"
         locator: "Common/Orders/OrderStatus.cs"
         note: "OrderStatus enum: New, Submitted, PartiallyFilled, Filled, Canceled, None, Invalid, CancelPending, UpdateSubmitted"
+      - reference: "fix"
+        locator: "FIX 5.0 SP2 :: OrdStatus"
+        note: "FIX OrdStatus values (PendingNew, DoneForDay, Stopped, Suspended, Calculated, Restated, PendingReplace) align to Axiolune v1.1.0 additions"
     status: accepted
 
-  - term: "Liquidity Side"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/LiquiditySide"
-    definition: "controlled vocabulary indicating whether an execution was a maker (added liquidity) or taker (removed liquidity)"
+  - term: "Liquidity Role"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/LiquidityRole"
+    definition: "controlled vocabulary indicating whether an execution order was a maker (added liquidity), a taker (removed liquidity), or auction-undefined, from the execution account-order perspective"
     genus: "liquidity classification"
     differentia:
-      - "Maker: execution added liquidity to order book"
-      - "Taker: execution removed liquidity from order book"
-      - "impacts fee calculation (maker fees typically lower)"
-      - "relevant for market microstructure analysis"
+      - "Maker: execution account order added liquidity"
+      - "Taker: execution account order removed liquidity"
+      - "AuctionUndefined: source contract explicitly defines auction liquidity as undefined"
+      - "governed by source-contract capability (required/optional/unsupported) and delivered via LiquidityRoleDetermination"
+      - "relevant for market microstructure analysis and fee calculation"
     excludes:
       - "order side (buy/sell direction)"
       - "order type (execution instruction)"
+      - "a source-level 'NO_LIQUIDITY_SIDE' sentinel (handled by the unavailable branch, not a canonical role)"
     sources:
       - reference: "nautilus-trader"
         locator: "nautilus_trader/core/rust/model.rs::LiquiditySide"
-        note: "LiquiditySide enum: MAKER, TAKER, NO_LIQUIDITY_SIDE"
+        note: "LiquiditySide enum: MAKER, TAKER, NO_LIQUIDITY_SIDE — Axiolune models NO_LIQUIDITY_SIDE as the unavailable determination branch, not a canonical role value"
       - reference: "lean"
         locator: "Common/Orders/OrderEvent.cs"
         note: "Lean does not explicitly model liquidity side in OrderEvent"
     status: accepted
+
+  # --- v1.1.0 (ADR-025) additions ---
+
+  - term: "Order Intent Lifecycle Event"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLifecycleEvent"
+    definition: "immutable internal lifecycle event bound to an exact OrderIntent but not to any ExternalOrder or OrderEventStream, recording pre-submission internal transitions such as intent initialization, pre-submission denial, internal emulation, and emulated-order release"
+    genus: "internal state transition fact"
+    differentia:
+      - "binds exactly one OrderIntent and one intentEventEmitter (the client, strategy, emulator, or authorized routing process)"
+      - "carries no provider order, event stream, providerEventId, sourceOrderKey, rawProviderStatusCode, or applied mapping/profile"
+      - "shares the OrderEventKind and OrderLifecycleState vocabularies with the external event but is limited to Initialized/Denied/Emulated/Released kinds"
+      - "is immutable (event-sourced, append-only)"
+    excludes:
+      - "external provider events (OrderLifecycleEvent bound to an ExternalOrder/OrderEventStream)"
+      - "the order intent itself"
+    sources:
+      - reference: "nautilus-trader"
+        locator: "nautilus_trader/model/events/order.pyx::OrderInitialized"
+        note: "OrderInitialized is a pre-submission event with no venue order id"
+      - reference: "fix"
+        locator: "FIX 5.0 SP2 :: ExecType"
+        note: "FIX separates ExecType (why the report was sent) from OrdStatus (current state); Axiolune separates the internal pre-submission event from the external provider event"
+    status: accepted
+
+  - term: "Matched Trade"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/MatchedTrade"
+    definition: "immutable bilateral trade fact that links two account-side executions (or one execution to its known counterparty) when bilateral evidence is sufficient, requiring both contra roles and a disclosure status"
+    genus: "bilateral trade fact"
+    differentia:
+      - "requires matchedContraParty and matchedContraAccount as explicit logical roles (no 'unknown' placeholder)"
+      - "optionally references a matchedContraExecution when both sides are recorded as executions"
+      - "carries a disclosureStatus and a matchId"
+      - "is absent for anonymous order-book fills or client-side reports that cannot supply bilateral facts; those remain single-sided Executions"
+    excludes:
+      - "a single-sided account fill (Execution without bilateral evidence)"
+      - "a fabricated counterparty ('unknown Party'/'unknown Account' is forbidden)"
+    sources:
+      - reference: "fix"
+        locator: "FIX 5.0 SP2 :: ExecutionReport contra group"
+        note: "FIX contra group is optional; Axiolune requires it only on MatchedTrade when bilateral evidence suffices"
+      - reference: "fibo-2026Q1"
+        locator: "FBC/ProductsAndServices/FinancialProductsAndServices::Trade"
+        note: "FIBO Trade is a bilateral transaction; Axiolune MatchedTrade is the bilateral sibling of an account-side Execution"
+    status: accepted
+
+  - term: "Order Route"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderRoute"
+    definition: "immutable routing fact that connects a parent OrderIntent (or parent route) to a child ExternalOrder or child intent via a destination, routed quantity, route time, and route status/reason, expressing venue-neutral, SOR, best-execution, and broker-decides-venue delegation"
+    genus: "routing fact"
+    differentia:
+      - "links a parent OrderIntent to a child ExternalOrder or child OrderIntent for further routing"
+      - "carries routedQuantity, routeTime, routeStatus, and optional routeReason"
+      - "the actual venue lands on the route / external-order / execution, not the parent intent"
+      - "distinct from OrderIntentLineage (intent split/aggregation provenance) — a route is a delegation, not a conservation-bound transformation"
+    excludes:
+      - "OrderIntentLineage (split/aggregation with quantity conservation)"
+      - "the external order itself (the child is referenced, not duplicated)"
+    sources:
+      - reference: "fix"
+        locator: "FIX 5.0 SP2 :: Routing instructions / SOR"
+        note: "FIX supports smart-order-routing and broker-decides-venue; Axiolune models the routing fact as an immutable link"
+    status: accepted
+
+  - term: "Execution Allocation"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/ExecutionAllocation"
+    definition: "immutable allocation fact that distributes one source Execution across one or more AllocationLine target accounts with quantity conservation, modeling post-execution allocation, average-price allocation, and bunched-order back-allocation"
+    genus: "allocation fact"
+    differentia:
+      - "references exactly one source Execution and one or more AllocationLines"
+      - "conserves quantity: the sum of AllocationLine quantities equals the source executionQuantity"
+      - "carries an allocationStatus (proposed/accepted/rejected/cancelled/corrected)"
+      - "detailed allocation and clearing semantics remain in post-trade-operations via a stable cross-module reference to the source Execution"
+    excludes:
+      - "the execution itself (the source is referenced, not duplicated)"
+      - "clearing and settlement detail (post-trade-operations)"
+    sources:
+      - reference: "iso-20022"
+        locator: "ISO 20022 securities_trade — allocation"
+        note: "ISO 20022 lists allocation under securities trade; Axiolune models the stable scaffold, detail deferred to post-trade-operations"
+      - reference: "cftc"
+        locator: "CFTC 17 CFR 1.35 — bunched order back-allocation"
+        note: "CFTC defines bunched-order back-allocation with business/regulatory semantics"
+    status: accepted
+
+  - term: "Allocation Line"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/AllocationLine"
+    definition: "immutable allocation target line expressing one account's share of a source execution, paired with an ExecutionAllocation"
+    genus: "allocation target"
+    differentia:
+      - "carries a strictly positive allocationQuantity and an allocationStatus"
+      - "targets exactly one FinancialAccount via allocationTargetAccount"
+      - "the set of lines under one ExecutionAllocation partitions the source execution quantity with conservation"
+    excludes:
+      - "the source execution (referenced via the parent ExecutionAllocation)"
+      - "the target account's full position state (portfolio-positions)"
+    sources:
+      - reference: "iso-20022"
+        locator: "ISO 20022 securities_trade — AllocationLine"
+        note: "ISO 20022 allocation line carries account, quantity, and status"
+    status: accepted
+
+  - term: "Order Revision"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderRevision"
+    definition: "immutable cancel/replace chain fact that links a revision request to its previous and root order, expressing the FIX ClOrdID/OrigClOrdID-style order chain with replace, cancel, cancel-replace, rejected, replaced terms, and a priority-preserved flag"
+    genus: "order chain fact"
+    differentia:
+      - "carries a revisionRequestId (the new request id) and a revisionKind (replace/cancel/cancelReplace)"
+      - "optionally links a previousOrder and a rootOrder exact ExternalOrder version"
+      - "carries replacedTerms (present only for replace/cancelReplace) and priorityPreserved"
+      - "does not update a single fixed order id in place — the chain is an immutable set of links"
+    excludes:
+      - "a single mutable order id (the chain uses distinct request ids)"
+      - "the lifecycle event stream (OrderRevision is the instruction chain, not a status event)"
+    sources:
+      - reference: "fix"
+        locator: "FIX 5.0 SP2 :: ClOrdID / OrigClOrdID order chain"
+        note: "FIX uses ClOrdID/OrigClOrdID for cancel/replace, not a single mutable order id"
+    status: accepted
+
+  - term: "Fill Snapshot"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/FillSnapshot"
+    definition: "immutable cumulative-quantity snapshot object carried by a fill-kind lifecycle event, expressing last fill quantity, cumulative filled quantity, remaining (leaves) quantity, cancelled quantity, and average price so the event-execution-cumulative-quantity-state loop is auditable without recomputation"
+    genus: "cumulative quantity snapshot"
+    differentia:
+      - "carries lastQty, cumQty, leavesQty, cancelledQty, and averagePrice (all optional)"
+      - "cumQty equals the sum of executionQuantity over the stream's executions for the order up to and including the reported execution"
+      - "leavesQty = orderQuantity - cumQty - cancelledQty and is non-negative"
+      - "Filled iff leavesQty = 0; PartiallyFilled iff leavesQty > 0 and cumQty > 0"
+    excludes:
+      - "the executions themselves (the snapshot is derived-auditable, not the source of truth)"
+      - "the order state (the snapshot supports state audit, it is not the state)"
+    sources:
+      - reference: "fix"
+        locator: "FIX 5.0 SP2 :: ExecutionReport CumQty / LeavesQty / AvgPx"
+        note: "FIX ExecutionReport carries CumQty, LeavesQty, and AvgPx; Axiolune captures them as an immutable snapshot for audit"
+    status: accepted
+
+  - term: "Order Leg"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderLeg"
+    definition: "optional single-leg component of a multi-leg order intent, used as an extension point for multi-leg instruments (FX swap, strategies); in v1.1.0 a single-instrument order carries no OrderLeg"
+    genus: "order leg component"
+    differentia:
+      - "carries an orderSide and an orderQuantity per leg"
+      - "is an extension point; full multi-leg semantics are completed via a cross-module follow-up gated on the instruments QuotationConvention (ADR-021)"
+      - "absent for single-instrument v1.1.0 orders (described directly on the OrderIntent)"
+    excludes:
+      - "the single-instrument order (no leg in v1.1.0)"
+      - "execution legs (ExecutionLeg corresponds to an OrderLeg)"
+    sources:
+      - reference: "fix"
+        locator: "FIX 5.0 SP2 :: ExecutionReport legs / multi-leg"
+        note: "FIX supports multi-leg strategies; Axiolune scaffolds legs as an extension point"
+    status: accepted
+
+  - term: "Execution Leg"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/ExecutionLeg"
+    definition: "optional single-leg execution component corresponding to an OrderLeg, used as an extension point for multi-leg executions; in v1.1.0 a single-instrument execution carries no ExecutionLeg"
+    genus: "execution leg component"
+    differentia:
+      - "carries an executionQuantity and an executionPrice per leg"
+      - "corresponds to an OrderLeg of a multi-leg order"
+      - "full semantics are completed via a cross-module follow-up gated on the instruments QuotationConvention (ADR-021)"
+      - "absent for single-instrument v1.1.0 executions (described directly on the Execution)"
+    excludes:
+      - "the single-instrument execution (no leg in v1.1.0)"
+      - "the order leg (OrderLeg is the instruction; ExecutionLeg is the fill)"
+    sources:
+      - reference: "fix"
+        locator: "FIX 5.0 SP2 :: ExecutionReport legs"
+        note: "FIX ExecutionReport may carry per-leg fill data for multi-leg strategies"
+    status: accepted
+
+  - term: "Order Event Stream"
+    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderEventStream"
+    definition: "provider event stream locked to a single ExternalOrder logical identity, carrying all lifecycle events and fill reports of that order and declaring its liquidity-role classification capability; it is a per-order event sequence, not a live FIX/WebSocket feed"
+    genus: "per-order event sequence"
+    differentia:
+      - "locked to exactly one ExternalOrder logical identity"
+      - "carries the source contract, provider API/schema version, provider stream id, and liquidity-role capability"
+      - "is a single-external-order event sequence, not a live provider feed or session (those are a separate optional concept)"
+    excludes:
+      - "a live FIX/WebSocket feed or session (the stream is a per-order logical sequence)"
+      - "the external order itself (referenced via streamExternalOrder)"
+    sources:
+      - reference: "nautilus-trader"
+        locator: "nautilus_trader/model/events/order.pyx::OrderEvent"
+        note: "Per-order event sequence in the event-sourced model"
+    status: accepted
+    deprecationNote: >-
+      The name "OrderEventStream" can be misread as a live FIX/WebSocket feed; it is
+      defined as a single-external-order event sequence. A rename to
+      ExternalOrderEventSequence was considered (ADR-025 D8/Round-15 P1-8) but
+      deferred to preserve IRI stability; the definition and this card clarify the
+      per-order-sequence semantics. A live provider feed/session remains a
+      separate optional concept.

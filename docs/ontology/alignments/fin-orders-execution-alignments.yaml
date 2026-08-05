@@ -1,26 +1,75 @@
 module: fin-orders-execution
-version: 0.3.0
+version: 1.1.0
 alignments:
   - targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/FinancialProductsAndServices/Trade
     relation: skos:closeMatch
     sourceRelease: FIBO 2026Q1
-    rationale: Execution fill facts align with FIBO Trade while adding venue, commission, and order lineage context.
+    rationale: Execution (account-side fill) and MatchedTrade (bilateral) align with FIBO Trade; v1.1.0 separates the account-side fill from the bilateral trade and adds venue, commission, timing, and order lineage context.
     reviewStatus: accepted
     bibliographyRef: fibo-local
   - targetIri: FIX::OrdStatus
     relation: skos:closeMatch
-    sourceRelease: internal
-    rationale: ExternalOrderStatusMapping translates FIX order status codes to canonical lifecycle states.
+    sourceRelease: FIX 5.0 SP2
+    rationale: ExternalOrderStatusMapping translates FIX order status codes to canonical OrderLifecycleState; v1.1.0 extends the state vocabulary with PendingNew, DoneForDay, Stopped, Suspended, Calculated, Restated, PendingReplace and records the raw provider status code plus applied mapping/profile on each event for auditability.
+    reviewStatus: accepted
+    bibliographyRef: nautilus-trader
+  - targetIri: FIX::ExecType
+    relation: skos:closeMatch
+    sourceRelease: FIX 5.0 SP2
+    rationale: OrderEventKind is distinct from the resulting OrderLifecycleState, mirroring FIX ExecType (why the report was sent) vs OrdStatus (current state); v1.1.0 adds TradeCorrect and TradeCancel event kinds and keeps event x post-state composition rather than a monolithic enum.
+    reviewStatus: accepted
+    bibliographyRef: nautilus-trader
+  - targetIri: FIX::ClOrdID-OrigClOrdID
+    relation: skos:closeMatch
+    sourceRelease: FIX 5.0 SP2
+    rationale: OrderRevision expresses the FIX cancel/replace chain with a distinct revisionRequestId and previous/root order links, plus replace/cancel/cancelReplace kinds, replacedTerms, and priorityPreserved — rather than a single fixed order id updated in place.
+    reviewStatus: accepted
+    bibliographyRef: nautilus-trader
+  - targetIri: FIX::ExecutionReport
+    relation: skos:closeMatch
+    sourceRelease: FIX 5.0 SP2
+    rationale: FillSnapshot carries lastQty/cumQty/leavesQty/cancelledQty/averagePrice mirroring FIX CumQty/LeavesQty/AvgPx so the event-execution-cumulative-quantity-state loop is auditable; v1.1.0 distinguishes executedAt (TransactTime), providerReportedAt, observedAt, and tradeDate, and separates venueTradeId/providerReportId/matchId.
+    reviewStatus: accepted
+    bibliographyRef: nautilus-trader
+  - targetIri: FIX::ExecutionReport-contra-group
+    relation: skos:relatedMatch
+    sourceRelease: FIX 5.0 SP2
+    rationale: Execution relaxes contraAccount/contraParty to optional (FIX contra group is optional) and forbids an "unknown" placeholder; MatchedTrade requires both contra roles and a disclosureStatus only when bilateral evidence suffices.
     reviewStatus: accepted
     bibliographyRef: nautilus-trader
   - targetIri: BIAN::MarketOperations::OrderManagement
     relation: skos:closeMatch
     sourceRelease: BIAN
-    rationale: Order intent and lifecycle event sourcing map to BIAN order management service operations.
+    rationale: Order intent and lifecycle event sourcing map to BIAN order management service operations; v1.1.0 separates internal (OrderIntentLifecycleEvent) from external (OrderLifecycleEvent) order management events.
     reviewStatus: accepted
     bibliographyRef: bian-local
+  - targetIri: ISO-20022::securities_trade-allocation
+    relation: skos:relatedMatch
+    sourceRelease: ISO 20022
+    rationale: ExecutionAllocation and AllocationLine express post-execution allocation, average-price allocation, and bunched-order back-allocation with quantity conservation, aligned to ISO 20022 securities-trade allocation; detailed allocation/clearing semantics remain in post-trade-operations via a stable cross-module reference.
+    reviewStatus: accepted
+    bibliographyRef: iso-20022
+  - targetIri: ESMA::MiFIR-Article-26
+    relation: skos:relatedMatch
+    sourceRelease: ESMA MiFIR
+    rationale: Execution timing and venue identity (executedAt, executionVenue, venueTradeId) align to MiFIR Article 26 transaction-reporting requirements for execution time, price, quantity, instrument, and venue transaction identification.
+    reviewStatus: accepted
+    bibliographyRef: esma-mifir
+  - targetIri: SEC::Regulation-SHO
+    relation: skos:relatedMatch
+    sourceRelease: SEC Regulation SHO
+    rationale: ShortSaleIndicator (long/short/short-exempt) and the separation of order side from position effect and order capacity align to SEC Regulation SHO short-sale marking requirements.
+    reviewStatus: accepted
+    bibliographyRef: sec-reg-sho
   - targetIri: internal::OrderIntent
     relation: skos:closeMatch
     sourceRelease: internal
-    rationale: OrderIntent is Axiolune-native where FIBO lacks explicit pre-submission trade instruction concept.
+    rationale: OrderIntent is Axiolune-native where FIBO lacks an explicit pre-submission trade instruction concept; v1.1.0 adds intentIssuer and intentIdentifierAuthority so the logical key is (authority, clientIntentId).
     reviewStatus: accepted
+    bibliographyRef: axiolune-internal
+  - targetIri: internal::OrderRoute
+    relation: skos:closeMatch
+    sourceRelease: internal
+    rationale: OrderRoute is Axiolune-native, expressing venue-neutral / SOR / best-execution / broker-decides-venue delegation as an immutable routing fact; FIX and FIBO do not model the routing-delegation fact separately from the order chain.
+    reviewStatus: accepted
+    bibliographyRef: axiolune-internal

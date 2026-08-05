@@ -1,191 +1,449 @@
 # Axiolune M2 Finance — Portfolio & Positions Terminology
 # Module: fin-portfolio-positions
-# Version: 0.1.0
+# Version: 1.1.0
 # Standard: ISO 704:2022 (Terminology work — Principles and methods)
-# Evidence sources: FIBO SEC/Portfolios, nautilus_trader, Lean
+# Evidence sources: FIBO SEC/Portfolios, nautilus_trader, Lean, FIX, ISO 15022, IFRS 13, GIPS, IRS Pub 550
+# Note: v0.1.0 cards for Account/PositionSide/AccountType referenced types that do not exist in the
+#   v1.0.0+ module (the module uses foundation:FinancialAccount, signed positionQuantity, and
+#   ValuationMethod). This v1.1.0 file drops those deprecated cards and adds cards for all v1.0.0
+#   concrete types plus the new v1.1.0 generic-core + profile types.
 
 terms:
-  - term: "Account"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/Account"
-    definition: "financial account that serves as the unit of ownership, authorization, and accounting for trading activities and asset holdings"
-    genus: "financial account"
-    differentia:
-      - "serves as unit of ownership"
-      - "serves as unit of authorization"
-      - "serves as unit of accounting for trading activities"
-    excludes:
-      - "a portfolio (which may span multiple accounts)"
-      - "a legal entity (which may own multiple accounts)"
-      - "an account statement or report"
-    sources:
-      - reference: "nautilus_trader"
-        locator: "model/identifiers.pyx:Account"
-        retrievalDate: "2026-07-30"
-        note: "nautilus_trader defines Account as identifier for segregated account"
-      - reference: "FIBO-2026Q1"
-        locator: "FBC/ProductsAndServices/ClientsAndAccounts/Account"
-        note: "FIBO Account is broader (banking/payments); Axiolune focuses on trading context"
-    status: accepted
-
   - term: "Portfolio"
     canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio"
-    definition: "collection of financial instruments and cash positions managed as a unit for investment objectives, performance tracking, or risk management"
-    genus: "collection of financial instruments and cash positions"
+    definition: "stable managed collection whose logical identity is an authority-scoped identifier (identifying authority + portfolioId), used for expressing account membership and management authority through temporal associations rather than storing membership edges directly"
+    genus: "stable managed collection"
     differentia:
-      - "managed as a unit"
-      - "for investment objectives"
-      - "for performance tracking"
-      - "for risk management"
+      - "logical identity is authority-scoped (identifying authority + portfolioId)"
+      - "membership expressed through temporal associations"
     excludes:
-      - "a single instrument or holding"
-      - "an account (the ownership/custody container)"
+      - "a single account (the ownership/custody container)"
       - "a strategy definition (the rule set)"
     sources:
       - reference: "FIBO-2026Q1"
         locator: "SEC/Portfolios/PortfolioManagement/Portfolio"
-        retrievalDate: "2026-07-30"
-        note: "FIBO defines Portfolio as collection of holdings; Axiolune aligns with this"
-      - reference: "Lean"
-        locator: "Algorithm/QCAlgorithm.Portfolio.cs"
-        note: "Lean SecurityPortfolioManager tracks holdings and statistics"
+        note: "FIBO portfolio collection semantics"
+    status: accepted
+
+  - term: "Portfolio Identifying Authority"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/portfolioIdentifyingAuthority"
+    definition: "relationship to the logical Party whose namespace governs the stable portfolio identifier, used so that the same portfolioId under two authorities remains unambiguous"
+    genus: "functional relationship to a Party"
+    differentia:
+      - "governs the stable portfolio identifier namespace"
+      - "forms the authority-scoped logical identity with portfolioId"
+    excludes:
+      - "membership authority (which asserts a membership, not the portfolio identity)"
+      - "mandate authority (which grants management, not identity)"
+    sources:
+      - reference: "ADR-029"
+        locator: "D1"
+        note: "identity-authority scoping"
+    status: accepted
+
+  - term: "Portfolio Account Membership"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembership"
+    definition: "effective-dated and source-approved account ownership association, used as the sole graph path for resolving member accounts of a Portfolio at a PIT pivot; retained as the account-kind specialization of PortfolioConstituent"
+    genus: "temporal association"
+    differentia:
+      - "effective-dated and source-approved"
+      - "sole graph path for member-account resolution"
+    excludes:
+      - "a stored edge on the Portfolio"
+      - "a management mandate"
+    sources:
+      - reference: "FIBO-2026Q1"
+        locator: "FBC/ProductsAndServices/ClientsAndAccounts/Account"
+        note: "account ownership semantics"
+    status: accepted
+
+  - term: "Portfolio Management Mandate"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioManagementMandate"
+    definition: "effective-dated and source-approved authority association from a managing Party over a Portfolio, used for the sole management path; scoped as management authority, not a full investment mandate (benchmark, base currency, performance policy belong to a future performance-and-attribution module)"
+    genus: "temporal authority association"
+    differentia:
+      - "from a managing Party over a Portfolio"
+      - "management authority, not a full investment mandate"
+    excludes:
+      - "an investment mandate with benchmark and performance policy"
+    sources:
+      - reference: "BIAN"
+        locator: "InvestmentPortfolio::PortfolioManagement"
+        note: "BIAN investment portfolio service domain"
+    status: accepted
+
+  - term: "Portfolio Account Membership Closure"
+    canonicalIri: "https://axiolune.ai/ontology/portfolio-positions/PortfolioAccountMembershipClosure"
+    definition: "complete exact-version set of all effective memberships of one Portfolio at a PIT pivot, used for turning account absence into closed-world evidence through a completed closure probe"
+    genus: "closed-world closure"
+    differentia:
+      - "complete exact-version set at a PIT pivot"
+      - "closed-world evidence of absence"
+    excludes:
+      - "an open membership list"
+    sources:
+      - reference: "ADR-012"
+        locator: "three-axis temporal"
+        note: "PIT-eligible membership closure"
     status: accepted
 
   - term: "Holding Snapshot"
     canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot"
-    definition: "time-stamped observation of an account or portfolio's holding of a specific financial instrument at a point in time, with three-axis temporal semantics distinguishing the business effective time, knowledge time, and data availability time"
-    genus: "time-stamped observation"
+    definition: "source-observed non-negative quantity observation of one account and instrument from a single observation stream, used for recording externally reported ownership facts; optional positionScope, balanceDimension, grossLongQuantity, grossShortQuantity, businessAsOf, and statementPeriodRef carry the view and sub-balance truths"
+    genus: "non-negative quantity observation"
     differentia:
-      - "of an account or portfolio's holding"
-      - "of a specific financial instrument"
-      - "with three-axis temporal semantics (valid/knowledge/availability)"
+      - "source-observed, not execution-derived"
+      - "non-negative owned-interest quantity"
+      - "optional scope, dimension, and gross truths"
     excludes:
-      - "the financial instrument itself"
-      - "a position lot (more granular acquisition tracking)"
+      - "a position lot (more granular)"
       - "a valuation (computed market value)"
-      - "a transaction or execution that caused the holding"
     sources:
       - reference: "FIBO-2026Q1"
         locator: "SEC/Portfolios/PortfolioManagement/PortfolioHolding"
-        retrievalDate: "2026-07-30"
-        note: "FIBO PortfolioHolding exists but lacks three-axis temporal semantics"
-      - reference: "nautilus_trader"
-        locator: "model/position.pyx:Position"
-        note: "nautilus_trader Position tracks quantity, side, realized/unrealized PnL"
-      - reference: "ADR-012"
-        locator: "docs/domain/decisions/ADR-012-three-axis-time.md"
-        note: "Three-axis temporal semantics requirement"
+        note: "FIBO PortfolioHolding plus three-axis temporal"
+      - reference: "FIX"
+        locator: "Position Report (Tag 702)"
+        note: "account, clearing business day, quantity type"
     status: accepted
 
-  - term: "Position Valuation"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation"
-    definition: "time-stamped valuation of a holding that explicitly references the price observation used, the valuation method applied, and the resulting market value, enabling full traceability from price to valuation result"
-    genus: "time-stamped valuation"
+  - term: "Position Snapshot"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshot"
+    definition: "signed exposure observation of one account and instrument from a single observation stream, used for storing the signed net quantity as the default directional truth (positive long, negative short, zero flat) with optional grossLongQuantity/grossShortQuantity, positionScope, and balanceDimension carrying the gross and per-bucket truths so the signed net is not the only authoritative quantity"
+    genus: "signed exposure observation"
     differentia:
-      - "of a holding"
-      - "explicitly references the price observation used"
-      - "specifies the valuation method applied"
-      - "provides resulting market value"
-      - "enables full traceability from price to valuation"
+      - "signed net quantity as default directional truth"
+      - "optional gross long/short and per-bucket truths"
     excludes:
-      - "the price observation itself"
-      - "the holding snapshot (position without valuation)"
-      - "a valuation rule or method definition"
-      - "unrealized PnL calculated without explicit price reference"
+      - "a stored side label (side is derived)"
+      - "a stored basis or PnL (duplicate truths forbidden)"
     sources:
-      - reference: "M2-PLAN"
-        locator: "§6.1 Slice A, CQ-S4"
-        retrievalDate: "2026-07-30"
-        note: "CQ-S4 requires explicit price-to-valuation traceability"
-      - reference: "Lean"
-        locator: "Securities/SecurityHolding.cs"
-        note: "Lean SecurityHolding tracks UnrealizedProfit, TotalMarketValue but doesn't make price reference explicit"
+      - reference: "nautilus_trader"
+        locator: "model/position.pyx:Position"
+        note: "signed quantity, side derived"
+      - reference: "ISO 15022"
+        locator: "MT538"
+        note: "custody statement sub-balances"
+    status: accepted
+
+  - term: "Position Scope"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionScope"
+    definition: "closed classification of the view under which a snapshot is observed (custody, accounting, economic, regulatory)"
+    genus: "closed classification"
+    differentia:
+      - "custody / accounting / economic / regulatory"
+    excludes:
+      - "a balance bucket (use BalanceDimension)"
+    status: accepted
+
+  - term: "Balance Dimension"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/BalanceDimension"
+    definition: "closed classification of sub-balance buckets for a snapshot (settled, pending, available, pledged, loaned, receivable, payable)"
+    genus: "closed classification"
+    differentia:
+      - "settled / pending / available / pledged / loaned / receivable / payable"
+    excludes:
+      - "a view scope (use PositionScope)"
+    sources:
+      - reference: "FIX"
+        locator: "Position Report Tag 702"
+        note: "quantity type and balance bucket"
     status: accepted
 
   - term: "Position Lot"
     canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot"
-    definition: "distinct acquisition or disposition of a specific quantity of an instrument, tracked separately for tax basis, holding period, or accounting purposes"
-    genus: "distinct acquisition or disposition"
+    definition: "execution-derived or non-execution-sourced opening exposure, used for tracking immutable cost and context; lotSourceKind distinguishes execution-derived from transfer/opening-balance/corporate-action-result/etc., and optional derivedFromChange references the source PositionChange"
+    genus: "opening exposure lot"
     differentia:
-      - "of a specific quantity of an instrument"
-      - "tracked separately for tax basis"
-      - "tracked separately for holding period"
-      - "tracked separately for accounting purposes"
+      - "execution-derived or non-execution-sourced"
+      - "lotDiscriminator identifies the residual lot"
+      - "immutable cost and context"
     excludes:
-      - "a holding snapshot (net position aggregate)"
-      - "a transaction or execution record"
-      - "a cost basis methodology"
+      - "a holding snapshot (net aggregate)"
     sources:
       - reference: "IRS-Publication-550"
         locator: "Basis of Investment Property"
-        retrievalDate: "2026-07-30"
-        note: "Tax lot tracking for capital gains calculation"
-      - reference: "Lean"
-        locator: "Securities/SecurityHolding.cs:Quantity"
-        note: "Lean tracks aggregate position; lot tracking would be enhancement"
+        note: "tax-lot tracking"
+      - reference: "FIX"
+        locator: "PosType"
+        note: "position type for corporate-action adjustments"
     status: accepted
 
-  - term: "Position Side"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionSide"
-    definition: "controlled vocabulary indicating whether a position is long (owns the asset), short (owes the asset), or flat (no position)"
-    genus: "controlled vocabulary"
+  - term: "Position Change"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionChange"
+    definition: "non-execution lifecycle event that changes a position's quantity or basis (opening balance, transfer, corporate-action result, exercise or assignment, manual adjustment, clearing or custody statement, calculated aggregation), used for tracing the non-execution lifecycle; full corporate-action workflow remains in an independent module"
+    genus: "non-execution lifecycle event"
     differentia:
-      - "indicates long (owns the asset)"
-      - "indicates short (owes the asset)"
-      - "indicates flat (no position)"
+      - "openingBalance / transfer / corporateActionResult / exerciseAssignment / manualAdjustment / clearingCustodyStatement / calculatedAggregation"
+      - "carries source business event reference"
     excludes:
-      - "order side (buy/sell intent)"
-      - "trade direction"
-      - "quantity sign (positive/negative)"
+      - "an execution (use orders:Execution)"
     sources:
-      - reference: "nautilus_trader"
-        locator: "model/enums.pyx:PositionSide"
-        retrievalDate: "2026-07-30"
-        note: "nautilus_trader defines LONG/SHORT/FLAT as position states"
+      - reference: "FIX"
+        locator: "PosType"
+        note: "corporate-action adjustment"
+    status: accepted
+
+  - term: "Lot Adjustment"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/LotAdjustment"
+    definition: "lot transformation (split, merge, restatement, corporate-action adjustment) that adjusts a lot's quantity and/or cost basis"
+    genus: "lot transformation"
+    differentia:
+      - "split / merge / restatement / corporateActionAdjustment"
+      - "quantityAdjustmentFactor and/or basisAdjustment"
+    status: accepted
+
+  - term: "Lot Realization"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/LotRealization"
+    definition: "fact that closes out a strictly positive quantity of a PositionLot, recording realized cost basis, realized proceeds, and realized PnL"
+    genus: "lot closure fact"
+    differentia:
+      - "strictly positive realized quantity"
+      - "realizedPnl = realizedProceeds − realizedCostBasis"
+    status: accepted
+
+  - term: "Valuation Method Family"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/ValuationMethodFamily"
+    definition: "abstract parent of valuation method profiles, used as the generic semantic core so that the direct-unit-price method is one concrete profile rather than the only universal valuation path"
+    genus: "abstract valuation method parent"
+    differentia:
+      - "abstract; not instantiated directly"
+      - "parent of DirectUnitValuationProfile and future profiles"
+    excludes:
+      - "a concrete valuation method (use a profile subtype)"
+    sources:
+      - reference: "ADR-021"
+        locator: "QuotationConvention precedent"
+        note: "abstract quotation parent"
+      - reference: "IFRS-13"
+        locator: "Fair Value Measurement"
+        note: "measurement date, market participant, exit price"
+    status: accepted
+
+  - term: "Direct Unit Valuation Profile"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/DirectUnitValuationProfile"
+    definition: "concrete valuation method profile that values a position by signed snapshot quantity multiplied by an exact direct-unit Money price, with contractMultiplier = 1 and forbidding par, accrued, inverse, notional, and multiplier fallback paths; this is where the previously global hard lock of directUnitPriceTimesQuantity lives"
+    genus: "valuation method profile"
+    differentia:
+      - "directUnitPriceTimesQuantity method"
+      - "contractMultiplier = 1"
+      - "forbids par/accrued/inverse/notional/multiplier fallback"
+    excludes:
+      - "mark-to-model, cost-basis, lower-of-cost-or-market, accrued-income, notional-based (other profiles)"
+    sources:
+      - reference: "GIPS"
+        locator: "Asset Owners"
+        note: "valuation, cash, and accrual policies"
+    status: accepted
+
+  - term: "Valuation Calculation Definition"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/ValuationCalculationDefinition"
+    definition: "authority-scoped versioned valuation specification binding a ValuationMethodFamily profile, used for locking the quotation input closure, formula, input/output contracts, precision, rounding, runtime, and tool lock"
+    genus: "versioned valuation specification"
+    differentia:
+      - "binds exactly one ValuationMethodFamily profile"
+      - "locks the input closure and executable evidence"
+    status: accepted
+
+  - term: "Cost Basis Calculation Definition"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition"
+    definition: "sole authority-scoped versioned execution-derived cost-basis specification, used for locking the method, quotation input, fee treatment, lot opening and consumption, currency and FX policy, and implementation evidence"
+    genus: "versioned cost-basis specification"
+    differentia:
+      - "execution-derived cost basis"
+      - "locks fee treatment, lot policies, currency and FX"
+    status: accepted
+
+  - term: "Portfolio Valuation"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuation"
+    definition: "valuation run header that fixes the portfolio, complete member-account closure, valuation definition, reporting currency, and PIT input context"
+    genus: "valuation run header"
+    differentia:
+      - "fixes portfolio, member closure, definition, reporting currency, PIT context"
+    status: accepted
+
+  - term: "Position Valuation"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation"
+    definition: "valuation line whose logical identity is the exact valuation header and input snapshot version, used for producing market value from a holding or position snapshot and an exact PIT price; optional valuationSubjectKind, valuationFinality, coverageInclusionReason, and exclusionReason carry coverage metadata"
+    genus: "valuation line"
+    differentia:
+      - "selects one holding or position snapshot (xone)"
+      - "uses an exact PIT price"
+      - "optional coverage metadata"
+    excludes:
+      - "carrying method truth (method lives on the definition)"
+    status: accepted
+
+  - term: "Portfolio Valuation Summary"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuationSummary"
+    definition: "coverage-closure aggregate of all PositionValuation lines in one PortfolioValuation run, used for verifying the valuation-line coverage and total market value"
+    genus: "valuation coverage closure"
+    differentia:
+      - "sums all lines in a run"
+      - "coverageStatus (complete/partial/excludesMembers)"
+    status: accepted
+
+  - term: "FX Conversion"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/FXConversion"
+    definition: "auditable fact that applies an exact PIT FX rate and direction to convert one Money into another (a rate application, also referenced as FXRateApplication); optional rateSource, quoteTime, rateDate, rateFinality, and crossRatePath carry rate provenance and multi-leg cross-currency path; if it represents a real FX trade rather than a rate application, it belongs to trading or settlement semantics"
+    genus: "rate application fact"
+    differentia:
+      - "applies an exact PIT FX rate and direction"
+      - "uniquely consumed by a valuation line, opening lot, or fee allocation"
+      - "optional cross-rate path and finality"
+    excludes:
+      - "a real FX trade (belongs to settlement/trading)"
+    status: accepted
+
+  - term: "Position Lot Allocation"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocation"
+    definition: "opening or consumption allocation between one Execution and one PositionLot under the same cost-basis definition and calculation context, used for establishing a traceable chain through a strictly positive quantity and the allocation kind"
+    genus: "lot allocation"
+    differentia:
+      - "opening or consumption kind"
+      - "strictly positive allocated quantity"
+    status: accepted
+
+  - term: "Position Lot Fee Allocation"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotFeeAllocation"
+    definition: "fact that allocates a strictly positive Money fee to one PositionLotAllocation, used for carrying an exact FX conversion when currencies differ and bringing the fee effect into basis"
+    genus: "fee allocation"
+    differentia:
+      - "strictly positive fee magnitude"
+      - "optional exact FX conversion"
+    status: accepted
+
+  - term: "Execution Lot Allocation Closure"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure"
+    definition: "closed-world header for one exact Execution and CostBasisCalculationDefinition version, used for encapsulating the complete eligible lot set, selection evidence, and allocation-fee closure while completing conservation probes; the strict closure probes belong to the execution-and-reproducibility profile"
+    genus: "closed-world closure header"
+    differentia:
+      - "encapsulates eligible lots, selection, allocation-fee closure"
+      - "completes conservation probes (profile-scoped)"
+    status: accepted
+
+  - term: "Position Lot State Closure"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotStateClosure"
+    definition: "closed-world bridge from all non-zero PositionLot versions, their allocations, and execution closures to one execution-derived PositionSnapshot, used for conserving signed quantity and remaining cost basis; external source snapshots forbid this branch"
+    genus: "closed-world state bridge"
+    differentia:
+      - "from non-zero lots to execution-derived snapshot"
+      - "conserves signed quantity and remaining basis"
+    excludes:
+      - "external source snapshots (forbidden)"
+    status: accepted
+
+  - term: "Unrealized PnL Observation"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/UnrealizedPnLObservation"
+    definition: "reproducible fact joining one PositionValuation and one PositionLotStateClosure, used for satisfying the equation that PnL equals market value minus remaining basis in the header reporting currency"
+    genus: "PnL fact"
+    differentia:
+      - "joins valuation and lot-state closure"
+      - "unrealizedPnl = marketValue − remainingCostBasis"
+    status: accepted
+
+  - term: "External Cost Basis Observation"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/ExternalCostBasisObservation"
+    definition: "source-provided cost-basis observation of one account and instrument from a single observation stream, used for retaining the external basis independently; externalBasisDefinition is optional (the external party may report its own externalBasisMethod, externalStatementDate, and externalBasisMappingStatus), and the internal definition is an optional mapping rather than a disguised external method"
+    genus: "external cost-basis observation"
+    differentia:
+      - "source-provided, independent of execution-derived basis"
+      - "optional internal mapping (not a disguised external method)"
+    excludes:
+      - "overwriting the execution-derived basis"
+    sources:
+      - reference: "ADR-029"
+        locator: "D5"
+        note: "external basis method independence"
+    status: accepted
+
+  - term: "Reconciliation Comparison"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationComparison"
+    definition: "comparison act between external and execution-derived evidence, used for producing a typed comparison result (matched, break, ambiguous, not comparable) so that matched is a comparison result rather than a standalone finding"
+    genus: "comparison act"
+    differentia:
+      - "comparisonFamily (quantity or basis)"
+      - "comparisonResult (matched/break/ambiguous/notComparable)"
+    excludes:
+      - "a finding (use ReconciliationFinding)"
+      - "a resolution (use ReconciliationResolution)"
+    status: accepted
+
+  - term: "Portfolio Position Reconciliation Finding"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioPositionReconciliationFinding"
+    definition: "break or notable result requiring disposition, sourced from a ReconciliationComparison, used for preventing silent merge or overwrite of the two evidence sets; findingKind and findingSeverity type and prioritize the result"
+    genus: "reconciliation finding"
+    differentia:
+      - "requires disposition"
+      - "sourced from a ReconciliationComparison"
+      - "findingKind includes methodologyDifference, timingDifference, ambiguous, notComparable"
+    excludes:
+      - "a comparison result (use ReconciliationComparison)"
+    status: accepted
+
+  - term: "Reconciliation Resolution"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationResolution"
+    definition: "disposition of a ReconciliationFinding, used for recording accepted, investigated, corrected, waived, or escalated outcomes so that breaks carry an explicit resolution"
+    genus: "disposition fact"
+    differentia:
+      - "resolutionKind (accepted/investigated/corrected/waived/escalated)"
+      - "resolves a finding"
+    status: accepted
+
+  - term: "Portfolio Constituent"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioConstituent"
+    definition: "effective-dated association from a Portfolio to a constituent subject that may be a FinancialAccount, a sub-Portfolio, a Sleeve, or an explicit allocation, used so that a portfolio is not restricted to an account aggregation"
+    genus: "temporal constituent association"
+    differentia:
+      - "constituentKind (account/subPortfolio/sleeve/explicitAllocation)"
+      - "polymorphic constituent subject"
+    excludes:
+      - "membership restricted to accounts only"
+    sources:
+      - reference: "GIPS"
+        locator: "Asset Owners"
+        note: "portfolio and composite semantics"
+    status: accepted
+
+  - term: "Sleeve"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/Sleeve"
+    definition: "management subdivision of a portfolio, used as a portfolio constituent subject so that a portfolio may aggregate accounts, sub-portfolios, sleeves, and explicit allocations"
+    genus: "management subdivision"
+    differentia:
+      - "subdivision of a portfolio"
+      - "usable as a constituent subject"
     status: accepted
 
   - term: "Valuation Method"
     canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/ValuationMethod"
-    definition: "controlled vocabulary of valuation methodologies including mark-to-market (current market price), mark-to-model (theoretical price), cost basis (original acquisition cost), and lower-of-cost-or-market"
-    genus: "controlled vocabulary of valuation methodologies"
+    definition: "closed classification of the calculation method used to derive a PortfolioValuation from its locked inputs; directUnitPriceTimesQuantity is the DirectUnitValuationProfile method; markToModel, costBasis, lowerOfCostOrMarket, accruedIncome, and notionalBased belong to other profiles"
+    genus: "closed classification"
     differentia:
-      - "includes mark-to-market (current market price)"
-      - "includes mark-to-model (theoretical price)"
-      - "includes cost basis (original acquisition cost)"
-      - "includes lower-of-cost-or-market"
+      - "directUnitPriceTimesQuantity (DirectUnitValuationProfile)"
+      - "markToModel / costBasis / lowerOfCostOrMarket / accruedIncome / notionalBased"
     excludes:
-      - "a specific valuation result or amount"
-      - "a pricing model or algorithm"
-      - "an accounting standard (though may be driven by one)"
+      - "the mark-to-market/mark-to-model/cost/lower-of-cost-or-market list from v0.1.0 (superseded)"
     sources:
       - reference: "FASB-ASC-820"
         locator: "Fair Value Measurement"
-        retrievalDate: "2026-07-30"
-        note: "Fair value measurement framework distinguishes market-based vs model-based valuation"
-      - reference: "IAS-2"
-        locator: "Inventories - lower of cost and net realizable value"
-        note: "Lower-of-cost-or-market principle"
+        note: "fair value framework"
     status: accepted
 
-  - term: "Account Type"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/AccountType"
-    definition: "controlled vocabulary of account categories including cash (no borrowing), margin (allows leverage), simulated (paper trading), managed (third-party discretion), and custodial"
-    genus: "controlled vocabulary of account categories"
+  - term: "Position Source Kind"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionSourceKind"
+    definition: "closed source branch for holding and position snapshots, distinguishing externally reported, execution-derived, and non-execution lifecycle sources (openingBalance, transfer, corporateActionResult, exerciseAssignment, manualAdjustment, clearingCustodyStatement, calculatedAggregation)"
+    genus: "closed classification"
     differentia:
-      - "includes cash (no borrowing allowed)"
-      - "includes margin (leverage allowed)"
-      - "includes simulated (paper trading)"
-      - "includes managed (third-party discretion)"
-      - "includes custodial"
+      - "externalReported / executionDerived / openingBalance / transfer / corporateActionResult / exerciseAssignment / manualAdjustment / clearingCustodyStatement / calculatedAggregation"
     excludes:
-      - "a specific account instance"
-      - "account status (active/closed)"
-      - "account ownership structure"
-    sources:
-      - reference: "nautilus_trader"
-        locator: "model/enums.pyx:AccountType"
-        retrievalDate: "2026-07-30"
-        note: "nautilus_trader defines CASH/MARGIN account types"
-      - reference: "Regulation-T"
-        locator: "12 CFR 220"
-        note: "Federal Reserve regulation distinguishing cash and margin accounts"
+      - "collapsing all non-external sources into executionDerived"
+    status: accepted
+
+  - term: "Portfolio Observation Stream"
+    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioObservationStream"
+    definition: "provider-owned versioned data stream whose stable logical identity is (provider, stream identifier); the source, completeness, and pagination contracts are version-locked ingestion semantics (version content) that do not change stream identity; the contracts and source-artifact digests belong to the execution-and-reproducibility profile"
+    genus: "provider-owned data stream"
+    differentia:
+      - "stable identity = (provider, streamId)"
+      - "contracts are version-locked ingestion semantics, not identity"
     status: accepted

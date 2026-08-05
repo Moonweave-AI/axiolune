@@ -2,12 +2,18 @@ module:
   moduleIri: https://axiolune.ai/ontology/finance/orders-execution
   baseIri: https://axiolune.ai/ontology/finance/orders-execution/
   preferredPrefix: fin-orders
-  version: 1.0.0
+  version: 1.1.0
   label: Orders and Execution
   definition: >-
-    Order intent, immutable split and aggregation lineage, external order, provider event stream, lifecycle event,
-    execution, fee, status adaptation, liquidity determination, and stream integrity semantics with explicit identity
-    and reference-mode contracts.
+    The Orders and Execution module is a domain module that defines the trade lifecycle from order intent through
+    routing and external order to execution and allocation, used for providing state-machine and audit-backed
+    definitions for the order-to-fill process. The domain facts (intent, route, external order, lifecycle event,
+    execution, fee, allocation) are separated from provider raw-code mapping/adapter implementation and from
+    runtime/validation/quality findings, which are evidence of an interpretation or check rather than existence
+    conditions of an order fact. v1.1.0 covers single-instrument, direct-unit-quotation orders; multi-leg and
+    non-direct-unit quotation are scaffolded as extension points and completed via a cross-module follow-up gated
+    on the instruments QuotationConvention (ADR-021).
+  cnNote: 订单与执行模块，是本体工程中定义从订单意图经路由与外部订单到执行与分配的交易生命周期的领域模块，旨在为下单到成交的全过程提供带状态机与审计的定义。领域事实（意图、路由、外部订单、生命周期事件、成交、费用、分配）与供应方原始码映射/适配器实现、运行时/验证/质量发现相分离，后两者是解释或检查的证据而非订单事实的存在条件。v1.1.0 覆盖单工具、直接单位报价的订单；多腿与非直接单位报价作为扩展点骨架化，经跨模块后续 ADR（以 instruments QuotationConvention/ADR-021 为门控）完成。
   imports:
     - moduleIri: https://axiolune.ai/ontology/finance/foundation
     - moduleIri: https://axiolune.ai/ontology/finance/market-structure
@@ -26,11 +32,10 @@ domain:
       localName: OrderIntent
       label: Order Intent
       definition: >-
-        Stable trade intent issued by a client, strategy, or authorized routing process. Its logical identity is the
-        authority-scoped intent identifier, and its version fixes account, instrument, optional listing or OTC context,
-        side, positive absolute quantity, order type, validity, price conditions, and source evidence before provider
-        acceptance. A routing-derived intent remains distinct from its source intents and is connected only through an
-        immutable OrderIntentLineage fact.
+        An Order Intent is a stable trade intent issued by a client, strategy, or authorized routing process, used for
+        fixing account, instrument, and trade conditions before provider acceptance, and for guaranteeing traceability
+        and immutability through source evidence.
+      cnNote: 订单意图，是由客户、策略或授权路由过程发出的稳定交易意图，用于在报送执行方之前固化账户、工具与交易条件等核心要素，并以来源证据保证其可追溯且不可篡改。
       superTypes: []
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/orders-execution/clientIntentId
@@ -78,8 +83,10 @@ domain:
       localName: ExternalOrder
       label: External Order
       definition: >-
-        Provider-scoped accepted or submitted order whose logical identity is provider, API identifier, schema version,
-        and provider external order identifier, and whose originating OrderIntent is fixed to one exact intent version.
+        An External Order is a provider-scoped order that has been accepted or submitted by a provider, used for binding
+        one exact OrderIntent version to a specific provider interface and external order identifier as the order fact
+        anchor of an external system.
+      cnNote: 外部订单，是已被执行方受理或提交的、按供应方作用域标识的订单，用于把某条确切的订单意图版本绑定到具体供应方的接口与外部订单标识，作为外部系统的订单事实锚点。
       superTypes: []
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/orders-execution/externalOrderId
@@ -109,9 +116,10 @@ domain:
       localName: OrderEventStream
       label: Order Event Stream
       definition: >-
-        Source-locked provider event stream for exactly one ExternalOrder logical identity. Its logical identity is
-        provider, source contract, API, schema, ExternalOrder logical IRI, and provider stream identifier; its
-        capability declares whether liquidity role is required, optional, or unsupported.
+        An Order Event Stream is a provider event stream locked to a single ExternalOrder logical identity, used for
+        carrying all lifecycle events and fill reports of that order, and for declaring the degree of support for its
+        liquidity role classification capability.
+      cnNote: 订单事件流，是为单一外部订单逻辑身份锁定的供应方事件流，用于承载该订单的全部生命周期事件与成交回报，并声明其流动性角色分类能力的支持程度。
       superTypes: []
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/orders-execution/sourceContractRef
@@ -150,8 +158,10 @@ domain:
       localName: ExternalOrderStatusVocabulary
       label: External Order Status Vocabulary
       definition: >-
-        Version-identified provider vocabulary that scopes raw order status codes by provider, API identifier, and
-        schema version before reviewed mapping to the canonical OrderLifecycleState vocabulary.
+        An External Order Status Vocabulary is a raw status-code vocabulary scoped by provider, API, and schema version,
+        used for collecting each provider's raw status-code values before they are reviewed and mapped to the canonical
+        lifecycle state vocabulary.
+      cnNote: 外部订单状态词表，是按供应方、接口与版本作用域标识的原始状态码词表，用于在评审映射到规范生命周期状态之前，收录各供应方的原始状态码取值。
       superTypes: []
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/orders-execution/statusVocabularyId
@@ -181,8 +191,10 @@ domain:
       localName: OrderTransitionProfile
       label: Order Transition Profile
       definition: >-
-        Versioned provider transition evaluator that fixes canonical occurrence ordering, legal lifecycle transitions,
-        expiry and trigger rules, and implementation, runtime, tool, input, and output contract digests.
+        An Order Transition Profile is a versioned provider lifecycle-transition evaluator, used for fixing the
+        canonical event ordering, legal state transitions, and expiry and trigger rules, and for locking the evidence
+        digests of its implementation and runtime environment.
+      cnNote: 订单流转配置，是按供应方版本化的生命周期流转评估器，用于固化规范事件次序、合法状态转移、到期与触发规则，并锁定其实现与运行环境的证据摘要。
       superTypes: []
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/orders-execution/transitionProfileId
@@ -215,8 +227,10 @@ domain:
       localName: LiquidityRoleMapping
       label: Liquidity Role Mapping
       definition: >-
-        Versioned source-contract mapping from a provider-declared raw field and perspective to the execution
-        account-order LiquidityRole perspective, including any reviewed contra-perspective inversion.
+        A Liquidity Role Mapping is a versioned source-contract mapping, used for converting a provider-declared raw field
+        and perspective into the canonical liquidity role from the execution account-order perspective, and for recording
+        any reviewed contra-perspective inversion.
+      cnNote: 流动性角色映射，是版本化的来源契约映射，用于把供应方声明的原始字段与视角转换为执行账户订单视角的规范流动性角色，并可记录评审后的对手视角反转。
       superTypes: []
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/orders-execution/liquidityMappingId
@@ -243,16 +257,152 @@ domain:
       patternBindings:
         - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
         - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    FillSnapshot:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/FillSnapshot
+      namespace: fin-orders
+      localName: FillSnapshot
+      label: Fill Snapshot
+      definition: >-
+        A Fill Snapshot is an immutable cumulative-quantity snapshot object carried by a fill-kind lifecycle event,
+        used to express the last fill quantity, cumulative filled quantity, remaining (leaves) quantity, cancelled
+        quantity, and average price so that the event—execution—cumulative-quantity—state closed loop is auditable
+        without recomputation.
+      cnNote: 成交快照，是由成交类生命周期事件携带的不可变累计数量快照对象，用于表达本次成交数量、累计成交数量、剩余数量、取消数量与均价，使事件—成交—累计数量—状态闭环可审计而无需重算。
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/lastQty
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/cumQty
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/leavesQty
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/cancelledQty
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/averagePrice
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    AllocationLine:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/AllocationLine
+      namespace: fin-orders
+      localName: AllocationLine
+      label: Allocation Line
+      definition: >-
+        An Allocation Line is an immutable allocation target line expressing one account's share of a source execution,
+        used to model post-execution allocation, average-price allocation, and bunched-order back-allocation together
+        with an ExecutionAllocation, while detailed allocation and clearing semantics remain in post-trade-operations.
+      cnNote: 分配行，是表达某一账户对源成交份额的不可变分配目标行，用于与 ExecutionAllocation 共同建模执行后分配、均分配与打包订单后分配，而详细分配与清算语义保留在 post-trade-operations。
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/allocationQuantity
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/allocationStatus
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    OrderLeg:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLeg
+      namespace: fin-orders
+      localName: OrderLeg
+      label: Order Leg
+      definition: >-
+        An Order Leg is an optional single-leg component of a multi-leg order intent, used as an extension point for
+        multi-leg instruments (FX swap, strategies) whose full multi-leg semantics are completed via a cross-module
+        follow-up gated on the instruments QuotationConvention (ADR-021). In v1.1.0 a single-instrument order carries no
+        OrderLeg and remains described directly on the OrderIntent.
+      cnNote: 订单腿，是多腿订单意图的可选单腿组件，作为多腿工具（外汇掉期、策略）的扩展点，其完整多腿语义经以 instruments QuotationConvention（ADR-021）为门控的跨模块后续完成。在 v1.1.0 中，单工具订单不携带 OrderLeg，仍直接在 OrderIntent 上描述。
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/orderSide
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/orderQuantity
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    ExecutionLeg:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/ExecutionLeg
+      namespace: fin-orders
+      localName: ExecutionLeg
+      label: Execution Leg
+      definition: >-
+        An Execution Leg is an optional single-leg execution component corresponding to an OrderLeg, used as an
+        extension point for multi-leg executions whose full semantics are completed via a cross-module follow-up gated
+        on the instruments QuotationConvention (ADR-021). In v1.1.0 a single-instrument execution carries no
+        ExecutionLeg and remains described directly on the Execution.
+      cnNote: 成交腿，是对应某一 OrderLeg 的可选单腿成交组件，作为多腿成交的扩展点，其完整语义经以 instruments QuotationConvention（ADR-021）为门控的跨模块后续完成。在 v1.1.0 中，单工具成交不携带 ExecutionLeg，仍直接在 Execution 上描述。
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/executionQuantity
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/executionPrice
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
   associationTypes:
     OrderLifecycleEvent:
       iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
       namespace: fin-orders
       localName: OrderLifecycleEvent
-      label: Order Lifecycle Event
+      label: External Order Lifecycle Event
       definition: >-
-        Immutable provider event in one exact OrderEventStream version whose provider event identifier and non-negative
-        source order key determine event identity and occurrence order, and whose stored lifecycle state is the
-        resulting canonical state; previous state is derived and is never a stored attribute.
+        An External Order Lifecycle Event is an immutable provider event that occurs in one exact event stream version
+        and is bound to an exact ExternalOrder, used for determining its identity and occurrence order from the
+        provider event identifier and source order key, recording the resulting canonical lifecycle state, and
+        tracing the raw provider status code and the exact applied status mapping and transition profile versions.
+        Pre-submission internal lifecycle events (Initialized, Denied, Emulated, Released) that have no provider
+        order or stream are modeled by OrderIntentLifecycleEvent, not by this external event type.
+      cnNote: 外部订单生命周期事件，是发生在确切事件流版本中并绑定到确切外部订单的不可变供应方事件，用于以供应方事件标识与源订单序键确定其身份与发生次序，记录经规范化的结果生命周期状态，并追溯原始供应方状态码与所应用的精确状态映射与流转配置版本。无供应方订单或事件流的提交前内部生命周期事件（Initialized、Denied、Emulated、Released）由 OrderIntentLifecycleEvent 而非本外部事件类型建模。
       participantRoles:
         - id: eventStream
           range: https://axiolune.ai/ontology/finance/orders-execution/OrderEventStream
@@ -272,6 +422,18 @@ domain:
           maxCount: 1
           label: order intent
           definition: exact originating client intent version
+        - id: reportedExecution
+          range: https://axiolune.ai/ontology/finance/orders-execution/Execution
+          minCount: 0
+          maxCount: 1
+          label: reported execution
+          definition: exact execution version recorded by this event when the event is a fill report
+        - id: fillSnapshot
+          range: https://axiolune.ai/ontology/finance/orders-execution/FillSnapshot
+          minCount: 0
+          maxCount: 1
+          label: fill snapshot
+          definition: exact cumulative-quantity snapshot carried by a fill-kind event
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/orders-execution/providerEventId
           minCount: 1
@@ -279,6 +441,60 @@ domain:
         - attribute: https://axiolune.ai/ontology/finance/orders-execution/sourceOrderKey
           minCount: 1
           maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/lifecycleState
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/orderEventKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/rawProviderStatusCode
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/eventReason
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    OrderIntentLifecycleEvent:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLifecycleEvent
+      namespace: fin-orders
+      localName: OrderIntentLifecycleEvent
+      label: Order Intent Lifecycle Event
+      definition: >-
+        An Order Intent Lifecycle Event is an immutable internal lifecycle event bound to an exact OrderIntent version
+        but not to any ExternalOrder or OrderEventStream, used to record pre-submission internal transitions such as
+        intent initialization, pre-submission denial, internal emulation, and emulated-order release before a provider
+        order exists. It shares the OrderEventKind and OrderLifecycleState vocabularies with the external
+        OrderLifecycleEvent but does not carry provider event identifiers, source order keys, raw provider status
+        codes, or applied provider mappings.
+      cnNote: 订单意图生命周期事件，是绑定到确切订单意图版本但不绑定任何外部订单或事件流的不可变内部生命周期事件，用于记录提交前内部转移，如意图初始化、提交前拒绝、内部模拟与模拟订单释放（此时尚无供应方订单）。它与外部 OrderLifecycleEvent 共享 OrderEventKind 与 OrderLifecycleState 词表，但不携带供应方事件标识、源订单序键、原始供应方状态码或所应用的供应方映射。
+      participantRoles:
+        - id: intentLifecycleOrderIntent
+          range: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+          minCount: 1
+          maxCount: 1
+          label: order intent
+          definition: exact originating client intent version transitioned by this internal event
+        - id: intentEventEmitter
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 1
+          maxCount: 1
+          label: intent event emitter
+          definition: logical Party that emitted the internal event (the client, strategy, emulator, or authorized routing process), distinct from any provider
+      attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/orders-execution/lifecycleState
           minCount: 1
           maxCount: 1
@@ -309,13 +525,10 @@ domain:
       localName: OrderIntentLineage
       label: Order Intent Lineage
       definition: >-
-        Immutable, source-evidenced routing transformation fact connecting exact source OrderIntent versions to exact
-        result OrderIntent versions. A split has exactly one source and at least two results; an aggregation has at
-        least two sources and exactly one result. The closed endpoint sets, their counts, their framed digests, and the
-        transformation key digest are version content. Its provenance artifact is the authenticated selected-graph
-        inventory, closing the exact lineage-version set, count, framed digest, PIT request, and selection scope used by
-        validation. Lineage expresses domain provenance only and does not represent account reservation, order
-        submission, or any external side effect.
+        An Order Intent Lineage is an immutable, source-evidenced routing transformation fact, used for connecting an exact
+        set of source intent versions to an exact set of result intent versions to express the domain provenance of a
+        split or aggregation, without representing any external side effect such as order submission.
+      cnNote: 订单意图谱系，是不可变且有来源证据的路由变换事实，用于把确切的源意图版本集合连接到确切的结果意图版本集合，表达拆分或聚合的领域溯源关系，而不代表报送等外部副作用。
       participantRoles:
         - id: sourceOrderIntent
           range: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
@@ -366,11 +579,10 @@ domain:
       localName: Execution
       label: Execution
       definition: >-
-        Immutable provider trade or fill fact in one exact event stream with one external order and originating intent,
-        explicit execution-side Party/account and contra-side Party/account roles, instrument, positive absolute
-        quantity, independent side, Money price, listed-or-OTC context, and the exact matching
-        DirectUnitPriceQuotationContract. An optional executing broker is an intermediary role and never substitutes for
-        either bilateral Party/account role.
+        An Execution is an immutable provider fill or fill-report fact that occurs in one exact event stream, used for
+        recording the real economic content of a trade through explicit execution-side and contra-side accounts, party
+        roles, instrument, quantity, price, and the matching quotation contract.
+      cnNote: 成交，是发生在确切事件流中的不可变供应方成交或成交回报事实，用于以显式的执行方与对手方账户、当事人角色、工具、数量、价格与报价契约记录一笔买卖的真实经济内容。
       participantRoles:
         - id: executionStream
           range: https://axiolune.ai/ontology/finance/orders-execution/OrderEventStream
@@ -404,16 +616,16 @@ domain:
           definition: logical principal Party whose account-side perspective is represented by the execution
         - id: contraAccount
           range: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
-          minCount: 1
+          minCount: 0
           maxCount: 1
           label: contra account
-          definition: logical FinancialAccount occupying the counterparty-side account role in the execution
+          definition: optional logical FinancialAccount occupying the counterparty-side account role; absent when the execution is an anonymous order-book fill or a client-side report without bilateral evidence
         - id: contraParty
           range: https://axiolune.ai/ontology/finance/foundation/Party
-          minCount: 1
+          minCount: 0
           maxCount: 1
           label: contra party
-          definition: logical Party occupying the counterparty role in the execution, independently of any executing broker
+          definition: optional logical Party occupying the counterparty role; absent when no bilateral evidence is available, independently of any executing broker; a "unknown Party" placeholder is forbidden
         - id: executionInstrument
           range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
           minCount: 1
@@ -431,19 +643,73 @@ domain:
           minCount: 0
           maxCount: 1
           label: execution OTC context
-          definition: exact OTC context required only when no listing is supplied
+          definition: optional exact OTC context; required only when no listing is supplied (deprecated with OTCTradingContext per ADR-024; to be migrated to NonVenueMarketContext via a cross-module follow-up)
+        - id: executionVenue
+          range: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
+          minCount: 0
+          maxCount: 1
+          label: execution venue
+          definition: optional logical TradingFacility where the execution occurred, distinct from the execution listing
         - id: executionQuotationContract
           range: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
           minCount: 1
           maxCount: 1
           label: execution quotation contract
-          definition: exact direct-unit quotation contract matching context, instrument, currency, and quantity unit
+          definition: exact direct-unit quotation contract matching context, instrument, currency, and quantity unit; v1.1.0 covers single-instrument direct-unit quotation only
         - id: executingBroker
           range: https://axiolune.ai/ontology/finance/foundation/Party
           minCount: 0
           maxCount: 1
           label: executing broker
           definition: optional logical party that executed or reported the fill
+        - id: clientBeneficialOwner
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 0
+          maxCount: 1
+          label: client beneficial owner
+          definition: optional logical party that is the beneficial owner on whose behalf the execution is made
+        - id: investmentDecisionMaker
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 0
+          maxCount: 1
+          label: investment decision maker
+          definition: optional logical party responsible for the investment decision
+        - id: executionDecisionMaker
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 0
+          maxCount: 1
+          label: execution decision maker
+          definition: optional logical party responsible for the execution decision
+        - id: executingAlgorithm
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 0
+          maxCount: 1
+          label: executing algorithm
+          definition: optional logical party representing the algorithm that generated or routed the order
+        - id: transmittingFirm
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 0
+          maxCount: 1
+          label: transmitting firm
+          definition: optional logical firm that transmitted the order to the executing venue
+        - id: executingFirm
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 0
+          maxCount: 1
+          label: executing firm
+          definition: optional logical firm that executed the order
+        - id: reportingParty
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 0
+          maxCount: 1
+          label: reporting party
+          definition: optional logical party responsible for reporting the execution
+        - id: clearingMember
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 0
+          maxCount: 1
+          label: clearing member
+          definition: optional logical clearing member party
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/orders-execution/providerExecutionId
           minCount: 1
@@ -458,6 +724,94 @@ domain:
           minCount: 1
           maxCount: 1
         - attribute: https://axiolune.ai/ontology/finance/orders-execution/executionPrice
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/disclosureStatus
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/executedAt
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/providerReportedAt
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/tradeDate
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/venueTradeId
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/providerReportId
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/matchId
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/positionEffect
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/shortSaleIndicator
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/orderCapacity
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    MatchedTrade:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/MatchedTrade
+      namespace: fin-orders
+      localName: MatchedTrade
+      label: Matched Trade
+      definition: >-
+        A Matched Trade is an immutable bilateral trade fact that links two account-side executions (or one execution
+        to its known counterparty) when bilateral evidence is sufficient, used to record the real two-sided economic
+        trade with both contra roles required and a disclosure status. It is absent for anonymous order-book fills or
+        client-side reports that cannot supply bilateral facts; those remain as single-sided Executions.
+      cnNote: 已匹配成交，是当双边证据充分时将两个账户侧成交（或一个成交与其已知对手方）联系起来的不可变双边成交事实，用于以双方对手角色均必需并带披露状态记录真实双边经济成交。对于无法提供双边事实的匿名订单簿成交或客户侧报告，该对象缺席，仍为单边成交。
+      participantRoles:
+        - id: matchedExecution
+          range: https://axiolune.ai/ontology/finance/orders-execution/Execution
+          minCount: 1
+          maxCount: 1
+          label: matched execution
+          definition: exact account-side execution version that is one side of the matched trade
+        - id: matchedContraExecution
+          range: https://axiolune.ai/ontology/finance/orders-execution/Execution
+          minCount: 0
+          maxCount: 1
+          label: matched contra execution
+          definition: optional exact contra-side execution version when both sides are recorded as executions
+        - id: matchedContraParty
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 1
+          maxCount: 1
+          label: matched contra party
+          definition: logical Party occupying the counterparty role in the matched trade; required for a bilateral trade
+        - id: matchedContraAccount
+          range: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+          minCount: 1
+          maxCount: 1
+          label: matched contra account
+          definition: logical FinancialAccount occupying the counterparty-side account role in the matched trade; required for a bilateral trade
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/disclosureStatus
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/matchId
           minCount: 1
           maxCount: 1
         - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
@@ -481,8 +835,10 @@ domain:
       localName: Fee
       label: Execution Fee
       definition: >-
-        Immutable charge or rebate fact for one exact Execution version whose Money amount is a strictly positive
-        magnitude; feeEffect, rather than a signed amount, is the sole arithmetic direction truth.
+        A Fee is an immutable charge or rebate fact recorded for one exact Execution version, used for expressing the
+        economic or regulatory cost of a trade through a strictly positive amount together with a fee-effect direction,
+        whose direction is never carried by a signed amount.
+      cnNote: 成交费用，是针对确切成交版本记录的不可变收费或返利事实，用于以严格为正的金额配合费用效应方向表达一笔成交的经济或监管费用，其方向不以符号金额承载。
       participantRoles:
         - id: feeExecution
           range: https://axiolune.ai/ontology/finance/orders-execution/Execution
@@ -527,9 +883,10 @@ domain:
       localName: ExternalOrderStatusMapping
       label: External Order Status Mapping
       definition: >-
-        Reviewed, effective-dated mapping from one provider/API/schema/version raw status code to exactly one canonical
-        lifecycle state, retaining the public M2-PLAN name and preventing provider values from entering the canonical
-        vocabulary.
+        An External Order Status Mapping is a reviewed, effective-dated mapping, used for translating one provider raw
+        status code into exactly one canonical lifecycle state, and for preventing provider values from entering the
+        canonical vocabulary.
+      cnNote: 外部订单状态映射，是经评审且带生效期的映射，用于把某一供应方原始状态码映射到唯一的规范生命周期状态，阻止供应方取值进入规范词表。
       participantRoles:
         - id: statusProvider
           range: https://axiolune.ai/ontology/finance/foundation/Party
@@ -589,9 +946,11 @@ domain:
       localName: LiquidityRoleDetermination
       label: Liquidity Role Determination
       definition: >-
-        Source-capability-governed determination of the liquidity role of one exact Execution from the execution
-        account-order perspective, with a classified branch supported by exact raw field and mapping evidence or an
-        unavailable branch supported by exact contract or field-absence evidence.
+        A Liquidity Role Determination is a source-capability-governed liquidity-role fact for one exact Execution, used
+        for delivering, from the execution account-order perspective, either a classified liquidity role supported by
+        exact raw-field and mapping evidence, or an unavailable conclusion supported by exact contract or field-absence
+        evidence.
+      cnNote: 流动性角色判定，是受来源能力约束、针对确切成交的流动性角色判定事实，用于从执行账户订单视角给出已分类的流动性角色或基于确切契约与字段缺失证据的不可用结论。
       participantRoles:
         - id: determinedExecution
           range: https://axiolune.ai/ontology/finance/orders-execution/Execution
@@ -654,9 +1013,10 @@ domain:
       localName: OrderEventIntegrityFinding
       label: Order Event Integrity Finding
       definition: >-
-        Typed event-stream defect finding for duplicate conflict, sequence gap, out-of-order event, late fill, missing
-        acknowledgement, or transition violation. Logical identity is stream logical IRI, finding kind, affected-key
-        digest, and exact related-version-set digest.
+        An Order Event Integrity Finding is a typed finding fact for an event-stream defect, used for recording each kind
+        of integrity problem occurring in the event stream by defect kind, and for fixing the subject and evidence set
+        for each defect kind.
+      cnNote: 订单事件完整性发现，是针对事件流缺陷的类型化发现事实，用于按缺陷类别记录事件流中发生的各类完整性问题，并为每类缺陷固化其主体与证据集合。
       participantRoles:
         - id: findingStream
           range: https://axiolune.ai/ontology/finance/orders-execution/OrderEventStream
@@ -746,13 +1106,173 @@ domain:
       patternBindings:
         - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
         - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    OrderRoute:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderRoute
+      namespace: fin-orders
+      localName: OrderRoute
+      label: Order Route
+      definition: >-
+        An Order Route is an immutable routing fact that connects a parent OrderIntent (or parent route) to a child
+        ExternalOrder or child intent via a destination, routed quantity, route time, and route status/reason, used to
+        express venue-neutral, smart-order-router, best-execution, multi-child, and broker-decides-venue delegation
+        without forcing the parent intent to bind a single listing or OTC context before provider acceptance.
+      cnNote: 订单路由，是把父订单意图（或父路由）经目的地、路由数量、路由时间与路由状态/原因连接到子外部订单或子意图的不可变路由事实，用于表达场所中立、智能订单路由、最佳执行、多子单与经纪商决定场所的委托，而无需在供应方接受前强制父意图绑定单一挂牌或场外上下文。
+      participantRoles:
+        - id: routeParentIntent
+          range: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+          minCount: 1
+          maxCount: 1
+          label: route parent intent
+          definition: exact parent OrderIntent version being routed
+        - id: routeChildExternalOrder
+          range: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
+          minCount: 0
+          maxCount: 1
+          label: route child external order
+          definition: optional exact child ExternalOrder version produced by the route
+        - id: routeChildIntent
+          range: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+          minCount: 0
+          maxCount: 1
+          label: route child intent
+          definition: optional exact child OrderIntent version produced by the route for further routing
+        - id: routeDestination
+          range: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
+          minCount: 0
+          maxCount: 1
+          label: route destination
+          definition: optional logical TradingFacility destination of the route
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/routedQuantity
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/routeTime
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/routeStatus
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/routeReason
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    ExecutionAllocation:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/ExecutionAllocation
+      namespace: fin-orders
+      localName: ExecutionAllocation
+      label: Execution Allocation
+      definition: >-
+        An Execution Allocation is an immutable allocation fact that distributes one source Execution across one or
+        more AllocationLine target accounts, used to express post-execution allocation, average-price allocation, and
+        bunched-order back-allocation with quantity conservation, while detailed allocation and clearing semantics
+        remain in post-trade-operations with a stable cross-module reference to the source Execution.
+      cnNote: 成交分配，是把单一源成交分配到一个或多个 AllocationLine 目标账户的不可变分配事实，用于以数量守恒表达执行后分配、均分配与打包订单后分配，而详细分配与清算语义保留在 post-trade-operations 并通过稳定的跨模块引用指向源成交。
+      participantRoles:
+        - id: allocationSourceExecution
+          range: https://axiolune.ai/ontology/finance/orders-execution/Execution
+          minCount: 1
+          maxCount: 1
+          label: allocation source execution
+          definition: exact source Execution version being allocated
+        - id: allocationLine
+          range: https://axiolune.ai/ontology/finance/orders-execution/AllocationLine
+          minCount: 1
+          maxCount: null
+          label: allocation line
+          definition: one or more exact AllocationLine versions that partition the source execution quantity
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/allocationStatus
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    OrderRevision:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderRevision
+      namespace: fin-orders
+      localName: OrderRevision
+      label: Order Revision
+      definition: >-
+        An Order Revision is an immutable cancel/replace chain fact that links a revision request to its previous and
+        root order, used to express the FIX ClOrdID/OrigClOrdID-style order chain with replace, cancel, cancel-replace,
+        reject, replaced terms, and a priority-preserved flag, rather than a single fixed order identifier updated
+        in place.
+      cnNote: 订单修订，是把修订请求链接到其前序与根订单的不可撤改单链事实，用于以 FIX ClOrdID/OrigClOrdID 风格订单链表达替换、撤销、撤改、拒绝、被替换条款与优先级保留标记，而非以单个固定订单标识原地更新。
+      participantRoles:
+        - id: revisionOrder
+          range: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
+          minCount: 1
+          maxCount: 1
+          label: revision order
+          definition: exact ExternalOrder version that is the subject of the revision
+        - id: revisionPreviousOrder
+          range: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
+          minCount: 0
+          maxCount: 1
+          label: revision previous order
+          definition: optional exact previous ExternalOrder version in the chain
+        - id: revisionRootOrder
+          range: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
+          minCount: 0
+          maxCount: 1
+          label: revision root order
+          definition: optional exact root ExternalOrder version of the chain
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/revisionRequestId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/revisionKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/replacedTerms
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/priorityPreserved
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
   relationTypes:
     intentAccount:
       iri: https://axiolune.ai/ontology/finance/orders-execution/intentAccount
       namespace: fin-orders
       localName: intentAccount
       label: intent account
-      definition: relationship from an OrderIntent to its logical FinancialAccount
+      definition: relationship from an OrderIntent to its logical FinancialAccount, used for identifying the account principal of the trade at the intent level
+      cnNote: 意图账户，是从订单意图指向其逻辑金融账户的关系，用于在意图层面标识该交易所属的账户主体。
       domain: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
       range: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
       characteristics:
@@ -762,7 +1282,8 @@ domain:
       namespace: fin-orders
       localName: intentInstrument
       label: intent instrument
-      definition: relationship from an OrderIntent to its logical FinancialInstrument
+      definition: relationship from an OrderIntent to its logical FinancialInstrument, used for identifying the instrument to be bought or sold by the trade intent
+      cnNote: 意图工具，是从订单意图指向其逻辑金融工具的关系，用于标识该交易意图所欲买卖的工具标的。
       domain: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
       range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
       characteristics:
@@ -772,7 +1293,8 @@ domain:
       namespace: fin-orders
       localName: intentListing
       label: intent listing
-      definition: relationship from an OrderIntent to its optional exact listed trading context
+      definition: relationship from an OrderIntent to its optional exact listed trading context, used for binding the listed trading context of the intent when trading on an exchange
+      cnNote: 意图挂牌，是从订单意图指向其可选的确切场内交易挂牌的关系，用于在挂牌交易时绑定该意图的挂牌交易上下文。
       domain: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
       range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
       characteristics:
@@ -782,7 +1304,8 @@ domain:
       namespace: fin-orders
       localName: intentOtcContext
       label: intent OTC context
-      definition: relationship from an OrderIntent to its optional exact OTC trading context
+      definition: relationship from an OrderIntent to its optional exact OTC trading context, used for binding the OTC trading context of the intent when trading over the counter
+      cnNote: 意图场外上下文，是从订单意图指向其可选的确切场外交易上下文的关系，用于在场外交易时绑定该意图的场外交易上下文。
       domain: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
       range: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
       characteristics:
@@ -792,7 +1315,8 @@ domain:
       namespace: fin-orders
       localName: externalOrderProvider
       label: external order provider
-      definition: relationship from an ExternalOrder to the logical provider Party
+      definition: relationship from an ExternalOrder to the logical provider Party, used for identifying the execution service provider that accepted or holds the external order
+      cnNote: 外部订单供应方，是从外部订单指向其逻辑供应方当事人的关系，用于标识受理或托管该外部订单的执行服务方。
       domain: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
       range: https://axiolune.ai/ontology/finance/foundation/Party
       characteristics:
@@ -802,7 +1326,8 @@ domain:
       namespace: fin-orders
       localName: externalOrderOriginatingIntent
       label: external order originating intent
-      definition: relationship from an ExternalOrder to its exact originating OrderIntent version
+      definition: relationship from an ExternalOrder to its exact originating OrderIntent version, used for anchoring the external order to its unique client trade intent
+      cnNote: 外部订单源起意图，是从外部订单指向其确切的源起订单意图版本的关系，用于把外部订单锚定到其唯一的客户交易意图。
       domain: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
       range: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
       characteristics:
@@ -812,7 +1337,8 @@ domain:
       namespace: fin-orders
       localName: streamProvider
       label: stream provider
-      definition: relationship from an OrderEventStream to its logical provider Party
+      definition: relationship from an OrderEventStream to its logical provider Party, used for identifying the execution service provider that supplies the event stream data
+      cnNote: 事件流供应方，是从订单事件流指向其逻辑供应方当事人的关系，用于标识提供该事件流数据的执行服务方。
       domain: https://axiolune.ai/ontology/finance/orders-execution/OrderEventStream
       range: https://axiolune.ai/ontology/finance/foundation/Party
       characteristics:
@@ -822,7 +1348,8 @@ domain:
       namespace: fin-orders
       localName: streamExternalOrder
       label: stream external order
-      definition: relationship from an OrderEventStream to its one ExternalOrder logical identity
+      definition: relationship from an OrderEventStream to its one ExternalOrder logical identity, used for locking the event stream to the single external order it carries
+      cnNote: 事件流外部订单，是从订单事件流指向其唯一外部订单逻辑身份的关系，用于把事件流锁定到其承载的那一笔外部订单。
       domain: https://axiolune.ai/ontology/finance/orders-execution/OrderEventStream
       range: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
       characteristics:
@@ -832,7 +1359,8 @@ domain:
       namespace: fin-orders
       localName: statusVocabularyProvider
       label: status vocabulary provider
-      definition: relationship from an external status vocabulary to its logical publishing Party
+      definition: relationship from an external status vocabulary to its logical publishing Party, used for identifying the provider that publishes the raw status-code vocabulary
+      cnNote: 状态词表供应方，是从外部状态词表指向其逻辑发布当事人的关系，用于标识发布该原始状态码词表的供应方。
       domain: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusVocabulary
       range: https://axiolune.ai/ontology/finance/foundation/Party
       characteristics:
@@ -842,9 +1370,108 @@ domain:
       namespace: fin-orders
       localName: transitionProfileProvider
       label: transition profile provider
-      definition: relationship from a transition profile to the logical provider whose lifecycle it evaluates
+      definition: relationship from a transition profile to the logical provider whose lifecycle it evaluates, used for identifying the provider whose lifecycle the profile evaluates
+      cnNote: 流转配置供应方，是从订单流转配置指向其逻辑供应方当事人的关系，用于标识该配置所评估其生命周期的供应方。
       domain: https://axiolune.ai/ontology/finance/orders-execution/OrderTransitionProfile
       range: https://axiolune.ai/ontology/finance/foundation/Party
+      characteristics:
+        - functional
+    intentIssuer:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/intentIssuer
+      namespace: fin-orders
+      localName: intentIssuer
+      label: intent issuer
+      definition: relationship from an OrderIntent to the logical Party that issued the intent, used to identify the client, strategy, or authorized routing process that originated the trade intent independently of the account
+      cnNote: 意图发起方，是从订单意图指向发出该意图的逻辑参与方的关系，用于独立于账户标识发起该交易意图的客户、策略或授权路由过程。
+      domain: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+      range: https://axiolune.ai/ontology/finance/foundation/Party
+      characteristics:
+        - functional
+    intentIdentifierAuthority:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/intentIdentifierAuthority
+      namespace: fin-orders
+      localName: intentIdentifierAuthority
+      label: intent identifier authority
+      definition: relationship from an OrderIntent to the logical IdentifierAuthority that scopes its clientIntentId, used to establish the two-component logical key (authority, clientIntentId) so that two different authorities using the same clientIntentId remain distinct
+      cnNote: 意图标识权威，是从订单意图指向限定其 clientIntentId 的逻辑标识权威的关系，用于建立两分量逻辑键（权威，clientIntentId），使两个不同权威使用相同 clientIntentId 仍可区分。
+      domain: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+      range: https://axiolune.ai/ontology/finance/foundation/IdentifierAuthority
+      characteristics:
+        - functional
+    executionVenue:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/executionVenue
+      namespace: fin-orders
+      localName: executionVenue
+      label: execution venue
+      definition: relationship from an Execution to the logical TradingFacility where the execution occurred, used to distinguish the actual execution venue from the execution listing
+      cnNote: 成交场所，是从成交指向成交发生所在的逻辑交易设施的关系，用于区分实际成交场所与成交挂牌。
+      domain: https://axiolune.ai/ontology/finance/orders-execution/Execution
+      range: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
+      characteristics:
+        - functional
+    reportsExecution:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/reportsExecution
+      namespace: fin-orders
+      localName: reportsExecution
+      label: reports execution
+      definition: relationship from a fill-kind OrderLifecycleEvent to the exact Execution version it records, used to close the event—execution—cumulative-quantity—state loop
+      cnNote: 报告成交，是从成交类生命周期事件指向其所记录的确切成交版本的关系，用于闭合事件—成交—累计数量—状态闭环。
+      domain: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+      range: https://axiolune.ai/ontology/finance/orders-execution/Execution
+      characteristics:
+        - functional
+    appliedStatusMapping:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/appliedStatusMapping
+      namespace: fin-orders
+      localName: appliedStatusMapping
+      label: applied status mapping
+      definition: relationship from an OrderLifecycleEvent to the exact ExternalOrderStatusMapping version applied to translate its raw provider status code into a canonical lifecycle state, used to make the state machine auditable
+      cnNote: 所应用状态映射，是从生命周期事件指向用于将其原始供应方状态码翻译为规范生命周期状态的确切外部订单状态映射版本的关系，用于使状态机可审计。
+      domain: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+      range: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMapping
+      characteristics:
+        - functional
+    appliedTransitionProfile:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/appliedTransitionProfile
+      namespace: fin-orders
+      localName: appliedTransitionProfile
+      label: applied transition profile
+      definition: relationship from an OrderLifecycleEvent to the exact OrderTransitionProfile version whose transition table governed the event's state transition, used to make the transition auditable
+      cnNote: 所应用流转配置，是从生命周期事件指向其状态转移所依据转移表的确切订单流转配置版本的关系，用于使转移可审计。
+      domain: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+      range: https://axiolune.ai/ontology/finance/orders-execution/OrderTransitionProfile
+      characteristics:
+        - functional
+    acceptableVenueSet:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/acceptableVenueSet
+      namespace: fin-orders
+      localName: acceptableVenueSet
+      label: acceptable venue set
+      definition: relationship from a venue-neutral OrderIntent to one or more logical TradingFacility venues acceptable for its execution, used as the venue-neutral alternative to a single listing or OTC context binding
+      cnNote: 可接受场所集合，是从场所中立订单意图指向一个或多个可接受执行场所的逻辑交易设施的关系，作为单一挂牌或场外上下文绑定的场所中立替代。
+      domain: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+      range: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
+      characteristics: []
+    executionQuotationConvention:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/executionQuotationConvention
+      namespace: fin-orders
+      localName: executionQuotationConvention
+      label: execution quotation convention
+      definition: relationship from an Execution to its quotation convention, used as the hook to be broadened from DirectUnitPriceQuotationContract to the abstract QuotationConvention (ADR-021) in a cross-module follow-up; in v1.1.0 it references the retained DirectUnitPriceQuotationContract
+      cnNote: 成交报价约定，是从成交指向其报价约定的关系，作为从 DirectUnitPriceQuotationContract 扩展为抽象 QuotationConvention（ADR-021）的跨模块后续钩子；在 v1.1.0 中引用保留的 DirectUnitPriceQuotationContract。
+      domain: https://axiolune.ai/ontology/finance/orders-execution/Execution
+      range: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+      characteristics:
+        - functional
+    allocationTargetAccount:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/allocationTargetAccount
+      namespace: fin-orders
+      localName: allocationTargetAccount
+      label: allocation target account
+      definition: relationship from an AllocationLine to the logical FinancialAccount that is the allocation target, used to express post-execution allocation across multiple final accounts
+      cnNote: 分配目标账户，是从分配行指向作为分配目标的逻辑金融账户的关系，用于表达跨多个最终账户的执行后分配。
+      domain: https://axiolune.ai/ontology/finance/orders-execution/AllocationLine
+      range: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
       characteristics:
         - functional
   attributeTypes:
@@ -853,7 +1480,8 @@ domain:
       namespace: fin-orders
       localName: clientIntentId
       label: client intent identifier
-      definition: authority-scoped stable identifier of a client trade intent
+      definition: authority-scoped stable string identifier of a client trade intent, used for providing the logical identity primary key of an OrderIntent
+      cnNote: 客户意图标识，是在授权作用域内标识某客户交易意图的稳定字符串属性，用于为订单意图提供逻辑身份主键。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -863,7 +1491,8 @@ domain:
       namespace: fin-orders
       localName: externalOrderId
       label: external order identifier
-      definition: provider-scoped immutable identifier of an external order
+      definition: provider-scoped immutable string identifier of an external order, used for providing the logical identity primary key of an ExternalOrder
+      cnNote: 外部订单标识，是供应方作用域内不可变的外部订单字符串标识，用于为外部订单提供逻辑身份主键。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -873,7 +1502,8 @@ domain:
       namespace: fin-orders
       localName: providerApiIdentifier
       label: provider API identifier
-      definition: canonical identifier of the provider API or protocol surface
+      definition: canonical string identifier of the provider API or protocol surface, used for distinguishing different execution service interfaces
+      cnNote: 供应方接口标识，是标识供应方接口或协议面的规范字符串属性，用于区分不同的执行服务接口。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -883,7 +1513,8 @@ domain:
       namespace: fin-orders
       localName: providerSchemaVersion
       label: provider schema version
-      definition: immutable provider-declared schema or protocol version
+      definition: immutable provider-declared string version of the API or protocol, used for fixing the provider version on which a fact relies
+      cnNote: 供应方版本号，是供应方声明的不可变接口或协议版本字符串，用于固定记录所依据的供应方版本。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -893,7 +1524,8 @@ domain:
       namespace: fin-orders
       localName: sourceContractRef
       label: source contract reference
-      definition: immutable reference to the source schema, mapping, and capability contract
+      definition: immutable URI reference to the source schema, mapping, and capability contract, used for locating the source contract on which a fact was generated
+      cnNote: 来源契约引用，是指向来源结构、映射与能力契约的不可变引用，用于定位生成某事实所依据的来源契约。
       valueType: uri
       defaultCardinality:
         minCount: 1
@@ -903,7 +1535,8 @@ domain:
       namespace: fin-orders
       localName: sourceContractDigest
       label: source contract digest
-      definition: SHA-256 digest of the canonical source contract bytes
+      definition: SHA-256 digest value over the canonical source contract bytes, used for verifying the content integrity of the referenced contract
+      cnNote: 来源契约摘要，是来源契约规范字节的摘要值，用于验证所引用契约的内容完整性。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -914,7 +1547,8 @@ domain:
       namespace: fin-orders
       localName: providerStreamId
       label: provider stream identifier
-      definition: provider-scoped identifier of one order event stream
+      definition: provider-scoped string identifier of one order event stream, used for providing the provider-side stream identifier of an event stream
+      cnNote: 供应方流标识，是供应方作用域内标识某条订单事件流的字符串属性，用于为事件流提供供应方侧的流标识。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -924,7 +1558,8 @@ domain:
       namespace: fin-orders
       localName: liquidityRoleCapability
       label: liquidity role capability
-      definition: closed source-contract capability governing liquidity classification
+      definition: closed source-contract capability attribute governing liquidity classification, used for declaring whether an event stream requires, optionally supports, or does not support liquidity role classification
+      cnNote: 流动性角色能力，是约束流动性分类的来源契约能力属性，用于声明某事件流对流动性角色分类是必需、可选还是不支持。
       valueType: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleCapability
       defaultCardinality:
         minCount: 1
@@ -934,7 +1569,8 @@ domain:
       namespace: fin-orders
       localName: statusVocabularyId
       label: status vocabulary identifier
-      definition: provider-scoped stable identifier of an external status vocabulary
+      definition: provider-scoped stable string identifier of an external status vocabulary, used for providing the logical identity primary key of a status vocabulary
+      cnNote: 状态词表标识，是供应方作用域内标识某外部状态词表的稳定字符串属性，用于为状态词表提供逻辑身份主键。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -944,7 +1580,8 @@ domain:
       namespace: fin-orders
       localName: orderSide
       label: order side
-      definition: independent buy or sell direction of an intent or execution
+      definition: independent buy-or-sell direction attribute of an intent or execution, used for expressing whether the trade increases or decreases position exposure
+      cnNote: 订单方向，是意图或成交中独立的买卖方向属性，用于表达该笔交易增加或减少头寸的方向语义。
       valueType: https://axiolune.ai/ontology/finance/orders-execution/OrderSide
       defaultCardinality:
         minCount: 1
@@ -954,7 +1591,8 @@ domain:
       namespace: fin-orders
       localName: orderQuantity
       label: order quantity
-      definition: strictly positive absolute Quantity requested by an OrderIntent
+      definition: strictly positive absolute Quantity attribute requested by an OrderIntent, used for expressing the amount of the instrument the intent wishes to trade
+      cnNote: 订单数量，是订单意图所请求的严格为正的绝对数量属性，用于表达该意图欲成交的标的数量。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 1
@@ -964,7 +1602,8 @@ domain:
       namespace: fin-orders
       localName: orderType
       label: order type
-      definition: reviewed execution instruction kind of an OrderIntent
+      definition: reviewed execution instruction kind attribute of an OrderIntent, used for distinguishing order types such as market, limit, and stop by their price and trigger semantics
+      cnNote: 订单类型，是订单意图经评审的执行指令类别属性，用于按价格与触发语义区分市价、限价、止损等订单类型。
       valueType: https://axiolune.ai/ontology/finance/orders-execution/OrderType
       defaultCardinality:
         minCount: 1
@@ -974,7 +1613,8 @@ domain:
       namespace: fin-orders
       localName: timeInForce
       label: time in force
-      definition: reviewed validity duration instruction of an OrderIntent
+      definition: reviewed validity duration instruction attribute of an OrderIntent, used for expressing how long the order remains effective in the market
+      cnNote: 有效期指令，是订单意图经评审的有效期时长属性，用于表达订单在市场中保持有效的持续时间。
       valueType: https://axiolune.ai/ontology/finance/orders-execution/TimeInForce
       defaultCardinality:
         minCount: 1
@@ -984,7 +1624,8 @@ domain:
       namespace: fin-orders
       localName: orderValidUntil
       label: order valid until
-      definition: exclusive expiry instant required when the validity instruction has an explicit end
+      definition: exclusive expiry instant required when the validity instruction has an explicit end, used for limiting the last moment at which the order remains valid
+      cnNote: 订单有效期截止，是当有效期指令含明确结束时所要求的排他性到期时刻，用于限定订单有效的最后时点。
       valueType: instant
       defaultCardinality:
         minCount: 0
@@ -994,7 +1635,8 @@ domain:
       namespace: fin-orders
       localName: limitPrice
       label: limit price
-      definition: Money price limit required only by an order type whose executable profile requires one
+      definition: Money price limit required only when the executable profile of the order type demands one, used for constraining the executable price of a limit-type order
+      cnNote: 限价，是仅当订单类型的执行画像需要时所要求的货币价格限值，用于约束限价类订单的可成交价格。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 0
@@ -1004,7 +1646,8 @@ domain:
       namespace: fin-orders
       localName: triggerPrice
       label: trigger price
-      definition: Money trigger required only by an order type whose executable profile requires one
+      definition: Money trigger required only when the executable profile of the order type demands one, used for setting the activation price condition of a conditional order
+      cnNote: 触发价，是仅当订单类型的执行画像需要时所要求的货币触发价，用于在条件订单中设定激活价格条件。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 0
@@ -1015,8 +1658,9 @@ domain:
       localName: triggerPriceBasis
       label: trigger price basis
       definition: >-
-        Reviewed internal semantic basis used to observe and evaluate an order trigger; required exactly when
-        triggerPrice is present.
+        Reviewed internal semantic basis attribute used to observe and evaluate an order trigger, present only when a
+        trigger price is in use, used for specifying which market quote serves as the trigger evaluation basis.
+      cnNote: 触发价基准，是用于观察与评估订单触发的评审内部语义基准，仅当触发价存在时使用，用于明确以何种行情作为触发判定依据。
       valueType: https://axiolune.ai/ontology/finance/orders-execution/TriggerPriceBasis
       defaultCardinality:
         minCount: 0
@@ -1026,7 +1670,8 @@ domain:
       namespace: fin-orders
       localName: providerEventId
       label: provider event identifier
-      definition: immutable event identifier unique within one OrderEventStream
+      definition: immutable event identifier string unique within one OrderEventStream, used for providing the provider-side event primary key of a lifecycle event
+      cnNote: 供应方事件标识，是在一条订单事件流内唯一的事件标识字符串，用于为生命周期事件提供供应方侧的事件主键。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1036,7 +1681,8 @@ domain:
       namespace: fin-orders
       localName: providerExecutionId
       label: provider execution identifier
-      definition: immutable trade or execution identifier unique within one OrderEventStream
+      definition: immutable trade or execution identifier string unique within one OrderEventStream, used for providing the provider-side execution primary key of an execution fact
+      cnNote: 供应方成交标识，是在一条订单事件流内唯一的成交或执行标识字符串，用于为成交事实提供供应方侧的执行主键。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1046,7 +1692,8 @@ domain:
       namespace: fin-orders
       localName: sourceOrderKey
       label: source order key
-      definition: non-negative normalized provider ordering key unique within one event stream
+      definition: non-negative normalized provider ordering key unique within one event stream, used for determining the occurrence order of events within that stream
+      cnNote: 源订单序键，是在一条事件流内唯一的非负规范化供应方排序键，用于确定事件在该流中的发生次序。
       valueType: integer
       defaultCardinality:
         minCount: 1
@@ -1056,7 +1703,8 @@ domain:
       namespace: fin-orders
       localName: orderLineageKind
       label: order lineage kind
-      definition: split-or-aggregation branch selected by an immutable OrderIntentLineage fact
+      definition: split-or-aggregation branch attribute selected by an immutable OrderIntentLineage fact, used for distinguishing the two routing types of a lineage transformation
+      cnNote: 谱系类别，是不可变意图谱系事实所选定的拆分或聚合分支属性，用于区分谱系变换的两种路由类型。
       valueType: https://axiolune.ai/ontology/finance/orders-execution/OrderLineageKind
       defaultCardinality:
         minCount: 1
@@ -1066,7 +1714,8 @@ domain:
       namespace: fin-orders
       localName: sourceIntentCount
       label: source intent count
-      definition: exact number of source OrderIntent versions in the lineage input closure
+      definition: exact number of source OrderIntent versions in the lineage input closure, used for verifying the closure of the lineage endpoints together with the set digest
+      cnNote: 源意图数量，是谱系输入闭包中源订单意图版本的精确数量，用于与集合摘要共同验证谱系端点的封闭性。
       valueType: integer
       defaultCardinality:
         minCount: 1
@@ -1076,7 +1725,8 @@ domain:
       namespace: fin-orders
       localName: sourceIntentVersionSetDigest
       label: source intent version-set digest
-      definition: section-5.8 framed IRI-set digest over the sorted unique exact source OrderIntent versions
+      definition: section-5.8 framed IRI-set digest over the sorted unique exact source OrderIntent versions, used for verifying the integrity and consistency of the lineage source endpoint set
+      cnNote: 源意图版本集摘要，是对排序去重后的确切源意图版本集合的摘要值，用于验证谱系源端点集合的完整性与一致性。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1087,7 +1737,8 @@ domain:
       namespace: fin-orders
       localName: resultIntentCount
       label: result intent count
-      definition: exact number of result OrderIntent versions in the lineage output closure
+      definition: exact number of result OrderIntent versions in the lineage output closure, used for verifying the closure of the lineage endpoints together with the set digest
+      cnNote: 结果意图数量，是谱系输出闭包中结果订单意图版本的精确数量，用于与集合摘要共同验证谱系端点的封闭性。
       valueType: integer
       defaultCardinality:
         minCount: 1
@@ -1097,7 +1748,8 @@ domain:
       namespace: fin-orders
       localName: resultIntentVersionSetDigest
       label: result intent version-set digest
-      definition: section-5.8 framed IRI-set digest over the sorted unique exact result OrderIntent versions
+      definition: section-5.8 framed IRI-set digest over the sorted unique exact result OrderIntent versions, used for verifying the integrity and consistency of the lineage result endpoint set
+      cnNote: 结果意图版本集摘要，是对排序去重后的确切结果意图版本集合的摘要值，用于验证谱系结果端点集合的完整性与一致性。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1109,8 +1761,9 @@ domain:
       localName: orderLineageKeyDigest
       label: order lineage key digest
       definition: >-
-        SHA-256 digest over the lineage kind and the two exact endpoint-set digests, domain-separated by the
-        axiolune-order-intent-lineage-key-v1 contract
+        SHA-256 digest computed over the lineage kind and the two exact endpoint-set digests under domain separation by
+        the axiolune-order-intent-lineage-key-v1 contract, used for providing the unique logical key of a lineage fact.
+      cnNote: 谱系键摘要，是对谱系类别与两个端点集摘要经域名隔离后计算的摘要值，用于为谱系事实提供唯一逻辑键。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1121,7 +1774,8 @@ domain:
       namespace: fin-orders
       localName: lifecycleState
       label: lifecycle state
-      definition: resulting canonical lifecycle state stored on an immutable event
+      definition: resulting canonical lifecycle state attribute stored on an immutable event, used for expressing the canonical state of an order after an event has occurred
+      cnNote: 生命周期状态，是记录在不可变事件上的结果规范生命周期状态属性，用于表达事件发生后订单所处的规范状态。
       valueType: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState
       defaultCardinality:
         minCount: 1
@@ -1131,7 +1785,8 @@ domain:
       namespace: fin-orders
       localName: orderEventKind
       label: order event kind
-      definition: immutable event-log kind distinct from the resulting state
+      definition: immutable event-log kind attribute distinct from the resulting state, used for expressing the type of the event itself rather than the state it causes
+      cnNote: 订单事件类别，是与结果状态相区别的不可变事件日志类别，用于表达事件本身的类型而非其所导致的状态。
       valueType: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind
       defaultCardinality:
         minCount: 1
@@ -1141,7 +1796,8 @@ domain:
       namespace: fin-orders
       localName: eventReason
       label: event reason
-      definition: provider reason text or normalized reason identifier for an event
+      definition: provider reason text or normalized reason identifier for an event, used for explaining the cause of the event
+      cnNote: 事件原因，是供应方为某事件提供的原因文本或规范化原因标识，用于解释该事件发生的缘由。
       valueType: string
       defaultCardinality:
         minCount: 0
@@ -1151,7 +1807,8 @@ domain:
       namespace: fin-orders
       localName: executionQuantity
       label: execution quantity
-      definition: strictly positive absolute Quantity filled by an Execution
+      definition: strictly positive absolute Quantity attribute filled by an Execution, used for expressing the amount of the instrument traded in that execution
+      cnNote: 成交数量，是某次成交所成交的严格为正的绝对数量属性，用于表达该笔成交的标的数量。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 1
@@ -1161,7 +1818,8 @@ domain:
       namespace: fin-orders
       localName: executionPrice
       label: execution price
-      definition: Money price interpreted only through the exact direct-unit quotation contract
+      definition: Money price attribute interpreted only through the exact direct-unit quotation contract, used for expressing the trade price of the execution
+      cnNote: 成交价，是仅通过确切的直接单位报价契约来解释的货币价格属性，用于表达该笔成交的成交价格。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 1
@@ -1171,7 +1829,8 @@ domain:
       namespace: fin-orders
       localName: feeId
       label: fee identifier
-      definition: source-scoped immutable identifier of one fee fact
+      definition: source-scoped immutable string identifier of one fee fact, used for providing the logical identity primary key of a fee fact
+      cnNote: 费用标识，是来源作用域内标识某条费用事实的不可变字符串，用于为费用事实提供逻辑身份主键。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1181,7 +1840,8 @@ domain:
       namespace: fin-orders
       localName: feeKind
       label: fee kind
-      definition: member of the closed classification identifying the economic or regulatory kind of an execution Fee
+      definition: closed classification member identifying the economic or regulatory kind of an execution Fee, used for distinguishing commission, exchange fee, clearing fee, and other fee natures
+      cnNote: 费用类别，是标识成交费用经济或监管类别的封闭分类成员，用于区分佣金、交易所费、清算费等费用性质。
       valueType: https://axiolune.ai/ontology/finance/orders-execution/FeeKind
       defaultCardinality:
         minCount: 1
@@ -1191,7 +1851,8 @@ domain:
       namespace: fin-orders
       localName: feeEffect
       label: fee effect
-      definition: charge or rebate arithmetic direction for a positive fee magnitude
+      definition: charge-or-rebate arithmetic direction attribute for a positive fee magnitude, used for independently determining the direction in which the fee affects cost or proceeds
+      cnNote: 费用效应，是为正费用金额指定收费或返利方向的算术方向属性，用于独立决定费用对成本或收益的影响方向。
       valueType: https://axiolune.ai/ontology/finance/orders-execution/FeeEffect
       defaultCardinality:
         minCount: 1
@@ -1201,7 +1862,8 @@ domain:
       namespace: fin-orders
       localName: feeAmount
       label: fee amount
-      definition: strictly positive Money magnitude whose sign is never overloaded with fee effect
+      definition: strictly positive Money magnitude attribute, used for expressing the magnitude of the fee, whose sign is never overloaded with fee-effect semantics
+      cnNote: 费用金额，是严格为正的货币金额属性，用于表达费用的数值大小，其符号不承载费用方向语义。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 1
@@ -1211,7 +1873,8 @@ domain:
       namespace: fin-orders
       localName: statusMappingVersion
       label: status mapping version
-      definition: immutable semantic version of one provider status mapping
+      definition: immutable semantic version string of one provider status mapping, used for fixing the version of a mapping decision
+      cnNote: 状态映射版本，是某条供应方状态映射的不可变语义版本字符串，用于固定该映射决策的版本。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1221,7 +1884,8 @@ domain:
       namespace: fin-orders
       localName: rawStatusCode
       label: raw status code
-      definition: exact provider lexical status code before canonical mapping
+      definition: exact provider lexical status code string before canonical mapping, used for recording the provider raw value that is mapped to a canonical state
+      cnNote: 原始状态码，是映射前的确切供应方原始状态码字符串，用于记录被映射到规范状态的供应方原始取值。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1231,7 +1895,8 @@ domain:
       namespace: fin-orders
       localName: canonicalLifecycleState
       label: canonical lifecycle state
-      definition: exactly one canonical target state selected by a status mapping
+      definition: exactly one canonical target state selected by a status mapping, used for normalizing a provider raw code into a canonical state
+      cnNote: 规范生命周期状态，是状态映射所选定的唯一规范目标状态，用于把供应方原始码归一化为规范状态。
       valueType: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState
       defaultCardinality:
         minCount: 1
@@ -1241,7 +1906,8 @@ domain:
       namespace: fin-orders
       localName: reviewDecisionRef
       label: review decision reference
-      definition: immutable reference to the human-reviewed semantic mapping decision
+      definition: immutable URI reference to the human-reviewed semantic mapping decision, used for locating the review record of that mapping decision
+      cnNote: 评审决策引用，是指向经人工评审的语义映射决策的不可变引用，用于定位该映射决策的评审记录。
       valueType: uri
       defaultCardinality:
         minCount: 1
@@ -1251,7 +1917,8 @@ domain:
       namespace: fin-orders
       localName: reviewDecisionDigest
       label: review decision digest
-      definition: SHA-256 digest of the canonical mapping review record
+      definition: SHA-256 digest value of the canonical mapping review record, used for verifying the content integrity of the review decision record
+      cnNote: 评审决策摘要，是规范映射评审记录的摘要值，用于验证评审决策记录的内容完整性。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1262,7 +1929,8 @@ domain:
       namespace: fin-orders
       localName: transitionProfileId
       label: transition profile identifier
-      definition: stable identifier of a provider lifecycle transition profile
+      definition: stable string identifier of a provider lifecycle transition profile, used for providing the logical identity primary key of a transition profile
+      cnNote: 流转配置标识，是供应方生命周期流转配置的稳定字符串标识，用于为流转配置提供逻辑身份主键。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1272,7 +1940,8 @@ domain:
       namespace: fin-orders
       localName: implementationDigest
       label: implementation digest
-      definition: SHA-256 digest of canonical executable implementation bytes
+      definition: SHA-256 digest value over the canonical executable implementation bytes, used for locking the implementation content of the transition evaluator
+      cnNote: 实现摘要，是规范可执行实现字节的摘要值，用于锁定流转评估器的实现内容。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1283,7 +1952,8 @@ domain:
       namespace: fin-orders
       localName: inputContractDigest
       label: input contract digest
-      definition: SHA-256 digest of the evaluator input contract
+      definition: SHA-256 digest value of the evaluator input contract, used for locking the input contract of the evaluator
+      cnNote: 输入契约摘要，是评估器输入契约的摘要值，用于锁定评估器的输入约定。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1294,7 +1964,8 @@ domain:
       namespace: fin-orders
       localName: outputContractDigest
       label: output contract digest
-      definition: SHA-256 digest of the evaluator output contract
+      definition: SHA-256 digest value of the evaluator output contract, used for locking the output contract of the evaluator
+      cnNote: 输出契约摘要，是评估器输出契约的摘要值，用于锁定评估器的输出约定。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1305,7 +1976,8 @@ domain:
       namespace: fin-orders
       localName: toolLockRef
       label: tool lock reference
-      definition: immutable reference to the exact evaluator tool lock
+      definition: immutable URI reference to the exact evaluator tool lock, used for locating the tool lock record of the evaluation tool in use
+      cnNote: 工具锁引用，是指向确切评估器工具锁的不可变引用，用于定位所用的评估工具锁定记录。
       valueType: uri
       defaultCardinality:
         minCount: 1
@@ -1315,7 +1987,8 @@ domain:
       namespace: fin-orders
       localName: toolLockDigest
       label: tool lock digest
-      definition: SHA-256 digest of the exact evaluator tool lock bytes
+      definition: SHA-256 digest value of the exact evaluator tool lock bytes, used for verifying the content integrity of the tool lock record
+      cnNote: 工具锁摘要，是确切评估器工具锁字节的摘要值，用于验证工具锁记录的内容完整性。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1326,7 +1999,8 @@ domain:
       namespace: fin-orders
       localName: runtimeDigest
       label: runtime digest
-      definition: SHA-256 digest of the evaluator runtime environment
+      definition: SHA-256 digest value of the evaluator runtime environment, used for locking the content of the evaluator runtime environment
+      cnNote: 运行时摘要，是评估器运行时环境的摘要值，用于锁定评估器运行环境的内容。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1337,7 +2011,8 @@ domain:
       namespace: fin-orders
       localName: liquidityMappingId
       label: liquidity mapping identifier
-      definition: stable identifier of a source liquidity-role mapping
+      definition: stable string identifier of a source liquidity-role mapping, used for providing the logical identity primary key of a liquidity mapping
+      cnNote: 流动性映射标识，是来源流动性角色映射的稳定字符串标识，用于为流动性映射提供逻辑身份主键。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1347,7 +2022,8 @@ domain:
       namespace: fin-orders
       localName: rawFieldLocator
       label: raw field locator
-      definition: canonical source-schema field locator for a liquidity value
+      definition: canonical source-schema field locator string for a liquidity value, used for locating the field in the source record that carries the liquidity value
+      cnNote: 原始字段定位符，是流动性数值的来源结构字段规范定位符，用于在来源记录中定位承载流动性取值的字段。
       valueType: string
       defaultCardinality:
         minCount: 0
@@ -1357,7 +2033,8 @@ domain:
       namespace: fin-orders
       localName: rawPerspective
       label: raw perspective
-      definition: source-contract perspective from which a raw liquidity value is expressed
+      definition: source-contract perspective from which a raw liquidity value is expressed, used for identifying which side perspective the value is given from
+      cnNote: 原始视角，是原始流动性取值所表达的来源契约视角，用于标识该取值是从哪一方视角给出的。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1367,7 +2044,8 @@ domain:
       namespace: fin-orders
       localName: perspectiveInversion
       label: perspective inversion
-      definition: whether a reviewed mapping inverts a contra-perspective source value
+      definition: boolean attribute indicating whether a reviewed mapping inverts a contra-perspective source value, used for handling liquidity values that originate from the counterparty side
+      cnNote: 视角反转，是表明评审映射是否反转对手视角来源取值的布尔属性，用于处理来自对手方的流动性取值。
       valueType: boolean
       defaultCardinality:
         minCount: 1
@@ -1377,7 +2055,8 @@ domain:
       namespace: fin-orders
       localName: mappingDigest
       label: mapping digest
-      definition: SHA-256 digest of the canonical raw-value mapping table
+      definition: SHA-256 digest value of the canonical raw-value mapping table, used for verifying the content integrity of the mapping table
+      cnNote: 映射摘要，是规范原始取值映射表的摘要值，用于验证映射表的内容完整性。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1388,7 +2067,8 @@ domain:
       namespace: fin-orders
       localName: liquidityPerspective
       label: liquidity perspective
-      definition: fixed execution-account-order perspective of a liquidity determination
+      definition: fixed execution-account-order perspective attribute of a liquidity determination, used for specifying the perspective on which the determination result is based
+      cnNote: 流动性视角，是流动性判定的固定执行账户订单视角属性，用于明确判定结果所基于的视角。
       valueType: https://axiolune.ai/ontology/finance/orders-execution/LiquidityPerspective
       defaultCardinality:
         minCount: 1
@@ -1398,7 +2078,8 @@ domain:
       namespace: fin-orders
       localName: liquidityDeterminationResult
       label: liquidity determination result
-      definition: classified or unavailable branch discriminator
+      definition: classified-or-unavailable branch discriminator attribute, used for expressing whether the determination yields a role or declares unavailability
+      cnNote: 流动性判定结果，是区分已分类与不可用分支的判定属性，用于表达判定是给出角色还是声明不可用。
       valueType: https://axiolune.ai/ontology/finance/orders-execution/LiquidityDeterminationResult
       defaultCardinality:
         minCount: 1
@@ -1408,7 +2089,8 @@ domain:
       namespace: fin-orders
       localName: liquidityRole
       label: liquidity role
-      definition: maker, taker, or contract-defined auction-undefined result
+      definition: maker, taker, or contract-defined auction-undefined result attribute, used for expressing the role of the execution order in providing liquidity
+      cnNote: 流动性角色，是表明执行订单作为 maker、taker 或拍卖未定义的结果属性，用于表达该成交在提供流动性方面的角色。
       valueType: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRole
       defaultCardinality:
         minCount: 0
@@ -1418,7 +2100,8 @@ domain:
       namespace: fin-orders
       localName: liquidityUnavailableReason
       label: liquidity unavailable reason
-      definition: contractUnsupported or providerNotSpecified evidence branch reason
+      definition: contractUnsupported or providerNotSpecified evidence branch reason attribute, used for explaining why a liquidity role cannot be classified
+      cnNote: 流动性不可用原因，是支持契约不支持或供应方未指定证据分支的原因属性，用于解释为何无法分类流动性角色。
       valueType: https://axiolune.ai/ontology/finance/orders-execution/LiquidityUnavailableReason
       defaultCardinality:
         minCount: 0
@@ -1428,7 +2111,8 @@ domain:
       namespace: fin-orders
       localName: sourceRecordRef
       label: source record reference
-      definition: immutable reference to the exact provider record evaluated
+      definition: immutable URI reference to the exact provider record evaluated, used for locating the original record that was determined
+      cnNote: 来源记录引用，是指向所评估的确切供应方记录的不可变引用，用于定位被判定的原始记录。
       valueType: uri
       defaultCardinality:
         minCount: 1
@@ -1438,7 +2122,8 @@ domain:
       namespace: fin-orders
       localName: sourceRecordDigest
       label: source record digest
-      definition: SHA-256 digest of the exact canonical provider record bytes
+      definition: SHA-256 digest value of the exact canonical provider record bytes, used for verifying the content integrity of the evaluated record
+      cnNote: 来源记录摘要，是确切的规范供应方记录字节的摘要值，用于验证所评估记录的内容完整性。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1449,7 +2134,8 @@ domain:
       namespace: fin-orders
       localName: rawLexicalValue
       label: raw lexical value
-      definition: exact source lexical value used by a classified liquidity mapping
+      definition: exact source lexical value used by a classified liquidity mapping, used for recording the raw field value on which the mapping was based
+      cnNote: 原始词法取值，是已分类流动性映射所用的确切来源词法取值，用于记录映射所依据的原始字段取值。
       valueType: string
       defaultCardinality:
         minCount: 0
@@ -1459,7 +2145,8 @@ domain:
       namespace: fin-orders
       localName: fieldAbsenceProbeRef
       label: field absence probe reference
-      definition: immutable reference to the completed source-record field-absence probe
+      definition: immutable URI reference to the completed source-record field-absence probe, used for locating the probe record that proves the absence of a field
+      cnNote: 字段缺失探针引用，是指向已完成的来源记录字段缺失探针的不可变引用，用于定位证明某字段缺失的探针记录。
       valueType: uri
       defaultCardinality:
         minCount: 0
@@ -1469,7 +2156,8 @@ domain:
       namespace: fin-orders
       localName: fieldAbsenceProbeDigest
       label: field absence probe digest
-      definition: SHA-256 digest of the completed field-absence probe record
+      definition: SHA-256 digest value of the completed field-absence probe record, used for verifying the content integrity of the probe record
+      cnNote: 字段缺失探针摘要，是已完成的字段缺失探针记录的摘要值，用于验证探针记录的内容完整性。
       valueType: string
       defaultCardinality:
         minCount: 0
@@ -1480,7 +2168,8 @@ domain:
       namespace: fin-orders
       localName: orderIntegrityKind
       label: order integrity kind
-      definition: closed kind of order event stream defect
+      definition: closed kind attribute of order event stream defect, used for distinguishing different defect types such as duplicate conflict and sequence gap
+      cnNote: 订单完整性类别，是订单事件流缺陷的封闭类别属性，用于区分重复冲突、序号缺口等不同缺陷类型。
       valueType: https://axiolune.ai/ontology/finance/orders-execution/OrderIntegrityKind
       defaultCardinality:
         minCount: 1
@@ -1490,7 +2179,8 @@ domain:
       namespace: fin-orders
       localName: affectedKeyDigest
       label: affected key digest
-      definition: kind-discriminated digest of the strict OrderFindingSubject object
+      definition: kind-discriminated digest value of the strict OrderFindingSubject object, used for digesting and distinguishing finding subjects by defect kind
+      cnNote: 受影响键摘要，是完整性发现主体对象的摘要值，用于按缺陷类别对发现主体进行摘要与区分。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1501,7 +2191,8 @@ domain:
       namespace: fin-orders
       localName: relatedVersionSetDigest
       label: related version set digest
-      definition: digest of the sorted unique exact versions cited by an integrity finding
+      definition: digest value of the sorted unique exact versions cited by an integrity finding, used for verifying the integrity and consistency of the version set involved in the finding
+      cnNote: 关联版本集摘要，是完整性发现所引用的排序去重确切版本集合的摘要值，用于验证发现所涉版本集合的完整性与一致性。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1512,7 +2203,8 @@ domain:
       namespace: fin-orders
       localName: missingKeyFrom
       label: missing key from
-      definition: inclusive start of a sequence-gap half-open interval
+      definition: inclusive start of a sequence-gap half-open interval, used for bounding the lower end of the missing key interval
+      cnNote: 缺失键起点，是序号缺口半开区间的包含性起点，用于界定缺失序号区间的下界。
       valueType: integer
       defaultCardinality:
         minCount: 0
@@ -1522,7 +2214,8 @@ domain:
       namespace: fin-orders
       localName: missingKeyTo
       label: missing key to
-      definition: exclusive end of a sequence-gap half-open interval
+      definition: exclusive end of a sequence-gap half-open interval, used for bounding the upper end of the missing key interval
+      cnNote: 缺失键终点，是序号缺口半开区间的排他性终点，用于界定缺失序号区间的上界。
       valueType: integer
       defaultCardinality:
         minCount: 0
@@ -1532,7 +2225,8 @@ domain:
       namespace: fin-orders
       localName: findingProviderEventId
       label: finding provider event identifier
-      definition: provider event identifier in a duplicateConflict finding subject
+      definition: provider event identifier in a duplicateConflict finding subject, used for indicating which event identifier is in conflict
+      cnNote: 发现供应方事件标识，是重复冲突发现主体中的供应方事件标识，用于指明发生冲突的事件标识。
       valueType: string
       defaultCardinality:
         minCount: 0
@@ -1542,7 +2236,8 @@ domain:
       namespace: fin-orders
       localName: observedSourceOrderKey
       label: observed source order key
-      definition: observed source order key in an outOfOrder finding subject
+      definition: observed source order key in an outOfOrder finding subject, used for recording the actual arrival order of events
+      cnNote: 观察到的源订单序键，是乱序发现主体中所观察到的源订单序键，用于记录实际到达事件的发生次序。
       valueType: integer
       defaultCardinality:
         minCount: 0
@@ -1552,7 +2247,8 @@ domain:
       namespace: fin-orders
       localName: requiredPredecessorSourceOrderKey
       label: required predecessor source order key
-      definition: predecessor key required before an outOfOrder event
+      definition: predecessor key required before an outOfOrder event, used for judging whether the event violates the order constraint
+      cnNote: 所需前驱源订单序键，是乱序事件之前所必需的前驱序键，用于判定事件是否违反了次序约束。
       valueType: integer
       defaultCardinality:
         minCount: 0
@@ -1562,8 +2258,361 @@ domain:
       namespace: fin-orders
       localName: expectedAfterSourceOrderKey
       label: expected after source order key
-      definition: source order key after which an acknowledgement was required
+      definition: source order key after which an acknowledgement was required, used for judging whether an acknowledgement is missing
+      cnNote: 期望之后源订单序键，是确认本应在其之后到达的源订单序键，用于判定应答是否缺失。
       valueType: integer
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    rawProviderStatusCode:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/rawProviderStatusCode
+      namespace: fin-orders
+      localName: rawProviderStatusCode
+      label: raw provider status code
+      definition: exact provider lexical status code carried by an external lifecycle event before canonical mapping, used to make the applied status mapping auditable on the event itself
+      cnNote: 原始供应方状态码，是外部生命周期事件在规范映射前携带的确切供应方原始状态码，用于使所应用状态映射在事件本身可审计。
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    transitionTable:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/transitionTable
+      namespace: fin-orders
+      localName: transitionTable
+      label: transition table
+      definition: declarative fromState × eventKind → toState + condition transition table carried by an OrderTransitionProfile, used to make the profile reviewable without executing the digest-locked evaluator
+      cnNote: 转移表，是订单流转配置携带的声明式 fromState × eventKind → toState + condition 转移表，用于使配置可评审而无需执行摘要锁定的评估器。
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    lastQty:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/lastQty
+      namespace: fin-orders
+      localName: lastQty
+      label: last quantity
+      definition: strictly positive absolute Quantity filled by the last execution recorded in a FillSnapshot, used to express the incremental fill quantity of the event
+      cnNote: 本次数量，是成交快照中记录的最后一次成交的严格为正的绝对数量，用于表达该事件的增量成交数量。
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    cumQty:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/cumQty
+      namespace: fin-orders
+      localName: cumQty
+      label: cumulative quantity
+      definition: cumulative filled Quantity recorded in a FillSnapshot, used to audit Filled and PartiallyFilled states against the effective net quantity
+      cnNote: 累计数量，是成交快照中记录的累计成交数量，用于按有效净成交量审计 Filled 与 PartiallyFilled 状态。
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    leavesQty:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/leavesQty
+      namespace: fin-orders
+      localName: leavesQty
+      label: leaves quantity
+      definition: remaining (open) Quantity recorded in a FillSnapshot, used to express the quantity still eligible for filling
+      cnNote: 剩余数量，是成交快照中记录的剩余（未成交）数量，用于表达仍可成交的数量。
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    cancelledQty:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/cancelledQty
+      namespace: fin-orders
+      localName: cancelledQty
+      label: cancelled quantity
+      definition: cancelled Quantity recorded in a FillSnapshot, used to express the quantity removed from the order by cancellation
+      cnNote: 取消数量，是成交快照中记录的取消数量，用于表达因撤销而从订单移除的数量。
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    averagePrice:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/averagePrice
+      namespace: fin-orders
+      localName: averagePrice
+      label: average price
+      definition: volume-weighted average execution Money price recorded in a FillSnapshot, interpreted through the exact direct-unit quotation contract
+      cnNote: 均价，是成交快照中记录的成交量加权平均成交货币价格，通过确切的直接单位报价契约解释。
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    disclosureStatus:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/disclosureStatus
+      namespace: fin-orders
+      localName: disclosureStatus
+      label: disclosure status
+      definition: closed disclosure classification attribute of an Execution or MatchedTrade, used to express whether the counterparty is disclosed, anonymous, or partially disclosed
+      cnNote: 披露状态，是成交或已匹配成交的封闭披露分类属性，用于表达对手方是已披露、匿名还是部分披露。
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/DisclosureStatus
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    executedAt:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/executedAt
+      namespace: fin-orders
+      localName: executedAt
+      label: executed at
+      definition: optional inclusive UTC instant at which the trade represented by an execution actually occurred, distinct from the provider-reporteded and observed timestamps
+      cnNote: 成交时刻，是成交所代表交易实际发生的可选含端 UTC 瞬时，区别于供应方上报与系统观察时间戳。
+      valueType: instant
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    providerReportedAt:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/providerReportedAt
+      namespace: fin-orders
+      localName: providerReportedAt
+      label: provider reported at
+      definition: optional inclusive UTC instant at which the provider reported the execution, distinct from the actual execution and system observation timestamps
+      cnNote: 供应方上报时刻，是供应方上报成交的可选含端 UTC 瞬时，区别于实际成交与系统观察时间戳。
+      valueType: instant
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    tradeDate:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/tradeDate
+      namespace: fin-orders
+      localName: tradeDate
+      label: trade date
+      definition: optional business trade date to which an execution belongs, used for trade-date attribution that may differ from the execution and observation dates
+      cnNote: 交易日，是成交所属的可选营业交易日，用于可能区别于成交与观察日期的交易日归属。
+      valueType: date
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    venueTradeId:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/venueTradeId
+      namespace: fin-orders
+      localName: venueTradeId
+      label: venue trade identifier
+      definition: optional venue-side trade identifier string assigned by the execution venue, distinct from the provider execution identifier and the match identifier
+      cnNote: 场所成交标识，是成交场所分配的可选场所侧成交标识字符串，区别于供应方成交标识与匹配标识。
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    providerReportId:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/providerReportId
+      namespace: fin-orders
+      localName: providerReportId
+      label: provider report identifier
+      definition: optional provider report identifier string for the execution report, distinct from the venue trade identifier and the match identifier
+      cnNote: 供应方报告标识，是成交回报的可选供应方报告标识字符串，区别于场所成交标识与匹配标识。
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    matchId:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/matchId
+      namespace: fin-orders
+      localName: matchId
+      label: match identifier
+      definition: optional match identifier string for the matched trade, distinct from the venue trade identifier and the provider report identifier
+      cnNote: 匹配标识，是已匹配成交的可选匹配标识字符串，区别于场所成交标识与供应方报告标识。
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    positionEffect:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/positionEffect
+      namespace: fin-orders
+      localName: positionEffect
+      label: position effect
+      definition: closed position-effect classification attribute separate from order side, used to express open, close, roll, and similar position effects
+      cnNote: 头寸效应，是与订单方向相区别的封闭头寸效应分类属性，用于表达开仓、平仓、滚动等头寸效应。
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/PositionEffect
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    shortSaleIndicator:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/shortSaleIndicator
+      namespace: fin-orders
+      localName: shortSaleIndicator
+      label: short sale indicator
+      definition: closed short-sale indicator classification attribute, used to express long, short, and short-exempt markers required by short-sale regulation (e.g. SEC Regulation SHO)
+      cnNote: 卖空标记，是封闭卖空标记分类属性，用于表达卖空监管（如 SEC Regulation SHO）所要求的 long、short、short-exempt 标记。
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/ShortSaleIndicator
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    orderCapacity:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/orderCapacity
+      namespace: fin-orders
+      localName: orderCapacity
+      label: order capacity
+      definition: closed capacity classification attribute, used to express agency, principal, and riskless-principal capacity separate from the order side and position effect
+      cnNote: 订单能力，是封闭能力分类属性，用于表达独立于订单方向与头寸效应的 agency、principal、riskless-principal 能力。
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/OrderCapacity
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    routingPolicy:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/routingPolicy
+      namespace: fin-orders
+      localName: routingPolicy
+      label: routing policy
+      definition: optional string describing the routing policy governing a venue-neutral OrderIntent (e.g. best-execution, SOR), used when no single listing or OTC context is bound
+      cnNote: 路由策略，是描述管辖场所中立订单意图路由策略（如最佳执行、SOR）的可选字符串，在未绑定单一挂牌或场外上下文时使用。
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    routedQuantity:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/routedQuantity
+      namespace: fin-orders
+      localName: routedQuantity
+      label: routed quantity
+      definition: strictly positive absolute Quantity routed by an OrderRoute, used to express the quantity delegated to a child order or destination
+      cnNote: 路由数量，是某订单路由路由的严格为正的绝对数量，用于表达委托给子单或目的地的数量。
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    routeTime:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/routeTime
+      namespace: fin-orders
+      localName: routeTime
+      label: route time
+      definition: inclusive UTC instant at which an OrderRoute was made, used to order routes within a parent intent
+      cnNote: 路由时刻，是某订单路由发生的含端 UTC 瞬时，用于在父意图内排列路由次序。
+      valueType: instant
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    routeStatus:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/routeStatus
+      namespace: fin-orders
+      localName: routeStatus
+      label: route status
+      definition: closed route-status classification attribute of an OrderRoute, used to express the state of a route (e.g. routed, accepted, rejected, cancelled)
+      cnNote: 路由状态，是某订单路由的封闭路由状态分类属性，用于表达路由的状态（如 routed、accepted、rejected、cancelled）。
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/RouteStatus
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    routeReason:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/routeReason
+      namespace: fin-orders
+      localName: routeReason
+      label: route reason
+      definition: optional reason text or normalized identifier explaining why a route was made or changed, used to explain routing decisions
+      cnNote: 路由原因，是解释路由为何发生或变更的可选原因文本或规范化标识，用于解释路由决策。
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    allocationQuantity:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/allocationQuantity
+      namespace: fin-orders
+      localName: allocationQuantity
+      label: allocation quantity
+      definition: strictly positive absolute Quantity allocated to one AllocationLine target account, used to partition a source execution quantity with conservation
+      cnNote: 分配数量，是分配给某一分配行目标账户的严格为正的绝对数量，用于以守恒分割源成交数量。
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    allocationStatus:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/allocationStatus
+      namespace: fin-orders
+      localName: allocationStatus
+      label: allocation status
+      definition: closed allocation-status classification attribute of an ExecutionAllocation or AllocationLine, used to express the state of an allocation (e.g. proposed, accepted, rejected, cancelled, corrected)
+      cnNote: 分配状态，是成交分配或分配行的封闭分配状态分类属性，用于表达分配的状态（如 proposed、accepted、rejected、cancelled、corrected）。
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/AllocationStatus
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    revisionRequestId:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/revisionRequestId
+      namespace: fin-orders
+      localName: revisionRequestId
+      label: revision request identifier
+      definition: immutable string identifier of a cancel/replace revision request, used to provide the logical identity primary key of an OrderRevision
+      cnNote: 修订请求标识，是撤改修订请求的不可变字符串标识，用于为订单修订提供逻辑身份主键。
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    revisionKind:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/revisionKind
+      namespace: fin-orders
+      localName: revisionKind
+      label: revision kind
+      definition: closed classification attribute of an OrderRevision, used to distinguish replace, cancel, and cancel-replace revision kinds
+      cnNote: 修订类别，是订单修订的封闭分类属性，用于区分 replace、cancel、cancel-replace 修订类别。
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/RevisionKind
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    replacedTerms:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/replacedTerms
+      namespace: fin-orders
+      localName: replacedTerms
+      label: replaced terms
+      definition: optional string describing the terms that replace the previous order terms in a replace or cancel-replace revision
+      cnNote: 替换条款，是描述在替换或撤改修订中替换前序订单条款的可选字符串。
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    priorityPreserved:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/priorityPreserved
+      namespace: fin-orders
+      localName: priorityPreserved
+      label: priority preserved
+      definition: boolean attribute indicating whether a replace or cancel-replace revision preserves the original order priority in the book
+      cnNote: 优先级保留，是表明替换或撤改修订是否保留原订单在簿中的优先级的布尔属性。
+      valueType: boolean
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    feePayer:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/feePayer
+      namespace: fin-orders
+      localName: feePayer
+      label: fee payer
+      definition: relationship from a Fee to the logical Party that pays the fee, used to fix the fee effect relative to an explicit payer
+      cnNote: 费用支付方，是从费用指向支付该费用的逻辑参与方的关系，用于将费用效应相对于明确支付方固定。
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    feePayee:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/feePayee
+      namespace: fin-orders
+      localName: feePayee
+      label: fee payee
+      definition: relationship from a Fee to the logical Party that receives the fee, used to fix the fee effect relative to an explicit payee or assessor
+      cnNote: 费用收取方，是从费用指向收取该费用的逻辑参与方的关系，用于将费用效应相对于明确收取方或评估方固定。
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    feeBasis:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/feeBasis
+      namespace: fin-orders
+      localName: feeBasis
+      label: fee basis
+      definition: optional string describing the basis on which a fee was calculated (e.g. per-share, notional, bps), used to explain the fee amount
+      cnNote: 费用依据，是描述费用计算依据（如每股、按名义、按基点）的可选字符串，用于解释费用金额。
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    feeTaxJurisdiction:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/feeTaxJurisdiction
+      namespace: fin-orders
+      localName: feeTaxJurisdiction
+      label: fee tax jurisdiction
+      definition: optional logical Jurisdiction under whose tax authority a fee falls, used for tax-jurisdiction-scoped fees
+      cnNote: 费用税务辖区，是费用所属税务辖区的可选逻辑辖区，用于按税务辖区划分的费用。
+      valueType: string
       defaultCardinality:
         minCount: 0
         maxCount: 1
@@ -1574,7 +2623,8 @@ domain:
       namespace: fin-orders
       localName: OrderSide
       label: Order Side
-      definition: Closed semantic direction vocabulary without implementation sentinel members.
+      definition: Closed semantic direction vocabulary without implementation sentinel members, used for canonically expressing the buy-or-sell direction of an order.
+      cnNote: 订单方向词表，是不含实现哨兵成员的封闭语义方向词表，用于规范表达订单的买卖方向。
       vocabulary: Order Side
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1593,7 +2643,8 @@ domain:
       namespace: fin-orders
       localName: OrderLineageKind
       label: Order Lineage Kind
-      definition: Closed classification of immutable order-intent routing transformations.
+      definition: Closed classification of immutable order-intent routing transformations, used for distinguishing the two lineage transformation types, split and aggregation.
+      cnNote: 订单谱系类别词表，是不可变订单意图路由变换的封闭分类，用于区分拆分与聚合两类谱系变换。
       vocabulary: Order Lineage Kind
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1612,7 +2663,8 @@ domain:
       namespace: fin-orders
       localName: OrderType
       label: Order Type
-      definition: Closed classification of executable order instructions by their price and trigger semantics.
+      definition: Closed classification of executable order instructions by their price and trigger semantics, used for canonically expressing order types such as market, limit, and stop.
+      cnNote: 订单类型词表，是按价格与触发语义对可执行订单指令的封闭分类，用于规范表达市价、限价、止损等订单类型。
       vocabulary: Order Type
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1648,9 +2700,9 @@ domain:
       localName: TriggerPriceBasis
       label: Trigger Price Basis
       definition: >-
-        Closed classification of the market observation basis evaluated by a conditional order trigger. Each member
-        identifies the eligible observation type or composite observation rule used to compare market state with the
-        trigger condition; provider-specific codes require explicit mappings pinned to provider and schema version.
+        Closed classification of the market observation basis evaluated by a conditional order trigger, used for
+        canonically expressing which market quote serves as the trigger evaluation basis.
+      cnNote: 触发价基准词表，是条件订单触发所评估的市场观察基准的封闭分类，用于规范表达以何种行情作为触发判定依据。
       vocabulary: Trigger Price Basis
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1697,7 +2749,8 @@ domain:
       namespace: fin-orders
       localName: TimeInForce
       label: Time In Force
-      definition: Closed vocabulary of order validity duration instructions.
+      definition: Closed vocabulary of order validity duration instructions, used for canonically expressing how long an order remains effective in the market.
+      cnNote: 有效期词表，是订单有效期时长指令的封闭词表，用于规范表达订单在市场中保持有效的持续时间。
       vocabulary: Time In Force
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1736,7 +2789,8 @@ domain:
       namespace: fin-orders
       localName: OrderLifecycleState
       label: Order Lifecycle State
-      definition: Canonical resulting order states independent of provider raw codes.
+      definition: Canonical resulting order state vocabulary independent of provider raw codes, used for unifying the canonical state of an order across its lifecycle.
+      cnNote: 订单生命周期状态词表，是独立于供应方原始码的规范订单结果状态词表，用于统一表达订单在其生命周期中的规范状态。
       vocabulary: Order Lifecycle State
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1798,12 +2852,41 @@ domain:
           notation: Triggered
           label: Triggered
           definition: trigger condition became true
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/PendingNew
+          notation: PendingNew
+          label: Pending New
+          definition: order has been sent but not yet acknowledged by the provider
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/DoneForDay
+          notation: DoneForDay
+          label: Done For Day
+          definition: order is done for the day
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/Stopped
+          notation: Stopped
+          label: Stopped
+          definition: order was stopped
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/Suspended
+          notation: Suspended
+          label: Suspended
+          definition: order was suspended
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/Calculated
+          notation: Calculated
+          label: Calculated
+          definition: order has been calculated
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/Restated
+          notation: Restated
+          label: Restated
+          definition: order state was restated
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/PendingReplace
+          notation: PendingReplace
+          label: Pending Replace
+          definition: replace request is awaiting resolution
     OrderEventKind:
       iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind
       namespace: fin-orders
       localName: OrderEventKind
       label: Order Event Kind
-      definition: Immutable event kinds distinct from resulting lifecycle state.
+      definition: Immutable event-kind vocabulary distinct from the resulting lifecycle state, used for canonically expressing the type of the event itself in the event log.
+      cnNote: 订单事件类别词表，是与结果生命周期状态相区别的不可变事件类别词表，用于规范表达事件日志中事件本身的类型。
       vocabulary: Order Event Kind
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1877,14 +2960,47 @@ domain:
           notation: Triggered
           label: Triggered
           definition: trigger activation event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/TradeCorrect
+          notation: TradeCorrect
+          label: Trade Correct
+          definition: trade correction event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/TradeCancel
+          notation: TradeCancel
+          label: Trade Cancel
+          definition: trade cancellation (bust) event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/New
+          notation: New
+          label: New
+          definition: new order submission event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/DoneForDay
+          notation: DoneForDay
+          label: Done For Day
+          definition: order done for the day event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/Stopped
+          notation: Stopped
+          label: Stopped
+          definition: order stopped event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/Suspended
+          notation: Suspended
+          label: Suspended
+          definition: order suspended event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/Calculated
+          notation: Calculated
+          label: Calculated
+          definition: order calculated event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/Restated
+          notation: Restated
+          label: Restated
+          definition: order state restated event
     FeeKind:
       iri: https://axiolune.ai/ontology/finance/orders-execution/FeeKind
       namespace: fin-orders
       localName: FeeKind
       label: Fee Kind
       definition: >-
-        Closed classification of commissions, facility charges, clearing charges, regulatory assessments, taxes, and
-        residual fees attached to an Execution.
+        Closed classification of commissions, exchange fees, clearing fees, regulatory fees, taxes, and residual fees
+        attached to an Execution, used for canonically expressing the economic or regulatory nature of a fee.
+      cnNote: 费用类别词表，是对成交所附佣金、交易所费、清算费、监管费、税费及残余费用的封闭分类，用于规范表达费用的经济或监管性质。
       vocabulary: Fee Kind
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1919,7 +3035,8 @@ domain:
       namespace: fin-orders
       localName: FeeEffect
       label: Fee Effect
-      definition: Closed arithmetic direction of a positive Fee magnitude.
+      definition: Closed arithmetic direction vocabulary of a positive Fee magnitude, used for canonically expressing whether a fee is a charge or a rebate.
+      cnNote: 费用效应词表，是正费用金额的封闭算术方向词表，用于规范表达费用是收费还是返利。
       vocabulary: Fee Effect
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1938,7 +3055,8 @@ domain:
       namespace: fin-orders
       localName: LiquidityRoleCapability
       label: Liquidity Role Capability
-      definition: Closed source-contract capability for liquidity role evidence.
+      definition: Closed source-contract capability vocabulary for liquidity role evidence, used for canonically declaring the degree of support an event stream provides for liquidity classification.
+      cnNote: 流动性角色能力词表，是流动性角色证据的封闭来源契约能力词表，用于规范声明事件流对流动性分类的支持程度。
       vocabulary: Liquidity Role Capability
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1961,7 +3079,8 @@ domain:
       namespace: fin-orders
       localName: LiquidityRole
       label: Liquidity Role
-      definition: Closed account-order liquidity role vocabulary.
+      definition: Closed account-order liquidity role vocabulary, used for canonically expressing whether an execution order is a maker, a taker, or auction-undefined.
+      cnNote: 流动性角色词表，是账户订单视角的封闭流动性角色词表，用于规范表达成交订单是 maker、taker 还是拍卖未定义。
       vocabulary: Liquidity Role
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1984,7 +3103,8 @@ domain:
       namespace: fin-orders
       localName: LiquidityPerspective
       label: Liquidity Perspective
-      definition: Closed perspective used for canonical liquidity determinations.
+      definition: Closed perspective vocabulary used for canonical liquidity determinations, used for specifying the execution account-order perspective on which the determination is based.
+      cnNote: 流动性视角词表，是用于规范流动性判定的封闭视角词表，用于明确判定所基于的执行账户订单视角。
       vocabulary: Liquidity Perspective
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1999,7 +3119,8 @@ domain:
       namespace: fin-orders
       localName: LiquidityDeterminationResult
       label: Liquidity Determination Result
-      definition: Closed xone branch discriminator for liquidity evidence.
+      definition: Closed mutually exclusive branch discriminator vocabulary for liquidity evidence, used for canonically expressing whether a determination is classified or unavailable.
+      cnNote: 流动性判定结果词表，是流动性证据的封闭互斥分支判别词表，用于规范表达判定是已分类还是不可用。
       vocabulary: Liquidity Determination Result
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -2018,7 +3139,8 @@ domain:
       namespace: fin-orders
       localName: LiquidityUnavailableReason
       label: Liquidity Unavailable Reason
-      definition: Closed supported reasons for an unavailable liquidity determination.
+      definition: Closed reason vocabulary supporting an unavailable liquidity determination, used for canonically expressing the two reasons, contract-unsupported and provider-not-specified.
+      cnNote: 流动性不可用原因词表，是支持流动性判定不可用的封闭原因词表，用于规范表达契约不支持或供应方未指定两类原因。
       vocabulary: Liquidity Unavailable Reason
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -2037,7 +3159,8 @@ domain:
       namespace: fin-orders
       localName: OrderIntegrityKind
       label: Order Integrity Kind
-      definition: Closed kind-discriminated order event integrity finding vocabulary.
+      definition: Closed kind-discriminated order event integrity finding vocabulary, used for canonically expressing defect types such as duplicate conflict, sequence gap, out-of-order, late fill, missing acknowledgement, and transition violation.
+      cnNote: 订单完整性类别词表，是按类别区分的订单事件完整性发现的封闭词表，用于规范表达重复冲突、序号缺口、乱序、迟到成交、缺失应答与流转违规等缺陷类型。
       vocabulary: Order Integrity Kind
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -2067,6 +3190,194 @@ domain:
           notation: transitionViolation
           label: transition violation
           definition: ordered event pair violates the exact transition profile
+    DisclosureStatus:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/DisclosureStatus
+      namespace: fin-orders
+      localName: DisclosureStatus
+      label: Disclosure Status
+      definition: closed disclosure classification vocabulary, used to express whether an execution counterparty is disclosed, anonymous, or partially disclosed
+      cnNote: 披露状态词表，是封闭披露分类词表，用于表达成交对手方是已披露、匿名还是部分披露。
+      vocabulary: Disclosure Status
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/DisclosureStatus/value/disclosed
+          notation: disclosed
+          label: disclosed
+          definition: counterparty is fully disclosed
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/DisclosureStatus/value/anonymous
+          notation: anonymous
+          label: anonymous
+          definition: counterparty is not disclosed
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/DisclosureStatus/value/partiallyDisclosed
+          notation: partiallyDisclosed
+          label: partially disclosed
+          definition: counterparty is partially disclosed
+    PositionEffect:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/PositionEffect
+      namespace: fin-orders
+      localName: PositionEffect
+      label: Position Effect
+      definition: closed position-effect classification vocabulary separate from order side, used to express open, close, and roll position effects
+      cnNote: 头寸效应词表，是与订单方向相区别的封闭头寸效应分类词表，用于表达开仓、平仓、滚动头寸效应。
+      vocabulary: Position Effect
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/PositionEffect/value/open
+          notation: open
+          label: open
+          definition: order opens a new position
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/PositionEffect/value/close
+          notation: close
+          label: close
+          definition: order closes an existing position
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/PositionEffect/value/roll
+          notation: roll
+          label: roll
+          definition: order rolls a position from one expiry to another
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/PositionEffect/value/unspecified
+          notation: unspecified
+          label: unspecified
+          definition: position effect is not specified
+    ShortSaleIndicator:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/ShortSaleIndicator
+      namespace: fin-orders
+      localName: ShortSaleIndicator
+      label: Short Sale Indicator
+      definition: closed short-sale indicator classification vocabulary, used to express long, short, and short-exempt markers required by short-sale regulation
+      cnNote: 卖空标记词表，是封闭卖空标记分类词表，用于表达卖空监管所要求的 long、short、short-exempt 标记。
+      vocabulary: Short Sale Indicator
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/ShortSaleIndicator/value/long
+          notation: long
+          label: long
+          definition: sell of a long position
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/ShortSaleIndicator/value/short
+          notation: short
+          label: short
+          definition: short sale
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/ShortSaleIndicator/value/shortExempt
+          notation: shortExempt
+          label: short exempt
+          definition: short sale exempt from price restriction
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/ShortSaleIndicator/value/unspecified
+          notation: unspecified
+          label: unspecified
+          definition: short-sale indicator is not specified
+    OrderCapacity:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderCapacity
+      namespace: fin-orders
+      localName: OrderCapacity
+      label: Order Capacity
+      definition: closed capacity classification vocabulary, used to express agency, principal, and riskless-principal capacity separate from order side and position effect
+      cnNote: 订单能力词表，是封闭能力分类词表，用于表达独立于订单方向与头寸效应的 agency、principal、riskless-principal 能力。
+      vocabulary: Order Capacity
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderCapacity/value/agency
+          notation: agency
+          label: agency
+          definition: order is acted on as agent
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderCapacity/value/principal
+          notation: principal
+          label: principal
+          definition: order is acted on as principal
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderCapacity/value/risklessPrincipal
+          notation: risklessPrincipal
+          label: riskless principal
+          definition: order is acted on as riskless principal
+    RevisionKind:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/RevisionKind
+      namespace: fin-orders
+      localName: RevisionKind
+      label: Revision Kind
+      definition: closed classification vocabulary of order revision kinds, used to distinguish replace, cancel, and cancel-replace revisions in an order chain
+      cnNote: 修订类别词表，是订单修订类别的封闭分类词表，用于区分订单链中的 replace、cancel、cancel-replace 修订。
+      vocabulary: Revision Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/RevisionKind/value/replace
+          notation: replace
+          label: replace
+          definition: revision replaces the previous order terms
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/RevisionKind/value/cancel
+          notation: cancel
+          label: cancel
+          definition: revision cancels the previous order
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/RevisionKind/value/cancelReplace
+          notation: cancelReplace
+          label: cancel replace
+          definition: revision cancels and replaces the previous order
+    RouteStatus:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/RouteStatus
+      namespace: fin-orders
+      localName: RouteStatus
+      label: Route Status
+      definition: closed route-status classification vocabulary, used to express the state of an order route
+      cnNote: 路由状态词表，是封闭路由状态分类词表，用于表达订单路由的状态。
+      vocabulary: Route Status
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/RouteStatus/value/routed
+          notation: routed
+          label: routed
+          definition: route has been dispatched to a destination
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/RouteStatus/value/accepted
+          notation: accepted
+          label: accepted
+          definition: destination accepted the routed order
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/RouteStatus/value/rejected
+          notation: rejected
+          label: rejected
+          definition: destination rejected the routed order
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/RouteStatus/value/cancelled
+          notation: cancelled
+          label: cancelled
+          definition: route was cancelled
+    AllocationStatus:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/AllocationStatus
+      namespace: fin-orders
+      localName: AllocationStatus
+      label: Allocation Status
+      definition: closed allocation-status classification vocabulary, used to express the state of an execution allocation
+      cnNote: 分配状态词表，是封闭分配状态分类词表，用于表达成交分配的状态。
+      vocabulary: Allocation Status
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/AllocationStatus/value/proposed
+          notation: proposed
+          label: proposed
+          definition: allocation has been proposed
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/AllocationStatus/value/accepted
+          notation: accepted
+          label: accepted
+          definition: allocation has been accepted
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/AllocationStatus/value/rejected
+          notation: rejected
+          label: rejected
+          definition: allocation has been rejected
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/AllocationStatus/value/cancelled
+          notation: cancelled
+          label: cancelled
+          definition: allocation has been cancelled
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/AllocationStatus/value/corrected
+          notation: corrected
+          label: corrected
+          definition: allocation has been corrected
   constraints:
     OrderIntentContract:
       iri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentContract
@@ -2081,7 +3392,8 @@ domain:
       expression:
         language: Custom
         expression: >-
-          stable(clientIntentId); intentAccount and intentInstrument are logical references; orderQuantity.value > 0;
+          logicalKey(intentIdentifierAuthority, clientIntentId); intentIssuer and intentIdentifierAuthority are
+          logical references; intentAccount and intentInstrument are logical references; orderQuantity.value > 0;
           orderSide in {Buy,Sell}; Market forbids limitPrice, triggerPrice, and triggerPriceBasis; Limit requires only
           limitPrice and forbids triggerPriceBasis; Stop and MarketIfTouched require triggerPrice and exactly one
           triggerPriceBasis in TriggerPriceBasis; StopLimit and LimitIfTouched require limitPrice, triggerPrice, and
@@ -2256,16 +3568,18 @@ domain:
         language: Custom
         expression: >-
           logicalKey(executionStream.logicalIri,providerExecutionId); executionQuantity.value > 0; orderSide in
-          {Buy,Sell}; executionAccount and executionInstrument equal OrderIntent truths; executionParty,
-          executionAccount, contraParty, and contraAccount are all explicit logical participant roles; executingBroker
-          is an optional intermediary and cannot substitute for any principal or contra party/account role; supplied
-          executionListing is PIT-eligible and lists executionInstrument; executionQuotationContract context equals the
-          selected listing or OTC version, instrument logical IRI equals executionInstrument, quote Currency equals
-          executionPrice.currency, and denominator unit equals executionQuantity.unit;
-          forbidden(signedQuantity,liquidityRole,commission,facility);
+          {Buy,Sell}; executionAccount and executionInstrument equal OrderIntent truths; executionParty and
+          executionAccount are explicit logical participant roles; contraParty and contraAccount are optional and
+          absent when disclosureStatus is anonymous or no bilateral evidence is available; a "unknown Party" or
+          "unknown Account" placeholder is forbidden; executingBroker is an optional intermediary and cannot
+          substitute for any principal or contra party/account role; supplied executionListing is PIT-eligible and
+          lists executionInstrument; executionQuotationContract context equals the selected listing or OTC version,
+          instrument logical IRI equals executionInstrument, quote Currency equals executionPrice.currency, and
+          denominator unit equals executionQuantity.unit; executionAccount may differ from intentAccount when an
+          ExecutionAllocation is present; forbidden(signedQuantity,liquidityRole,commission,facility);
           versionKey(validFrom,knowledgeFrom,availableFrom,revision)
       severity: Error
-      message: execution order chain, quantity, context, quotation, or identity is invalid
+      message: execution order chain, quantity, context, quotation, bilateral, or identity is invalid
       targetElement: https://axiolune.ai/ontology/finance/orders-execution/Execution
     ExecutionLiquidityDeterminationCompletenessContract:
       iri: https://axiolune.ai/ontology/finance/orders-execution/ExecutionLiquidityDeterminationCompletenessContract
@@ -2389,6 +3703,128 @@ domain:
       severity: Error
       message: order integrity finding kind, subject, closed version set, digest, or identity is invalid
       targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderEventIntegrityFinding
+    OrderIntentLifecycleEventContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLifecycleEventContract
+      namespace: fin-orders
+      localName: OrderIntentLifecycleEventContract
+      label: Order Intent Lifecycle Event Contract
+      definition: validation contract for an internal pre-submission lifecycle event bound only to an OrderIntent and carrying no provider order, stream, raw status, or applied mapping
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          exactlyOne(intentLifecycleOrderIntent) and exactlyOne(intentEventEmitter); no externalOrder, no
+          eventStream, no providerEventId, no sourceOrderKey, no rawProviderStatusCode, no appliedStatusMapping,
+          no appliedTransitionProfile; orderEventKind in {Initialized,Denied,Emulated,Released}; lifecycleState
+          consistent with orderEventKind; versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: order intent lifecycle event binds a provider order, stream, or provider field it must not carry
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLifecycleEvent
+    FillSnapshotConsistencyContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/FillSnapshotConsistencyContract
+      namespace: fin-orders
+      localName: FillSnapshotConsistencyContract
+      label: Fill Snapshot Consistency Contract
+      definition: validation contract requiring a FillSnapshot's cumulative and leaves quantities to be consistent with the effective net execution quantity of the stream's executions for the order
+      constraintType: Logical
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          cumQty = sum(executionQuantity) over the stream's Execution versions for the same external order up to and
+          including the reported execution; leavesQty = orderQuantity - cumQty - cancelledQty and leavesQty >= 0;
+          averagePrice is the executionQuantity-weighted average of executionPrice over the same execution set;
+          Filled iff leavesQty = 0; PartiallyFilled iff leavesQty > 0 and cumQty > 0
+      severity: Error
+      message: fill snapshot cumulative, leaves, cancelled, or average price is inconsistent with the stream executions
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/FillSnapshot
+    OrderRouteContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderRouteContract
+      namespace: fin-orders
+      localName: OrderRouteContract
+      label: Order Route Contract
+      definition: validation contract for a routing fact linking a parent intent to a child external order or child intent with a routed quantity, time, and status
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          exactlyOne(routeParentIntent); at least one of routeChildExternalOrder or routeChildIntent is present;
+          routedQuantity.value > 0; routeStatus in {routed,accepted,rejected,cancelled}; routeTime present;
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: order route parent, child, quantity, time, or status is invalid
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderRoute
+    ExecutionAllocationConservationContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/ExecutionAllocationConservationContract
+      namespace: fin-orders
+      localName: ExecutionAllocationConservationContract
+      label: Execution Allocation Conservation Contract
+      definition: validation contract requiring the sum of allocation line quantities to equal the source execution quantity
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          exactlyOne(allocationSourceExecution); at least one allocationLine; sum(allocationLine.allocationQuantity)
+          = allocationSourceExecution.executionQuantity; every allocationLine.allocationTargetAccount is a logical
+          FinancialAccount; allocationStatus in {proposed,accepted,rejected,cancelled,corrected};
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: execution allocation does not conserve the source execution quantity
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/ExecutionAllocation
+    OrderRevisionContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderRevisionContract
+      namespace: fin-orders
+      localName: OrderRevisionContract
+      label: Order Revision Contract
+      definition: validation contract for a cancel/replace chain fact linking a revision request to its previous and root order
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          exactlyOne(revisionOrder); revisionRequestId stable; revisionKind in {replace,cancel,cancelReplace};
+          revisionPreviousOrder and revisionRootOrder are exact ExternalOrder versions when present; replacedTerms
+          present only for replace or cancelReplace; versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: order revision chain, kind, previous/root order, or replaced terms is invalid
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderRevision
+    MatchedTradeContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/MatchedTradeContract
+      namespace: fin-orders
+      localName: MatchedTradeContract
+      label: Matched Trade Contract
+      definition: validation contract for a bilateral matched trade requiring both contra roles and a disclosure status
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          exactlyOne(matchedExecution); matchedContraParty and matchedContraAccount are explicit logical roles (no
+          "unknown" placeholder); disclosureStatus in {disclosed,anonymous,partiallyDisclosed}; matchId stable;
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: matched trade is missing required bilateral contra roles, disclosure status, or match identity
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/MatchedTrade
+    OrderIntentRoutingPolicy:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentRoutingPolicy
+      namespace: fin-orders
+      localName: OrderIntentRoutingPolicy
+      label: Order Intent Routing Policy
+      definition: constraint admitting a venue-neutral OrderIntent that specifies an acceptableVenueSet (one or more) or a routingPolicy instead of a single listing or OTC context, so that venue-neutral, SOR, and broker-decides-venue intents are expressible
+      constraintType: Logical
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          either (exactlyOne of intentListing, intentOtcContext) or (atLeastOne acceptableVenueSet) or (routingPolicy
+          present); the three context modes are mutually exclusive; an intent with no context binding at all is
+          forbidden
+      severity: Error
+      message: order intent must select either a single listing/OTC context or a venue-neutral acceptable venue set or routing policy
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
   relationUses:
     - relation: https://axiolune.ai/ontology/finance/orders-execution/intentAccount
       subjectType: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
@@ -2489,6 +3925,96 @@ domain:
       constraints:
         - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
           targetElement: https://axiolune.ai/ontology/finance/orders-execution/transitionProfileProvider
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/orders-execution/intentIssuer
+      subjectType: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+      objectType: https://axiolune.ai/ontology/finance/foundation/Party
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/orders-execution/intentIssuer
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/orders-execution/intentIdentifierAuthority
+      subjectType: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+      objectType: https://axiolune.ai/ontology/finance/foundation/IdentifierAuthority
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/orders-execution/intentIdentifierAuthority
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/orders-execution/executionVenue
+      subjectType: https://axiolune.ai/ontology/finance/orders-execution/Execution
+      objectType: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/orders-execution/executionVenue
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/orders-execution/reportsExecution
+      subjectType: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+      objectType: https://axiolune.ai/ontology/finance/orders-execution/Execution
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/orders-execution/reportsExecution
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/orders-execution/appliedStatusMapping
+      subjectType: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+      objectType: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMapping
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/orders-execution/appliedStatusMapping
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/orders-execution/appliedTransitionProfile
+      subjectType: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+      objectType: https://axiolune.ai/ontology/finance/orders-execution/OrderTransitionProfile
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/orders-execution/appliedTransitionProfile
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/orders-execution/acceptableVenueSet
+      subjectType: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+      objectType: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
+      outboundCardinality:
+        minCount: 0
+        maxCount: null
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/orders-execution/acceptableVenueSet
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/orders-execution/executionQuotationConvention
+      subjectType: https://axiolune.ai/ontology/finance/orders-execution/Execution
+      objectType: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/orders-execution/executionQuotationConvention
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/orders-execution/allocationTargetAccount
+      subjectType: https://axiolune.ai/ontology/finance/orders-execution/AllocationLine
+      objectType: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/orders-execution/allocationTargetAccount
           enforcementLevel: Mandatory
   constraintBindings:
     - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
@@ -2641,4 +4167,25 @@ domain:
       enforcementLevel: Mandatory
     - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/OrderEventIntegrityFindingContract
       targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderEventIntegrityFinding
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLifecycleEventContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLifecycleEvent
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/FillSnapshotConsistencyContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/FillSnapshot
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/OrderRouteContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderRoute
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/ExecutionAllocationConservationContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/ExecutionAllocation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/OrderRevisionContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderRevision
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/MatchedTradeContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/MatchedTrade
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentRoutingPolicy
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
       enforcementLevel: Mandatory

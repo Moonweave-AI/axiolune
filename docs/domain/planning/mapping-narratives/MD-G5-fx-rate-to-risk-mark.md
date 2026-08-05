@@ -1,15 +1,15 @@
 # MD-G5: FX Rate Observation to Risk Mark Mapping Narrative
 
 **Status**: P2 polish (continuous improvement)  
-**Date**: 2026-08-03  
+**Date**: 2026-08-04  
 **Gap**: market-data-semantic-gap MD-G5
 
 ## Story
 
 1. **Source**: FX vendor stream row `(pair, rate, quote_time, revision)`.
-2. **SemanticMappingDefinition** target: `FxRateObservation` version with:
-   - instrument / currency pair identity
-   - `hasPriceValue` or FX-specific rate slot
+2. **SemanticMappingDefinition** target: `FXRateObservation` version with:
+   - baseCurrency / quoteCurrency identity
+   - `fxRate` attribute (strictly positive dimensionless ratio)
    - stream role + revision axis
 3. **Consumer**: `RiskMeasurement` references `measurementMarketDataStream` (see `risk-v03.yaml` referenceRecords) for mark inputs.
 4. **CQ chain**: CQ-MD1 (PIT price/FX query) + CQ-R1 (exposure with market data stream ref).

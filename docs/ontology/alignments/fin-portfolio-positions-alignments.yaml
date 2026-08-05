@@ -1,27 +1,75 @@
 module: fin-portfolio-positions
-version: 0.3.0
+version: 1.1.0
 alignments:
   - targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/ClientsAndAccounts/Account
     relation: skos:closeMatch
     sourceRelease: FIBO 2026Q1
-    rationale: Trading Account narrows FIBO Account to ownership and authorization unit for holdings.
+    rationale: Portfolio membership narrows FIBO Account ownership to temporal portfolio membership.
     reviewStatus: accepted
     bibliographyRef: fibo-local
   - targetIri: https://spec.edmcouncil.org/fibo/ontology/SEC/Portfolios/PortfolioManagement/Portfolio
     relation: skos:closeMatch
     sourceRelease: FIBO 2026Q1
-    rationale: Portfolio collection semantics match FIBO portfolio management module definitions.
+    rationale: Portfolio collection semantics match FIBO portfolio management module definitions; identifying-authority scoping extends FIBO with authority-scoped logical identity.
     reviewStatus: accepted
     bibliographyRef: fibo-local
   - targetIri: https://spec.edmcouncil.org/fibo/ontology/SEC/Portfolios/PortfolioManagement/PortfolioHolding
     relation: skos:closeMatch
     sourceRelease: FIBO 2026Q1
-    rationale: HoldingSnapshot adds three-axis temporal facts atop FIBO PortfolioHolding quantity semantics.
+    rationale: HoldingSnapshot adds three-axis temporal facts and position scope/balance dimension atop FIBO PortfolioHolding quantity semantics.
     reviewStatus: accepted
     bibliographyRef: fibo-local
   - targetIri: BIAN::InvestmentPortfolio::PortfolioManagement
     relation: skos:closeMatch
     sourceRelease: BIAN
-    rationale: Portfolio mandate and membership patterns align with BIAN investment portfolio service domain.
+    rationale: Portfolio mandate and membership patterns align with BIAN investment portfolio service domain; PortfolioConstituent extends beyond account aggregation to sleeves and sub-portfolios.
     reviewStatus: accepted
     bibliographyRef: bian-local
+  - targetIri: https://www.fixtrading.org/standards/fix-protocol-position-report-tag-702
+    relation: skos:relatedMatch
+    sourceRelease: FIX 5.0 SP2
+    rationale: FIX Position Report (Tag 702) distinguishes account, clearing business day, quantity type, and amount groups; informs PositionScope and BalanceDimension.
+    reviewStatus: accepted
+    bibliographyRef: fix-local
+  - targetIri: https://www.iso20022.org/15022/MT538
+    relation: skos:relatedMatch
+    sourceRelease: ISO 15022 MT538
+    rationale: ISO 15022 custody statement sub-balances (settled, pending, available, pledged, loaned) inform BalanceDimension.
+    reviewStatus: accepted
+    bibliographyRef: iso15022-local
+  - targetIri: https://www.ifrs.org/issued-standards/ifrs13-fair-value-measurement
+    relation: skos:relatedMatch
+    sourceRelease: IFRS 13
+    rationale: IFRS 13 fair-value measurement (measurement date, market participant, exit price) informs ValuationMethodFamily and DirectUnitValuationProfile.
+    reviewStatus: accepted
+    bibliographyRef: ifrs13-local
+  - targetIri: https://www.gipsstandards.org/standards/gips-asset-owners
+    relation: skos:relatedMatch
+    sourceRelease: GIPS Asset Owners
+    rationale: GIPS valuation, cash, and accrual policies inform the valuation family boundary; performance and attribution (TWR/MWR) are deferred to a future performance-and-attribution module.
+    reviewStatus: accepted
+    bibliographyRef: gips-local
+  - targetIri: https://www.irs.gov/publications/p550
+    relation: skos:relatedMatch
+    sourceRelease: IRS Publication 550
+    rationale: IRS Publication 550 lot/basis rules inform PositionLot lifecycle, LotAdjustment, and LotRealization; cost basis and quantity are changed by non-execution events.
+    reviewStatus: accepted
+    bibliographyRef: irs550-local
+  - targetIri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesLots
+    relation: skos:relatedMatch
+    sourceRelease: FIBO 2026Q1
+    rationale: FIBO securities lots inform PositionLot and LotAdjustment/Transformation semantics.
+    reviewStatus: accepted
+    bibliographyRef: fibo-local
+  - targetIri: nautilus_trader::model::position::Position
+    relation: skos:relatedMatch
+    sourceRelease: nautilus_trader
+    rationale: nautilus Position tracks signed quantity, side, realized/unrealized PnL; informs PositionSnapshot signed-net default and LotRealization.
+    reviewStatus: accepted
+    bibliographyRef: nautilus-local
+  - targetIri: https://www.fixtrading.org/standards/fix-protocol-postype
+    relation: skos:relatedMatch
+    sourceRelease: FIX 5.0 SP2
+    rationale: FIX PosType informs PositionSourceKind corporate-action adjustment and non-execution lifecycle sources.
+    reviewStatus: accepted
+    bibliographyRef: fix-local

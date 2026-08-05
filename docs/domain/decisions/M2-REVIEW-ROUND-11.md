@@ -40,7 +40,7 @@ Each module: `version: 0.3.0`, `status: approved`.
 - Ten module gap matrices: all P0/P1 **closed** or ADR-deferred; rubric rows signed **pass** (2026-08-03 P2 sweep).
 - Clear remaining CQ probe pending items (F4, MD1/MD2/MD5-neg) — **Done (2026-08-03)**: 110/0/0 (55 CQs).
 - ~~Expand cross-module CQ-R4 trading trace slice (breach → execution)~~ **Done (2026-08-03)**: `tests/m2/fixtures/positive/risk-order-trace-v03.yaml` + negative + lifecycle story §8.
-- Exotic corporate-action subtypes deferred per [ADR-016](ADR-016-defer-exotic-corporate-actions.md) with P2+ backlog table and terminology `review` cards — not a v0.3.0 blocker.
+- Exotic corporate-action subtypes deferred per [ADR-019](ADR-019-defer-exotic-corporate-actions.md) with P2+ backlog table and terminology `review` cards — not a v0.3.0 blocker.
 - **Done (P2+)**: CQ-R5 `ScenarioDefinition` / `StressTestRun` types + stress fixtures; mapping narratives MR-G5 / MS-G4 / MD-G5; optional `run-pyshacl-smoke.cjs` evidence.
 - pySHACL runtime smoke remains **optional** engineering evidence — see `docs/domain/infrastructure/SHACL-RUNTIME-NOTES.md` and `shacl-smoke-evidence.json` (not acceptance).
 

@@ -1,0 +1,282 @@
+schemaVersion: '1.1'
+description: >-
+  fin-risk v1.1.0 additive staging fixtures (ADR-032). Stages the new object/association types
+  introduced by the risk-core + measure-spec/profile/implementation split + limit-rule + breach-case
+  governance + scenario-shock layering so the CQ probes CQ-R6..CQ-R13 can report staged counts.
+  Structural/cardinality enforcement is verified by validate-m2-core --strict; these fixtures stage
+  instance facts. Existing v0.3/v1.0.0 risk-v03 fixtures remain valid (additive).
+fixtures:
+  # --- D1: Risk core (CQ-R12) ---
+  - id: risk-v11-risk-category-positive
+    expectedResult: accepted
+    type: RiskCategory
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RiskCategory
+          versionIri: https://example.test/risk/category/market/v1
+          riskCategoryValue: market
+          riskCategoryName: Market Risk
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'
+
+  - id: risk-v11-risk-factor-positive
+    expectedResult: accepted
+    type: RiskFactor
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RiskFactor
+          versionIri: https://example.test/risk/factor/eur-ir-10y/v1
+          riskFactorId: EUR-IR-10Y
+          riskFactorName: EUR interest rate 10Y
+          riskFactorResearchRef: https://example.test/strategy/factor/eur-rate/v3
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'
+
+  - id: risk-v11-risk-exposure-positive
+    expectedResult: accepted
+    type: RiskExposure
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RiskExposure
+          versionIri: https://example.test/risk/exposure/equity-trading/v1
+          riskExposureId: EQTR-EXP-1
+          exposureMagnitudeKind: notional
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'
+
+  - id: risk-v11-risk-appetite-positive
+    expectedResult: accepted
+    type: RiskAppetite
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RiskAppetite
+          versionIri: https://example.test/risk/appetite/firm/v1
+          riskAppetiteId: FIRM-APPETITE-2026
+          riskAppetiteStatement: The firm is willing to bear measured market risk within approved hard limits.
+          riskAppetiteQuantitativeRef: https://example.test/risk/limit/var-firm/v1
+          validFrom: '2026-01-01T00:00:00Z'
+          knowledgeFrom: '2026-01-01T00:00:01Z'
+          availableFrom: '2026-01-01T00:00:02Z'
+
+  # --- D2: Measure spec / profile / implementation (CQ-R6, CQ-R12) ---
+  - id: risk-v11-measure-spec-positive
+    expectedResult: accepted
+    type: RiskMeasureSpecification
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RiskMeasureSpecification
+          versionIri: https://example.test/risk/spec/var-99-1d/v1
+          riskMeasureSpecificationId: VAR-99-1D
+          riskMeasureKind: var
+          modelPurpose: internalLimitMonitoring
+          lossConvention: lossAsPositive
+          aggregationMethod: varianceCovariance
+          measureSpecificationAuthority: https://example.test/authority/risk
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'
+
+  - id: risk-v11-implementation-version-positive
+    expectedResult: accepted
+    type: ImplementationVersion
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/ImplementationVersion
+          versionIri: https://example.test/risk/impl/var-engine/v2
+          implementationVersionId: VAR-ENGINE-V2
+          implementationVersionLabel: '2.3.1'
+          implementationDigest: 'sha256:aaaa1f64aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+          implementationAuthority: https://example.test/authority/risk
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'
+
+  # --- D3: Input set (CQ-R6) ---
+  - id: risk-v11-input-set-positive
+    expectedResult: accepted
+    type: RiskInputSet
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RiskInputSet
+          versionIri: https://example.test/risk/input-set/20260805/v1
+          riskInputSetId: INPUT-20260805-1
+          inputValuationAsOf: '2026-08-04T16:00:00Z'
+          inputDataQualityStatus: complete
+          fxPolicyRef: https://example.test/policy/fx/v1
+          valuationPolicyRef: https://example.test/policy/valuation/v1
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'
+
+  # --- D4: Scope definition + snapshot ---
+  - id: risk-v11-scope-snapshot-positive
+    expectedResult: accepted
+    type: RiskScopeSnapshot
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RiskScopeSnapshot
+          versionIri: https://example.test/risk/scope-snapshot/equity-trading/v1
+          riskScopeSnapshotId: SCOPE-EQTR-20260805
+          snapshotAsOf: '2026-08-05T00:00:00Z'
+          snapshotSelectionRule: all-positions-in-desk-EQTR
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'
+
+  # --- D6: Limit rule + lifecycle (CQ-R7) ---
+  - id: risk-v11-limit-rule-band-positive
+    expectedResult: accepted
+    type: RiskLimitRule
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RiskLimitRule
+          versionIri: https://example.test/risk/limit-rule/var-band/v1
+          riskLimitRuleId: VAR-BAND-RULE-1
+          comparisonOperator: withinBand
+          lowerThresholdMoney:
+            amount: '-1000000'
+            currency: USD
+          upperThresholdMoney:
+            amount: '1000000'
+            currency: USD
+          comparisonBasis: netExposure
+          limitSeverity: hard
+          riskLimitLifecycleStatus: effective
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'
+
+  # --- D5: Comparison policy (CQ-R8) ---
+  - id: risk-v11-comparison-policy-positive
+    expectedResult: accepted
+    type: RiskLimitComparisonPolicy
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RiskLimitComparisonPolicy
+          versionIri: https://example.test/risk/comparison-policy/bucket-per/v1
+          comparisonPolicyId: BUCKET-PERBUCKET-1
+          bucketComparisonMode: perBucket
+          missingBucketHandling: failClosed
+          comparisonTolerance:
+            value: '0'
+            unit: https://example.test/unit/count
+          roundingPolicy: half-up-2dp
+          unitConversionPolicyRef: https://example.test/policy/fx/v1
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'
+
+  # --- D7: Breach case + governance (CQ-R10) ---
+  - id: risk-v11-breach-case-positive
+    expectedResult: accepted
+    type: RiskLimitBreachCase
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RiskLimitBreachCase
+          versionIri: https://example.test/risk/breach-case/var/v1
+          breachCaseId: BREACH-CASE-VAR-20260805
+          breachMagnitude:
+            value: '250000'
+            unit: https://example.test/unit/usd
+          breachDuration:
+            value: '3'
+            unit: https://example.test/unit/day
+          breachCaseStatus: acknowledged
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'
+
+  - id: risk-v11-remediation-positive
+    expectedResult: accepted
+    type: RemediationAction
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RemediationAction
+          versionIri: https://example.test/risk/remediation/var/v1
+          remediationId: REM-VAR-20260805-1
+          remediationKind: exposureReduction
+          remediationEvidence: https://example.test/evidence/reduction/v1
+          validFrom: '2026-08-05T06:00:00Z'
+          knowledgeFrom: '2026-08-05T06:00:01Z'
+          availableFrom: '2026-08-05T06:00:02Z'
+
+  - id: risk-v11-escalation-positive
+    expectedResult: accepted
+    type: EscalationEvent
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/EscalationEvent
+          versionIri: https://example.test/risk/escalation/var/v1
+          escalationId: ESC-VAR-20260805-1
+          escalationLevel: riskCommittee
+          escalationTarget: https://example.test/party/risk-committee/v1
+          escalatedAt: '2026-08-05T07:00:00Z'
+          validFrom: '2026-08-05T07:00:00Z'
+          knowledgeFrom: '2026-08-05T07:00:01Z'
+          availableFrom: '2026-08-05T07:00:02Z'
+
+  # --- D8: Scenario shock + application evidence (CQ-R5) ---
+  - id: risk-v11-scenario-shock-positive
+    expectedResult: accepted
+    type: ScenarioShock
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/ScenarioShock
+          versionIri: https://example.test/risk/shock/ir-200bp/v1
+          scenarioShockId: SHOCK-IR-200BP
+          shockType: absoluteShift
+          shockMagnitude:
+            value: '200'
+            unit: https://example.test/unit/basis-points
+          shockUnit: https://example.test/unit/basis-points
+          shockPropagationRule: parallel-shift-curve
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'
+
+  - id: risk-v11-application-evidence-positive
+    expectedResult: accepted
+    type: ScenarioApplicationEvidence
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/ScenarioApplicationEvidence
+          versionIri: https://example.test/risk/app-evidence/ir-stress/v1
+          applicationEvidenceId: APPEV-IR-STRESS-1
+          applicationProofDigest: 'sha256:bbbb2f64bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'
+
+  # --- D9: Measurement status (CQ-R11) ---
+  - id: risk-v11-preliminary-measurement-positive
+    expectedResult: accepted
+    type: RiskMeasurement
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RiskMeasurement
+          versionIri: https://example.test/risk/measurement/var-prelim/v1
+          measuredMoney:
+            amount: '750000'
+            currency: USD
+          measurementStatus: preliminary
+          validFrom: '2026-08-05T11:00:00Z'
+          knowledgeFrom: '2026-08-05T11:00:01Z'
+          availableFrom: '2026-08-05T11:00:02Z'
+
+  # --- D10 P1-8: Risk report (CQ-R13) ---
+  - id: risk-v11-risk-report-positive
+    expectedResult: accepted
+    type: RiskReport
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RiskReport
+          versionIri: https://example.test/risk/report/eod-20260805/v1
+          riskReportId: RPT-EOD-20260805
+          reportAsOf: '2026-08-05T16:00:00Z'
+          reportAudience: riskCommittee
+          validFrom: '2026-08-05T17:00:00Z'
+          knowledgeFrom: '2026-08-05T17:00:01Z'
+          availableFrom: '2026-08-05T17:00:02Z'

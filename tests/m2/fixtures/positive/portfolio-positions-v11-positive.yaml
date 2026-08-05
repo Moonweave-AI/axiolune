@@ -1,0 +1,235 @@
+# Portfolio Positions v1.1.0 (ADR-029) positive staging fixtures.
+# These fixtures stage the new v1.1.0 object/association types so the CQ
+# honesty probes (CQ-PP8..PP15) report staged data rather than contract-only
+# guarantees. They use the instances: dialect read by loadStaging() in
+# run-all-cq-probes.cjs, with typed predicates on each fact. Structural/
+# cardinality enforcement of these types is verified by validate-m2-core
+# --all --strict; full SHACL enforcement of the new association types via
+# the generic fixture-to-TTL converter is documented as pending the SHACL
+# runner's object-value handling (see traceability matrix).
+
+fixtures:
+  # --- Portfolio with identifying authority (PP-A1) ---
+  - id: pp-v11-pos-portfolio-with-authority
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-portfolio-A/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
+        portfolioIdentifyingAuthority: https://axiolune.ai/parties/asset-manager-alpha
+        portfolioId: PORT-ALPHA-001
+        portfolioName: Alpha Growth Portfolio
+        validFrom: '2026-01-01T00:00:00Z'
+        knowledgeFrom: '2026-01-01T00:00:00Z'
+        availableFrom: '2026-01-01T00:00:01Z'
+
+  # --- PositionSnapshot with scope + balance dimension + gross (PP-A2) ---
+  - id: pp-v11-pos-snapshot-gross-buckets
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshot
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-snap-AAPL-gross/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshot
+        positionObservationStream: https://axiolune.ai/data/portfolio/v11-stream-derived/version/v1
+        positionAccount: https://axiolune.ai/accounts/acct-001
+        positionInstrument: https://axiolune.ai/instruments/US0378331005
+        positionQuantity: '100'
+        positionSourceKind: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSourceKind/value/executionDerived
+        positionScope: https://axiolune.ai/ontology/finance/portfolio-positions/PositionScope/value/economic
+        balanceDimension: https://axiolune.ai/ontology/finance/portfolio-positions/BalanceDimension/value/available
+        grossLongQuantity: '120'
+        grossShortQuantity: '0'
+        businessAsOf: '2026-08-01T16:00:00Z'
+        validFrom: '2026-08-01T16:00:00Z'
+        knowledgeFrom: '2026-08-01T16:00:01Z'
+        availableFrom: '2026-08-01T16:00:02Z'
+
+  # --- DirectUnitValuationProfile (PP-A3) ---
+  - id: pp-v11-pos-direct-unit-profile
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/DirectUnitValuationProfile
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-direct-unit-profile/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/DirectUnitValuationProfile
+        valuationMethodFamilyId: directUnitPriceTimesQuantity
+        validFrom: '2026-01-01T00:00:00Z'
+        knowledgeFrom: '2026-01-01T00:00:00Z'
+        availableFrom: '2026-01-01T00:00:01Z'
+
+  # --- PositionChange: transfer (PP-A4) ---
+  - id: pp-v11-pos-change-transfer
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/PositionChange
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-change-transfer-1/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/PositionChange
+        changeAccount: https://axiolune.ai/accounts/acct-001
+        changeInstrument: https://axiolune.ai/instruments/US0378331005
+        changeKind: https://axiolune.ai/ontology/finance/portfolio-positions/PositionChangeKind/value/transfer
+        changeQuantity: '50'
+        changeEffectiveAt: '2026-07-15T10:00:00Z'
+        changeEvidence: https://axiolune.ai/evidence/transfer-note-001
+        validFrom: '2026-07-15T10:00:00Z'
+        knowledgeFrom: '2026-07-15T10:00:01Z'
+        availableFrom: '2026-07-15T10:00:02Z'
+
+  # --- PositionChange: corporate-action result (PP-A4) ---
+  - id: pp-v11-pos-change-corporate-action
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/PositionChange
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-change-ca-2/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/PositionChange
+        changeAccount: https://axiolune.ai/accounts/acct-001
+        changeInstrument: https://axiolune.ai/instruments/US0378331005
+        changeKind: https://axiolune.ai/ontology/finance/portfolio-positions/PositionChangeKind/value/corporateActionResult
+        changeQuantity: '100'
+        changeEffectiveAt: '2026-06-20T00:00:00Z'
+        changeEvidence: https://axiolune.ai/evidence/ca-2for1-split
+        validFrom: '2026-06-20T00:00:00Z'
+        knowledgeFrom: '2026-06-20T00:00:01Z'
+        availableFrom: '2026-06-20T00:00:02Z'
+
+  # --- LotAdjustment: split (PP-A4) ---
+  - id: pp-v11-pos-lot-adjustment-split
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/LotAdjustment
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-adjustment-split-1/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/LotAdjustment
+        adjustedLot: https://axiolune.ai/data/portfolio/v11-lot-A/version/v2
+        adjustmentChange: https://axiolune.ai/data/portfolio/v11-change-ca-2/version/v1
+        adjustmentKind: https://axiolune.ai/ontology/finance/portfolio-positions/LotAdjustmentKind/value/split
+        quantityAdjustmentFactor: '2'
+        validFrom: '2026-06-20T00:00:00Z'
+        knowledgeFrom: '2026-06-20T00:00:01Z'
+        availableFrom: '2026-06-20T00:00:02Z'
+
+  # --- LotRealization (PP-A4) ---
+  - id: pp-v11-pos-lot-realization
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/LotRealization
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-realization-1/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/LotRealization
+        realizedLot: https://axiolune.ai/data/portfolio/v11-lot-B/version/v1
+        realizingExecution: https://axiolune.ai/data/orders/exec-001/version/v1
+        realizedQuantity: '50'
+        realizedCostBasis: '5000.00 USD'
+        realizedProceeds: '7500.00 USD'
+        realizedPnl: '2500.00 USD'
+        validFrom: '2026-08-01T16:00:00Z'
+        knowledgeFrom: '2026-08-01T16:00:01Z'
+        availableFrom: '2026-08-01T16:00:02Z'
+
+  # --- ReconciliationComparison: matched (PP-A5) ---
+  - id: pp-v11-pos-comparison-matched
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationComparison
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-comparison-matched-1/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationComparison
+        comparisonFamily: https://axiolune.ai/ontology/finance/portfolio-positions/ComparisonFamily/value/quantity
+        comparisonResult: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationComparisonResult/value/matched
+        comparisonProfileRef: https://axiolune.ai/profiles/recon-quantity-v1
+        reconciliationSubjectDigest: 'sha256:abc123def4567890123456789012345678901234567890123456789012345678ab'
+        comparedExternalPositionSnapshot: https://axiolune.ai/data/portfolio/v11-snap-ext-AAPL/version/v1
+        comparedDerivedSnapshot: https://axiolune.ai/data/portfolio/v11-snap-AAPL-gross/version/v1
+        validFrom: '2026-08-01T17:00:00Z'
+        knowledgeFrom: '2026-08-01T17:00:01Z'
+        availableFrom: '2026-08-01T17:00:02Z'
+
+  # --- ReconciliationComparison: break -> finding -> resolution (PP-A5) ---
+  - id: pp-v11-pos-comparison-break
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationComparison
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-comparison-break-1/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationComparison
+        comparisonFamily: https://axiolune.ai/ontology/finance/portfolio-positions/ComparisonFamily/value/quantity
+        comparisonResult: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationComparisonResult/value/break
+        comparisonProfileRef: https://axiolune.ai/profiles/recon-quantity-v1
+        reconciliationSubjectDigest: 'sha256:bbb123def4567890123456789012345678901234567890123456789012345678cd'
+        comparedExternalPositionSnapshot: https://axiolune.ai/data/portfolio/v11-snap-ext-MSFT/version/v1
+        comparedDerivedSnapshot: https://axiolune.ai/data/portfolio/v11-snap-MSFT-derived/version/v1
+        validFrom: '2026-08-01T17:00:00Z'
+        knowledgeFrom: '2026-08-01T17:00:01Z'
+        availableFrom: '2026-08-01T17:00:02Z'
+
+  - id: pp-v11-pos-finding-break
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioPositionReconciliationFinding
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-finding-break-1/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioPositionReconciliationFinding
+        sourceComparison: https://axiolune.ai/data/portfolio/v11-comparison-break-1/version/v1
+        findingKind: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationFindingKind/value/quantityMismatch
+        findingSeverity: https://axiolune.ai/ontology/finance/portfolio-positions/FindingSeverity/value/high
+        portfolioReconciliationKind: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioReconciliationKind/value/quantityMismatch
+        reconciliationSubjectDigest: 'sha256:bbb123def4567890123456789012345678901234567890123456789012345678cd'
+        validFrom: '2026-08-01T17:05:00Z'
+        knowledgeFrom: '2026-08-01T17:05:01Z'
+        availableFrom: '2026-08-01T17:05:02Z'
+
+  - id: pp-v11-pos-resolution-corrected
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationResolution
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-resolution-1/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationResolution
+        resolvedFinding: https://axiolune.ai/data/portfolio/v11-finding-break-1/version/v1
+        resolvingParty: https://axiolune.ai/parties/ops-recon-team
+        resolutionKind: https://axiolune.ai/ontology/finance/portfolio-positions/ResolutionKind/value/corrected
+        resolutionNote: 'Derived snapshot corrected to match external custody statement'
+        resolutionEvidence: https://axiolune.ai/evidence/recon-resolution-001
+        validFrom: '2026-08-01T18:00:00Z'
+        knowledgeFrom: '2026-08-01T18:00:01Z'
+        availableFrom: '2026-08-01T18:00:02Z'
+
+  # --- PortfolioValuationSummary (PP-A3) ---
+  - id: pp-v11-pos-valuation-summary
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuationSummary
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-summary-1/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuationSummary
+        valuedPortfolioRun: https://axiolune.ai/data/portfolio/v11-valuation-run-1/version/v1
+        totalMarketValue: '150000.00 USD'
+        lineCount: '3'
+        coverageStatus: https://axiolune.ai/ontology/finance/portfolio-positions/CoverageStatus/value/complete
+        coverageDigest: 'sha256:ccc123def4567890123456789012345678901234567890123456789012345678ef'
+        validFrom: '2026-08-01T16:30:00Z'
+        knowledgeFrom: '2026-08-01T16:30:01Z'
+        availableFrom: '2026-08-01T16:30:02Z'
+
+  # --- PortfolioConstituent: sleeve (PP-A7) ---
+  - id: pp-v11-pos-constituent-sleeve
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioConstituent
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-constituent-sleeve-1/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioConstituent
+        constituentPortfolio: https://axiolune.ai/data/portfolio/v11-portfolio-A/version/v1
+        constituentSubject: https://axiolune.ai/data/portfolio/v11-sleeve-equity/version/v1
+        constituentAuthority: https://axiolune.ai/parties/asset-manager-alpha
+        constituentKind: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioConstituentKind/value/sleeve
+        membershipId: CONST-SLEEVE-001
+        authorityScope: equity-sleeve
+        approvalRef: https://axiolune.ai/approvals/sleeve-approval-001
+        approvalDigest: 'sha256:ddd123def4567890123456789012345678901234567890123456789012345678gh'
+        validFrom: '2026-01-01T00:00:00Z'
+        knowledgeFrom: '2026-01-01T00:00:01Z'
+        availableFrom: '2026-01-01T00:00:02Z'
+
+  # --- Sleeve (PP-A7) ---
+  - id: pp-v11-pos-sleeve
+    type: https://axiolune.ai/ontology/finance/portfolio-positions/Sleeve
+    expectedResult: accepted
+    instances:
+      - iri: https://axiolune.ai/data/portfolio/v11-sleeve-equity/version/v1
+        type: https://axiolune.ai/ontology/finance/portfolio-positions/Sleeve
+        sleeveId: SLEEVE-EQUITY-001
+        sleeveName: Equity Sleeve
+        validFrom: '2026-01-01T00:00:00Z'
+        knowledgeFrom: '2026-01-01T00:00:00Z'
+        availableFrom: '2026-01-01T00:00:01Z'

@@ -1,0 +1,131 @@
+schemaVersion: '1.1'
+description: >-
+  Post-Trade Operations v1.1.0 additive negative cases (ADR-030). Stages the
+  contract violations introduced by the core + profile layering so the CQ
+  probes PTO11-PTO19-neg report negatives exist. Structural/cardinality
+  enforcement is verified by validate-m2-core --strict and the generated SHACL.
+fixtures:
+  # D6: a no-result query promoted to a MissingSideAssertion of economic-fact
+  # absence (without a deterministic universe probe) must be rejected.
+  - id: post-trade-missing-side-no-universe-probe-negative
+    expectedResult: rejected
+    violationType: MissingSideAssertionContract
+    note: >-
+      A MissingSideAssertion claiming deterministicSideAbsence without a completed
+      universe probe (absenceProbeRef/Digest absent) is rejected by
+      MissingSideAssertionContract under the strict profile.
+    type: MissingSideAssertion
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/MissingSideAssertion
+          versionIri: https://example.test/post-trade/missing-side-bad/v1
+          expectedSide: internal
+          absenceProofKind: deterministicSideAbsence
+          normalizedSettlementReference: 'REF-2026-0009'
+          settlementDate: '2026-08-12'
+          settlementSystem: 'DTC'
+          settlementLocation: 'US'
+          entryDirection: debit
+          settlementAssetKind: cash
+          comparisonKeyDigest: 'sha256:key-bad'
+          reconciliationAsOfValid: '2026-08-12T00:00:00Z'
+          reconciliationAsOfKnowledge: '2026-08-13T00:00:00Z'
+          reconciliationAsOfAvailable: '2026-08-13T00:00:01Z'
+
+  # D8: a Direct Rights Due-Bill profile event with an out-of-profile kind
+  # (e.g. tenderOffer) and a multi-consideration option is rejected.
+  - id: post-trade-direct-rights-out-of-profile-negative
+    expectedResult: rejected
+    violationType: DirectRightsDueBillCorporateActionProfileContract
+    note: >-
+      A Direct Rights Due-Bill Corporate Action Profile event with kind
+      tenderOffer and two consideration kinds is rejected by
+      DirectRightsDueBillCorporateActionProfileContract.
+    type: CorporateActionOption
+    instance:
+      events:
+        - kind: tenderOffer
+          type: CorporateActionEvent
+          versionIri: https://example.test/post-trade/ca-event-bad/v1
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionOption
+          versionIri: https://example.test/post-trade/ca-option-bad/v1
+          optionKind: voluntaryElection
+          optionConsiderationCash: 'USD 0.50'
+          optionConsiderationSubscriptionPrice: 'USD 10.00'
+          optionElectionDeadline: '2026-09-01'
+
+  # D9: a SettlementLegAllocation whose residual plus allocated value does not
+  # conserve the leg value is rejected.
+  - id: post-trade-leg-allocation-non-conserving-negative
+    expectedResult: rejected
+    violationType: SettlementLegAllocationContract
+    note: >-
+      A SettlementLegAllocation where allocatedMoney plus allocationResidualMoney
+      does not conserve the leg value is rejected by
+      SettlementLegAllocationContract.
+    type: SettlementLegAllocation
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/SettlementLegAllocation
+          versionIri: https://example.test/post-trade/leg-alloc-bad/v1
+          allocationAssetKind: cash
+          allocatedMoney: 'USD 1000.00'
+          allocationResidualMoney: 'USD 500.00'
+          allocationBasis: 'non-conserving residual'
+
+  # D3: a SettlementFinalityEvent conflating finalityInstant with observedAt
+  # (same instant under a non-provisional kind) is rejected.
+  - id: post-trade-finality-time-conflation-negative
+    expectedResult: rejected
+    violationType: SettlementFinalityEventContract
+    note: >-
+      A SettlementFinalityEvent with irrevocable finalityKind where finalityInstant
+      equals observedAt without a distinct basis is rejected by
+      SettlementFinalityEventContract time-separation rule.
+    type: SettlementFinalityEvent
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/SettlementFinalityEvent
+          versionIri: https://example.test/post-trade/finality-bad/v1
+          finalityProviderEventId: 'FIN-2026-0002'
+          finalityKind: irrevocable
+          finalityInstant: '2026-08-12T15:00:00Z'
+          observedAt: '2026-08-12T15:00:00Z'
+
+  # D5: a ReconciliationMatchGroup with matchCardinality oneToMany but only
+  # one external member is rejected.
+  - id: post-trade-match-group-cardinality-mismatch-negative
+    expectedResult: rejected
+    violationType: ReconciliationMatchGroupContract
+    note: >-
+      A ReconciliationMatchGroup with matchCardinality oneToMany but only one
+      external member (counts do not match) is rejected by
+      ReconciliationMatchGroupContract.
+    type: ReconciliationMatchGroup
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/ReconciliationMatchGroup
+          versionIri: https://example.test/post-trade/match-group-bad/v1
+          matchCardinality: oneToMany
+          matchGroupSubjectDigest: 'sha256:match-group-bad'
+
+  # P1-f: a ReconciliationDisposition with dispositionKind waived but no
+  # waiverRef is rejected.
+  - id: post-trade-disposition-waiver-without-ref-negative
+    expectedResult: rejected
+    violationType: ReconciliationDispositionContract
+    note: >-
+      A ReconciliationDisposition with dispositionKind waived but no waiverRef is
+      rejected by ReconciliationDispositionContract.
+    type: ReconciliationDisposition
+    instance:
+      findings:
+        - kind: valueMismatch
+          type: ReconciliationFinding
+          versionIri: https://example.test/post-trade/finding-bad/v1
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/ReconciliationDisposition
+          versionIri: https://example.test/post-trade/disposition-bad/v1
+          dispositionKind: waived
+          remedialAction: 'waived without a documented waiver reference'

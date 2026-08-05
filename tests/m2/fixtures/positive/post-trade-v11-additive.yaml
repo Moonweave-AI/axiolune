@@ -1,0 +1,285 @@
+schemaVersion: '1.1'
+description: >-
+  Post-Trade Operations v1.1.0 additive staging fixtures (ADR-030). Stages the new
+  object/association types introduced by the core + profile layering so the CQ
+  probes PTO11-PTO19 can report staged counts. Structural/cardinality enforcement
+  is verified by validate-m2-core --strict; these fixtures stage instance facts.
+fixtures:
+  # --- D2: Simple DvP/FoP Settlement Profile + internal transfer (CQ-PTO11) ---
+  - id: post-trade-simple-dvp-fop-profile-positive
+    expectedResult: accepted
+    type: SimpleDvpFopSettlementProfile
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/SimpleDvpFopSettlementProfile
+          versionIri: https://example.test/post-trade/profile-simple-dvp-fop/v1
+          profileScopeDigest: 'sha256:profile-simple-dvp-fop-v1'
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'
+
+  - id: post-trade-internal-transfer-positive
+    expectedResult: accepted
+    type: SettlementInstruction
+    instance:
+      instructions:
+        - type: SettlementInstruction
+          versionIri: https://example.test/post-trade/internal-transfer/v1
+          settlementMethod: freeOfPayment
+          settlementDate: '2026-08-12'
+          settlementSystem: 'INTERNAL-BOOK'
+          settlementLocation: 'BOOK-TRANSFER'
+          confirmationRef: https://example.test/confirm/ct-1
+          affirmationRef: https://example.test/affirm/at-1
+          clearingRef: https://example.test/clear/cl-1
+          nettingSetRef: https://example.test/netting/ns-1
+          validFrom: '2026-08-12T00:00:00Z'
+          knowledgeFrom: '2026-08-12T00:00:01Z'
+          availableFrom: '2026-08-12T00:00:02Z'
+
+  # --- D3: Settlement finality event + time semantics (CQ-PTO12, CQ-PTO13) ---
+  - id: post-trade-settlement-finality-positive
+    expectedResult: accepted
+    type: SettlementFinalityEvent
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/SettlementFinalityEvent
+          versionIri: https://example.test/post-trade/finality/v1
+          finalityProviderEventId: 'FIN-2026-0001'
+          finalityKind: irrevocable
+          finalitySystem: 'DTC'
+          finalityRuleBasisRef: https://example.test/rule/dtc-finality
+          finalityInstant: '2026-08-12T15:00:00Z'
+          originalSettlementDate: '2026-08-12'
+          amendedSettlementDate: '2026-08-13'
+          actualSettlementInstant: '2026-08-13T14:30:00Z'
+          observedAt: '2026-08-13T14:30:05Z'
+          validFrom: '2026-08-13T14:30:06Z'
+          knowledgeFrom: '2026-08-13T14:30:07Z'
+          availableFrom: '2026-08-13T14:30:08Z'
+
+  - id: post-trade-settlement-status-partial-positive
+    expectedResult: accepted
+    type: SettlementStatusEvent
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/SettlementStatusEvent
+          versionIri: https://example.test/post-trade/status-partial/v1
+          providerEventId: 'ST-2026-0001'
+          sourceOrderKey: 1
+          settlementStatus: partiallySettled
+          observedAt: '2026-08-12T16:00:00Z'
+          validFrom: '2026-08-12T16:00:01Z'
+          knowledgeFrom: '2026-08-12T16:00:02Z'
+          availableFrom: '2026-08-12T16:00:03Z'
+
+  # --- D5: Reconciliation match group (multi-cardinality) (CQ-PTO14) ---
+  - id: post-trade-strict-reconciliation-profile-positive
+    expectedResult: accepted
+    type: StrictTechnicalSettlementReconciliationProfile
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/StrictTechnicalSettlementReconciliationProfile
+          versionIri: https://example.test/post-trade/profile-strict-recon/v1
+          profileScopeDigest: 'sha256:profile-strict-recon-v1'
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'
+
+  - id: post-trade-reconciliation-match-group-positive
+    expectedResult: accepted
+    type: ReconciliationMatchGroup
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/ReconciliationMatchGroup
+          versionIri: https://example.test/post-trade/match-group/v1
+          matchCardinality: oneToMany
+          matchBasis: 'one internal netted entry matches three external partial settlements'
+          matchGroupSubjectDigest: 'sha256:match-group-v1'
+          validFrom: '2026-08-14T00:00:00Z'
+          knowledgeFrom: '2026-08-14T00:00:01Z'
+          availableFrom: '2026-08-14T00:00:02Z'
+
+  # --- D6: MissingSideAssertion (one-sided) + IncompleteSourceCoverageAssertion (CQ-PTO15) ---
+  - id: post-trade-missing-side-one-sided-positive
+    expectedResult: accepted
+    type: MissingSideAssertion
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/MissingSideAssertion
+          versionIri: https://example.test/post-trade/missing-side/v1
+          expectedSide: internal
+          absenceProofKind: deterministicSideAbsence
+          normalizedSettlementReference: 'REF-2026-0001'
+          settlementDate: '2026-08-12'
+          settlementSystem: 'DTC'
+          settlementLocation: 'US'
+          entryDirection: debit
+          settlementAssetKind: cash
+          comparisonCurrencyAlphaCode: 'USD'
+          comparisonCurrencyScale: 2
+          comparisonKeyDigest: 'sha256:key-v1'
+          reconciliationAsOfValid: '2026-08-12T00:00:00Z'
+          reconciliationAsOfKnowledge: '2026-08-13T00:00:00Z'
+          reconciliationAsOfAvailable: '2026-08-13T00:00:01Z'
+          validFrom: '2026-08-13T00:00:02Z'
+          knowledgeFrom: '2026-08-13T00:00:03Z'
+          availableFrom: '2026-08-13T00:00:04Z'
+
+  - id: post-trade-incomplete-coverage-positive
+    expectedResult: accepted
+    type: IncompleteSourceCoverageAssertion
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/IncompleteSourceCoverageAssertion
+          versionIri: https://example.test/post-trade/incomplete-coverage/v1
+          expectedSide: external
+          normalizedSettlementReference: 'REF-2026-0002'
+          settlementDate: '2026-08-12'
+          settlementSystem: 'DTC'
+          settlementLocation: 'US'
+          entryDirection: credit
+          settlementAssetKind: security
+          comparisonKeyDigest: 'sha256:key-v2'
+          reconciliationAsOfValid: '2026-08-12T00:00:00Z'
+          reconciliationAsOfKnowledge: '2026-08-13T00:00:00Z'
+          reconciliationAsOfAvailable: '2026-08-13T00:00:01Z'
+          coverageUnknownReason: 'external provider statement for the period not yet received'
+          validFrom: '2026-08-13T00:00:02Z'
+          knowledgeFrom: '2026-08-13T00:00:03Z'
+          availableFrom: '2026-08-13T00:00:04Z'
+
+  # --- D8: Corporate action option (multi-option lifecycle) (CQ-PTO16) ---
+  - id: post-trade-direct-rights-profile-positive
+    expectedResult: accepted
+    type: DirectRightsDueBillCorporateActionProfile
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/DirectRightsDueBillCorporateActionProfile
+          versionIri: https://example.test/post-trade/profile-direct-rights/v1
+          profileScopeDigest: 'sha256:profile-direct-rights-v1'
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'
+
+  - id: post-trade-corporate-action-option-positive
+    expectedResult: accepted
+    type: CorporateActionOption
+    instance:
+      events:
+        - kind: cashDividend
+          type: CorporateActionEvent
+          versionIri: https://example.test/post-trade/ca-event/v1
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionOption
+          versionIri: https://example.test/post-trade/ca-option-default/v1
+          optionKind: defaultOption
+          optionIsDefault: true
+          optionConsiderationCash: 'USD 0.50'
+          optionElectionDeadline: '2026-09-01'
+          validFrom: '2026-08-10T00:00:00Z'
+          knowledgeFrom: '2026-08-10T00:00:01Z'
+          availableFrom: '2026-08-10T00:00:02Z'
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionOption
+          versionIri: https://example.test/post-trade/ca-option-elect/v1
+          optionKind: voluntaryElection
+          optionConsiderationCash: 'USD 0.50'
+          optionElectionDeadline: '2026-09-01'
+          validFrom: '2026-08-15T00:00:00Z'
+          knowledgeFrom: '2026-08-15T00:00:01Z'
+          availableFrom: '2026-08-15T00:00:02Z'
+
+  # --- D9: Settlement leg allocation (cash/fee/tax) (CQ-PTO17) ---
+  - id: post-trade-settlement-leg-allocation-positive
+    expectedResult: accepted
+    type: SettlementLegAllocation
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/SettlementLegAllocation
+          versionIri: https://example.test/post-trade/leg-alloc-cash/v1
+          allocationAssetKind: cash
+          allocatedMoney: 'USD 1000.00'
+          allocationBasis: 'pro-rata by holding quantity'
+          allocationResidualMoney: 'USD 0.03'
+          validFrom: '2026-08-12T00:00:00Z'
+          knowledgeFrom: '2026-08-12T00:00:01Z'
+          availableFrom: '2026-08-12T00:00:02Z'
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/SettlementLegAllocation
+          versionIri: https://example.test/post-trade/leg-alloc-fee/v1
+          allocationAssetKind: fee
+          allocatedMoney: 'USD 1.50'
+          validFrom: '2026-08-12T00:00:00Z'
+          knowledgeFrom: '2026-08-12T00:00:01Z'
+          availableFrom: '2026-08-12T00:00:02Z'
+
+  # --- P1-c: Custody chain (upstream ref) (CQ-PTO18) ---
+  - id: post-trade-custody-chain-positive
+    expectedResult: accepted
+    type: CustodySettlementAccountBridge
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/CustodySettlementAccountBridge
+          versionIri: https://example.test/post-trade/custody-bridge/v1
+          authorityScopedId: 'BRIDGE-2026-0001'
+          settlementSystem: 'EUROCLEAR'
+          settlementLocation: 'BE'
+          upstreamCustodyBridgeRef: https://example.test/post-trade/custody-bridge/upstream-v0
+          bridgeValidFrom: '2026-01-01'
+          bridgeValidTo: '2026-12-31'
+          validFrom: '2026-01-01T00:00:00Z'
+          knowledgeFrom: '2026-01-01T00:00:01Z'
+          availableFrom: '2026-01-01T00:00:02Z'
+
+  # --- P1-d: External statement shape (multi-day + correction/reversal) (CQ-PTO19) ---
+  - id: post-trade-statement-shape-positive
+    expectedResult: accepted
+    type: ExternalSettlementStatement
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/ExternalSettlementStatement
+          versionIri: https://example.test/post-trade/statement-multi/v1
+          authorityScopedId: 'STMT-2026-0001'
+          statementDate: '2026-08-31'
+          statementType: transactions
+          coveragePeriodStart: '2026-08-01'
+          coveragePeriodEnd: '2026-08-31'
+          statementAsOfTime: '2026-08-31T23:59:59Z'
+          sourceSnapshotRef: https://example.test/snapshot/stmt-v1
+          sourceSnapshotDigest: 'sha256:snapshot-v1'
+          sourceSchemaDigest: 'sha256:schema-v1'
+          validFrom: '2026-09-01T00:00:00Z'
+          knowledgeFrom: '2026-09-01T00:00:01Z'
+          availableFrom: '2026-09-01T00:00:02Z'
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/ExternalSettlementStatementLine
+          versionIri: https://example.test/post-trade/statement-line-corr/v1
+          authorityScopedId: 'LINE-2026-0001'
+          settlementDate: '2026-08-15'
+          settlementSystem: 'DTC'
+          settlementLocation: 'US'
+          entryDirection: credit
+          normalizedSettlementReference: 'REF-2026-0003'
+          statementLineMoney: 'USD 500.00'
+          bookDate: '2026-08-15'
+          valueDate: '2026-08-17'
+          entryIsCorrection: true
+          validFrom: '2026-08-15T00:00:00Z'
+          knowledgeFrom: '2026-08-15T00:00:01Z'
+          availableFrom: '2026-08-15T00:00:02Z'
+
+  # --- P1-f: Reconciliation disposition (finding-level) (CQ-PTO14 follow-up) ---
+  - id: post-trade-reconciliation-disposition-positive
+    expectedResult: accepted
+    type: ReconciliationDisposition
+    instance:
+      findings:
+        - kind: valueMismatch
+          type: ReconciliationFinding
+          versionIri: https://example.test/post-trade/finding-v1
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/post-trade-operations/ReconciliationDisposition
+          versionIri: https://example.test/post-trade/disposition/v1
+          dispositionKind: investigated
+          remedialAction: 'pending counterparty confirmation of corrected settlement reference'
+          validFrom: '2026-08-14T00:00:00Z'
+          knowledgeFrom: '2026-08-14T00:00:01Z'
+          availableFrom: '2026-08-14T00:00:02Z'

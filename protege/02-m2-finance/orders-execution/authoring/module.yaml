@@ -1,0 +1,2644 @@
+module:
+  moduleIri: https://axiolune.ai/ontology/finance/orders-execution
+  baseIri: https://axiolune.ai/ontology/finance/orders-execution/
+  preferredPrefix: fin-orders
+  version: 1.0.0
+  label: Orders and Execution
+  definition: >-
+    Order intent, immutable split and aggregation lineage, external order, provider event stream, lifecycle event,
+    execution, fee, status adaptation, liquidity determination, and stream integrity semantics with explicit identity
+    and reference-mode contracts.
+  imports:
+    - moduleIri: https://axiolune.ai/ontology/finance/foundation
+    - moduleIri: https://axiolune.ai/ontology/finance/market-structure
+    - moduleIri: https://axiolune.ai/ontology/finance/instruments
+    - moduleIri: https://axiolune.ai/ontology/finance/market-rules
+  exports: []
+  status: approved
+  governance:
+    ownerRef: urn:axiolune:principal:repository-owner
+    status: approved
+domain:
+  objectTypes:
+    OrderIntent:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+      namespace: fin-orders
+      localName: OrderIntent
+      label: Order Intent
+      definition: >-
+        Stable trade intent issued by a client, strategy, or authorized routing process. Its logical identity is the
+        authority-scoped intent identifier, and its version fixes account, instrument, optional listing or OTC context,
+        side, positive absolute quantity, order type, validity, price conditions, and source evidence before provider
+        acceptance. A routing-derived intent remains distinct from its source intents and is connected only through an
+        immutable OrderIntentLineage fact.
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/clientIntentId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/orderSide
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/orderQuantity
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/orderType
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/timeInForce
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/orderValidUntil
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/limitPrice
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/triggerPrice
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/triggerPriceBasis
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    ExternalOrder:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
+      namespace: fin-orders
+      localName: ExternalOrder
+      label: External Order
+      definition: >-
+        Provider-scoped accepted or submitted order whose logical identity is provider, API identifier, schema version,
+        and provider external order identifier, and whose originating OrderIntent is fixed to one exact intent version.
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/externalOrderId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/providerApiIdentifier
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/providerSchemaVersion
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    OrderEventStream:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventStream
+      namespace: fin-orders
+      localName: OrderEventStream
+      label: Order Event Stream
+      definition: >-
+        Source-locked provider event stream for exactly one ExternalOrder logical identity. Its logical identity is
+        provider, source contract, API, schema, ExternalOrder logical IRI, and provider stream identifier; its
+        capability declares whether liquidity role is required, optional, or unsupported.
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/sourceContractRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/sourceContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/providerApiIdentifier
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/providerSchemaVersion
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/providerStreamId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/liquidityRoleCapability
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    ExternalOrderStatusVocabulary:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusVocabulary
+      namespace: fin-orders
+      localName: ExternalOrderStatusVocabulary
+      label: External Order Status Vocabulary
+      definition: >-
+        Version-identified provider vocabulary that scopes raw order status codes by provider, API identifier, and
+        schema version before reviewed mapping to the canonical OrderLifecycleState vocabulary.
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/statusVocabularyId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/providerApiIdentifier
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/providerSchemaVersion
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    OrderTransitionProfile:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderTransitionProfile
+      namespace: fin-orders
+      localName: OrderTransitionProfile
+      label: Order Transition Profile
+      definition: >-
+        Versioned provider transition evaluator that fixes canonical occurrence ordering, legal lifecycle transitions,
+        expiry and trigger rules, and implementation, runtime, tool, input, and output contract digests.
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/transitionProfileId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/implementationDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/inputContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/outputContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/toolLockRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/toolLockDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/runtimeDigest
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    LiquidityRoleMapping:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleMapping
+      namespace: fin-orders
+      localName: LiquidityRoleMapping
+      label: Liquidity Role Mapping
+      definition: >-
+        Versioned source-contract mapping from a provider-declared raw field and perspective to the execution
+        account-order LiquidityRole perspective, including any reviewed contra-perspective inversion.
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/liquidityMappingId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/sourceContractRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/sourceContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/rawFieldLocator
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/rawPerspective
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/perspectiveInversion
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/mappingDigest
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+  associationTypes:
+    OrderLifecycleEvent:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+      namespace: fin-orders
+      localName: OrderLifecycleEvent
+      label: Order Lifecycle Event
+      definition: >-
+        Immutable provider event in one exact OrderEventStream version whose provider event identifier and non-negative
+        source order key determine event identity and occurrence order, and whose stored lifecycle state is the
+        resulting canonical state; previous state is derived and is never a stored attribute.
+      participantRoles:
+        - id: eventStream
+          range: https://axiolune.ai/ontology/finance/orders-execution/OrderEventStream
+          minCount: 1
+          maxCount: 1
+          label: event stream
+          definition: exact source-locked stream version containing this event
+        - id: externalOrder
+          range: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
+          minCount: 1
+          maxCount: 1
+          label: external order
+          definition: exact provider order version transitioned by this event
+        - id: orderIntent
+          range: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+          minCount: 1
+          maxCount: 1
+          label: order intent
+          definition: exact originating client intent version
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/providerEventId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/sourceOrderKey
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/lifecycleState
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/orderEventKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/eventReason
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    OrderIntentLineage:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLineage
+      namespace: fin-orders
+      localName: OrderIntentLineage
+      label: Order Intent Lineage
+      definition: >-
+        Immutable, source-evidenced routing transformation fact connecting exact source OrderIntent versions to exact
+        result OrderIntent versions. A split has exactly one source and at least two results; an aggregation has at
+        least two sources and exactly one result. The closed endpoint sets, their counts, their framed digests, and the
+        transformation key digest are version content. Its provenance artifact is the authenticated selected-graph
+        inventory, closing the exact lineage-version set, count, framed digest, PIT request, and selection scope used by
+        validation. Lineage expresses domain provenance only and does not represent account reservation, order
+        submission, or any external side effect.
+      participantRoles:
+        - id: sourceOrderIntent
+          range: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+          minCount: 1
+          maxCount: null
+          label: source order intent
+          definition: sorted unique closed set of exact input OrderIntent versions transformed by this lineage fact
+        - id: resultOrderIntent
+          range: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+          minCount: 1
+          maxCount: null
+          label: result order intent
+          definition: sorted unique closed set of exact output OrderIntent versions produced by this lineage fact
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/orderLineageKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/sourceIntentCount
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/sourceIntentVersionSetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/resultIntentCount
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/resultIntentVersionSetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/orderLineageKeyDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    Execution:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/Execution
+      namespace: fin-orders
+      localName: Execution
+      label: Execution
+      definition: >-
+        Immutable provider trade or fill fact in one exact event stream with one external order and originating intent,
+        explicit execution-side Party/account and contra-side Party/account roles, instrument, positive absolute
+        quantity, independent side, Money price, listed-or-OTC context, and the exact matching
+        DirectUnitPriceQuotationContract. An optional executing broker is an intermediary role and never substitutes for
+        either bilateral Party/account role.
+      participantRoles:
+        - id: executionStream
+          range: https://axiolune.ai/ontology/finance/orders-execution/OrderEventStream
+          minCount: 1
+          maxCount: 1
+          label: execution stream
+          definition: exact source-locked event stream version reporting the execution
+        - id: executionExternalOrder
+          range: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
+          minCount: 1
+          maxCount: 1
+          label: execution external order
+          definition: exact external order version filled by the execution
+        - id: executionOrderIntent
+          range: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+          minCount: 1
+          maxCount: 1
+          label: execution order intent
+          definition: exact originating order intent version
+        - id: executionAccount
+          range: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+          minCount: 1
+          maxCount: 1
+          label: execution account
+          definition: logical financial account whose order perspective is represented
+        - id: executionParty
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 1
+          maxCount: 1
+          label: execution party
+          definition: logical principal Party whose account-side perspective is represented by the execution
+        - id: contraAccount
+          range: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+          minCount: 1
+          maxCount: 1
+          label: contra account
+          definition: logical FinancialAccount occupying the counterparty-side account role in the execution
+        - id: contraParty
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 1
+          maxCount: 1
+          label: contra party
+          definition: logical Party occupying the counterparty role in the execution, independently of any executing broker
+        - id: executionInstrument
+          range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+          minCount: 1
+          maxCount: 1
+          label: execution instrument
+          definition: logical financial instrument that was bought or sold
+        - id: executionListing
+          range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+          minCount: 0
+          maxCount: 1
+          label: execution listing
+          definition: optional exact PIT-eligible listing version for a listed execution
+        - id: executionOtcContext
+          range: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
+          minCount: 0
+          maxCount: 1
+          label: execution OTC context
+          definition: exact OTC context required only when no listing is supplied
+        - id: executionQuotationContract
+          range: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+          minCount: 1
+          maxCount: 1
+          label: execution quotation contract
+          definition: exact direct-unit quotation contract matching context, instrument, currency, and quantity unit
+        - id: executingBroker
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 0
+          maxCount: 1
+          label: executing broker
+          definition: optional logical party that executed or reported the fill
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/providerExecutionId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/sourceOrderKey
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/orderSide
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/executionQuantity
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/executionPrice
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    Fee:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/Fee
+      namespace: fin-orders
+      localName: Fee
+      label: Execution Fee
+      definition: >-
+        Immutable charge or rebate fact for one exact Execution version whose Money amount is a strictly positive
+        magnitude; feeEffect, rather than a signed amount, is the sole arithmetic direction truth.
+      participantRoles:
+        - id: feeExecution
+          range: https://axiolune.ai/ontology/finance/orders-execution/Execution
+          minCount: 1
+          maxCount: 1
+          label: fee execution
+          definition: exact execution version assessed the fee
+        - id: feeAssessor
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 0
+          maxCount: 1
+          label: fee assessor
+          definition: optional logical venue, broker, clearer, or authority assessing the fee
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/feeId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/feeKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/feeEffect
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/feeAmount
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    ExternalOrderStatusMapping:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMapping
+      namespace: fin-orders
+      localName: ExternalOrderStatusMapping
+      label: External Order Status Mapping
+      definition: >-
+        Reviewed, effective-dated mapping from one provider/API/schema/version raw status code to exactly one canonical
+        lifecycle state, retaining the public M2-PLAN name and preventing provider values from entering the canonical
+        vocabulary.
+      participantRoles:
+        - id: statusProvider
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 1
+          maxCount: 1
+          label: status provider
+          definition: logical provider publishing the raw status code
+        - id: statusVocabulary
+          range: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusVocabulary
+          minCount: 1
+          maxCount: 1
+          label: status vocabulary
+          definition: exact external status vocabulary version containing the raw code
+        - id: statusMappingReviewer
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 1
+          maxCount: 1
+          label: status mapping reviewer
+          definition: logical reviewing authority accepting the mapping decision
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/providerApiIdentifier
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/providerSchemaVersion
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/statusMappingVersion
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/rawStatusCode
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/canonicalLifecycleState
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/reviewDecisionRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/reviewDecisionDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    LiquidityRoleDetermination:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleDetermination
+      namespace: fin-orders
+      localName: LiquidityRoleDetermination
+      label: Liquidity Role Determination
+      definition: >-
+        Source-capability-governed determination of the liquidity role of one exact Execution from the execution
+        account-order perspective, with a classified branch supported by exact raw field and mapping evidence or an
+        unavailable branch supported by exact contract or field-absence evidence.
+      participantRoles:
+        - id: determinedExecution
+          range: https://axiolune.ai/ontology/finance/orders-execution/Execution
+          minCount: 1
+          maxCount: 1
+          label: determined execution
+          definition: exact execution version whose account-order liquidity role is determined
+        - id: determinationStream
+          range: https://axiolune.ai/ontology/finance/orders-execution/OrderEventStream
+          minCount: 1
+          maxCount: 1
+          label: determination stream
+          definition: exact event stream version whose capability controls the result branch
+        - id: liquidityMapping
+          range: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleMapping
+          minCount: 0
+          maxCount: 1
+          label: liquidity mapping
+          definition: exact reviewed mapping version required for a classified result
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/liquidityPerspective
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/liquidityDeterminationResult
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/liquidityRole
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/liquidityUnavailableReason
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/sourceRecordRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/sourceRecordDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/rawFieldLocator
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/rawLexicalValue
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/fieldAbsenceProbeRef
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/fieldAbsenceProbeDigest
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    OrderEventIntegrityFinding:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventIntegrityFinding
+      namespace: fin-orders
+      localName: OrderEventIntegrityFinding
+      label: Order Event Integrity Finding
+      definition: >-
+        Typed event-stream defect finding for duplicate conflict, sequence gap, out-of-order event, late fill, missing
+        acknowledgement, or transition violation. Logical identity is stream logical IRI, finding kind, affected-key
+        digest, and exact related-version-set digest.
+      participantRoles:
+        - id: findingStream
+          range: https://axiolune.ai/ontology/finance/orders-execution/OrderEventStream
+          minCount: 1
+          maxCount: 1
+          label: finding stream
+          definition: exact event stream version evaluated for the defect
+        - id: relatedLifecycleEvent
+          range: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+          minCount: 0
+          maxCount: null
+          label: related lifecycle event
+          definition: exact lifecycle event version in the kind-specific subject set
+        - id: relatedExecution
+          range: https://axiolune.ai/ontology/finance/orders-execution/Execution
+          minCount: 0
+          maxCount: null
+          label: related execution
+          definition: exact execution version in the kind-specific subject set
+        - id: evaluatedTransitionProfile
+          range: https://axiolune.ai/ontology/finance/orders-execution/OrderTransitionProfile
+          minCount: 0
+          maxCount: 1
+          label: evaluated transition profile
+          definition: exact transition-profile version required for a transition violation
+        - id: subjectFillExecution
+          range: https://axiolune.ai/ontology/finance/orders-execution/Execution
+          minCount: 0
+          maxCount: 1
+          label: subject fill execution
+          definition: exact fill version in the kind-specific lateFill subject
+        - id: subjectTerminalEvent
+          range: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+          minCount: 0
+          maxCount: 1
+          label: subject terminal event
+          definition: exact terminal event version preceding a kind-specific lateFill
+        - id: subjectMissingAcknowledgementOrder
+          range: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
+          minCount: 0
+          maxCount: 1
+          label: subject missing acknowledgement order
+          definition: exact ExternalOrder version in a missingAcknowledgement subject
+        - id: subjectFromEvent
+          range: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+          minCount: 0
+          maxCount: 1
+          label: subject from event
+          definition: exact predecessor event version in a transitionViolation subject
+        - id: subjectToEvent
+          range: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+          minCount: 0
+          maxCount: 1
+          label: subject to event
+          definition: exact successor event version in a transitionViolation subject
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/orderIntegrityKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/affectedKeyDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/relatedVersionSetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/missingKeyFrom
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/missingKeyTo
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/findingProviderEventId
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/observedSourceOrderKey
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/requiredPredecessorSourceOrderKey
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/orders-execution/expectedAfterSourceOrderKey
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+  relationTypes:
+    intentAccount:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/intentAccount
+      namespace: fin-orders
+      localName: intentAccount
+      label: intent account
+      definition: relationship from an OrderIntent to its logical FinancialAccount
+      domain: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+      range: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+      characteristics:
+        - functional
+    intentInstrument:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/intentInstrument
+      namespace: fin-orders
+      localName: intentInstrument
+      label: intent instrument
+      definition: relationship from an OrderIntent to its logical FinancialInstrument
+      domain: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+      range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+      characteristics:
+        - functional
+    intentListing:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/intentListing
+      namespace: fin-orders
+      localName: intentListing
+      label: intent listing
+      definition: relationship from an OrderIntent to its optional exact listed trading context
+      domain: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+      range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+      characteristics:
+        - functional
+    intentOtcContext:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/intentOtcContext
+      namespace: fin-orders
+      localName: intentOtcContext
+      label: intent OTC context
+      definition: relationship from an OrderIntent to its optional exact OTC trading context
+      domain: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+      range: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
+      characteristics:
+        - functional
+    externalOrderProvider:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/externalOrderProvider
+      namespace: fin-orders
+      localName: externalOrderProvider
+      label: external order provider
+      definition: relationship from an ExternalOrder to the logical provider Party
+      domain: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
+      range: https://axiolune.ai/ontology/finance/foundation/Party
+      characteristics:
+        - functional
+    externalOrderOriginatingIntent:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/externalOrderOriginatingIntent
+      namespace: fin-orders
+      localName: externalOrderOriginatingIntent
+      label: external order originating intent
+      definition: relationship from an ExternalOrder to its exact originating OrderIntent version
+      domain: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
+      range: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+      characteristics:
+        - functional
+    streamProvider:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/streamProvider
+      namespace: fin-orders
+      localName: streamProvider
+      label: stream provider
+      definition: relationship from an OrderEventStream to its logical provider Party
+      domain: https://axiolune.ai/ontology/finance/orders-execution/OrderEventStream
+      range: https://axiolune.ai/ontology/finance/foundation/Party
+      characteristics:
+        - functional
+    streamExternalOrder:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/streamExternalOrder
+      namespace: fin-orders
+      localName: streamExternalOrder
+      label: stream external order
+      definition: relationship from an OrderEventStream to its one ExternalOrder logical identity
+      domain: https://axiolune.ai/ontology/finance/orders-execution/OrderEventStream
+      range: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
+      characteristics:
+        - functional
+    statusVocabularyProvider:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/statusVocabularyProvider
+      namespace: fin-orders
+      localName: statusVocabularyProvider
+      label: status vocabulary provider
+      definition: relationship from an external status vocabulary to its logical publishing Party
+      domain: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusVocabulary
+      range: https://axiolune.ai/ontology/finance/foundation/Party
+      characteristics:
+        - functional
+    transitionProfileProvider:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/transitionProfileProvider
+      namespace: fin-orders
+      localName: transitionProfileProvider
+      label: transition profile provider
+      definition: relationship from a transition profile to the logical provider whose lifecycle it evaluates
+      domain: https://axiolune.ai/ontology/finance/orders-execution/OrderTransitionProfile
+      range: https://axiolune.ai/ontology/finance/foundation/Party
+      characteristics:
+        - functional
+  attributeTypes:
+    clientIntentId:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/clientIntentId
+      namespace: fin-orders
+      localName: clientIntentId
+      label: client intent identifier
+      definition: authority-scoped stable identifier of a client trade intent
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    externalOrderId:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/externalOrderId
+      namespace: fin-orders
+      localName: externalOrderId
+      label: external order identifier
+      definition: provider-scoped immutable identifier of an external order
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    providerApiIdentifier:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/providerApiIdentifier
+      namespace: fin-orders
+      localName: providerApiIdentifier
+      label: provider API identifier
+      definition: canonical identifier of the provider API or protocol surface
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    providerSchemaVersion:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/providerSchemaVersion
+      namespace: fin-orders
+      localName: providerSchemaVersion
+      label: provider schema version
+      definition: immutable provider-declared schema or protocol version
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    sourceContractRef:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/sourceContractRef
+      namespace: fin-orders
+      localName: sourceContractRef
+      label: source contract reference
+      definition: immutable reference to the source schema, mapping, and capability contract
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    sourceContractDigest:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/sourceContractDigest
+      namespace: fin-orders
+      localName: sourceContractDigest
+      label: source contract digest
+      definition: SHA-256 digest of the canonical source contract bytes
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    providerStreamId:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/providerStreamId
+      namespace: fin-orders
+      localName: providerStreamId
+      label: provider stream identifier
+      definition: provider-scoped identifier of one order event stream
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    liquidityRoleCapability:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/liquidityRoleCapability
+      namespace: fin-orders
+      localName: liquidityRoleCapability
+      label: liquidity role capability
+      definition: closed source-contract capability governing liquidity classification
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleCapability
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    statusVocabularyId:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/statusVocabularyId
+      namespace: fin-orders
+      localName: statusVocabularyId
+      label: status vocabulary identifier
+      definition: provider-scoped stable identifier of an external status vocabulary
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    orderSide:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/orderSide
+      namespace: fin-orders
+      localName: orderSide
+      label: order side
+      definition: independent buy or sell direction of an intent or execution
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/OrderSide
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    orderQuantity:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/orderQuantity
+      namespace: fin-orders
+      localName: orderQuantity
+      label: order quantity
+      definition: strictly positive absolute Quantity requested by an OrderIntent
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    orderType:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/orderType
+      namespace: fin-orders
+      localName: orderType
+      label: order type
+      definition: reviewed execution instruction kind of an OrderIntent
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/OrderType
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    timeInForce:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/timeInForce
+      namespace: fin-orders
+      localName: timeInForce
+      label: time in force
+      definition: reviewed validity duration instruction of an OrderIntent
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/TimeInForce
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    orderValidUntil:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/orderValidUntil
+      namespace: fin-orders
+      localName: orderValidUntil
+      label: order valid until
+      definition: exclusive expiry instant required when the validity instruction has an explicit end
+      valueType: instant
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    limitPrice:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/limitPrice
+      namespace: fin-orders
+      localName: limitPrice
+      label: limit price
+      definition: Money price limit required only by an order type whose executable profile requires one
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    triggerPrice:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/triggerPrice
+      namespace: fin-orders
+      localName: triggerPrice
+      label: trigger price
+      definition: Money trigger required only by an order type whose executable profile requires one
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    triggerPriceBasis:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/triggerPriceBasis
+      namespace: fin-orders
+      localName: triggerPriceBasis
+      label: trigger price basis
+      definition: >-
+        Reviewed internal semantic basis used to observe and evaluate an order trigger; required exactly when
+        triggerPrice is present.
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/TriggerPriceBasis
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    providerEventId:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/providerEventId
+      namespace: fin-orders
+      localName: providerEventId
+      label: provider event identifier
+      definition: immutable event identifier unique within one OrderEventStream
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    providerExecutionId:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/providerExecutionId
+      namespace: fin-orders
+      localName: providerExecutionId
+      label: provider execution identifier
+      definition: immutable trade or execution identifier unique within one OrderEventStream
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    sourceOrderKey:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/sourceOrderKey
+      namespace: fin-orders
+      localName: sourceOrderKey
+      label: source order key
+      definition: non-negative normalized provider ordering key unique within one event stream
+      valueType: integer
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    orderLineageKind:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/orderLineageKind
+      namespace: fin-orders
+      localName: orderLineageKind
+      label: order lineage kind
+      definition: split-or-aggregation branch selected by an immutable OrderIntentLineage fact
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/OrderLineageKind
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    sourceIntentCount:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/sourceIntentCount
+      namespace: fin-orders
+      localName: sourceIntentCount
+      label: source intent count
+      definition: exact number of source OrderIntent versions in the lineage input closure
+      valueType: integer
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    sourceIntentVersionSetDigest:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/sourceIntentVersionSetDigest
+      namespace: fin-orders
+      localName: sourceIntentVersionSetDigest
+      label: source intent version-set digest
+      definition: section-5.8 framed IRI-set digest over the sorted unique exact source OrderIntent versions
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    resultIntentCount:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/resultIntentCount
+      namespace: fin-orders
+      localName: resultIntentCount
+      label: result intent count
+      definition: exact number of result OrderIntent versions in the lineage output closure
+      valueType: integer
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    resultIntentVersionSetDigest:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/resultIntentVersionSetDigest
+      namespace: fin-orders
+      localName: resultIntentVersionSetDigest
+      label: result intent version-set digest
+      definition: section-5.8 framed IRI-set digest over the sorted unique exact result OrderIntent versions
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    orderLineageKeyDigest:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/orderLineageKeyDigest
+      namespace: fin-orders
+      localName: orderLineageKeyDigest
+      label: order lineage key digest
+      definition: >-
+        SHA-256 digest over the lineage kind and the two exact endpoint-set digests, domain-separated by the
+        axiolune-order-intent-lineage-key-v1 contract
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    lifecycleState:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/lifecycleState
+      namespace: fin-orders
+      localName: lifecycleState
+      label: lifecycle state
+      definition: resulting canonical lifecycle state stored on an immutable event
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    orderEventKind:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/orderEventKind
+      namespace: fin-orders
+      localName: orderEventKind
+      label: order event kind
+      definition: immutable event-log kind distinct from the resulting state
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    eventReason:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/eventReason
+      namespace: fin-orders
+      localName: eventReason
+      label: event reason
+      definition: provider reason text or normalized reason identifier for an event
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    executionQuantity:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/executionQuantity
+      namespace: fin-orders
+      localName: executionQuantity
+      label: execution quantity
+      definition: strictly positive absolute Quantity filled by an Execution
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    executionPrice:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/executionPrice
+      namespace: fin-orders
+      localName: executionPrice
+      label: execution price
+      definition: Money price interpreted only through the exact direct-unit quotation contract
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    feeId:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/feeId
+      namespace: fin-orders
+      localName: feeId
+      label: fee identifier
+      definition: source-scoped immutable identifier of one fee fact
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    feeKind:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/feeKind
+      namespace: fin-orders
+      localName: feeKind
+      label: fee kind
+      definition: member of the closed classification identifying the economic or regulatory kind of an execution Fee
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/FeeKind
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    feeEffect:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/feeEffect
+      namespace: fin-orders
+      localName: feeEffect
+      label: fee effect
+      definition: charge or rebate arithmetic direction for a positive fee magnitude
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/FeeEffect
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    feeAmount:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/feeAmount
+      namespace: fin-orders
+      localName: feeAmount
+      label: fee amount
+      definition: strictly positive Money magnitude whose sign is never overloaded with fee effect
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    statusMappingVersion:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/statusMappingVersion
+      namespace: fin-orders
+      localName: statusMappingVersion
+      label: status mapping version
+      definition: immutable semantic version of one provider status mapping
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    rawStatusCode:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/rawStatusCode
+      namespace: fin-orders
+      localName: rawStatusCode
+      label: raw status code
+      definition: exact provider lexical status code before canonical mapping
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    canonicalLifecycleState:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/canonicalLifecycleState
+      namespace: fin-orders
+      localName: canonicalLifecycleState
+      label: canonical lifecycle state
+      definition: exactly one canonical target state selected by a status mapping
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    reviewDecisionRef:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/reviewDecisionRef
+      namespace: fin-orders
+      localName: reviewDecisionRef
+      label: review decision reference
+      definition: immutable reference to the human-reviewed semantic mapping decision
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    reviewDecisionDigest:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/reviewDecisionDigest
+      namespace: fin-orders
+      localName: reviewDecisionDigest
+      label: review decision digest
+      definition: SHA-256 digest of the canonical mapping review record
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    transitionProfileId:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/transitionProfileId
+      namespace: fin-orders
+      localName: transitionProfileId
+      label: transition profile identifier
+      definition: stable identifier of a provider lifecycle transition profile
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    implementationDigest:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/implementationDigest
+      namespace: fin-orders
+      localName: implementationDigest
+      label: implementation digest
+      definition: SHA-256 digest of canonical executable implementation bytes
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    inputContractDigest:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/inputContractDigest
+      namespace: fin-orders
+      localName: inputContractDigest
+      label: input contract digest
+      definition: SHA-256 digest of the evaluator input contract
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    outputContractDigest:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/outputContractDigest
+      namespace: fin-orders
+      localName: outputContractDigest
+      label: output contract digest
+      definition: SHA-256 digest of the evaluator output contract
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    toolLockRef:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/toolLockRef
+      namespace: fin-orders
+      localName: toolLockRef
+      label: tool lock reference
+      definition: immutable reference to the exact evaluator tool lock
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    toolLockDigest:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/toolLockDigest
+      namespace: fin-orders
+      localName: toolLockDigest
+      label: tool lock digest
+      definition: SHA-256 digest of the exact evaluator tool lock bytes
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    runtimeDigest:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/runtimeDigest
+      namespace: fin-orders
+      localName: runtimeDigest
+      label: runtime digest
+      definition: SHA-256 digest of the evaluator runtime environment
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    liquidityMappingId:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/liquidityMappingId
+      namespace: fin-orders
+      localName: liquidityMappingId
+      label: liquidity mapping identifier
+      definition: stable identifier of a source liquidity-role mapping
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    rawFieldLocator:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/rawFieldLocator
+      namespace: fin-orders
+      localName: rawFieldLocator
+      label: raw field locator
+      definition: canonical source-schema field locator for a liquidity value
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    rawPerspective:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/rawPerspective
+      namespace: fin-orders
+      localName: rawPerspective
+      label: raw perspective
+      definition: source-contract perspective from which a raw liquidity value is expressed
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    perspectiveInversion:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/perspectiveInversion
+      namespace: fin-orders
+      localName: perspectiveInversion
+      label: perspective inversion
+      definition: whether a reviewed mapping inverts a contra-perspective source value
+      valueType: boolean
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    mappingDigest:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/mappingDigest
+      namespace: fin-orders
+      localName: mappingDigest
+      label: mapping digest
+      definition: SHA-256 digest of the canonical raw-value mapping table
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    liquidityPerspective:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/liquidityPerspective
+      namespace: fin-orders
+      localName: liquidityPerspective
+      label: liquidity perspective
+      definition: fixed execution-account-order perspective of a liquidity determination
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/LiquidityPerspective
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    liquidityDeterminationResult:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/liquidityDeterminationResult
+      namespace: fin-orders
+      localName: liquidityDeterminationResult
+      label: liquidity determination result
+      definition: classified or unavailable branch discriminator
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/LiquidityDeterminationResult
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    liquidityRole:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/liquidityRole
+      namespace: fin-orders
+      localName: liquidityRole
+      label: liquidity role
+      definition: maker, taker, or contract-defined auction-undefined result
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRole
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    liquidityUnavailableReason:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/liquidityUnavailableReason
+      namespace: fin-orders
+      localName: liquidityUnavailableReason
+      label: liquidity unavailable reason
+      definition: contractUnsupported or providerNotSpecified evidence branch reason
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/LiquidityUnavailableReason
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    sourceRecordRef:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/sourceRecordRef
+      namespace: fin-orders
+      localName: sourceRecordRef
+      label: source record reference
+      definition: immutable reference to the exact provider record evaluated
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    sourceRecordDigest:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/sourceRecordDigest
+      namespace: fin-orders
+      localName: sourceRecordDigest
+      label: source record digest
+      definition: SHA-256 digest of the exact canonical provider record bytes
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    rawLexicalValue:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/rawLexicalValue
+      namespace: fin-orders
+      localName: rawLexicalValue
+      label: raw lexical value
+      definition: exact source lexical value used by a classified liquidity mapping
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    fieldAbsenceProbeRef:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/fieldAbsenceProbeRef
+      namespace: fin-orders
+      localName: fieldAbsenceProbeRef
+      label: field absence probe reference
+      definition: immutable reference to the completed source-record field-absence probe
+      valueType: uri
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    fieldAbsenceProbeDigest:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/fieldAbsenceProbeDigest
+      namespace: fin-orders
+      localName: fieldAbsenceProbeDigest
+      label: field absence probe digest
+      definition: SHA-256 digest of the completed field-absence probe record
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    orderIntegrityKind:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/orderIntegrityKind
+      namespace: fin-orders
+      localName: orderIntegrityKind
+      label: order integrity kind
+      definition: closed kind of order event stream defect
+      valueType: https://axiolune.ai/ontology/finance/orders-execution/OrderIntegrityKind
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    affectedKeyDigest:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/affectedKeyDigest
+      namespace: fin-orders
+      localName: affectedKeyDigest
+      label: affected key digest
+      definition: kind-discriminated digest of the strict OrderFindingSubject object
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    relatedVersionSetDigest:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/relatedVersionSetDigest
+      namespace: fin-orders
+      localName: relatedVersionSetDigest
+      label: related version set digest
+      definition: digest of the sorted unique exact versions cited by an integrity finding
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    missingKeyFrom:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/missingKeyFrom
+      namespace: fin-orders
+      localName: missingKeyFrom
+      label: missing key from
+      definition: inclusive start of a sequence-gap half-open interval
+      valueType: integer
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    missingKeyTo:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/missingKeyTo
+      namespace: fin-orders
+      localName: missingKeyTo
+      label: missing key to
+      definition: exclusive end of a sequence-gap half-open interval
+      valueType: integer
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    findingProviderEventId:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/findingProviderEventId
+      namespace: fin-orders
+      localName: findingProviderEventId
+      label: finding provider event identifier
+      definition: provider event identifier in a duplicateConflict finding subject
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    observedSourceOrderKey:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/observedSourceOrderKey
+      namespace: fin-orders
+      localName: observedSourceOrderKey
+      label: observed source order key
+      definition: observed source order key in an outOfOrder finding subject
+      valueType: integer
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    requiredPredecessorSourceOrderKey:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/requiredPredecessorSourceOrderKey
+      namespace: fin-orders
+      localName: requiredPredecessorSourceOrderKey
+      label: required predecessor source order key
+      definition: predecessor key required before an outOfOrder event
+      valueType: integer
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    expectedAfterSourceOrderKey:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/expectedAfterSourceOrderKey
+      namespace: fin-orders
+      localName: expectedAfterSourceOrderKey
+      label: expected after source order key
+      definition: source order key after which an acknowledgement was required
+      valueType: integer
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+  identifierTypes: {}
+  codeLists:
+    OrderSide:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderSide
+      namespace: fin-orders
+      localName: OrderSide
+      label: Order Side
+      definition: Closed semantic direction vocabulary without implementation sentinel members.
+      vocabulary: Order Side
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderSide/value/Buy
+          notation: Buy
+          label: Buy
+          definition: direction that increases long exposure or decreases short exposure
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderSide/value/Sell
+          notation: Sell
+          label: Sell
+          definition: direction that decreases long exposure or increases short exposure
+    OrderLineageKind:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLineageKind
+      namespace: fin-orders
+      localName: OrderLineageKind
+      label: Order Lineage Kind
+      definition: Closed classification of immutable order-intent routing transformations.
+      vocabulary: Order Lineage Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLineageKind/value/split
+          notation: split
+          label: split
+          definition: one exact source intent is transformed into at least two exact result intents
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLineageKind/value/aggregation
+          notation: aggregation
+          label: aggregation
+          definition: at least two exact source intents are transformed into one exact result intent
+    OrderType:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderType
+      namespace: fin-orders
+      localName: OrderType
+      label: Order Type
+      definition: Closed classification of executable order instructions by their price and trigger semantics.
+      vocabulary: Order Type
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderType/value/Market
+          notation: Market
+          label: Market
+          definition: order without a limit or trigger price
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderType/value/Limit
+          notation: Limit
+          label: Limit
+          definition: order constrained by a limit price
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderType/value/Stop
+          notation: Stop
+          label: Stop
+          definition: order activated by a trigger price
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderType/value/StopLimit
+          notation: StopLimit
+          label: Stop Limit
+          definition: triggered order constrained by a limit price
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderType/value/MarketIfTouched
+          notation: MarketIfTouched
+          label: Market If Touched
+          definition: market order activated by a touched trigger
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderType/value/LimitIfTouched
+          notation: LimitIfTouched
+          label: Limit If Touched
+          definition: limit order activated by a touched trigger
+    TriggerPriceBasis:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/TriggerPriceBasis
+      namespace: fin-orders
+      localName: TriggerPriceBasis
+      label: Trigger Price Basis
+      definition: >-
+        Closed classification of the market observation basis evaluated by a conditional order trigger. Each member
+        identifies the eligible observation type or composite observation rule used to compare market state with the
+        trigger condition; provider-specific codes require explicit mappings pinned to provider and schema version.
+      vocabulary: Trigger Price Basis
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/TriggerPriceBasis/value/venueDefault
+          notation: venueDefault
+          label: venue default
+          definition: trigger basis selected by the reviewed venue or adapter contract
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/TriggerPriceBasis/value/lastPrice
+          notation: lastPrice
+          label: last price
+          definition: most recent eligible trade price
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/TriggerPriceBasis/value/markPrice
+          notation: markPrice
+          label: mark price
+          definition: reviewed mark-price observation
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/TriggerPriceBasis/value/indexPrice
+          notation: indexPrice
+          label: index price
+          definition: reviewed index-price observation
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/TriggerPriceBasis/value/bidAsk
+          notation: bidAsk
+          label: bid or ask
+          definition: side-aware eligible bid or ask observation
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/TriggerPriceBasis/value/doubleLast
+          notation: doubleLast
+          label: double last
+          definition: reviewed consecutive-last-price trigger rule
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/TriggerPriceBasis/value/doubleBidAsk
+          notation: doubleBidAsk
+          label: double bid or ask
+          definition: reviewed consecutive side-aware quote trigger rule
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/TriggerPriceBasis/value/lastOrBidAsk
+          notation: lastOrBidAsk
+          label: last or bid or ask
+          definition: reviewed composite last-trade or side-aware quote rule
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/TriggerPriceBasis/value/midPoint
+          notation: midPoint
+          label: midpoint
+          definition: midpoint of the reviewed eligible bid and ask
+    TimeInForce:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/TimeInForce
+      namespace: fin-orders
+      localName: TimeInForce
+      label: Time In Force
+      definition: Closed vocabulary of order validity duration instructions.
+      vocabulary: Time In Force
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/TimeInForce/value/GTC
+          notation: GTC
+          label: Good Till Cancel
+          definition: valid until explicitly cancelled
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/TimeInForce/value/IOC
+          notation: IOC
+          label: Immediate Or Cancel
+          definition: execute immediately and cancel remainder
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/TimeInForce/value/FOK
+          notation: FOK
+          label: Fill Or Kill
+          definition: execute fully immediately or cancel
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/TimeInForce/value/DAY
+          notation: DAY
+          label: Day
+          definition: valid for the applicable trading day
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/TimeInForce/value/GTD
+          notation: GTD
+          label: Good Till Date
+          definition: valid until the explicit expiry instant
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/TimeInForce/value/AtTheOpen
+          notation: AtTheOpen
+          label: At The Open
+          definition: executable at the applicable opening session
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/TimeInForce/value/AtTheClose
+          notation: AtTheClose
+          label: At The Close
+          definition: executable at the applicable closing session
+    OrderLifecycleState:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState
+      namespace: fin-orders
+      localName: OrderLifecycleState
+      label: Order Lifecycle State
+      definition: Canonical resulting order states independent of provider raw codes.
+      vocabulary: Order Lifecycle State
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/Initialized
+          notation: Initialized
+          label: Initialized
+          definition: intent initialized internally
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/Denied
+          notation: Denied
+          label: Denied
+          definition: intent denied before provider submission
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/Emulated
+          notation: Emulated
+          label: Emulated
+          definition: order held by an emulator
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/Released
+          notation: Released
+          label: Released
+          definition: emulated order released for submission
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/Submitted
+          notation: Submitted
+          label: Submitted
+          definition: order submitted to provider
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/Accepted
+          notation: Accepted
+          label: Accepted
+          definition: provider accepted the order
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/Rejected
+          notation: Rejected
+          label: Rejected
+          definition: provider rejected the order
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/PendingUpdate
+          notation: PendingUpdate
+          label: Pending Update
+          definition: update request awaiting resolution
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/PendingCancel
+          notation: PendingCancel
+          label: Pending Cancel
+          definition: cancel request awaiting resolution
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/PartiallyFilled
+          notation: PartiallyFilled
+          label: Partially Filled
+          definition: order has a non-final fill
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/Filled
+          notation: Filled
+          label: Filled
+          definition: order has reached its fill terminal state
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/Canceled
+          notation: Canceled
+          label: Canceled
+          definition: order was cancelled
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/Expired
+          notation: Expired
+          label: Expired
+          definition: order validity expired
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState/value/Triggered
+          notation: Triggered
+          label: Triggered
+          definition: trigger condition became true
+    OrderEventKind:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind
+      namespace: fin-orders
+      localName: OrderEventKind
+      label: Order Event Kind
+      definition: Immutable event kinds distinct from resulting lifecycle state.
+      vocabulary: Order Event Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/Initialized
+          notation: Initialized
+          label: Initialized
+          definition: intent initialization event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/Denied
+          notation: Denied
+          label: Denied
+          definition: pre-submission denial event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/Emulated
+          notation: Emulated
+          label: Emulated
+          definition: order entered internal emulation before provider release
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/Released
+          notation: Released
+          label: Released
+          definition: emulated order was released for provider submission
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/Submitted
+          notation: Submitted
+          label: Submitted
+          definition: provider submission event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/Accepted
+          notation: Accepted
+          label: Accepted
+          definition: provider acceptance event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/Rejected
+          notation: Rejected
+          label: Rejected
+          definition: provider rejection event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/PendingUpdate
+          notation: PendingUpdate
+          label: Pending Update
+          definition: provider update request became pending
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/PendingCancel
+          notation: PendingCancel
+          label: Pending Cancel
+          definition: provider cancellation request became pending
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/Updated
+          notation: Updated
+          label: Updated
+          definition: accepted order update event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/ModifyRejected
+          notation: ModifyRejected
+          label: Modify Rejected
+          definition: provider rejected an order modification request
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/CancelRejected
+          notation: CancelRejected
+          label: Cancel Rejected
+          definition: cancellation rejection event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/PartiallyFilled
+          notation: PartiallyFilled
+          label: Partially Filled
+          definition: non-final fill event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/Filled
+          notation: Filled
+          label: Filled
+          definition: final fill event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/Canceled
+          notation: Canceled
+          label: Canceled
+          definition: cancellation event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/Expired
+          notation: Expired
+          label: Expired
+          definition: expiry event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind/value/Triggered
+          notation: Triggered
+          label: Triggered
+          definition: trigger activation event
+    FeeKind:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/FeeKind
+      namespace: fin-orders
+      localName: FeeKind
+      label: Fee Kind
+      definition: >-
+        Closed classification of commissions, facility charges, clearing charges, regulatory assessments, taxes, and
+        residual fees attached to an Execution.
+      vocabulary: Fee Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/FeeKind/value/commission
+          notation: commission
+          label: commission
+          definition: broker or execution commission
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/FeeKind/value/exchange
+          notation: exchange
+          label: exchange
+          definition: trading facility fee or rebate
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/FeeKind/value/clearing
+          notation: clearing
+          label: clearing
+          definition: clearing service fee
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/FeeKind/value/regulatory
+          notation: regulatory
+          label: regulatory
+          definition: regulatory assessment
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/FeeKind/value/tax
+          notation: tax
+          label: tax
+          definition: transaction tax or levy
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/FeeKind/value/other
+          notation: other
+          label: other
+          definition: reviewed residual fee category
+    FeeEffect:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/FeeEffect
+      namespace: fin-orders
+      localName: FeeEffect
+      label: Fee Effect
+      definition: Closed arithmetic direction of a positive Fee magnitude.
+      vocabulary: Fee Effect
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/FeeEffect/value/charge
+          notation: charge
+          label: charge
+          definition: fee increases cost or decreases proceeds
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/FeeEffect/value/rebate
+          notation: rebate
+          label: rebate
+          definition: fee decreases cost or increases proceeds
+    LiquidityRoleCapability:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleCapability
+      namespace: fin-orders
+      localName: LiquidityRoleCapability
+      label: Liquidity Role Capability
+      definition: Closed source-contract capability for liquidity role evidence.
+      vocabulary: Liquidity Role Capability
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleCapability/value/required
+          notation: required
+          label: required
+          definition: every source record must classify liquidity role
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleCapability/value/optional
+          notation: optional
+          label: optional
+          definition: source may omit the contract-declared field
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleCapability/value/unsupported
+          notation: unsupported
+          label: unsupported
+          definition: source contract has no liquidity-role field
+    LiquidityRole:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRole
+      namespace: fin-orders
+      localName: LiquidityRole
+      label: Liquidity Role
+      definition: Closed account-order liquidity role vocabulary.
+      vocabulary: Liquidity Role
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRole/value/maker
+          notation: maker
+          label: maker
+          definition: execution account order added liquidity
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRole/value/taker
+          notation: taker
+          label: taker
+          definition: execution account order removed liquidity
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRole/value/auctionUndefined
+          notation: auctionUndefined
+          label: auction undefined
+          definition: source contract explicitly defines auction liquidity as undefined
+    LiquidityPerspective:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityPerspective
+      namespace: fin-orders
+      localName: LiquidityPerspective
+      label: Liquidity Perspective
+      definition: Closed perspective used for canonical liquidity determinations.
+      vocabulary: Liquidity Perspective
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityPerspective/value/executionAccountOrder
+          notation: executionAccountOrder
+          label: execution account order
+          definition: perspective of the Execution financial account and its external order
+    LiquidityDeterminationResult:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityDeterminationResult
+      namespace: fin-orders
+      localName: LiquidityDeterminationResult
+      label: Liquidity Determination Result
+      definition: Closed xone branch discriminator for liquidity evidence.
+      vocabulary: Liquidity Determination Result
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityDeterminationResult/value/classified
+          notation: classified
+          label: classified
+          definition: raw source value mapped to one canonical liquidity role
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityDeterminationResult/value/unavailable
+          notation: unavailable
+          label: unavailable
+          definition: capability-governed exact absence assertion
+    LiquidityUnavailableReason:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityUnavailableReason
+      namespace: fin-orders
+      localName: LiquidityUnavailableReason
+      label: Liquidity Unavailable Reason
+      definition: Closed supported reasons for an unavailable liquidity determination.
+      vocabulary: Liquidity Unavailable Reason
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityUnavailableReason/value/contractUnsupported
+          notation: contractUnsupported
+          label: contract unsupported
+          definition: source contract declares no liquidity field
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityUnavailableReason/value/providerNotSpecified
+          notation: providerNotSpecified
+          label: provider not specified
+          definition: optional contract field is absent from the exact record
+    OrderIntegrityKind:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntegrityKind
+      namespace: fin-orders
+      localName: OrderIntegrityKind
+      label: Order Integrity Kind
+      definition: Closed kind-discriminated order event integrity finding vocabulary.
+      vocabulary: Order Integrity Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntegrityKind/value/duplicateConflict
+          notation: duplicateConflict
+          label: duplicate conflict
+          definition: same provider event identity has conflicting canonical content
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntegrityKind/value/sequenceGap
+          notation: sequenceGap
+          label: sequence gap
+          definition: half-open source order key interval is missing
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntegrityKind/value/outOfOrder
+          notation: outOfOrder
+          label: out of order
+          definition: observed event precedes its required predecessor
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntegrityKind/value/lateFill
+          notation: lateFill
+          label: late fill
+          definition: fill occurred after a terminal state event
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntegrityKind/value/missingAcknowledgement
+          notation: missingAcknowledgement
+          label: missing acknowledgement
+          definition: expected provider acknowledgement is absent
+        - iri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntegrityKind/value/transitionViolation
+          notation: transitionViolation
+          label: transition violation
+          definition: ordered event pair violates the exact transition profile
+  constraints:
+    OrderIntentContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentContract
+      namespace: fin-orders
+      localName: OrderIntentContract
+      label: Order Intent Contract
+      definition: >-
+        Validation contract for stable client intent identity, positive absolute quantity, order-type fields, validity,
+        source evidence, and instrument/listing consistency.
+      constraintType: Logical
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          stable(clientIntentId); intentAccount and intentInstrument are logical references; orderQuantity.value > 0;
+          orderSide in {Buy,Sell}; Market forbids limitPrice, triggerPrice, and triggerPriceBasis; Limit requires only
+          limitPrice and forbids triggerPriceBasis; Stop and MarketIfTouched require triggerPrice and exactly one
+          triggerPriceBasis in TriggerPriceBasis; StopLimit and LimitIfTouched require limitPrice, triggerPrice, and
+          exactly one triggerPriceBasis; GTD iff orderValidUntil; supplied intentListing.listedInstrument =
+          intentInstrument and is PIT-eligible; source evidence is complete; forbidden(signedQuantity,
+          facility,previousState)
+      severity: Error
+      message: order intent identity, quantity, validity, context, or field matrix is invalid
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+    OrderIntentContextXone:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentContextXone
+      namespace: fin-orders
+      localName: OrderIntentContextXone
+      label: Order Intent Context Xone
+      definition: Requires an OrderIntent to identify exactly one executable market context, either one Listing or one OTCContext.
+      constraintType: Cardinality
+      scope: Object
+      expression:
+        language: SHACL
+        expression: sh:xone(intentListing,intentOtcContext)
+      severity: Error
+      message: order intent must select exactly one listing or OTC context
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+    ExternalOrderContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderContract
+      namespace: fin-orders
+      localName: ExternalOrderContract
+      label: External Order Contract
+      definition: validation contract for provider-scoped order identity and exact originating intent
+      constraintType: Logical
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(externalOrderProvider.logicalIri,providerApiIdentifier, providerSchemaVersion,externalOrderId);
+          exactlyOne(externalOrderOriginatingIntent exact version); source evidence is complete;
+          versionKey(validFrom,knowledgeFrom, availableFrom,revision)
+      severity: Error
+      message: external order provider identity, originating intent, or source evidence is invalid
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
+    OrderEventStreamContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventStreamContract
+      namespace: fin-orders
+      localName: OrderEventStreamContract
+      label: Order Event Stream Contract
+      definition: validation contract for locked source stream identity and liquidity capability
+      constraintType: Logical
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(streamProvider.logicalIri,sourceContractRef, providerApiIdentifier,providerSchemaVersion,
+          streamExternalOrder.logicalIri,providerStreamId); sourceContractDigest = sha256(locked source schema, mapping,
+          and liquidityRoleCapability bytes); liquidityRoleCapability in {required,optional,unsupported}; source
+          evidence is complete; versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: order event stream identity, source contract digest, or capability is invalid
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderEventStream
+    ExternalOrderStatusVocabularyContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusVocabularyContract
+      namespace: fin-orders
+      localName: ExternalOrderStatusVocabularyContract
+      label: External Order Status Vocabulary Contract
+      definition: validation contract for a provider and schema scoped external status vocabulary
+      constraintType: Logical
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(statusVocabularyProvider.logicalIri,providerApiIdentifier,
+          providerSchemaVersion,statusVocabularyId); source evidence is complete;
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: external status vocabulary scope, identity, or source evidence is invalid
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusVocabulary
+    OrderTransitionProfileContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderTransitionProfileContract
+      namespace: fin-orders
+      localName: OrderTransitionProfileContract
+      label: Order Transition Profile Contract
+      definition: validation contract for provider transition semantics and executable evidence locks
+      constraintType: Dependency
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(transitionProfileProvider.logicalIri,transitionProfileId);
+          exactlyOne(implementationDigest,inputContractDigest,
+          outputContractDigest,toolLockRef,toolLockDigest,runtimeDigest);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: transition profile provider identity or executable evidence closure is invalid
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderTransitionProfile
+    LiquidityRoleMappingContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleMappingContract
+      namespace: fin-orders
+      localName: LiquidityRoleMappingContract
+      label: Liquidity Role Mapping Contract
+      definition: validation contract for raw field perspective, reviewed inversion, and mapping bytes
+      constraintType: Dependency
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(sourceContractRef,liquidityMappingId); sourceContractDigest and mappingDigest verify locked bytes;
+          rawPerspective in {executionAccountOrder,contraOrder}; rawPerspective=contraOrder requires
+          perspectiveInversion=true; every raw value maps to exactly one reviewed LiquidityRole and auctionUndefined
+          requires an explicit auction semantic; versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: liquidity mapping contract, perspective, inversion, or digest evidence is invalid
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleMapping
+    OrderLifecycleEventContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEventContract
+      namespace: fin-orders
+      localName: OrderLifecycleEventContract
+      label: Order Lifecycle Event Contract
+      definition: validation contract for immutable stream-scoped lifecycle event identity and ordering
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(eventStream.logicalIri,providerEventId); sourceOrderKey >= 0; exact eventStream, externalOrder, and
+          orderIntent versions agree; providerEventId is unique in stream; repeats whose complete event object has
+          identical RFC 8785 JCS canonical bytes are idempotent; any difference anywhere in the complete canonical event
+          content, rather than only kind/state/order-key fields, requires a duplicateConflict finding; previousState is
+          derived from sourceOrderKey and forbidden as stored truth;
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: lifecycle event identity, exact order chain, ordering, or immutable content is invalid
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+    OrderIntentLineageContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLineageContract
+      namespace: fin-orders
+      localName: OrderIntentLineageContract
+      label: Order Intent Lineage Contract
+      definition: >-
+        Validation contract for closed, conserved, acyclic, non-duplicated split and aggregation lineage over exact
+        OrderIntent versions.
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          sourceOrderIntent and resultOrderIntent are sorted unique closed exact-version sets whose stored counts and
+          RFC section-5.8 framed IRI-set digests match; split requires sourceIntentCount = 1 and resultIntentCount >= 2;
+          aggregation requires sourceIntentCount >= 2 and resultIntentCount = 1; endpoint sets are disjoint; every
+          endpoint resolves to a PIT-eligible OrderIntent version; all endpoints have the same instrument logical IRI,
+          orderSide, and Quantity unit, and exact source Quantity sum equals exact result Quantity sum;
+          sourceArtifactRef, sourceArtifactDigest, and sourceLocator resolve one canonical selected-graph inventory
+          artifact whose sorted lineageVersionIris, lineageVersionCount, and RFC section-5.8 framed
+          lineageVersionSetDigest equal the runtime graph exactly, and every lineage fact binds that same artifact; its
+          exact PITValidationRequest has a verifier-replayed selected FactVersion inventory containing every graph
+          lineage and endpoint version, one completed MaterializationRun, one passed ValidationReport, and one sealed
+          EvidenceLedger; the complete selected lineage graph contains no self edge, directed cycle, duplicate directed
+          source/result pair, or duplicate orderLineageKeyDigest; orderLineageKeyDigest =
+          SHA-256(UTF8("axiolune-order-intent-lineage-key-v1\0") ||
+          RFC8785-JCS({kind,sourceIntentVersionSetDigest,resultIntentVersionSetDigest}));
+          logicalKey(orderLineageKeyDigest); versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: order-intent lineage branch, endpoint closure, conservation, PIT eligibility, or graph integrity is invalid
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLineage
+    ExecutionContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/ExecutionContract
+      namespace: fin-orders
+      localName: ExecutionContract
+      label: Execution Contract
+      definition: validation contract for exact order chain and direct-unit execution economics
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(executionStream.logicalIri,providerExecutionId); executionQuantity.value > 0; orderSide in
+          {Buy,Sell}; executionAccount and executionInstrument equal OrderIntent truths; executionParty,
+          executionAccount, contraParty, and contraAccount are all explicit logical participant roles; executingBroker
+          is an optional intermediary and cannot substitute for any principal or contra party/account role; supplied
+          executionListing is PIT-eligible and lists executionInstrument; executionQuotationContract context equals the
+          selected listing or OTC version, instrument logical IRI equals executionInstrument, quote Currency equals
+          executionPrice.currency, and denominator unit equals executionQuantity.unit;
+          forbidden(signedQuantity,liquidityRole,commission,facility);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: execution order chain, quantity, context, quotation, or identity is invalid
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Execution
+    ExecutionLiquidityDeterminationCompletenessContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/ExecutionLiquidityDeterminationCompletenessContract
+      namespace: fin-orders
+      localName: ExecutionLiquidityDeterminationCompletenessContract
+      label: Execution Liquidity Determination Completeness Contract
+      definition: >-
+        Closed inverse-cardinality contract requiring every Execution version to be the determinedExecution of exactly
+        one LiquidityRoleDetermination version in the same exact OrderEventStream.
+      constraintType: Cardinality
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          exactlyOne(inverse LiquidityRoleDetermination.determinedExecution = this Execution version);
+          determinationStream exact version equals executionStream; classified/unavailable follows
+          LiquidityRoleDeterminationContract
+      severity: Error
+      message: execution lacks exactly one same-stream liquidity-role determination
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Execution
+    ExecutionContextXone:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/ExecutionContextXone
+      namespace: fin-orders
+      localName: ExecutionContextXone
+      label: Execution Context Xone
+      definition: Requires an Execution to identify exactly one execution market context, either one Listing or one OTCContext.
+      constraintType: Cardinality
+      scope: Association
+      expression:
+        language: SHACL
+        expression: sh:xone(executionListing,executionOtcContext)
+      severity: Error
+      message: execution must select exactly one listing or OTC context
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Execution
+    FeeContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/FeeContract
+      namespace: fin-orders
+      localName: FeeContract
+      label: Fee Contract
+      definition: validation contract for one execution fee as positive magnitude plus effect
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(feeExecution.versionIri,feeId); feeAmount.amount > 0; feeEffect in {charge,rebate}; signed fee
+          amount is forbidden; versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: fee execution identity, positive magnitude, or charge/rebate effect is invalid
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Fee
+    ExternalOrderStatusMappingContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMappingContract
+      namespace: fin-orders
+      localName: ExternalOrderStatusMappingContract
+      label: External Order Status Mapping Contract
+      definition: validation contract for provider schema scoped reviewed status normalization
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(statusProvider.logicalIri,providerApiIdentifier,
+          providerSchemaVersion,statusMappingVersion,rawStatusCode); statusVocabulary provider/API/schema equals the
+          mapping scope; exactlyOne(canonicalLifecycleState); source and review ref/digest evidence are complete; every
+          retired authoring alias is forbidden; versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: external status mapping scope, target, source, review, or canonical name is invalid
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMapping
+    LiquidityRoleDeterminationContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleDeterminationContract
+      namespace: fin-orders
+      localName: LiquidityRoleDeterminationContract
+      label: Liquidity Role Determination Contract
+      definition: validation contract for capability-governed classification or exact unavailability
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(determinedExecution.versionIri,determinationStream.versionIri); determinationStream is the
+          determinedExecution stream; liquidityPerspective=executionAccountOrder; determinationStream
+          sourceContractRef/digest equal the exact liquidityMapping sourceContractRef/digest; sourceRecordDigest equals
+          SHA-256(RFC8785-JCS(sourceRecord)); rawFieldLocator equals the exact mapping JSON Pointer, resolves in that
+          source record, and its lexical value equals rawLexicalValue; required => classified with exactly one
+          liquidityMapping, liquidityRole, source record, raw field locator/value, and no absence reason/probe;
+          unsupported => unavailable(contractUnsupported), no mapping/raw field/probe; optional => classified or
+          unavailable(providerNotSpecified) with completed exact absence probe over the same source-record digest and
+          declared JSON Pointer, which must be absent from that exact record; unknown or malformed values fail mapping
+          and are never unavailable; mapping raw value produces the stored role and contra perspective requires reviewed
+          inversion; versionKey(validFrom,knowledgeFrom, availableFrom,revision)
+      severity: Error
+      message: liquidity role determination capability branch, perspective, mapping, or source evidence is invalid
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleDetermination
+    OrderEventIntegrityFindingContract:
+      iri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventIntegrityFindingContract
+      namespace: fin-orders
+      localName: OrderEventIntegrityFindingContract
+      label: Order Event Integrity Finding Contract
+      definition: validation contract for closed kind-discriminated stream defect findings
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          atLeastOne(relatedLifecycleEvent,relatedExecution); duplicateConflict requires exactly findingProviderEventId
+          and two related event versions with the same providerEventId whose RFC 8785 JCS EventConflictContent differs,
+          where EventConflictContent is exactly eventStreamVersionIri, externalOrderVersionIri, orderIntentVersionIri,
+          providerEventId, sourceOrderKey, orderEventKind, lifecycleState, observedAt, sourceArtifactDigest, and the
+          exact source-artifact object; version/provenance envelopes are excluded, so a canonical-content-identical
+          retry is not a conflict; sequenceGap requires exactly [missingKeyFrom,missingKeyTo) and its boundary-event
+          closure; outOfOrder requires exactly observedSourceOrderKey and requiredPredecessorSourceOrderKey plus the
+          later-arrival proof; lateFill requires exactly subjectFillExecution and subjectTerminalEvent;
+          missingAcknowledgement requires exactly subjectMissingAcknowledgementOrder and expectedAfterSourceOrderKey;
+          transitionViolation requires exactly subjectFromEvent,subjectToEvent,evaluatedTransitionProfile and the
+          profile input-contract bytes must reject that state pair; affectedKeyDigest =
+          SHA-256(UTF8("axiolune-order-finding-subject-v1\0") || RFC8785-JCS(OrderFindingSubject));
+          relatedVersionSetDigest uses RFC §5.8 over the unique union of relatedLifecycleEvent, relatedExecution, and
+          every exact kind-specific subject/profile role; logicalKey(findingStream.logicalIri,
+          orderIntegrityKind,affectedKeyDigest,relatedVersionSetDigest);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: order integrity finding kind, subject, closed version set, digest, or identity is invalid
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderEventIntegrityFinding
+  relationUses:
+    - relation: https://axiolune.ai/ontology/finance/orders-execution/intentAccount
+      subjectType: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+      objectType: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/orders-execution/intentAccount
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/orders-execution/intentInstrument
+      subjectType: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+      objectType: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/orders-execution/intentInstrument
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/orders-execution/intentListing
+      subjectType: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+      objectType: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/orders-execution/intentListing
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/orders-execution/intentOtcContext
+      subjectType: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+      objectType: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/orders-execution/intentOtcContext
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/orders-execution/externalOrderProvider
+      subjectType: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
+      objectType: https://axiolune.ai/ontology/finance/foundation/Party
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/orders-execution/externalOrderProvider
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/orders-execution/externalOrderOriginatingIntent
+      subjectType: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
+      objectType: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/orders-execution/externalOrderOriginatingIntent
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/orders-execution/streamProvider
+      subjectType: https://axiolune.ai/ontology/finance/orders-execution/OrderEventStream
+      objectType: https://axiolune.ai/ontology/finance/foundation/Party
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/orders-execution/streamProvider
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/orders-execution/streamExternalOrder
+      subjectType: https://axiolune.ai/ontology/finance/orders-execution/OrderEventStream
+      objectType: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/orders-execution/streamExternalOrder
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/orders-execution/statusVocabularyProvider
+      subjectType: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusVocabulary
+      objectType: https://axiolune.ai/ontology/finance/foundation/Party
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/orders-execution/statusVocabularyProvider
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/orders-execution/transitionProfileProvider
+      subjectType: https://axiolune.ai/ontology/finance/orders-execution/OrderTransitionProfile
+      objectType: https://axiolune.ai/ontology/finance/foundation/Party
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/orders-execution/transitionProfileProvider
+          enforcementLevel: Mandatory
+  constraintBindings:
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent/role/eventStream
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent/role/externalOrder
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent/role/orderIntent
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLineage/role/sourceOrderIntent
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLineage/role/resultOrderIntent
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Execution/role/executionStream
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Execution/role/executionExternalOrder
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Execution/role/executionOrderIntent
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Execution/role/executionAccount
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Execution/role/executionParty
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Execution/role/contraAccount
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Execution/role/contraParty
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Execution/role/executionInstrument
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Execution/role/executionListing
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Execution/role/executionOtcContext
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Execution/role/executionQuotationContract
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Execution/role/executingBroker
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Fee/role/feeExecution
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Fee/role/feeAssessor
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMapping/role/statusProvider
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMapping/role/statusVocabulary
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMapping/role/statusMappingReviewer
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleDetermination/role/determinedExecution
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleDetermination/role/determinationStream
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleDetermination/role/liquidityMapping
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderEventIntegrityFinding/role/findingStream
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderEventIntegrityFinding/role/relatedLifecycleEvent
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderEventIntegrityFinding/role/relatedExecution
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderEventIntegrityFinding/role/evaluatedTransitionProfile
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderEventIntegrityFinding/role/subjectFillExecution
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderEventIntegrityFinding/role/subjectTerminalEvent
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: >-
+        https://axiolune.ai/ontology/finance/orders-execution/OrderEventIntegrityFinding/role/subjectMissingAcknowledgementOrder
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderEventIntegrityFinding/role/subjectFromEvent
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderEventIntegrityFinding/role/subjectToEvent
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentContextXone
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/OrderEventStreamContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderEventStream
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusVocabularyContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusVocabulary
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/OrderTransitionProfileContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderTransitionProfile
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleMappingContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleMapping
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEventContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLineageContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLineage
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/ExecutionContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Execution
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/ExecutionLiquidityDeterminationCompletenessContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Execution
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/ExecutionContextXone
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Execution
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/FeeContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/Fee
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMappingContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMapping
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleDeterminationContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleDetermination
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/orders-execution/OrderEventIntegrityFindingContract
+      targetElement: https://axiolune.ai/ontology/finance/orders-execution/OrderEventIntegrityFinding
+      enforcementLevel: Mandatory

@@ -1,4 +1,4 @@
-# fin-market-structure â€?Competency Questions
+# fin-market-structure ï¿½?Competency Questions
 
 cqs:
   - id: "CQ-MS1"
@@ -34,5 +34,41 @@ cqs:
     expectedResult: "returns JurisdictionCalendarBinding linking Jurisdiction to TradingCalendar version"
     negativeExample: "binding without calendar or jurisdiction rejected"
     dependsOn: ["JurisdictionCalendarBinding", "Jurisdiction", "TradingCalendar"]
+    riskLevel: "medium"
+    status: active
+
+  - id: "CQ-MS5"
+    question: "Given an Operating MIC that identifies a trade reporting facility (not a trading venue), which TradeReportingFacility does it identify?"
+    scope: "MIC target taxonomy (reporting facilities)"
+    expectedResult: "returns the TradeReportingFacility identified by the OPRT MIC, distinct from a TradingVenue"
+    negativeExample: "an OPRT MIC identifying a reporting facility is not misclassified as a TradingVenue"
+    dependsOn: ["MICRegistryEntry", "MICIdentifiedMarketInfrastructure", "TradeReportingFacility", "MICRegistryEntryContract"]
+    riskLevel: "high"
+    status: active
+
+  - id: "CQ-MS6"
+    question: "Which legal entity operates a given trading venue at a specified valid time, and what is its regulatory venue category?"
+    scope: "venue operator history"
+    expectedResult: "returns the VenueOperation binding the TradingVenue to its operating Party and VenueCategory"
+    negativeExample: "a venue without an active VenueOperation at the query time returns no operator"
+    dependsOn: ["TradingVenue", "VenueOperation", "Party", "VenueCategory"]
+    riskLevel: "medium"
+    status: active
+
+  - id: "CQ-MS7"
+    question: "Given a session template with a cross-midnight recurrence, what is the UTC interval and the schedule date vs the local start date of a materialized occurrence?"
+    scope: "cross-midnight session materialization"
+    expectedResult: "returns the occurrence UTC half-open interval together with the sessionBusinessDate and the local start date derived from endDayOffset"
+    negativeExample: "an occurrence whose UTC interval is inconsistent with the recurrence rule, local start/end, endDayOffset, and IANA time zone is rejected"
+    dependsOn: ["TradingSessionTemplate", "TradingSessionOccurrence", "TradingCalendar", "TradingSessionOccurrenceContract"]
+    riskLevel: "medium"
+    status: active
+
+  - id: "CQ-MS8"
+    question: "Does a single pre-announced schedule override consistently affect multiple session occurrences, and what is the single final effective interval or cancellation for each?"
+    scope: "n-ary schedule override synthesis"
+    expectedResult: "returns the TradingScheduleOverrideNotice and, for each affected occurrence, the final effective interval or cancellation synthesized by supersession order"
+    negativeExample: "conflicting notices that do not synthesize a single final effective interval are rejected"
+    dependsOn: ["TradingScheduleOverrideNotice", "TradingSessionOccurrence", "CalendarExceptionSupersession", "ScheduleOverrideNoticeIntegrity"]
     riskLevel: "medium"
     status: active

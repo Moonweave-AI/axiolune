@@ -59,3 +59,96 @@ cards:
     candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
+  # --- v1.1.0 (ADR-023) additions ---
+  - term: RuleSelectionOutcome
+    canonicalIri: https://axiolune.ai/ontology/finance/market-rules/RuleSelectionOutcome
+    definition: >-
+      immutable provenanced fact recording the result of evaluating one rule evaluation request against surviving
+      applicability versions; the abstract parent of the outcome hierarchy (resolved, no-applicable-rule, conflict,
+      unsupported, indeterminate)
+    genus: outcome
+    differentia:
+      - exactly one outcome per evaluation request
+      - subtypes carry the winner, the no-match reason, the conflict, or the indeterminacy
+      - no evaluation is left without an auditable result
+    excludes:
+      - the rule itself (the outcome records the result, not the rule)
+      - silent defaulting (absence is an explicit NoApplicableRule, not a null)
+    sources:
+      - reference: axiolune-native
+        locator: ADR-023 D1; M2-REVIEW-ROUND-13 P0-3
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ReferencePriceSpecification
+    canonicalIri: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceSpecification
+    definition: >-
+      versioned specification of the reference price used by a price-limit or circuit-breaker rule, carrying price
+      source, observation window, missing-value policy, quote currency, and rounding
+    genus: specification
+    differentia:
+      - makes a price band computable as reference price times ratio rounded to tick
+      - carries an explicit missing-value policy (reject, fallback, suspend)
+      - distinguishes previous close, opening auction, fixed price, intraday snapshot
+    excludes:
+      - the observed price itself (owned by fin-market-data)
+      - the tick size (owned by the tick clause)
+    sources:
+      - reference: axiolune-native
+        locator: ADR-023 D3; SSE price-limit rules (reference = previous close)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ScopeExpression
+    canonicalIri: https://axiolune.ai/ontology/finance/market-rules/ScopeExpression
+    definition: >-
+      boolean expression over scope terms that declares a rule's applicability scope with conjunction, disjunction, and
+      exception across dimensions including trading session, phase, instrument classification, investor category,
+      order type, order side, and market model
+    genus: expression
+    differentia:
+      - composes atomic ScopeTerm values
+      - supports exception (positive terms minus negative terms)
+      - replaces flat single-dimension scope
+    excludes:
+      - live session status (owned by orders-execution)
+      - the scope dimensions themselves (ScopeTerm is atomic; ScopeExpression composes them)
+    sources:
+      - reference: axiolune-native
+        locator: ADR-023 D7; M2-PLAN §5.3 (InstrumentClass, InvestorCategory scopes)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: NormativeSource
+    canonicalIri: https://axiolune.ai/ontology/finance/market-rules/NormativeSource
+    definition: >-
+      versioned reference to the authoritative text evidencing a rule or rule set, recording main text, amendments,
+      notices, interpretations, and effective notices; a rule may have multiple normative sources
+    genus: source
+    differentia:
+      - carries a document locator and optional section
+      - carries a role (main text, amendment, notice, interpretation, effective notice)
+      - replaces the single sole-evidence assumption
+    excludes:
+      - the formula/implementation digests (those are frozen audit evidence on the method, not the normative text)
+    sources:
+      - reference: axiolune-native
+        locator: ADR-023 D10
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ClauseOwnerRule
+    canonicalIri: https://axiolune.ai/ontology/finance/market-rules/clauseOwnerRule
+    definition: functional relation binding each rule clause to its exact one owning market-rule version
+    genus: relation
+    differentia:
+      - enforces clause uniqueness (one owner, never shared)
+      - functional inverse of ruleHasClause
+    excludes:
+      - cross-rule clause sharing (forbidden)
+    sources:
+      - reference: axiolune-native
+        locator: ADR-023 D5
+    candidateM3Type: RelationTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team

@@ -1,5 +1,5 @@
-# Axiolune M2 Post-Trade Operations â€?Competency Questions
-# Module: fin-post-trade | Version: 0.3.0 | Status: active (semantic approval)
+# Axiolune M2 Post-Trade Operations Competency Questions
+# Module: fin-post-trade | Version: 1.1.0 | Status: active (v1.1.0 additive revision per ADR-030)
 
 cqs:
   - id: CQ-PTO1
@@ -28,13 +28,13 @@ cqs:
     question: >-
       Is there a reconciliation break between internal settlement records and an external statement,
       and what evidence exists on each side?
-    businessContext: Ops control â€?break must not be confirmed without bilateral evidence
-    expectedResult: ReconciliationBreak with internal fact, external fact, and break classification
+    businessContext: Ops control â€” break must not be confirmed without bilateral evidence
+    expectedResult: ReconciliationFinding with internal fact, external fact, and break classification
     negativeExample: break elevated to confirmed without external-side evidence
     dependsOnElements:
-      - https://axiolune.ai/ontology/finance/post-trade-operations/ReconciliationBreak
+      - https://axiolune.ai/ontology/finance/post-trade-operations/ReconciliationFinding
       - https://axiolune.ai/ontology/finance/post-trade-operations/SettlementInstruction
-      - https://axiolune.ai/ontology/finance/post-trade-operations/ExternalStatementLine
+      - https://axiolune.ai/ontology/finance/post-trade-operations/ExternalSettlementStatementLine
     testFixtures:
       - fixture: post-trade-closure-reconciliation-negative
         expectedOutcome: break remains provisional or rejected
@@ -55,11 +55,11 @@ cqs:
   - id: CQ-PTO4
     question: >-
       For a failed or partial settlement, what exception case is open and what remediation actions apply?
-    businessContext: Exception management â€?rqalpha/Lean settlement failure paths
-    expectedResult: SettlementExceptionCase with reason, affected instruction, remediation action
+    businessContext: Exception management â€” rqalpha/Lean settlement failure paths
+    expectedResult: SettlementStatusEvent with failed/partiallySettled status, affected instruction, remediation
     negativeExample: confirmed settled status while exception case still open
     dependsOnElements:
-      - https://axiolune.ai/ontology/finance/post-trade-operations/SettlementExceptionCase
+      - https://axiolune.ai/ontology/finance/post-trade-operations/SettlementStatusEvent
       - https://axiolune.ai/ontology/finance/post-trade-operations/SettlementInstruction
     riskLevel: high
     status: active
@@ -78,7 +78,7 @@ cqs:
   - id: CQ-PTO6
     question: >-
       For a tender offer corporate action, what consideration and election deadline apply to affected holders?
-    businessContext: Voluntary corporate action ? ADR-018 exotic top-3
+    businessContext: Voluntary corporate action â€” ADR-018 exotic top-3
     expectedResult: CorporateActionEvent with kind tenderOffer, consideration, election deadline
     negativeExample: tender offer without election deadline or consideration rejected
     dependsOnElements:
@@ -94,7 +94,7 @@ cqs:
   - id: CQ-PTO7
     question: >-
       For a spin-off, what successor instrument and entitlement ratio apply to parent security holders?
-    businessContext: Multi-leg entitlement ? ADR-018 exotic top-3
+    businessContext: Multi-leg entitlement â€” ADR-018 exotic top-3
     expectedResult: spinOff event with successor security and ratio
     negativeExample: spin-off without successor or ratio rejected
     dependsOnElements:
@@ -110,7 +110,7 @@ cqs:
   - id: CQ-PTO8
     question: >-
       For an exchange offer, what swap ratio and successor security replace the affected instrument?
-    businessContext: Security swap corporate action ? ADR-018 exotic top-3
+    businessContext: Security swap corporate action â€” ADR-018 exotic top-3
     expectedResult: exchangeOffer event with ratio and successor
     negativeExample: exchange offer without ratio rejected
     dependsOnElements:
@@ -153,5 +153,124 @@ cqs:
         expectedOutcome: returns qualification chain
       - fixture: post-trade-duebill-negative
         expectedOutcome: rejected
+    riskLevel: medium
+    status: active
+
+  # --- v1.1.0 additive CQs (ADR-030) ---
+
+  - id: CQ-PTO11
+    question: >-
+      Can a settlement instruction express an internal transfer between two accounts of the same legal
+      entity, and is it valid outside the Simple DvP/FoP Settlement Profile?
+    businessContext: Internal transfers excluded by the v1.0.0 DvP/FoP hard lock (ADR-030 D2)
+    expectedResult: SettlementInstruction with same-party distinct-account legs valid under the generic core
+    negativeExample: internal transfer rejected solely because it is not a strict DvP/FoP two-leg structure
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/post-trade-operations/SettlementInstruction
+      - https://axiolune.ai/ontology/finance/post-trade-operations/SimpleDvpFopSettlementProfile
+    riskLevel: medium
+    status: active
+
+  - id: CQ-PTO12
+    question: >-
+      For a settlement leg that is partially settled, pending-failing, then rescheduled or failed, can the
+      full lifecycle be tracked across status events?
+    businessContext: Partial/failed settlement lifecycle (ADR-030 D3)
+    expectedResult: ordered SettlementStatusEvent sequence with partiallySettled/pending/rescheduled/failed
+    negativeExample: a settled status recorded while a prior partiallySettled event is still open
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/post-trade-operations/SettlementStatusEvent
+      - https://axiolune.ai/ontology/finance/post-trade-operations/SettlementStatus
+    riskLevel: high
+    status: active
+
+  - id: CQ-PTO13
+    question: >-
+      Are settled status, actual asset movement, and legal/system finality represented as distinct facts?
+    businessContext: Finality separation per PFMI (ADR-030 D3)
+    expectedResult: SettlementStatusEvent settled distinct from SettlementFinalityEvent with finalityKind
+    negativeExample: a source-reported settled treated as irrevocable finality without a SettlementFinalityEvent
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/post-trade-operations/SettlementStatusEvent
+      - https://axiolune.ai/ontology/finance/post-trade-operations/SettlementFinalityEvent
+    riskLevel: high
+    status: active
+
+  - id: CQ-PTO14
+    question: >-
+      Can one-to-many, many-to-one, or many-to-many internal/external entries match as a legitimate
+      reconciliation group rather than being auto-classified as duplicate?
+    businessContext: Multi-cardinality reconciliation matching (ADR-030 D5)
+    expectedResult: ReconciliationMatchGroup with matchCardinality and matched/non-duplicate finding
+    negativeExample: a one-to-many match auto-classified as duplicate under the strict profile applied to non-strict data
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/post-trade-operations/ReconciliationMatchGroup
+      - https://axiolune.ai/ontology/finance/post-trade-operations/ReconciliationFinding
+    riskLevel: high
+    status: active
+
+  - id: CQ-PTO15
+    question: >-
+      When data coverage is incomplete, can the model distinguish a true zero balance from an unobserved
+      position and from unknown coverage?
+    businessContext: MissingSideAssertion conflict fix (ADR-030 D6)
+    expectedResult: MissingSideAssertion with deterministicSideAbsence vs IncompleteSourceCoverageAssertion
+    negativeExample: a no-result query promoted to a MissingSideAssertion of economic-fact absence
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/post-trade-operations/MissingSideAssertion
+      - https://axiolune.ai/ontology/finance/post-trade-operations/IncompleteSourceCoverageAssertion
+      - https://axiolune.ai/ontology/finance/post-trade-operations/AbsenceProofKind
+    riskLevel: high
+    status: active
+
+  - id: CQ-PTO16
+    question: >-
+      Can a corporate action event express multiple options, a default option, an amendment, a withdrawal,
+      and a partial allocation across the option lifecycle?
+    businessContext: Multi-option CA lifecycle per ISO 15022 MT564/565/566/567 (ADR-030 D8)
+    expectedResult: CorporateActionOption set with optionKind covering default/election/withdrawal/amendment/partial
+    negativeExample: a multi-option voluntary event rejected because the single-choice rule is treated as universal
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionOption
+      - https://axiolune.ai/ontology/finance/post-trade-operations/CorporateActionOptionKind
+    riskLevel: medium
+    status: active
+
+  - id: CQ-PTO17
+    question: >-
+      Can cash, fee, and tax legs be allocated to economic accounts in the same way as security quantity,
+      and are residuals and FX conversion captured?
+    businessContext: Generalized economic-account allocation (ADR-030 D9)
+    expectedResult: SettlementLegAllocation with allocationAssetKind cash/fee/tax and residual/FX fields
+    negativeExample: a cash-leg allocation rejected because only security allocations were permitted
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/post-trade-operations/SettlementLegAllocation
+      - https://axiolune.ai/ontology/finance/post-trade-operations/SettlementLegAllocationAssetKind
+    riskLevel: medium
+    status: active
+
+  - id: CQ-PTO18
+    question: >-
+      Can a custody chain of global custodian, sub-custodian, and CSD be represented beyond a single
+      hop, with validity periods?
+    businessContext: Custody chain depth (ADR-030 D10 P1-c)
+    expectedResult: CustodySettlementAccountBridge with upstreamCustodyBridgeRef and validFrom/validTo
+    negativeExample: a multi-custodian chain rejected because only a single bridge hop is allowed
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/post-trade-operations/CustodySettlementAccountBridge
+    riskLevel: medium
+    status: active
+
+  - id: CQ-PTO19
+    question: >-
+      Can an external settlement statement represent a multi-day coverage period with a statement type,
+      an as-of time, and book/value dates with correction/reversal entries?
+    businessContext: External statement shape (ADR-030 D10 P1-d)
+    expectedResult: ExternalSettlementStatement with statementType, coveragePeriod, statementAsOfTime and lines with book/value/correction
+    negativeExample: a multi-day transactions statement rejected because only a single-day single-account flow is allowed
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/post-trade-operations/ExternalSettlementStatement
+      - https://axiolune.ai/ontology/finance/post-trade-operations/ExternalSettlementStatementLine
+      - https://axiolune.ai/ontology/finance/post-trade-operations/ExternalSettlementStatementType
     riskLevel: medium
     status: active

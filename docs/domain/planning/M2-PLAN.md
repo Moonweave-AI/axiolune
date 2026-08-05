@@ -2,8 +2,9 @@
 
 **状态**：Accepted — M2 v1.0.0 实施基线（Round-12 签收）  
 **日期**：2026-07-30  
-**上游基线**：已接受的 M3 v0.5.1（以发布清单、模块摘要和提交 `1fefc18` 为准）  
-**适用范围**：金融投研、组合与交易语义层（M2）；不包含生产 M1 数据接入、运行时编排或真实外部下单
+**上游基线**：已接受的 M3 v0.6.0（以发布清单、模块摘要为准；详见 meta ADR-013）  
+**适用范围**：金融投研、组合与交易语义层（M2）；不包含生产 M1 数据接入、运行时编排或真实外部下单  
+**验收契约**：本计划绑定 RFC-001 语义验收契约与域 ADR-016 typed-container authoring profile
 
 ---
 
@@ -321,16 +322,16 @@ flowchart TB
 
 | 模块 | 责任边界 | 首批核心概念 | 不应在本模块做的事 |
 |---|---|---|---|
-| `fin-foundation` | 金融通用身份、标识、分类、司法辖区与日历接口，不重造 M3 基础类型 | Party、LegalEntity、FinancialIdentifierAssignment、Currency/CodeList 使用策略、Jurisdiction、BusinessCalendar | 把 M3 `Money`/`Quantity` 再定义一遍；保存物理来源字段或承载组合/持仓语义 |
+| `fin-foundation` | 金融通用身份、标识、分类、司法辖区与日历接口，不重造 M3 基础类型 | Party、LegalEntity、FinancialIdentifierAssignment、Currency/CodeList 使用策略、Jurisdiction、BusinessCalendar（薄接口，由 market-structure 特化） | 把 M3 `Money`/`Quantity` 再定义一遍；保存物理来源字段或承载组合/持仓语义 |
 | `fin-market-structure` | 交易场所、市场段、交易日历和交易时段的稳定结构 | TradingVenue、MarketSegment、TradingCalendar、TradingSession | 用某个场所的一时规则或 ticker 代替稳定场所/上市语义 |
 | `fin-market-rules` | 交易、结算与准入规则及其适用范围、版本和证据 | MarketRuleSet、MarketRule、RuleApplicability、SettlementConvention | 把 T+1、涨跌停、结算周期平铺为静态 Venue 属性 |
-| `fin-instruments` | 金融工具、发行人、分类与上市/可交易范围 | FinancialInstrument、Security、EquitySecurity、InstrumentListing、Issuer relationship | 把 listing、ticker 或一时的交易状态等同于 Instrument 身份 |
-| `fin-market-data` | 观察、报价、成交、Bar 与数据来源/发布语义 | PriceObservation、QuoteObservation、TradeObservation、Bar、PriceKind | 一个带大量 nullable 字段的万能 `MarketDataRecord` |
-| `fin-portfolio-positions` | 账户/组合持仓与估值的事实模型 | HoldingSnapshot、PositionLot、PositionValuation、PnLObservation | 不区分外部快照与由成交重建的派生持仓 |
-| `fin-orders-execution` | 订单意图、生命周期事件、成交和外部状态适配 | OrderIntent、OrderLifecycleEvent、Execution、ExternalOrderStatusMapping | 将某经纪商状态枚举直接定义为规范本体；直接接入实盘 |
+| `fin-instruments` | 金融工具稳定身份、时态分类（CFI）、发行/上市关系与报价约定（薄核心，复杂产品条款延后） | FinancialInstrument、Security、EquitySecurity、InstrumentListing、InstrumentIssuance、QuotationConvention、InstrumentClassificationAssertion | 把 listing、ticker 或一时的交易状态等同于 Instrument 身份；全量衍生品/债券/基金产品条款 |
+| `fin-market-data` | 观察、报价、成交、Bar、FX 汇率与数据来源/发布语义（薄核心，物理映射归 Layer 4，报价约定归 QuotationConvention 抽象层） | PriceObservation、QuoteObservation、TradeObservation、TradeBar、QuoteBar、FXRateObservation、PriceKind | 一个带大量 nullable 字段的万能 `MarketDataRecord` |
+| `fin-portfolio-positions` | 组合/持仓/估值/成本基准/对账的通用语义核心 + 可选的直接单价×数量/成交驱动成本/严格闭包/数据接入实施画像（v1.1.0） | Portfolio、HoldingSnapshot、PositionSnapshot、PositionLot、PositionChange、LotAdjustment、LotRealization、ValuationMethodFamily、DirectUnitValuationProfile、PositionValuation、PortfolioValuationSummary、FXConversion、UnrealizedPnLObservation、ExternalCostBasisObservation、ReconciliationComparison、PortfolioPositionReconciliationFinding、ReconciliationResolution、PortfolioConstituent、Sleeve | 把通用语义核心与运行实施画像分离；单一符号数量不承载 custody/accounting/economic 三种头寸；lot 不锁为 execution-derived；对账拆 Comparison/Finding/Resolution |
+| `fin-orders-execution` | 订单意图、路由、外部订单、生命周期事件、成交、费用与分配的领域事实（v1.1.0：内部意图事件与外部供应方事件分离、事件—成交—累计数量闭环、账户侧成交与双边 MatchedTrade 分离、场所中立路由、分配骨架；供应方原始码映射/适配器与运行时/验证/质量发现作为解释或检查的证据而非订单事实存在条件） | OrderIntent、OrderIntentLifecycleEvent、OrderLifecycleEvent、OrderRoute、ExternalOrder、Execution、MatchedTrade、FillSnapshot、Fee、ExecutionAllocation、OrderRevision、ExternalOrderStatusMapping | 将某经纪商状态枚举直接定义为规范本体；把适配器映射/运行时/验证发现当作订单事实的存在条件；直接接入实盘 |
 | `fin-strategy-research` | 因子、信号、模型、策略、实验与回测语义 | FactorDefinition、Signal、StrategyDefinition、BacktestRun、PerformanceObservation | 将 Qlib 的内部实现对象视为标准本体 |
-| `fin-risk` | 度量定义、限额、敞口、情景、违例和结论 | RiskMeasureDefinition、RiskLimit、ExposureObservation、LimitBreach | 混淆风险定义、计算函数和一次风险结果 |
-| `fin-post-trade-operations` | 公司行动、结算、对账和运营异常 | CorporateActionEvent、SettlementInstruction、ReconciliationBreak | 以交易前端状态代替后处理事实 |
+| `fin-risk` | 风险核心（类别/来源/因子/暴露/范围/偏好/承受力）、风险度量规格/计算画像/实现版本/度量观察、限额规则与比较策略、限额评估、突破案例治理、情景冲击与应用证据（语义核心 + 可选已验证可重放画像）（v1.1.0） | RiskMeasureSpecification、CalculationProfile、ImplementationVersion、RiskMeasurement、RiskInputSet、RiskLimit、RiskLimitRule、RiskLimitComparisonPolicy、RiskLimitEvaluation、LimitBreach、RiskLimitBreachCase、ScenarioDefinition、ScenarioShock、StressTestRun、ScenarioApplicationEvidence、RiskExposure、RiskFactor、RiskCategory、RiskScopeDefinition、RiskAppetite、RiskReport | 把审计级可复现模型当作所有风险事实的前提；把风险定义、计算函数与一次风险结果混淆；限额硬编码为单一上限；把审计级闭包/digest 作为通用前提 |
+| `fin-post-trade-operations` | 结算、结算对账与受限公司行为处理（语义核心 + 可选画像） | CorporateActionEvent、SettlementInstruction、ReconciliationFinding、SettlementFinalityEvent、CorporateActionOption、SettlementLegAllocation | 将简单 DvP/FoP、直接认购权、到期票据、严格零容差对账、运行级可复现证据当作通用交易后语义；确认/适格/清算/更替/净额为范围外钩子。v1.1.0 增量修订见 ADR-030/RFC-006 |
 
 ### 5.3 市场规则不是地域子本体
 
@@ -583,7 +584,7 @@ ADR 编号以正式 register 为准；在未确认空号前不得擅自占用。
 
 | Epic | 关键任务 | 产出 | 依赖 |
 |---|---|---|---|
-| E0：M2 编译基座 | Authoring Profile、schema/IR、prefix registry、`validate-m2-core`、最小 fixture | G0 证据包 | M3 v0.5.1 release manifest |
+| E0：M2 编译基座 | Authoring Profile、schema/IR、prefix registry、`validate-m2-core`、最小 fixture | G0 证据包 | M3 v0.6.0 release manifest |
 | E1：语义证据工作台 | reference lock、术语卡、alignment/CQ/traceability 模板与校验 | 可审查的研究输入 | E0 的 canonical IRI 规则 |
 | E2：Foundation/Market/Instrument | 场所/规则、身份/上市模型、FIBO/ISO 对齐、OWL/SHACL | G1 发布候选 | E0/E1 |
 | E3：Market-data/PIT | 观察模型、合成 source contract、mapping、staging runner、PIT negatives | Slice A 行情部分 | E2、真实 SHACL runner |

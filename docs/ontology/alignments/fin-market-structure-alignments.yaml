@@ -1,27 +1,45 @@
 module: fin-market-structure
-version: 0.3.0
+version: 1.1.0
 alignments:
   - targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/Markets/Exchange
     relation: skos:closeMatch
     sourceRelease: FIBO 2026Q1
-    rationale: TradingVenue models organizations that bring together buyers and sellers per FIBO Exchange.
+    rationale: TradingVenue models the market system/venue that brings together buyers and sellers per FIBO Exchange; v1.1.0 separates the operator (VenueOperation) from the venue identity.
     reviewStatus: accepted
     bibliographyRef: fibo-local
   - targetIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FunctionalEntities/Markets/MarketSegmentLevelMarket
     relation: skos:closeMatch
     sourceRelease: FIBO 2026Q1
-    rationale: MarketSegment captures venue sub-sections identified by segment MIC per FIBO market segment model.
+    rationale: MarketSegment captures venue/facility sub-sections identified by segment MIC per FIBO market segment model; v1.1.0 adds the componentOf part-of semantics.
     reviewStatus: accepted
     bibliographyRef: fibo-local
   - targetIri: ISO 10383:2012
     relation: skos:closeMatch
-    sourceRelease: ISO-6166
-    rationale: Trading venue and segment identifiers bind to ISO 10383 MIC operating and segment codes.
+    sourceRelease: ISO-10383
+    rationale: Trading venue, reporting facility, and segment identifiers bind to ISO 10383 MIC operating and segment codes; v1.1.0 broadens the taxonomy to MICIdentifiedMarketInfrastructure and TradeReportingFacility.
     reviewStatus: accepted
     bibliographyRef: iso-10383-mic
   - targetIri: https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/FinancialDates/BusinessCalendar
     relation: skos:closeMatch
     sourceRelease: FIBO 2026Q1
-    rationale: TradingCalendar extends FIBO business calendar with venue session schedules for trading hours.
+    rationale: TradingCalendar extends FIBO business calendar with venue session schedules for trading hours; v1.1.0 adds IANA tzdb versioning and DST overlap policy.
     reviewStatus: accepted
     bibliographyRef: fibo-local
+  - targetIri: https://www.w3.org/TR/vocab-org/
+    relation: skos:closeMatch
+    sourceRelease: W3C ORG
+    rationale: VenueOperation follows the W3C ORG organization-role-temporal pattern for separating a venue from its operator over a validity interval.
+    reviewStatus: accepted
+    bibliographyRef: w3c-org
+  - targetIri: RFC 5545
+    relation: skos:closeMatch
+    sourceRelease: IETF RFC 5545
+    rationale: recurrenceRule adopts a bounded RFC 5545 RRULE-style grammar for deterministic session materialization.
+    reviewStatus: accepted
+    bibliographyRef: rfc-5545
+  - targetIri: https://www.iso.org/standard/62067.html
+    relation: skos:relatedMatch
+    sourceRelease: ISO-10383
+    rationale: MICOperationalStatus and MICMarketCategory align with the ISO 10383 active/updated/expired lifecycle and market category fields.
+    reviewStatus: accepted
+    bibliographyRef: iso-10383-mic

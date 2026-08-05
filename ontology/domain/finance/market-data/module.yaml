@@ -2,11 +2,13 @@ module:
   moduleIri: https://axiolune.ai/ontology/finance/market-data
   baseIri: https://axiolune.ai/ontology/finance/market-data/
   preferredPrefix: fin-market-data
-  version: 1.0.0
+  version: 2.0.0
   label: Market Data
   definition: >-
-    Source-contract-bound price, quote, trade, bar, quality, and FX-rate facts with immutable version identity, exact
-    observation context, and fail-closed valid, knowledge, and availability time semantics.
+    Market Data is a domain module in ontology engineering that defines market-data facts such as price observations,
+    quotes, and bars, used for providing fact structures with timestamps and provenance for the collection and
+    expression of market quotations.
+  cnNote: 市场数据模块，是本体工程中定义价格观测、报价、K 线等行情数据的领域模块，旨在为市场行情的采集与表达提供带时间戳与来源的事实结构。
   imports:
     - moduleIri: https://axiolune.ai/ontology/finance/foundation
     - moduleIri: https://axiolune.ai/ontology/finance/market-structure
@@ -25,9 +27,10 @@ domain:
       localName: MarketDataStream
       label: Market Data Stream
       definition: >-
-        Immutable version of one provider-owned market-data stream and its locked source contract. Its logical key is
-        the provider logical IRI, sourceContractRef, and providerStreamId; a bare provider-stream IRI is not a valid
-        observation reference.
+        MarketDataStream is an immutable version of a market-data channel owned by a data provider and bound to a
+        locked source contract, used for defining the supply source and normalization rules for all downstream
+        observation facts.
+      cnNote: 市场数据流，是数据提供方拥有并锁定源契约的不可变行情数据通道版本，用于为下游所有观测事实界定供应来源与规范化规则。
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/market-data/providerStreamId
           minCount: 1
@@ -83,9 +86,10 @@ domain:
       localName: BarSpecification
       label: Bar Specification
       definition: >-
-        Versioned, source-locked aggregation contract for one stream. It selects one aggregation kind, one price basis,
-        one timestamp convention, one source time zone and calendar, and exactly one time-interval or non-time threshold
-        branch.
+        BarSpecification is a structured value describing how a bar is aggregated, used for specifying the aggregation
+        kind, price basis, timestamp convention, and source calendar of a bar, and for selecting either a time-interval
+        or a non-time threshold branch.
+      cnNote: K 线规格，是描述一根 K 线聚合方式的结构化值，用于规定行情棒的聚合种类、价格基准、时间戳约定与源日历，并选定时间区间或非时间阈值分支。
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/market-data/barSpecificationId
           minCount: 1
@@ -108,6 +112,18 @@ domain:
         - attribute: https://axiolune.ai/ontology/finance/market-data/barThreshold
           minCount: 0
           maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/barThresholdKind
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/barThresholdNotional
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/barThresholdPriceRange
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/barThresholdEventCount
+          minCount: 0
+          maxCount: 1
         - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
           minCount: 1
           maxCount: 1
@@ -127,11 +143,10 @@ domain:
       localName: PriceObservation
       label: Price Observation
       definition: >-
-        Source-record-scoped observation of one non-FX instrument price. It names an exact stream, instrument,
-        listing-or-OTC context, and direct-unit quotation contract; Money carries the sole currency truth. VWAP and TWAP
-        observations additionally bind an exact calculation definition and an immutable calculation run whose
-        byte-locked input FactVersion set, selection window, input-set digest, output, and recalculation policy are
-        replayable.
+        PriceObservation is a namable association that records a quoted price of a financial instrument at a venue and a
+        point in time, used for modeling who quoted what price, where, and when as a fact carrying timestamps and
+        provenance.
+      cnNote: 价格观测，是记录某金融工具在某场所某时点报价的可具名关联，用于把"谁在何时何地报了什么价"建模为带时间戳与来源的事实。
       participantRoles:
         - id: observationStream
           range: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
@@ -158,7 +173,7 @@ domain:
           label: observed OTC context
           definition: exact OTCTradingContext version used by the OTC branch
         - id: quotationContract
-          range: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+          range: https://axiolune.ai/ontology/finance/instruments/QuotationConvention
           minCount: 1
           maxCount: 1
           label: quotation contract
@@ -200,6 +215,18 @@ domain:
         - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
           minCount: 1
           maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceSessionId
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceChannelId
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/updateAction
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/marketEventAt
+          minCount: 0
+          maxCount: 1
       patternBindings:
         - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
         - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
@@ -209,8 +236,10 @@ domain:
       localName: QuoteObservation
       label: Quote Observation
       definition: >-
-        Complete top-of-book observation containing paired bid price, bid size, ask price, and ask size. Bid and ask are
-        structural fields, never PriceKind members; a crossed quote is retained only with its required quality finding.
+        QuoteObservation is a namable association that records the complete paired bid and ask at a point in time, used
+        for modeling the four-field structure of bid price, bid size, ask price, and ask size as a market-data fact with
+        provenance and a quality finding.
+      cnNote: 报价观测，是记录某时点买卖盘完整对价的可具名关联，用于把买价、买量、卖价、卖量四元结构建模为带来源与质量判定的行情事实。
       participantRoles:
         - id: observationStream
           range: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
@@ -237,7 +266,7 @@ domain:
           label: observed OTC context
           definition: exact OTCTradingContext version used by the OTC branch
         - id: quotationContract
-          range: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+          range: https://axiolune.ai/ontology/finance/instruments/QuotationConvention
           minCount: 1
           maxCount: 1
           label: quotation contract
@@ -270,6 +299,18 @@ domain:
         - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
           minCount: 1
           maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceSessionId
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceChannelId
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/updateAction
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/marketEventAt
+          minCount: 0
+          maxCount: 1
       patternBindings:
         - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
         - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
@@ -279,8 +320,9 @@ domain:
       localName: TradeObservation
       label: Trade Observation
       definition: >-
-        Provider-declared trade event with an immutable source trade identifier, positive quantity, Last price kind,
-        exact direct-unit quotation contract, and deterministic canonical ordering tuple.
+        TradeObservation is a namable association that records a trade event, used for modeling the provider-declared
+        trade price, trade size, and event identifier as a fact carrying timestamps and a normalized ordering.
+      cnNote: 成交观测，是记录某笔成交事件的可具名关联，用于把提供方声明的成交价、成交量和事件标识建模为带时间戳与规范化排序的事实。
       participantRoles:
         - id: observationStream
           range: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
@@ -307,7 +349,7 @@ domain:
           label: observed OTC context
           definition: exact OTCTradingContext version used by the OTC branch
         - id: quotationContract
-          range: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+          range: https://axiolune.ai/ontology/finance/instruments/QuotationConvention
           minCount: 1
           maxCount: 1
           label: quotation contract
@@ -337,6 +379,18 @@ domain:
         - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
           minCount: 1
           maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceSessionId
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceChannelId
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/updateAction
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/marketEventAt
+          minCount: 0
+          maxCount: 1
       patternBindings:
         - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
         - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
@@ -346,9 +400,9 @@ domain:
       localName: TradeBar
       label: Trade Bar
       definition: >-
-        Trade-price OHLCV observation governed by one exact BarSpecification. Time bars use a half-open interval;
-        non-time bars use sequence and contributing event bounds. OHLC values and volume are never mixed with quote-side
-        bars.
+        TradeBar is an OHLCV bar that aggregates trade prices under one bar specification, used for recording the open,
+        high, low, and close prices together with the traded volume within either a time window or a non-time window.
+      cnNote: 成交棒，是按 K 线规格聚合成交价的 OHLCV 行情棒，用于记录时间或非时间窗口内的开高低收价与成交量。
       participantRoles:
         - id: observationStream
           range: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
@@ -375,7 +429,7 @@ domain:
           label: observed OTC context
           definition: exact OTCTradingContext version used by the OTC branch
         - id: quotationContract
-          range: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+          range: https://axiolune.ai/ontology/finance/instruments/QuotationConvention
           minCount: 1
           maxCount: 1
           label: quotation contract
@@ -432,6 +486,18 @@ domain:
         - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
           minCount: 1
           maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceSessionId
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceChannelId
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/updateAction
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/marketEventAt
+          minCount: 0
+          maxCount: 1
       patternBindings:
         - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
         - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
@@ -441,8 +507,10 @@ domain:
       localName: QuoteBar
       label: Quote Bar
       definition: >-
-        Quote-side bar preserving complete bid and ask OHLC series plus side sizes. It is distinct from TradeBar and has
-        no observation-level PriceKind.
+        QuoteBar is a bar that aggregates the bid and ask sides of a quote into separate OHLC series under one bar
+        specification, used for preserving the open, high, low, and close series and a representative size for each side,
+        and kept strictly distinct from a trade bar.
+      cnNote: 报价棒，是按 K 线规格聚合买卖盘各侧 OHLC 的行情棒，用于分别保留买方与卖方的开高低收序列及代表性量，与成交棒严格区分。
       participantRoles:
         - id: observationStream
           range: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
@@ -469,7 +537,7 @@ domain:
           label: observed OTC context
           definition: exact OTCTradingContext version used by the OTC branch
         - id: quotationContract
-          range: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+          range: https://axiolune.ai/ontology/finance/instruments/QuotationConvention
           minCount: 1
           maxCount: 1
           label: quotation contract
@@ -541,6 +609,18 @@ domain:
         - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
           minCount: 1
           maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceSessionId
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceChannelId
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/updateAction
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/marketEventAt
+          minCount: 0
+          maxCount: 1
       patternBindings:
         - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
         - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
@@ -550,9 +630,10 @@ domain:
       localName: MarketDataQualityFinding
       label: Market Data Quality Finding
       definition: >-
-        Immutable, generated finding over one exact stream and a kind-discriminated, sorted unique set of exact
-        observation versions. The closed kinds are crossed quote, duplicate source-record conflict, and canonical-order
-        collision.
+        MarketDataQualityFinding is an immutable judgment generated over a set of observation versions on one data
+        stream, used for surfacing quality issues such as crossed quotes, duplicate conflicts, and ordering collisions
+        through a closed set of predicates.
+      cnNote: 市场数据质量发现，是针对一条数据流上一组观测版本生成的不可变判定，用于以封闭谓词揭示交叉报价、重复冲突与排序碰撞等质量问题。
       participantRoles:
         - id: findingStream
           range: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
@@ -615,9 +696,10 @@ domain:
       localName: FXRateObservation
       label: FX Rate Observation
       definition: >-
-        Observation of quote-currency units equal to one base-currency unit. Base and quote currencies are different
-        logical Currency identities and the rate is a strictly positive dimensionless Quantity under the same stream,
-        revision, PIT, and context contracts as other market observations.
+        FXRateObservation is a namable association that records how many units of a quote currency exchange for one unit
+        of a base currency, used for modeling the exchange rate as a strictly positive dimensionless quantity that
+        follows the same time and source contracts as other market observations.
+      cnNote: 汇率观测，是记录一单位基准货币兑换若干计价货币单位的可具名关联，用于把汇率建模为正的无量纲量，并遵循与其他行情一致的时间与来源契约。
       participantRoles:
         - id: observationStream
           range: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
@@ -653,6 +735,15 @@ domain:
         - attribute: https://axiolune.ai/ontology/finance/market-data/fxRate
           minCount: 1
           maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/fxRateConvention
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/fxRateKind
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/fxValueDate
+          minCount: 0
+          maxCount: 1
         - attribute: https://axiolune.ai/ontology/finance/market-data/providerObservationId
           minCount: 1
           maxCount: 1
@@ -668,6 +759,18 @@ domain:
         - attribute: https://axiolune.ai/ontology/meta/patterns/attributes/observedAt
           minCount: 1
           maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceSessionId
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/sourceChannelId
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/updateAction
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-data/marketEventAt
+          minCount: 0
+          maxCount: 1
       patternBindings:
         - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
         - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
@@ -677,7 +780,10 @@ domain:
       namespace: fin-market-data
       localName: streamProvider
       label: Stream Provider
-      definition: relates a MarketDataStream version to the logical Party that provides and scopes the stream
+      definition: >-
+        streamProvider is a functional relation that links a MarketDataStream version to the Party that owns it, used
+        for declaring the supply party and the boundary of responsibility for a data stream.
+      cnNote: 数据流提供方关系，是连接市场数据流与其归属方的功能关系，用于声明一条数据流的供应主体与责任边界。
       domain: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
       range: https://axiolune.ai/ontology/finance/foundation/Party
       characteristics:
@@ -687,7 +793,10 @@ domain:
       namespace: fin-market-data
       localName: barSpecificationStream
       label: Bar Specification Stream
-      definition: relates a BarSpecification version to the exact MarketDataStream version whose source contract defines it
+      definition: >-
+        barSpecificationStream is a functional relation that links a BarSpecification to its source data stream, used
+        for declaring the exact source-contract version that the specification depends on.
+      cnNote: K 线规格数据流关系，是连接 K 线规格与其来源数据流的功能关系，用于声明该规格所依赖的供应契约版本。
       domain: https://axiolune.ai/ontology/finance/market-data/BarSpecification
       range: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
       characteristics:
@@ -697,7 +806,10 @@ domain:
       namespace: fin-market-data
       localName: barSpecificationCalendar
       label: Bar Specification Calendar
-      definition: relates a BarSpecification version to its exact source TradingCalendar version
+      definition: >-
+        barSpecificationCalendar is a functional relation that links a BarSpecification to its source trading calendar,
+        used for declaring the exact calendar version that governs its aggregation boundaries.
+      cnNote: K 线规格日历关系，是连接 K 线规格与其源交易日历的功能关系，用于规定聚合边界所依据的日历版本。
       domain: https://axiolune.ai/ontology/finance/market-data/BarSpecification
       range: https://axiolune.ai/ontology/finance/market-structure/TradingCalendar
       characteristics:
@@ -708,7 +820,10 @@ domain:
       namespace: fin-market-data
       localName: providerStreamId
       label: Provider Stream Identifier
-      definition: non-empty identifier unique for a stream within its provider and source contract
+      definition: >-
+        providerStreamId is a non-empty identifier that forms part of the logical key of a data stream, used for
+        uniquely distinguishing one stream within the scope of a given provider and source contract.
+      cnNote: 提供方数据流标识，是数据流逻辑键的组成部分，用于在同一提供方与源契约范围内唯一区分一条数据流。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -719,7 +834,10 @@ domain:
       namespace: fin-market-data
       localName: sourceContractRef
       label: Source Contract Reference
-      definition: absolute IRI of the immutable provider schema and normalization contract
+      definition: >-
+        sourceContractRef is an identifier that locks the field mapping and normalization rules of a data stream, used
+        for pointing to the immutable provider source contract.
+      cnNote: 来源契约引用，是锁定数据流字段映射与规范化规则的标识，用于指向不可变的提供方源契约。
       valueType: uri
       defaultCardinality:
         minCount: 1
@@ -729,7 +847,10 @@ domain:
       namespace: fin-market-data
       localName: sourceContractDigest
       label: Source Contract Digest
-      definition: lowercase SHA-256 digest recomputed from the exact immutable source-contract bytes
+      definition: >-
+        sourceContractDigest is a digest of the source-contract bytes, used for verifying the consistency between the
+        contract content and its reference.
+      cnNote: 来源契约摘要，是源契约字节的摘要，用于校验契约内容与引用之间的一致性。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -740,7 +861,10 @@ domain:
       namespace: fin-market-data
       localName: sourceApiIdentifier
       label: Source API Identifier
-      definition: provider-declared stable identifier for the API or delivery interface
+      definition: >-
+        sourceApiIdentifier is a stable identifier for a data delivery interface, used for locating the delivery
+        channel that a data stream corresponds to.
+      cnNote: 来源 API 标识，是数据交付接口的稳定标识，用于定位数据流所对应的交付通道。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -751,7 +875,10 @@ domain:
       namespace: fin-market-data
       localName: sourceSchemaIdentifier
       label: Source Schema Identifier
-      definition: provider-declared stable identifier for the source record schema
+      definition: >-
+        sourceSchemaIdentifier is a stable identifier for a source record schema, used for distinguishing different
+        field-structure definitions.
+      cnNote: 来源记录模式标识，是源记录结构的稳定标识，用于区分不同的字段结构定义。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -762,7 +889,10 @@ domain:
       namespace: fin-market-data
       localName: sourceSchemaVersion
       label: Source Schema Version
-      definition: exact provider schema version interpreted by the locked source contract
+      definition: >-
+        sourceSchemaVersion is the exact provider schema version interpreted by the locked source contract, used for
+        pinning the specific version of the field structure.
+      cnNote: 来源记录模式版本，是源契约所解释的提供方模式精确版本，用于锁定字段结构的具体版本。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -773,7 +903,10 @@ domain:
       namespace: fin-market-data
       localName: observationIdFieldLocator
       label: Observation Identifier Field Locator
-      definition: closed SourceLocator selecting the exact raw source field mapped to the observation or event identifier
+      definition: >-
+        observationIdFieldLocator is a locator structure that selects the observation-identifier field in a raw record,
+        used for mapping a source field precisely to an observation identifier.
+      cnNote: 观测标识字段定位器，是选择原始记录中观测标识字段的定位结构，用于精确映射来源字段到观测标识。
       valueType: https://axiolune.ai/ontology/meta/data-binding/structures/SourceLocator
       defaultCardinality:
         minCount: 1
@@ -783,7 +916,10 @@ domain:
       namespace: fin-market-data
       localName: sourceRevisionFieldLocator
       label: Source Revision Field Locator
-      definition: closed SourceLocator selecting the raw revision field required only by revisioned-record streams
+      definition: >-
+        sourceRevisionFieldLocator is a locator structure that selects the revision field in a raw record, used only by
+        revisioned-record streams.
+      cnNote: 来源修订字段定位器，是选择原始记录中修订字段的定位结构，仅在可修订记录流中使用。
       valueType: https://axiolune.ai/ontology/meta/data-binding/structures/SourceLocator
       defaultCardinality:
         minCount: 0
@@ -793,7 +929,10 @@ domain:
       namespace: fin-market-data
       localName: orderingTransformRef
       label: Ordering Transformation Reference
-      definition: absolute IRI of the lossless ordering tuple mapping or locked uniqueness-preserving transformation
+      definition: >-
+        orderingTransformRef is an identifier that locks the normalization ordering rule of a data stream, used for
+        pointing to a lossless, uniqueness-preserving ordering-tuple transformation.
+      cnNote: 排序变换引用，是锁定数据流规范化排序规则的标识，用于指向无损保序的排序元组变换。
       valueType: uri
       defaultCardinality:
         minCount: 1
@@ -803,7 +942,10 @@ domain:
       namespace: fin-market-data
       localName: orderingTransformDigest
       label: Ordering Transformation Digest
-      definition: lowercase SHA-256 digest of the exact ordering transformation bytes
+      definition: >-
+        orderingTransformDigest is a digest of the ordering-transformation bytes, used for verifying the consistency
+        between the ordering rule and its reference.
+      cnNote: 排序变换摘要，是排序变换字节的摘要，用于校验排序规则与引用之间的一致性。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -814,7 +956,10 @@ domain:
       namespace: fin-market-data
       localName: streamPurpose
       label: Stream Purpose
-      definition: one closed MarketDataStreamPurpose member limiting record kinds accepted from the stream
+      definition: >-
+        streamPurpose is a closed member that limits the kinds of records a data stream accepts, used for declaring the
+        purpose contract at the data-stream level.
+      cnNote: 数据流用途，是限定数据流所接受记录种类的封闭成员，用于在数据流层声明其用途契约。
       valueType: https://axiolune.ai/ontology/finance/market-data/MarketDataStreamPurpose
       defaultCardinality:
         minCount: 1
@@ -824,7 +969,10 @@ domain:
       namespace: fin-market-data
       localName: sourceRecordRevisionMode
       label: Source Record Revision Mode
-      definition: closed immutable-record or revisioned-record policy selected by the exact source contract
+      definition: >-
+        sourceRecordRevisionMode is a closed member that declares the revision policy of a data stream, used for
+        selecting between immutable-record and revisioned-record supply.
+      cnNote: 来源记录修订模式，是声明数据流修订策略的封闭成员，用于选择不可变记录或可修订记录的供应方式。
       valueType: https://axiolune.ai/ontology/finance/market-data/SourceRecordRevisionMode
       defaultCardinality:
         minCount: 1
@@ -834,7 +982,10 @@ domain:
       namespace: fin-market-data
       localName: providerObservationId
       label: Provider Observation Identifier
-      definition: non-empty raw observation or event identifier selected by the stream source contract
+      definition: >-
+        providerObservationId is the raw observation identifier selected by the source contract of a data stream, used
+        for uniquely identifying one observation within the scope of the stream.
+      cnNote: 提供方观测标识，是数据流来源契约选定的原始观测标识，用于在数据流范围内唯一识别一条观测。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -845,7 +996,10 @@ domain:
       namespace: fin-market-data
       localName: sourceTradeId
       label: Source Trade Identifier
-      definition: non-empty provider trade identifier used as the final canonical-order tiebreaker and logical-key component
+      definition: >-
+        sourceTradeId is a provider-declared trade identifier, used as the final tiebreaker for canonical ordering and
+        as a component of the logical key.
+      cnNote: 来源成交标识，是提供方声明的成交标识，用于作为规范化排序的最终决胜项与逻辑键组成。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -856,7 +1010,10 @@ domain:
       namespace: fin-market-data
       localName: sourceRevisionToken
       label: Source Revision Token
-      definition: normalized provider revision value required only under revisionedRecord policy
+      definition: >-
+        sourceRevisionToken is a normalized provider revision value used only under the revisioned-record policy, used
+        for distinguishing different revisions of the same record.
+      cnNote: 来源修订令牌，是提供方规范化的修订值，仅在可修订记录策略下使用，用于标识同一条记录的不同修订。
       valueType: string
       defaultCardinality:
         minCount: 0
@@ -867,7 +1024,10 @@ domain:
       namespace: fin-market-data
       localName: sourceRevisionOrder
       label: Source Revision Order
-      definition: non-negative provider revision order required only under revisionedRecord policy
+      definition: >-
+        sourceRevisionOrder is a non-negative provider-declared revision order used only under the revisioned-record
+        policy, used for constraining the linear order of the revision chain.
+      cnNote: 来源修订序号，是提供方声明的非负修订序号，仅在可修订记录策略下使用，用于约束修订链的线性顺序。
       valueType: integer
       defaultCardinality:
         minCount: 0
@@ -877,7 +1037,10 @@ domain:
       namespace: fin-market-data
       localName: sourceOrderKey
       label: Source Order Key
-      definition: non-negative lossless provider sequence or output of the stream's locked uniqueness-preserving transformation
+      definition: >-
+        sourceOrderKey is a non-negative integer from the provider sequence or the output of the ordering
+        transformation, used for establishing a normalized order for each observation.
+      cnNote: 来源排序键，是提供方序列或排序变换输出的非负整数，用于为每条观测确定规范化排序。
       valueType: integer
       defaultCardinality:
         minCount: 1
@@ -887,7 +1050,10 @@ domain:
       namespace: fin-market-data
       localName: priceValue
       label: Price Value
-      definition: Money value of one price observation, including the sole quote-currency truth
+      definition: >-
+        priceValue is the monetary amount of a price observation, used for carrying the sole quote-currency truth of
+        the price.
+      cnNote: 价格值，是价格观测的货币金额，用于承载报价的唯一计价货币真值。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 1
@@ -897,7 +1063,10 @@ domain:
       namespace: fin-market-data
       localName: priceKind
       label: Price Kind
-      definition: one compatible PriceKind member; bid and ask are prohibited because they are quote structure
+      definition: >-
+        priceKind is a closed member that annotates the semantic type of a price observation, used for classifying the
+        price, with bid and ask excluded because they belong to the quote structure.
+      cnNote: 价格种类，是标注价格观测语义类型的封闭成员，买盘与卖盘因属报价结构字段而被排除。
       valueType: https://axiolune.ai/ontology/finance/market-data/PriceKind
       defaultCardinality:
         minCount: 1
@@ -907,7 +1076,10 @@ domain:
       namespace: fin-market-data
       localName: calculationDefinitionRef
       label: Calculation Definition Reference
-      definition: absolute IRI of the exact immutable calculation definition used to derive a VWAP or TWAP observation
+      definition: >-
+        calculationDefinitionRef is an identifier for the immutable calculation definition used to derive a
+        volume- or time-weighted price, used only for derived prices.
+      cnNote: 计算定义引用，是用于推导成交量或时间加权价格的不可变计算定义的标识，仅用于衍生价格。
       valueType: uri
       defaultCardinality:
         minCount: 0
@@ -917,7 +1089,10 @@ domain:
       namespace: fin-market-data
       localName: calculationDefinitionDigest
       label: Calculation Definition Digest
-      definition: lowercase SHA-256 digest of the exact calculation-definition bytes selected by calculationDefinitionRef
+      definition: >-
+        calculationDefinitionDigest is a digest of the calculation-definition bytes, used for verifying the
+        consistency between the definition content and its reference.
+      cnNote: 计算定义摘要，是计算定义字节的摘要，用于校验定义内容与引用之间的一致性。
       valueType: string
       defaultCardinality:
         minCount: 0
@@ -929,9 +1104,9 @@ domain:
       localName: calculationRunRef
       label: Calculation Run Reference
       definition: >-
-        absolute IRI of the immutable calculation-run evidence that identifies the exact input FactVersions, selection
-        window, calculation definition, computed output, and append-only recalculation policy for a VWAP or TWAP
-        observation
+        calculationRunRef is an identifier for the evidence of one calculation run, used for locking the replayable
+        evidence of inputs, window, definition, output, and recalculation policy.
+      cnNote: 计算运行引用，是识别一次计算运行证据的标识，用于锁定输入、窗口、定义、输出与重算策略的可重放证据。
       valueType: uri
       defaultCardinality:
         minCount: 0
@@ -941,7 +1116,10 @@ domain:
       namespace: fin-market-data
       localName: calculationRunDigest
       label: Calculation Run Digest
-      definition: lowercase SHA-256 digest of the exact calculation-run evidence bytes selected by calculationRunRef
+      definition: >-
+        calculationRunDigest is a digest of the calculation-run evidence bytes, used for verifying the consistency
+        between the run evidence and its reference.
+      cnNote: 计算运行摘要，是计算运行证据字节的摘要，用于校验运行证据与引用之间的一致性。
       valueType: string
       defaultCardinality:
         minCount: 0
@@ -953,8 +1131,9 @@ domain:
       localName: calculationInputSetDigest
       label: Calculation Input Fact Set Digest
       definition: >-
-        lowercase SHA-256 digest of the RFC 8785 canonical, semantically selected input FactVersion snapshots used by
-        the calculation run; any selected identity, payload, temporal-axis, context, or order change changes this digest
+        calculationInputSetDigest is a digest of the canonically selected input fact-version snapshots, used for
+        invalidating the digest when the selected identity or payload drifts.
+      cnNote: 计算输入事实集摘要，是规范选定输入事实版本快照的摘要，用于在输入身份或负载漂移时使摘要失效。
       valueType: string
       defaultCardinality:
         minCount: 0
@@ -965,7 +1144,10 @@ domain:
       namespace: fin-market-data
       localName: bidPrice
       label: Bid Price
-      definition: Money value of the bid side of a complete QuoteObservation
+      definition: >-
+        bidPrice is the monetary amount of the bid side of a complete quote observation, used for recording the
+        buy-side quote at the observation time and belonging to the quote structure rather than a price kind.
+      cnNote: 买价，是完整报价观测买方的货币金额，用于记录观测时点的买入报价，属盘口结构字段而非价格种类。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 1
@@ -975,7 +1157,10 @@ domain:
       namespace: fin-market-data
       localName: askPrice
       label: Ask Price
-      definition: Money value of the ask side of a complete QuoteObservation
+      definition: >-
+        askPrice is the monetary amount of the ask side of a complete quote observation, used for recording the
+        sell-side quote at the observation time and belonging to the quote structure rather than a price kind.
+      cnNote: 卖价，是完整报价观测卖方的货币金额，用于记录观测时点的卖出报价，属盘口结构字段而非价格种类。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 1
@@ -985,7 +1170,10 @@ domain:
       namespace: fin-market-data
       localName: bidSize
       label: Bid Size
-      definition: non-negative Quantity available at the observed bid price
+      definition: >-
+        bidSize is the tradeable quantity corresponding to the observed bid price, used for recording the size of
+        buy-side interest at the observation time.
+      cnNote: 买量，是观测买价对应的可成交数量，用于记录买方在观测时点的挂单规模。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 1
@@ -995,7 +1183,10 @@ domain:
       namespace: fin-market-data
       localName: askSize
       label: Ask Size
-      definition: non-negative Quantity available at the observed ask price
+      definition: >-
+        askSize is the tradeable quantity corresponding to the observed ask price, used for recording the size of
+        sell-side interest at the observation time.
+      cnNote: 卖量，是观测卖价对应的可成交数量，用于记录卖方在观测时点的挂单规模。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 1
@@ -1005,7 +1196,10 @@ domain:
       namespace: fin-market-data
       localName: tradePrice
       label: Trade Price
-      definition: Money execution price reported by one TradeObservation
+      definition: >-
+        tradePrice is the monetary execution price reported by one trade observation, used for recording the actual
+        traded price.
+      cnNote: 成交价，是一笔成交观测报告的执行货币价格，用于记录实际成交价格。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 1
@@ -1015,7 +1209,10 @@ domain:
       namespace: fin-market-data
       localName: tradeSize
       label: Trade Size
-      definition: strictly positive Quantity reported by one TradeObservation
+      definition: >-
+        tradeSize is the strictly positive traded quantity reported by one trade observation, used for recording the
+        actual traded size.
+      cnNote: 成交量，是一笔成交观测报告的严格为正的成交数量，用于记录实际成交规模。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 1
@@ -1025,7 +1222,10 @@ domain:
       namespace: fin-market-data
       localName: tradeOpenPrice
       label: Trade Open Price
-      definition: first trade Money price in a TradeBar aggregation window
+      definition: >-
+        tradeOpenPrice is the monetary price of the first trade within a trade-bar aggregation window, used for
+        recording the open price of the window.
+      cnNote: 成交开盘价，是成交棒聚合窗口内首笔交易的货币价格，用于记录窗口开盘价。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 1
@@ -1035,7 +1235,10 @@ domain:
       namespace: fin-market-data
       localName: tradeHighPrice
       label: Trade High Price
-      definition: greatest trade Money price in a TradeBar aggregation window
+      definition: >-
+        tradeHighPrice is the highest trade monetary price within a trade-bar aggregation window, used for recording
+        the high price of the window.
+      cnNote: 成交最高价，是成交棒聚合窗口内最高的交易货币价格，用于记录窗口最高价。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 1
@@ -1045,7 +1248,10 @@ domain:
       namespace: fin-market-data
       localName: tradeLowPrice
       label: Trade Low Price
-      definition: least trade Money price in a TradeBar aggregation window
+      definition: >-
+        tradeLowPrice is the lowest trade monetary price within a trade-bar aggregation window, used for recording the
+        low price of the window.
+      cnNote: 成交最低价，是成交棒聚合窗口内最低的交易货币价格，用于记录窗口最低价。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 1
@@ -1055,7 +1261,10 @@ domain:
       namespace: fin-market-data
       localName: tradeClosePrice
       label: Trade Close Price
-      definition: last trade Money price in a TradeBar aggregation window
+      definition: >-
+        tradeClosePrice is the monetary price of the last trade within a trade-bar aggregation window, used for
+        recording the close price of the window.
+      cnNote: 成交收盘价，是成交棒聚合窗口内末笔交易的货币价格，用于记录窗口收盘价。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 1
@@ -1065,7 +1274,10 @@ domain:
       namespace: fin-market-data
       localName: tradeVolume
       label: Trade Volume
-      definition: non-negative aggregate Quantity of trades contributing to one TradeBar
+      definition: >-
+        tradeVolume is the aggregate traded quantity of all trades within a trade-bar aggregation window, used for
+        recording the cumulative size of the window.
+      cnNote: 成交总量，是成交棒聚合窗口内所有成交的聚合成交量，用于记录窗口累计规模。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 1
@@ -1075,7 +1287,10 @@ domain:
       namespace: fin-market-data
       localName: bidOpenPrice
       label: Bid Open Price
-      definition: first bid-side Money price in a QuoteBar aggregation window
+      definition: >-
+        bidOpenPrice is the bid-side monetary price first observed within a quote-bar aggregation window, used for
+        recording the bid-side open price.
+      cnNote: 买方开盘价，是报价棒聚合窗口内首观测的买方货币价格，用于记录买侧开盘价。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 1
@@ -1085,7 +1300,10 @@ domain:
       namespace: fin-market-data
       localName: bidHighPrice
       label: Bid High Price
-      definition: greatest bid-side Money price in a QuoteBar aggregation window
+      definition: >-
+        bidHighPrice is the highest bid-side monetary price within a quote-bar aggregation window, used for recording
+        the bid-side high price.
+      cnNote: 买方最高价，是报价棒聚合窗口内最高的买方货币价格，用于记录买侧最高价。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 1
@@ -1095,7 +1313,10 @@ domain:
       namespace: fin-market-data
       localName: bidLowPrice
       label: Bid Low Price
-      definition: least bid-side Money price in a QuoteBar aggregation window
+      definition: >-
+        bidLowPrice is the lowest bid-side monetary price within a quote-bar aggregation window, used for recording the
+        bid-side low price.
+      cnNote: 买方最低价，是报价棒聚合窗口内最低的买方货币价格，用于记录买侧最低价。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 1
@@ -1105,7 +1326,10 @@ domain:
       namespace: fin-market-data
       localName: bidClosePrice
       label: Bid Close Price
-      definition: last bid-side Money price in a QuoteBar aggregation window
+      definition: >-
+        bidClosePrice is the bid-side monetary price last observed within a quote-bar aggregation window, used for
+        recording the bid-side close price.
+      cnNote: 买方收盘价，是报价棒聚合窗口内末观测的买方货币价格，用于记录买侧收盘价。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 1
@@ -1115,7 +1339,10 @@ domain:
       namespace: fin-market-data
       localName: askOpenPrice
       label: Ask Open Price
-      definition: first ask-side Money price in a QuoteBar aggregation window
+      definition: >-
+        askOpenPrice is the ask-side monetary price first observed within a quote-bar aggregation window, used for
+        recording the ask-side open price.
+      cnNote: 卖方开盘价，是报价棒聚合窗口内首观测的卖方货币价格，用于记录卖侧开盘价。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 1
@@ -1125,7 +1352,10 @@ domain:
       namespace: fin-market-data
       localName: askHighPrice
       label: Ask High Price
-      definition: greatest ask-side Money price in a QuoteBar aggregation window
+      definition: >-
+        askHighPrice is the highest ask-side monetary price within a quote-bar aggregation window, used for recording
+        the ask-side high price.
+      cnNote: 卖方最高价，是报价棒聚合窗口内最高的卖方货币价格，用于记录卖侧最高价。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 1
@@ -1135,7 +1365,10 @@ domain:
       namespace: fin-market-data
       localName: askLowPrice
       label: Ask Low Price
-      definition: least ask-side Money price in a QuoteBar aggregation window
+      definition: >-
+        askLowPrice is the lowest ask-side monetary price within a quote-bar aggregation window, used for recording the
+        ask-side low price.
+      cnNote: 卖方最低价，是报价棒聚合窗口内最低的卖方货币价格，用于记录卖侧最低价。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 1
@@ -1145,7 +1378,10 @@ domain:
       namespace: fin-market-data
       localName: askClosePrice
       label: Ask Close Price
-      definition: last ask-side Money price in a QuoteBar aggregation window
+      definition: >-
+        askClosePrice is the ask-side monetary price last observed within a quote-bar aggregation window, used for
+        recording the ask-side close price.
+      cnNote: 卖方收盘价，是报价棒聚合窗口内末观测的卖方货币价格，用于记录卖侧收盘价。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 1
@@ -1155,7 +1391,10 @@ domain:
       namespace: fin-market-data
       localName: lastBidSize
       label: Last Bid Size
-      definition: non-negative representative bid Quantity preserved by a QuoteBar
+      definition: >-
+        lastBidSize is the representative bid-side quantity preserved by a quote bar, used for recording the bid-side
+        size at the end of the window.
+      cnNote: 末次买量，是报价棒保留的代表性买方数量，用于记录窗口末尾买侧规模。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 1
@@ -1165,7 +1404,10 @@ domain:
       namespace: fin-market-data
       localName: lastAskSize
       label: Last Ask Size
-      definition: non-negative representative ask Quantity preserved by a QuoteBar
+      definition: >-
+        lastAskSize is the representative ask-side quantity preserved by a quote bar, used for recording the ask-side
+        size at the end of the window.
+      cnNote: 末次卖量，是报价棒保留的代表性卖方数量，用于记录窗口末尾卖侧规模。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 1
@@ -1175,7 +1417,10 @@ domain:
       namespace: fin-market-data
       localName: barSpecificationId
       label: Bar Specification Identifier
-      definition: source-stream-scoped non-empty logical identifier for a BarSpecification
+      definition: >-
+        barSpecificationId is a non-empty logical identifier scoped to a source data stream, used for uniquely
+        identifying one bar specification within a data stream.
+      cnNote: K 线规格标识，是来源数据流范围内非空的逻辑标识，用于在某数据流下唯一识别一条 K 线规格。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1186,7 +1431,10 @@ domain:
       namespace: fin-market-data
       localName: barAggregation
       label: Bar Aggregation
-      definition: one closed BarAggregation member selecting time, tick, volume, notional, range, or renko aggregation
+      definition: >-
+        barAggregation is a closed member that selects the aggregation kind of a bar, used for distinguishing time,
+        tick, volume, notional, range, or renko aggregation.
+      cnNote: K 线聚合方式，是选择 K 线聚合种类的封闭成员，用于区分时间、笔数、成交量、名义、区间或砖型等聚合方式。
       valueType: https://axiolune.ai/ontology/finance/market-data/BarAggregation
       defaultCardinality:
         minCount: 1
@@ -1196,7 +1444,10 @@ domain:
       namespace: fin-market-data
       localName: barPriceBasis
       label: Bar Price Basis
-      definition: one closed BarPriceBasis member distinguishing trade from paired bid-and-ask bars
+      definition: >-
+        barPriceBasis is a closed discriminator that distinguishes the price semantics of a bar, used for separating
+        trade OHLCV bars from paired bid-and-ask OHLC bars.
+      cnNote: K 线价格基准，是区分棒价格语义的封闭判别成员，用于区分成交 OHLCV 与成对买卖盘 OHLC 两种棒的语义。
       valueType: https://axiolune.ai/ontology/finance/market-data/BarPriceBasis
       defaultCardinality:
         minCount: 1
@@ -1206,7 +1457,10 @@ domain:
       namespace: fin-market-data
       localName: barSourceTimeZone
       label: Bar Source Time Zone
-      definition: canonical IANA time-zone identifier used to derive source aggregation boundaries
+      definition: >-
+        barSourceTimeZone is a canonical IANA time-zone identifier used for deriving aggregation boundaries, used for
+        fixing the time-zone semantics of the source calendar.
+      cnNote: K 线来源时区，是用于推导聚合边界的规范时区标识，用于规定来源日历的时区语义。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1217,7 +1471,10 @@ domain:
       namespace: fin-market-data
       localName: barTimestampConvention
       label: Bar Timestamp Convention
-      definition: closed member stating whether observedAt denotes interval start or interval end
+      definition: >-
+        barTimestampConvention is a closed member stating whether the observedAt of a time bar denotes the interval
+        start or the interval end, used for unifying the timestamp semantics of time bars.
+      cnNote: K 线时间戳约定，是声明时间棒观测时间戳指向区间起点还是终点的封闭成员，用于统一时间棒的戳记语义。
       valueType: https://axiolune.ai/ontology/finance/market-data/BarTimestampConvention
       defaultCardinality:
         minCount: 1
@@ -1227,7 +1484,10 @@ domain:
       namespace: fin-market-data
       localName: barInterval
       label: Bar Interval
-      definition: strictly positive duration required only for time aggregation
+      definition: >-
+        barInterval is a strictly positive duration required for time-bar aggregation, used for specifying the
+        aggregation period of a time bar.
+      cnNote: K 线区间长度，是时间棒聚合所需的严格为正的时长，用于规定时间棒的聚合周期。
       valueType: duration
       defaultCardinality:
         minCount: 0
@@ -1237,7 +1497,10 @@ domain:
       namespace: fin-market-data
       localName: barThreshold
       label: Bar Threshold
-      definition: strictly positive Quantity required only for non-time aggregation
+      definition: >-
+        barThreshold is a strictly positive quantity required for non-time-bar aggregation, used for specifying the
+        trigger threshold of a non-time bar.
+      cnNote: K 线阈值，是非时间棒聚合所需的严格为正的数量，用于规定非时间棒的触发阈值。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 0
@@ -1247,7 +1510,10 @@ domain:
       namespace: fin-market-data
       localName: intervalStart
       label: Interval Start
-      definition: inclusive UTC instant at which a time bar aggregation window starts
+      definition: >-
+        intervalStart is the UTC instant at which a time-bar aggregation window starts, used for marking the left
+        boundary of the bar as a half-open interval.
+      cnNote: 区间起点，是时间棒聚合窗口起始的 UTC 时间点，用于以半开区间界定棒的左边界。
       valueType: instant
       defaultCardinality:
         minCount: 0
@@ -1257,7 +1523,10 @@ domain:
       namespace: fin-market-data
       localName: intervalEnd
       label: Interval End
-      definition: exclusive UTC instant at which a time bar aggregation window ends
+      definition: >-
+        intervalEnd is the UTC instant at which a time-bar aggregation window ends, used for marking the right
+        boundary of the bar as a half-open interval.
+      cnNote: 区间终点，是时间棒聚合窗口结束的 UTC 时间点，用于以半开区间界定棒的右边界。
       valueType: instant
       defaultCardinality:
         minCount: 0
@@ -1267,7 +1536,10 @@ domain:
       namespace: fin-market-data
       localName: barSequence
       label: Bar Sequence
-      definition: non-negative source-stream sequence required only for a non-time bar
+      definition: >-
+        barSequence is a non-negative sequence number of a non-time bar within a data stream, used for providing an
+        order position for a non-time bar.
+      cnNote: 棒序号，是非时间棒在数据流中的非负序号，用于为非时间棒提供顺序定位。
       valueType: integer
       defaultCardinality:
         minCount: 0
@@ -1277,7 +1549,10 @@ domain:
       namespace: fin-market-data
       localName: firstContributingEventAt
       label: First Contributing Event At
-      definition: UTC occurrence instant of the first source event in a non-time bar
+      definition: >-
+        firstContributingEventAt is the UTC instant at which the first source event occurs within a non-time bar,
+        used for recording the earliest event boundary of the bar.
+      cnNote: 首贡献事件时间，是非时间棒内首个来源事件发生的 UTC 时刻，用于记录棒的最早事件边界。
       valueType: instant
       defaultCardinality:
         minCount: 0
@@ -1287,7 +1562,10 @@ domain:
       namespace: fin-market-data
       localName: lastContributingEventAt
       label: Last Contributing Event At
-      definition: UTC occurrence instant of the last source event in a non-time bar
+      definition: >-
+        lastContributingEventAt is the UTC instant at which the last source event occurs within a non-time bar, used
+        for recording the latest event boundary of the bar.
+      cnNote: 末贡献事件时间，是非时间棒内末个来源事件发生的 UTC 时刻，用于记录棒的最晚事件边界。
       valueType: instant
       defaultCardinality:
         minCount: 0
@@ -1297,7 +1575,10 @@ domain:
       namespace: fin-market-data
       localName: qualityFindingKind
       label: Quality Finding Kind
-      definition: one closed MarketDataQualityFindingKind member whose predicate must hold exactly
+      definition: >-
+        qualityFindingKind is a closed member that annotates the predicate type of a quality finding, used for
+        declaring the exact judgment type that one quality finding executes.
+      cnNote: 质量发现种类，是标注质量发现谓词类型的封闭成员，用于声明一条质量发现所执行的精确判定类型。
       valueType: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFindingKind
       defaultCardinality:
         minCount: 1
@@ -1308,8 +1589,9 @@ domain:
       localName: affectedSubjectDigest
       label: Affected Subject Digest
       definition: >-
-        section-5.8 framed iriSetDigest over the UTF-8-byte-sorted unique exact-version IRI set; finding kind is a
-        separate logical-key component
+        affectedSubjectDigest is a digest over the unique exact-version IRI set of the affected observation versions,
+        used for locking the subject set of a quality finding.
+      cnNote: 受影响主体摘要，是对受影响观测版本唯一精确版本 IRI 集合的摘要，用于锁定质量发现的主体集合。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1320,11 +1602,138 @@ domain:
       namespace: fin-market-data
       localName: fxRate
       label: FX Rate
-      definition: strictly positive dimensionless Quantity meaning quote-currency units per one base-currency unit
+      definition: >-
+        fxRate is a strictly positive dimensionless quantity expressing the ratio of quote-currency units to one
+        base-currency unit, used for recording the ratio value of an FX rate observation.
+      cnNote: 汇率，是表示一单位基准货币对应若干计价货币单位兑换比率的严格为正的无量纲量，用于记录汇率观测的比率值。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 1
         maxCount: 1
+    sourceSessionId:
+      iri: https://axiolune.ai/ontology/finance/market-data/sourceSessionId
+      namespace: fin-market-data
+      localName: sourceSessionId
+      label: Source Session Identifier
+      definition: SourceSessionId is an optional identifier for the trading session or trading day partition under which a source record was produced, used for enriching observation identity with session context
+      cnNote: 来源会话标识，是来源记录所属交易会话或交易日分区的可选标识，用于以会话上下文丰富观测身份。
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    sourceChannelId:
+      iri: https://axiolune.ai/ontology/finance/market-data/sourceChannelId
+      namespace: fin-market-data
+      localName: sourceChannelId
+      label: Source Channel Identifier
+      definition: SourceChannelId is an optional identifier for the data channel or feed partition under which a source record was produced, used for enriching observation identity with channel context
+      cnNote: 来源通道标识，是来源记录所属数据通道或馈源分区的可选标识，用于以通道上下文丰富观测身份。
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    updateAction:
+      iri: https://axiolune.ai/ontology/finance/market-data/updateAction
+      namespace: fin-market-data
+      localName: updateAction
+      label: Update Action
+      definition: UpdateAction is an optional closed member that classifies the lifecycle action of a source market-data record, used for distinguishing new, change, delete, and correct actions
+      cnNote: 更新动作，是分类来源行情记录生命周期动作的可选封闭成员，用于区分新增、变更、删除与更正动作。
+      valueType: https://axiolune.ai/ontology/finance/market-data/UpdateAction
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    marketEventAt:
+      iri: https://axiolune.ai/ontology/finance/market-data/marketEventAt
+      namespace: fin-market-data
+      localName: marketEventAt
+      label: Market Event At
+      definition: MarketEventAt is an optional UTC instant recording the source-declared market event timestamp (e.g., execution time, quote time), distinct from the TemporalFact validFrom which is platform-assigned per business validity
+      cnNote: 市场事件时间，是记录来源声明的市场事件时间戳（如执行时间、报价时间）的可选 UTC 时刻，区别于平台按业务有效期赋予的 TemporalFact validFrom。
+      valueType: instant
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    fxRateConvention:
+      iri: https://axiolune.ai/ontology/finance/market-data/fxRateConvention
+      namespace: fin-market-data
+      localName: fxRateConvention
+      label: FX Rate Convention
+      definition: FXRateConvention is an optional closed member that classifies the settlement convention of an FX rate observation, used for distinguishing spot, forward, NDF, and swap
+      cnNote: 汇率约定，是分类汇率观测结算约定的可选封闭成员，用于区分即期、远期、无本金交割远期与掉期。
+      valueType: https://axiolune.ai/ontology/finance/market-data/FXRateConvention
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    fxRateKind:
+      iri: https://axiolune.ai/ontology/finance/market-data/fxRateKind
+      namespace: fin-market-data
+      localName: fxRateKind
+      label: FX Rate Kind
+      definition: FXRateKind is an optional closed member that classifies the nature of an FX rate observation, used for distinguishing tradeable, reference, fixing, and benchmark rates
+      cnNote: 汇率种类，是分类汇率观测性质的可选封闭成员，用于区分可交易、参考、定盘与基准汇率。
+      valueType: https://axiolune.ai/ontology/finance/market-data/FXRateKind
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    fxValueDate:
+      iri: https://axiolune.ai/ontology/finance/market-data/fxValueDate
+      namespace: fin-market-data
+      localName: fxValueDate
+      label: FX Value Date
+      definition: FXValueDate is an optional date for the settlement or value date of an FX rate, used for distinguishing spot, forward, and NDF value dates
+      cnNote: 汇率交割日，是汇率结算或交割日期的可选日期，用于区分即期、远期与无本金交割远期的交割日。
+      valueType: date
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    barThresholdKind:
+      iri: https://axiolune.ai/ontology/finance/market-data/barThresholdKind
+      namespace: fin-market-data
+      localName: barThresholdKind
+      label: Bar Threshold Kind
+      definition: BarThresholdKind is an optional closed member that classifies the threshold type of a non-time bar, used for strongly typing the bar threshold by its dimension
+      cnNote: K 线阈值种类，是分类非时间棒阈值类型的可选封闭成员，用于按量纲强类型化棒的触发阈值。
+      valueType: https://axiolune.ai/ontology/finance/market-data/BarThresholdKind
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    barThresholdNotional:
+      iri: https://axiolune.ai/ontology/finance/market-data/barThresholdNotional
+      namespace: fin-market-data
+      localName: barThresholdNotional
+      label: Bar Threshold Notional
+      definition: BarThresholdNotional is an optional MonetaryAmount threshold for notional-aggregation bars, used when barThresholdKind is notional
+      cnNote: K 线名义阈值，是名义聚合棒的可选货币金额阈值，在 barThresholdKind 为 notional 时使用。
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    barThresholdPriceRange:
+      iri: https://axiolune.ai/ontology/finance/market-data/barThresholdPriceRange
+      namespace: fin-market-data
+      localName: barThresholdPriceRange
+      label: Bar Threshold Price Range
+      definition: BarThresholdPriceRange is an optional MonetaryAmount threshold for price-range-aggregation bars, used when barThresholdKind is priceRange or renkoBrick
+      cnNote: K 线价格区间阈值，是价格区间聚合棒的可选货币金额阈值，在 barThresholdKind 为 priceRange 或 renkoBrick 时使用。
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    barThresholdEventCount:
+      iri: https://axiolune.ai/ontology/finance/market-data/barThresholdEventCount
+      namespace: fin-market-data
+      localName: barThresholdEventCount
+      label: Bar Threshold Event Count
+      definition: BarThresholdEventCount is an optional positive integer threshold for event-count-aggregation bars, used when barThresholdKind is eventCount
+      cnNote: K 线事件计数阈值，是事件计数聚合棒的可选正整数阈值，在 barThresholdKind 为 eventCount 时使用。
+      valueType: integer
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+
   identifierTypes: {}
   codeLists:
     MarketDataStreamPurpose:
@@ -1332,7 +1741,10 @@ domain:
       namespace: fin-market-data
       localName: MarketDataStreamPurpose
       label: Market Data Stream Purpose
-      definition: closed event-kind contract for records admitted by one MarketDataStream version
+      definition: >-
+        MarketDataStreamPurpose is a closed controlled vocabulary that limits the kinds of records a data stream
+        accepts, used for declaring the purpose contract at the data-stream level.
+      cnNote: 市场数据流用途词表，是限定数据流所接受记录种类的封闭受控词汇，用于在数据流层声明其用途契约。
       vocabulary: Market Data Stream Purpose
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1367,7 +1779,10 @@ domain:
       namespace: fin-market-data
       localName: SourceRecordRevisionMode
       label: Source Record Revision Mode
-      definition: closed policy determining whether a provider record can form a declared correction chain
+      definition: >-
+        SourceRecordRevisionMode is a closed policy vocabulary that determines whether a provider record can form a
+        revision chain, used for declaring the revision semantics of a data stream.
+      cnNote: 来源记录修订模式词表，是判定提供方记录能否形成修订链的封闭策略词汇，用于声明数据流的修订语义。
       vocabulary: Source Record Revision Mode
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1387,8 +1802,10 @@ domain:
       localName: PriceKind
       label: Price Kind
       definition: >-
-        Closed price semantics grouped by tick, reference, and derived member IRI paths. Bid and ask are deliberately
-        absent because quote side is structural.
+        PriceKind is a closed vocabulary of price semantics grouped into tick, reference, and derived categories, used
+        for annotating the type of a price observation, with bid and ask deliberately excluded because they belong to
+        the quote structure.
+      cnNote: 价格种类词表，是按即时、参考与衍生三类划分的封闭价格语义词汇，用于标注价格观测类型，买盘卖盘因属结构字段而刻意排除。
       vocabulary: Price Kind
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1435,7 +1852,10 @@ domain:
       namespace: fin-market-data
       localName: BarAggregation
       label: Bar Aggregation
-      definition: closed aggregation branch selected by a BarSpecification
+      definition: >-
+        BarAggregation is a closed aggregation-branch vocabulary selected by a bar specification, used for
+        distinguishing time, tick, volume, notional, range, or renko aggregation.
+      cnNote: K 线聚合方式词表，是供 K 线规格选择的封闭聚合分支词汇，用于区分时间、笔数、成交量、名义、区间与砖型等聚合方式。
       vocabulary: Bar Aggregation
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1470,7 +1890,10 @@ domain:
       namespace: fin-market-data
       localName: BarPriceBasis
       label: Bar Price Basis
-      definition: closed discriminator between trade OHLCV and paired quote-side OHLC semantics
+      definition: >-
+        BarPriceBasis is a closed discriminator vocabulary that distinguishes trade OHLCV from paired bid-and-ask OHLC
+        semantics, used for declaring the price semantics of a bar.
+      cnNote: K 线价格基准词表，是区分成交 OHLCV 与成对买卖盘 OHLC 的封闭判别词汇，用于声明一根棒的价格语义。
       vocabulary: Bar Price Basis
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1489,7 +1912,10 @@ domain:
       namespace: fin-market-data
       localName: BarTimestampConvention
       label: Bar Timestamp Convention
-      definition: closed rule identifying which boundary a time bar's observedAt value denotes
+      definition: >-
+        BarTimestampConvention is a closed rule vocabulary stating whether the observedAt of a time bar denotes the
+        interval start or the interval end, used for unifying the timestamp semantics of time bars.
+      cnNote: K 线时间戳约定词表，是声明时间棒观测时间戳指向区间起点还是终点的封闭规则词汇，用于统一时间棒的戳记语义。
       vocabulary: Bar Timestamp Convention
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1508,7 +1934,10 @@ domain:
       namespace: fin-market-data
       localName: MarketDataQualityFindingKind
       label: Market Data Quality Finding Kind
-      definition: closed generated outcomes whose exact predicates and affected-version sets are executable
+      definition: >-
+        MarketDataQualityFindingKind is a closed vocabulary of executable generated outcomes, used for precisely
+        describing the three quality-judgment types of crossed quote, duplicate conflict, and ordering collision.
+      cnNote: 市场数据质量发现种类词表，是封闭的可执行生成结果词汇，用于精确描述交叉报价、重复冲突与排序碰撞三类质量判定。
       vocabulary: Market Data Quality Finding Kind
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1526,6 +1955,122 @@ domain:
           notation: orderingCollision
           label: Ordering Collision
           definition: at least two observations share the full canonical ordering tuple but have different canonical content
+    UpdateAction:
+      iri: https://axiolune.ai/ontology/finance/market-data/UpdateAction
+      namespace: fin-market-data
+      localName: UpdateAction
+      label: Update Action
+      definition: UpdateAction is a closed vocabulary that classifies the lifecycle action of a source market-data record, used for distinguishing new, change, delete, and correct actions
+      cnNote: 更新动作词表，是分类来源行情记录生命周期动作的封闭词汇，用于区分新增、变更、删除与更正动作。
+      vocabulary: Update Action
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-data/UpdateAction/value/new
+          notation: new
+          label: New
+          definition: source record is a new observation or bar
+        - iri: https://axiolune.ai/ontology/finance/market-data/UpdateAction/value/change
+          notation: change
+          label: Change
+          definition: source record is a revision or correction of an existing observation
+        - iri: https://axiolune.ai/ontology/finance/market-data/UpdateAction/value/delete
+          notation: delete
+          label: Delete
+          definition: source record is a deletion or retraction of an existing observation
+        - iri: https://axiolune.ai/ontology/finance/market-data/UpdateAction/value/correct
+          notation: correct
+          label: Correct
+          definition: source record is a trade break or correction referencing a prior observation
+    FXRateConvention:
+      iri: https://axiolune.ai/ontology/finance/market-data/FXRateConvention
+      namespace: fin-market-data
+      localName: FXRateConvention
+      label: FX Rate Convention
+      definition: FXRateConvention is a closed vocabulary that classifies the settlement convention of an FX rate, used for distinguishing spot, forward, NDF, and other FX rate types
+      cnNote: 汇率约定词表，是分类汇率结算约定的封闭词汇，用于区分即期、远期、无本金交割远期等汇率类型。
+      vocabulary: FX Rate Convention
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-data/FXRateConvention/value/spot
+          notation: spot
+          label: Spot
+          definition: spot FX rate with near-term settlement (typically T+2)
+        - iri: https://axiolune.ai/ontology/finance/market-data/FXRateConvention/value/forward
+          notation: forward
+          label: Forward
+          definition: forward FX rate with a specified value date beyond spot
+        - iri: https://axiolune.ai/ontology/finance/market-data/FXRateConvention/value/ndf
+          notation: ndf
+          label: NDF
+          definition: non-deliverable forward FX rate settled in a single currency
+        - iri: https://axiolune.ai/ontology/finance/market-data/FXRateConvention/value/swap
+          notation: swap
+          label: FX Swap
+          definition: FX swap combining spot and forward legs
+    FXRateKind:
+      iri: https://axiolune.ai/ontology/finance/market-data/FXRateKind
+      namespace: fin-market-data
+      localName: FXRateKind
+      label: FX Rate Kind
+      definition: FXRateKind is a closed vocabulary that classifies the nature of an FX rate observation, used for distinguishing tradeable, reference, fixing, and benchmark rates
+      cnNote: 汇率种类词表，是分类汇率观测性质的封闭词汇，用于区分可交易、参考、定盘与基准汇率。
+      vocabulary: FX Rate Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-data/FXRateKind/value/tradeable
+          notation: tradeable
+          label: Tradeable
+          definition: rate at which a trade can be executed
+        - iri: https://axiolune.ai/ontology/finance/market-data/FXRateKind/value/reference
+          notation: reference
+          label: Reference
+          definition: published reference rate such as ECB reference rate, not directly tradeable
+        - iri: https://axiolune.ai/ontology/finance/market-data/FXRateKind/value/fixing
+          notation: fixing
+          label: Fixing
+          definition: fixing rate used for valuation or settlement at a specified time
+        - iri: https://axiolune.ai/ontology/finance/market-data/FXRateKind/value/benchmark
+          notation: benchmark
+          label: Benchmark
+          definition: benchmark rate such as WMR or ECB fixing used for portfolio valuation
+    BarThresholdKind:
+      iri: https://axiolune.ai/ontology/finance/market-data/BarThresholdKind
+      namespace: fin-market-data
+      localName: BarThresholdKind
+      label: Bar Threshold Kind
+      definition: BarThresholdKind is a closed vocabulary that classifies the threshold type of a non-time bar, used for strongly typing the bar threshold by its dimension
+      cnNote: K 线阈值种类词表，是分类非时间棒阈值类型的封闭词汇，用于按量纲强类型化棒的触发阈值。
+      vocabulary: Bar Threshold Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-data/BarThresholdKind/value/eventCount
+          notation: eventCount
+          label: Event Count
+          definition: threshold is a positive integer count of contributing events
+        - iri: https://axiolune.ai/ontology/finance/market-data/BarThresholdKind/value/volume
+          notation: volume
+          label: Volume
+          definition: threshold is a positive QuantityValue of traded volume
+        - iri: https://axiolune.ai/ontology/finance/market-data/BarThresholdKind/value/notional
+          notation: notional
+          label: Notional
+          definition: threshold is a positive MonetaryAmount of notional value
+        - iri: https://axiolune.ai/ontology/finance/market-data/BarThresholdKind/value/priceRange
+          notation: priceRange
+          label: Price Range
+          definition: threshold is a positive MonetaryAmount of price difference
+        - iri: https://axiolune.ai/ontology/finance/market-data/BarThresholdKind/value/renkoBrick
+          notation: renkoBrick
+          label: Renko Brick
+          definition: threshold is a positive MonetaryAmount of brick size
   constraints:
     MarketDataStreamIdentityContract:
       iri: https://axiolune.ai/ontology/finance/market-data/MarketDataStreamIdentityContract

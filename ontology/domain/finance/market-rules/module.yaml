@@ -2,11 +2,16 @@ module:
   moduleIri: https://axiolune.ai/ontology/finance/market-rules
   baseIri: https://axiolune.ai/ontology/finance/market-rules/
   preferredPrefix: fin-market-rules
-  version: 1.0.0
+  version: 1.1.0
   label: Market Rules
   definition: >-
-    versioned market-rule sets, executable clauses and parameters, explicit applicability, precedence and conflict
-    facts, and corporate-action schedule semantics for the finance domain
+    Market Rules, is a domain module that defines trading rules, price limits, circuit breakers, settlement
+    conventions, corporate-action schedule rules, and rule selection semantics in ontology engineering, used for
+    providing formalizable and verifiable rule definitions for the operating rules of trading venues. The module
+    carries the executable rule catalog and applicability scope; rule selection outcomes (resolved selection,
+    no-applicable-rule, conflict) are modeled as first-class facts so that evaluation is auditable rather than
+    silently resolved.
+  cnNote: 市场规则模块，是本体工程中定义交易规则、价格限制、熔断、结算约定、公司行为日程规则与规则选择语义的领域模块，旨在为交易场所的运行规则提供可形式化、可校验的规则定义。模块承载可执行规则目录与适用范围；规则选择结果（已消解选择、无适用规则、冲突）作为一等事实建模，使评估可审计而非静默消解。
   imports:
     - moduleIri: https://axiolune.ai/ontology/finance/foundation
     - moduleIri: https://axiolune.ai/ontology/finance/market-structure
@@ -24,10 +29,10 @@ domain:
       localName: MarketRuleSet
       label: Market Rule Set
       definition: >-
-        versioned collection of market rules maintained by one exact authority version under one authority-scoped set
-        identifier; logical identity is exactly (authority logical IRI, ruleSetId), its immutable fact version is the
-        comparison boundary for applicability priority, and its authoritative evidence is the sole ProvenancedFact
-        source
+        Market Rule Set, is a versioned collection of market rules maintained by a single authority under one
+        authority-scoped set identifier, used for organizing a set of executable market rules into a logical entity
+        with comparable applicability priority, with the authoritative source serving as the sole evidence.
+      cnNote: 市场规则集，是由单一权威在权威作用域标识下维护的带版本市场规则集合，用于把一组可执行市场规则组织为可比较适用优先级的逻辑实体，并以权威来源作为唯一证据。
       superTypes: []
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/market-rules/ruleSetId
@@ -42,9 +47,10 @@ domain:
       localName: MarketRule
       label: Market Rule
       definition: >-
-        versioned rule with one authority-scoped identifier, one reviewed rule kind, one exact containing RuleSet
-        version, one authoritative ProvenancedFact source, and one or more typed clauses; the standard three-axis fact
-        version is the only stored rule revision and logical identity is exactly (RuleSet logical IRI, ruleId)
+        Market Rule, is a versioned executable rule belonging to one exact rule-set version, used for expressing a
+        class of market-behavior constraint through one reviewed rule kind and several typed clauses, with the
+        authoritative source serving as the sole evidence.
+      cnNote: 市场规则，是归属于一个确切规则集版本的带版本可执行规则，用于以权威来源为唯一证据，通过一种经审阅的规则类型与若干类型化条款表达某一类市场行为约束。
       superTypes: []
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/market-rules/ruleId
@@ -65,9 +71,13 @@ domain:
       localName: RuleClause
       label: Rule Clause
       definition: >-
-        ordered, versioned executable clause owned by one exact MarketRule version, with explicit range boundaries and
-        ordering that is checked against the owning rule's explicit gap policy rather than an implicit scalar
-        interpretation; logical identity is exactly (MarketRule logical IRI, ruleClauseId)
+        Rule Clause, is the abstract ordered executable clause superclass belonging to one exact market-rule version,
+        used for carrying the concrete executable semantics of a rule. Concrete clause families specialize this class:
+        range clauses carry an input interval with explicit boundaries and endpoint inclusivity and check ordering
+        completeness against the rule's gap policy; trigger, date, and entitlement clauses carry their own typed
+        semantics without requiring an input range. The bound and inclusivity attributes are optional here and apply
+        only to range-bearing clauses.
+      cnNote: 规则条款，是隶属于一个确切市场规则版本的有序可执行条款抽象超类，用于承载规则的具体可执行语义。具体条款族特化此类：区间条款携带带显式边界与端点包含性的输入区间并按规则间隙策略检查排序完整性；触发、日期与权益条款携带各自类型化语义且不要求输入区间。界与包含性属性在此为可选且仅适用于承载区间的条款。
       superTypes: []
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/market-rules/ruleClauseId
@@ -83,10 +93,10 @@ domain:
           minCount: 0
           maxCount: 1
         - attribute: https://axiolune.ai/ontology/finance/market-rules/clauseLowerInclusive
-          minCount: 1
+          minCount: 0
           maxCount: 1
         - attribute: https://axiolune.ai/ontology/finance/market-rules/clauseUpperInclusive
-          minCount: 1
+          minCount: 0
           maxCount: 1
       patternBindings:
         - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
@@ -97,9 +107,10 @@ domain:
       localName: RuleParameter
       label: Rule Parameter
       definition: >-
-        typed executable parameter owned by one exact RuleClause version and populated by exactly one of Money,
-        Quantity, reviewed CodeValue, or an exact referenced RuleClause version; logical identity is exactly (RuleClause
-        logical IRI, ruleParameterId)
+        Rule Parameter, is a typed executable parameter belonging to one exact rule-clause version, used for supplying
+        the clause with a money amount, a quantity, a code value, or a precise reference to another clause version in a
+        mutually exclusive, choose-one manner.
+      cnNote: 规则参数，是隶属于一个确切规则条款版本的类型化可执行参数，用于以互斥择一的方式为条款提供金额、数量、代码值或对另一条款版本的精确引用。
       superTypes: []
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/market-rules/ruleParameterId
@@ -122,7 +133,10 @@ domain:
       namespace: fin-market-rules
       localName: TickSizeClause
       label: Tick Size Clause
-      definition: ordered RuleClause that supplies one positive price-increment Quantity for its non-overlapping range
+      definition: >-
+        Tick Size Clause, is an ordered rule clause that supplies a single positive price-increment quantity, used for
+        specifying the minimum quoting step within a non-overlapping quoting range.
+      cnNote: 最小价位变动条款，是提供单一正价格增量数量的有序规则条款，用于在互不重叠的报价区间内规定最小报价步长。
       superTypes:
         - https://axiolune.ai/ontology/finance/market-rules/RuleClause
       attributeUses:
@@ -137,7 +151,10 @@ domain:
       namespace: fin-market-rules
       localName: LotSizeClause
       label: Lot Size Clause
-      definition: ordered RuleClause that supplies one positive order-quantity increment for its non-overlapping range
+      definition: >-
+        Lot Size Clause, is an ordered rule clause that supplies a single positive order-quantity increment, used for
+        specifying the minimum order-quantity unit within a non-overlapping quoting range.
+      cnNote: 最小手数条款，是提供单一正申报数量增量的有序规则条款，用于在互不重叠的报价区间内规定最小申报数量单位。
       superTypes:
         - https://axiolune.ai/ontology/finance/market-rules/RuleClause
       attributeUses:
@@ -153,8 +170,10 @@ domain:
       localName: PriceLimitClause
       label: Price Limit Clause
       definition: >-
-        ordered RuleClause that supplies exactly one percentage Quantity or Money amount boundary relative to the rule's
-        reviewed reference-price method
+        Price Limit Clause, is an ordered rule clause that provides a single percentage or money-amount boundary
+        relative to the rule's reviewed reference-price method, used for setting price up/down limits within a given
+        range.
+      cnNote: 价格限制条款，是相对于规则所审阅的参考价方法提供单一百分比或金额边界的有序规则条款，用于在给定区间内设定价格涨跌限幅。
       superTypes:
         - https://axiolune.ai/ontology/finance/market-rules/RuleClause
       attributeUses:
@@ -172,7 +191,11 @@ domain:
       namespace: fin-market-rules
       localName: CircuitBreakerClause
       label: Circuit Breaker Clause
-      definition: ordered RuleClause containing one positive trigger threshold and one non-negative halt-duration Quantity
+      definition: >-
+        Circuit Breaker Clause, is an ordered rule clause that contains a single positive trigger threshold and a
+        single non-negative halt duration, used for triggering an executable temporary market halt when price movement
+        hits the threshold.
+      cnNote: 熔断条款，是包含单一正触发阈值与单一非负暂停时长的有序规则条款，用于在价格波动触及阈值时触发可执行的临时停市。
       superTypes:
         - https://axiolune.ai/ontology/finance/market-rules/RuleClause
       attributeUses:
@@ -191,8 +214,10 @@ domain:
       localName: SettlementCycleClause
       label: Settlement Cycle Clause
       definition: >-
-        RuleClause carrying a non-negative business-day Quantity from trade date to contractual settlement date; it is
-        distinct from any resale restriction
+        Settlement Cycle Clause, is a rule clause that carries a non-negative business-day quantity from the trade date
+        to the contractual settlement date, used for specifying the settlement cycle and distinct from any resale
+        restriction.
+      cnNote: 结算周期条款，是承载交易日到合约结算日之间非负营业日数量的规则条款，用于规定交收周期且区别于任何再销售限制。
       superTypes:
         - https://axiolune.ai/ontology/finance/market-rules/RuleClause
       attributeUses:
@@ -208,8 +233,10 @@ domain:
       localName: ResaleRestrictionClause
       label: Resale Restriction Clause
       definition: >-
-        RuleClause expressing whether same-day resale is permitted and, when prohibited, the minimum holding-period
-        Quantity; it does not reuse settlement-cycle semantics
+        Resale Restriction Clause, is a rule clause that expresses whether same-day resale is permitted and, when
+        prohibited, gives the minimum holding period, used for constraining resale eligibility of securities and not
+        reusing settlement-cycle semantics.
+      cnNote: 再销售限制条款，是表达是否允许同日转售并在禁止时给出最短持有期的规则条款，用于约束证券的再销售资格且不复用结算周期语义。
       superTypes:
         - https://axiolune.ai/ontology/finance/market-rules/RuleClause
       attributeUses:
@@ -228,9 +255,10 @@ domain:
       localName: CorporateActionEntitlementClause
       label: Corporate Action Entitlement Clause
       definition: >-
-        RuleClause that selects exactly one entitlement mode and the resolved entitlement pivot. Due-bill mode
-        additionally freezes a half-open cum-entitlement trade interval and settlement-qualification policy, while
-        ordinary mode forbids those due-bill-only fields. The clause never refers to a downstream Event instance.
+        Corporate Action Entitlement Clause, is a rule clause that selects a single entitlement mode and the resolved
+        entitlement pivot date, used for determining the entitlement-ownership trade interval and settlement
+        qualification rule via ordinary record position or due-bill adjustment.
+      cnNote: 公司行为权益条款，是选择唯一权益模式与已解析权益基准日的规则条款，用于以普通记录头寸或 due-bill 调整方式确定权益归属的交易日区间与结算资格审查规则。
       superTypes:
         - https://axiolune.ai/ontology/finance/market-rules/RuleClause
       attributeUses:
@@ -258,9 +286,10 @@ domain:
       localName: CorporateActionDateResolutionClause
       label: Corporate Action Date Resolution Clause
       definition: >-
-        typed executable RuleClause resolving one output date role from one published Event date-field role, a signed
-        business-day Quantity offset, and an explicit business-day adjustment. It encodes reviewed schedule semantics
-        rather than hiding the date rule behind prose or a digest.
+        Corporate Action Date Resolution Clause, is a typed executable clause that resolves a single output date role
+        from a published event date-field role, a signed business-day quantity offset, and an explicit business-day
+        adjustment, used for encoding the date rule as auditable schedule semantics.
+      cnNote: 公司行为日期解析条款，是依据已公告事件日期字段、带符号营业日偏移与显式营业日调整规则解析单一输出日期角色的类型化可执行条款，用于把日期规则编码为可审查的日程语义。
       superTypes:
         - https://axiolune.ai/ontology/finance/market-rules/RuleClause
       attributeUses:
@@ -285,8 +314,10 @@ domain:
       localName: CorporateActionDateOrderingClause
       label: Corporate Action Date Ordering Clause
       definition: >-
-        typed executable RuleClause comparing two distinct resolved date roles with one explicit ordering operator; each
-        schedule authors its reviewed jurisdiction/profile-specific ordering and no universal order is inferred.
+        Corporate Action Date Ordering Clause, is a typed executable clause that compares two distinct resolved date
+        roles with a single explicit ordering operator, used for letting each jurisdiction or archive author its own
+        specific legal date ordering.
+      cnNote: 公司行为日期排序条款，是用单一显式排序算子比较两个不同已解析日期角色的类型化可执行条款，用于由各司法管辖区或档案自行审阅其特定的法定日期先后关系。
       superTypes:
         - https://axiolune.ai/ontology/finance/market-rules/RuleClause
       attributeUses:
@@ -307,7 +338,10 @@ domain:
       namespace: fin-market-rules
       localName: TickScheduleRule
       label: Tick Schedule Rule
-      definition: MarketRule whose ordered non-overlapping clauses are exclusively TickSizeClause versions
+      definition: >-
+        Tick Schedule Rule, is a market rule whose ordered non-overlapping clauses are exclusively tick-size clauses,
+        used for arranging minimum quoting steps by price range.
+      cnNote: 最小价位表规则，是其有序互不重叠条款全部为最小价位变动条款的市场规则，用于按价格区间编排最小报价步长。
       superTypes:
         - https://axiolune.ai/ontology/finance/market-rules/MarketRule
       attributeUses: []
@@ -319,7 +353,10 @@ domain:
       namespace: fin-market-rules
       localName: LotScheduleRule
       label: Lot Schedule Rule
-      definition: MarketRule whose ordered non-overlapping clauses are exclusively LotSizeClause versions
+      definition: >-
+        Lot Schedule Rule, is a market rule whose ordered non-overlapping clauses are exclusively lot-size clauses,
+        used for arranging minimum order-quantity units by price range.
+      cnNote: 最小手数表规则，是其有序互不重叠条款全部为最小手数条款的市场规则，用于按价格区间编排最小申报数量单位。
       superTypes:
         - https://axiolune.ai/ontology/finance/market-rules/MarketRule
       attributeUses: []
@@ -331,7 +368,10 @@ domain:
       namespace: fin-market-rules
       localName: PriceLimitRule
       label: Price Limit Rule
-      definition: MarketRule whose executable boundary clauses are exclusively PriceLimitClause versions
+      definition: >-
+        Price Limit Rule, is a market rule whose executable boundary clauses are exclusively price-limit clauses, used
+        for specifying up/down limits relative to a reference price.
+      cnNote: 价格限制规则，是其可执行边界条款全部为价格限制条款的市场规则，用于规定相对于参考价的涨跌幅限制。
       superTypes:
         - https://axiolune.ai/ontology/finance/market-rules/MarketRule
       attributeUses: []
@@ -343,7 +383,11 @@ domain:
       namespace: fin-market-rules
       localName: CircuitBreakerRule
       label: Circuit Breaker Rule
-      definition: MarketRule whose ordered trigger and halt clauses are exclusively CircuitBreakerClause versions
+      definition: >-
+        Circuit Breaker Rule, is a market rule whose ordered trigger and halt clauses are exclusively circuit-breaker
+        clauses, used for arranging the market-protection mechanism of trigger thresholds and corresponding halt
+        durations.
+      cnNote: 熔断规则，是其有序触发与暂停条款全部为熔断条款的市场规则，用于编排触发阈值与对应停市时长的市场保护机制。
       superTypes:
         - https://axiolune.ai/ontology/finance/market-rules/MarketRule
       attributeUses: []
@@ -355,7 +399,10 @@ domain:
       namespace: fin-market-rules
       localName: SettlementCycleRule
       label: Settlement Cycle Rule
-      definition: MarketRule whose executable settlement clauses are exclusively SettlementCycleClause versions
+      definition: >-
+        Settlement Cycle Rule, is a market rule whose executable settlement clauses are exclusively settlement-cycle
+        clauses, used for determining the business-day offset from trade date to contractual settlement date.
+      cnNote: 结算周期规则，是其可执行结算条款全部为结算周期条款的市场规则，用于确定从交易日到合约结算日的营业日偏移。
       superTypes:
         - https://axiolune.ai/ontology/finance/market-rules/MarketRule
       attributeUses: []
@@ -367,7 +414,10 @@ domain:
       namespace: fin-market-rules
       localName: ResaleRestrictionRule
       label: Resale Restriction Rule
-      definition: MarketRule whose executable resale clauses are exclusively ResaleRestrictionClause versions
+      definition: >-
+        Resale Restriction Rule, is a market rule whose executable resale clauses are exclusively resale-restriction
+        clauses, used for constraining same-day resale eligibility and the minimum holding period.
+      cnNote: 再销售限制规则，是其可执行再销售条款全部为再销售限制条款的市场规则，用于约束同日转售资格与最短持有期。
       superTypes:
         - https://axiolune.ai/ontology/finance/market-rules/MarketRule
       attributeUses: []
@@ -380,9 +430,10 @@ domain:
       localName: CorporateActionDistributionAssessmentMethod
       label: Corporate Action Distribution Assessment Method
       definition: >-
-        versioned reviewed executable method identified by method authority and authority-scoped method ID. It freezes
-        the permitted calculation input, optional market-price selection rule, precision, rounding, formula digest, and
-        implementation digest used to test a candidate schedule rule's distribution-percentage interval.
+        Corporate Action Distribution Assessment Method, is a versioned reviewed executable method uniquely identified
+        by a method authority and an authority-scoped method identifier, used for freezing the calculation input, price
+        selection, precision, and formula digest of the distribution percentage to audit a candidate schedule rule.
+      cnNote: 公司行为分派评估方法，是由方法权威与作用域标识唯一确定的带版本审阅可执行方法，用于冻结分派百分比的计算输入、价格选择、精度与公式摘要以审查候选日程规则。
       superTypes: []
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/market-rules/distributionAssessmentMethodId
@@ -421,10 +472,10 @@ domain:
       localName: CorporateActionScheduleRule
       label: Corporate Action Schedule Rule
       definition: >-
-        MarketRule that selects one of the three supported CorporateActionKind members, freezes deterministic date
-        resolution, ordering, and calendar/cutoff contracts, optionally binds one exact reviewed distribution assessment
-        method when and only when a percentage interval is authored, and owns exactly one entitlement clause consumed by
-        Post-trade without a reverse module dependency.
+        Corporate Action Schedule Rule, is a market rule that selects a single corporate-action kind and freezes the
+        date-resolution, ordering, and calendar-cutoff contracts, used for providing the deterministic entitlement and
+        date schedule to downstream settlement without introducing a reverse module dependency.
+      cnNote: 公司行为日程规则，是选定一种公司行为类型并冻结日期解析、排序与日历截止契约的市场规则，用于为下游交收提供确定性的权益与日期日程且不引入反向模块依赖。
       superTypes:
         - https://axiolune.ai/ontology/finance/market-rules/MarketRule
       attributeUses:
@@ -464,8 +515,10 @@ domain:
       localName: RuleEvaluationRequest
       label: Rule Evaluation Request
       definition: >-
-        immutable request fact identified by request-authority logical IRI and authority-scoped request ID, binding
-        explicit exact scope versions, three PIT pivots, and one strictly prior completed input context
+        Rule Evaluation Request, is an immutable request fact uniquely identified by a request authority and an
+        authority-scoped request identifier, used for driving a rule evaluation with explicit scope versions, three
+        point-in-time pivots, and one strictly prior completed input context.
+      cnNote: 规则评估请求，是由请求权威与作用域请求标识唯一确定的不可变请求事实，用于以显式作用域版本、三个 PIT 时点与一个严格在先完成的输入上下文驱动一次规则评估。
       superTypes: []
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/market-rules/ruleEvaluationRequestId
@@ -495,6 +548,235 @@ domain:
       patternBindings:
         - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
         - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    RuleSelectionOutcome:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RuleSelectionOutcome
+      namespace: fin-market-rules
+      localName: RuleSelectionOutcome
+      label: Rule Selection Outcome
+      definition: >-
+        Rule Selection Outcome, is an immutable provenanced fact that records the result of evaluating one exact rule
+        evaluation request against surviving applicability versions, used for making rule selection auditable. It is
+        the abstract parent of the outcome hierarchy; exactly one concrete subtype is emitted per evaluation request,
+        so that resolved selection, no-applicable-rule, and conflict are all first-class results rather than silent
+        defaults.
+      cnNote: 规则选择结果，是记录一次确切规则评估请求对存活适用性版本评估结果的不可变带来源事实，用于使规则选择可审计。它是结果层级的抽象父类；每次评估请求恰好发出一个具体子类型，使已消解选择、无适用规则与冲突均为一等结果而非静默默认。
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/selectionOutcomeKind
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    ResolvedSelection:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ResolvedSelection
+      namespace: fin-market-rules
+      localName: ResolvedSelection
+      label: Resolved Selection
+      definition: >-
+        Resolved Selection, is a rule selection outcome that records the single surviving applicability, the selected
+        rule and clause, the derived specificity, and the inputs and outputs that produced it, used for making a normal
+        rule hit fully traceable from request to effect.
+      cnNote: 已消解选择，是记录唯一存活适用性、所选规则与条款、派生特异性及产生其的输入与输出的规则选择结果，用于使正常规则命中从请求到效果完全可追溯。
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/RuleSelectionOutcome
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/resolvedSpecificityVector
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/selectionBasis
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    NoApplicableRule:
+      iri: https://axiolune.ai/ontology/finance/market-rules/NoApplicableRule
+      namespace: fin-market-rules
+      localName: NoApplicableRule
+      label: No Applicable Rule
+      definition: >-
+        No Applicable Rule, is a rule selection outcome emitted when no surviving applicability version matches the
+        normalized request at the three point-in-time pivots, used for distinguishing a genuine coverage gap from an
+        error and ensuring absence is auditable rather than implicit.
+      cnNote: 无适用规则，是在三个 PIT 时点下无存活适用性版本匹配规范化请求时发出的规则选择结果，用于区分真正的覆盖空隙与错误并确保缺失可审计而非隐含。
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/RuleSelectionOutcome
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/noMatchReason
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    UnsupportedSelection:
+      iri: https://axiolune.ai/ontology/finance/market-rules/UnsupportedSelection
+      namespace: fin-market-rules
+      localName: UnsupportedSelection
+      label: Unsupported Selection
+      definition: >-
+        Unsupported Selection, is a rule selection outcome emitted when the request targets a rule kind or clause
+        shape the executable profile does not support, used for distinguishing an unsupported request from a coverage
+        gap or a conflict.
+      cnNote: 不支持的选择，是当请求针对可执行档案不支持的规则类型或条款形状时发出的规则选择结果，用于区分不支持请求与覆盖空隙或冲突。
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/RuleSelectionOutcome
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/unsupportedReason
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    IndeterminateSelection:
+      iri: https://axiolune.ai/ontology/finance/market-rules/IndeterminateSelection
+      namespace: fin-market-rules
+      localName: IndeterminateSelection
+      label: Indeterminate Selection
+      definition: >-
+        Indeterminate Selection, is a rule selection outcome emitted when evaluation cannot complete due to missing
+        inputs, an incomplete input context, or an unresolved reference, used for distinguishing indeterminacy from a
+        definitive conflict so that retry or remediation is auditable.
+      cnNote: 不确定选择，是当评估因输入缺失、输入上下文不完整或引用未解析而无法完成时发出的规则选择结果，用于区分不确定性与确定性冲突以使重试或补救可审计。
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/RuleSelectionOutcome
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/indeterminacyReason
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    ReferencePriceSpecification:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceSpecification
+      namespace: fin-market-rules
+      localName: ReferencePriceSpecification
+      label: Reference Price Specification
+      definition: >-
+        ReferencePriceSpecification, is a versioned provenanced specification of the reference price used by a
+        price-limit or circuit-breaker rule, used for making the price limit computable. It carries the price source,
+        the observation window, the missing-value policy, the quote currency, and the rounding convention applied to
+        the reference price before the band is computed, so that a limit up/down can be derived as reference price
+        times the band ratio rounded to the tick without ambiguity.
+      cnNote: 参考价规范，是价格限制或熔断规则所用参考价的带版本带来源规范，用于使价格限制可计算。它承载价格来源、观测窗口、缺失值策略、报价币种与取整规则，使涨跌幅可无歧义地由参考价乘以区间比例并按最小变动单位取整得出。
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/referencePriceSource
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/referencePriceWindow
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/referencePriceMissingPolicy
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/referencePriceCurrency
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/referencePriceRounding
+          minCount: 0
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    ScopeExpression:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ScopeExpression
+      namespace: fin-market-rules
+      localName: ScopeExpression
+      label: Scope Expression
+      definition: >-
+        ScopeExpression, is a provenanced boolean expression over scope terms that declares the applicability scope of
+        a rule, used for composing scope dimensions with conjunction, disjunction, and exception instead of a flat
+        single-dimension scope. A scope expression lets a rule apply to, for example, a trading session and an
+        instrument class except a named set of instruments.
+      cnNote: 作用域表达式，是基于作用域项的带来源布尔表达式，用于以合取、析取与例外组合作用域维度而非扁平单维作用域来声明规则适用范围。作用域表达式使规则可适用于例如某交易时段与某工具类别但排除一组具名工具。
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/scopeExpressionForm
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    ScopeTerm:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ScopeTerm
+      namespace: fin-market-rules
+      localName: ScopeTerm
+      label: Scope Term
+      definition: >-
+        ScopeTerm, is a single dimension value participating in a scope expression, used for binding one scope
+        dimension (trading session, trading phase, instrument classification, investor category, order type, order
+        side, market model, or the existing listing/instrument/segment/venue/jurisdiction/account-type dimensions) to
+        an exact versioned fact. A scope term is the atomic unit composed by a scope expression.
+      cnNote: 作用域项，是参与作用域表达式的单一维度值，用于将一个作用域维度（交易时段、交易阶段、工具分类、投资者类别、订单类型、买卖方向、市场模型或既有上市/工具/板块/场所/司法管辖区/账户类型维度）绑定到确切带版本事实。作用域项是由作用域表达式组合的原子单元。
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/scopeTermDimension
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/scopeTermPolarity
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    NormativeSource:
+      iri: https://axiolune.ai/ontology/finance/market-rules/NormativeSource
+      namespace: fin-market-rules
+      localName: NormativeSource
+      label: Normative Source
+      definition: >-
+        NormativeSource, is a versioned provenanced reference to the authoritative text that promulgates a rule or
+        rule set, used for recording the main text, amendments, notices, interpretations, and effective notices that
+        together constitute the rule's evidence. A rule may have multiple normative sources; the platform does not
+        rely on a single sole-evidence source.
+      cnNote: 规范来源，是对发布某规则或规则集的权威文本的带版本带来源引用，用于记录构成规则证据的正文、修订、公告、解释与生效通知。一条规则可有多个规范来源；平台不依赖单一唯一证据来源。
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/normativeSourceLocator
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/normativeSourceSection
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/normativeSourceRole
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    RangeClause:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RangeClause
+      namespace: fin-market-rules
+      localName: RangeClause
+      label: Range Clause
+      definition: >-
+        RangeClause, is a rule clause that carries an ordered input interval with explicit lower and upper bounds and
+        endpoint inclusivity, used for clauses whose effect applies over a non-overlapping input range and that must
+        check ordering completeness against the rule's gap policy. Tick-size and lot-size clauses are range clauses.
+      cnNote: 区间条款，是携带带显式上下界与端点包含性的有序输入区间的规则条款，用于其效果作用于互不重叠输入区间且须按规则间隙策略检查排序完整性的条款。最小价位变动与最小手数条款属于区间条款。
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      attributeUses: []
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    TriggerClause:
+      iri: https://axiolune.ai/ontology/finance/market-rules/TriggerClause
+      namespace: fin-market-rules
+      localName: TriggerClause
+      label: Trigger Clause
+      definition: >-
+        TriggerClause, is a rule clause that carries a trigger condition and an effect rather than an input range,
+        used for clauses such as circuit breakers where a monitored value crossing a threshold produces a market
+        effect. Trigger clauses do not require range bounds or endpoint inclusivity.
+      cnNote: 触发条款，是携带触发条件与效果而非输入区间的规则条款，用于如熔断等被监测值越阈值即产生市场效果的条款。触发条款不要求区间边界或端点包含性。
+      superTypes:
+        - https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      attributeUses: []
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
   associationTypes:
     RuleApplicability:
       iri: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability
@@ -502,10 +784,13 @@ domain:
       localName: RuleApplicability
       label: Rule Applicability
       definition: >-
-        temporal and provenanced fact binding one exact rule version to at least one explicit scope among listing,
-        instrument, segment, venue, AccountType, or jurisdiction; its RuleSet version is reached only through the rule's
-        canonical marketRuleSet relation, every authored scope must match the normalized RuleEvaluationRequest, absence
-        never means global, and authoritative evidence is the ProvenancedFact source
+        Rule Applicability, is a temporal and provenanced fact that binds one exact rule version to at least one
+        explicit scope among listing, instrument, segment, venue, account type, jurisdiction, trading session, trading
+        phase, instrument classification, investor category, order type, order side, or market model, used for
+        declaring a rule's applicability scope without ever implying global scope from absence. A complex scope may be
+        carried by an optional scope expression that composes scope terms with conjunction, disjunction, and
+        exception.
+      cnNote: 规则适用性，是绑定一个确切规则版本与至少一个显式作用域的带时序与来源事实，用于声明某规则在上市、工具、板块、场所、账户类型、司法管辖区、交易时段、交易阶段、工具分类、投资者类别、订单类型、买卖方向或市场模型上的适用范围且不得以缺失隐含全局。复杂作用域可由可选作用域表达式以合取、析取与例外组合作用域项承载。
       participantRoles:
         - id: applicableRuleVersion
           range: https://axiolune.ai/ontology/finance/market-rules/MarketRule
@@ -543,11 +828,47 @@ domain:
           maxCount: 1
           label: scope jurisdiction version
           definition: optional exact Jurisdiction fact version explicitly scoped by this applicability
+        - id: scopeTradingSessionVersion
+          range: https://axiolune.ai/ontology/finance/market-structure/TradingSessionTemplate
+          minCount: 0
+          maxCount: 1
+          label: scope trading session version
+          definition: optional exact TradingSessionTemplate fact version that defines which recurring session the rule applies to; live session status remains owned by orders-execution
+        - id: scopeTradingPhaseVersion
+          range: https://axiolune.ai/ontology/finance/market-structure/TradingSessionOccurrence
+          minCount: 0
+          maxCount: 1
+          label: scope trading phase version
+          definition: optional exact TradingSessionOccurrence fact version that defines which concrete session occurrence or phase the rule applies to
+        - id: scopeInstrumentClassificationVersion
+          range: https://axiolune.ai/ontology/finance/instruments/InstrumentClassificationAssertion
+          minCount: 0
+          maxCount: 1
+          label: scope instrument classification version
+          definition: optional exact instrument classification assertion version that scopes the rule by instrument class
+        - id: scopeExpressionVersion
+          range: https://axiolune.ai/ontology/finance/market-rules/ScopeExpression
+          minCount: 0
+          maxCount: 1
+          label: scope expression version
+          definition: optional exact ScopeExpression fact version that composes multiple scope dimensions with conjunction, disjunction, and exception
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/market-rules/applicabilityPriority
           minCount: 1
           maxCount: 1
         - attribute: https://axiolune.ai/ontology/finance/market-rules/applicabilityAccountType
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/applicabilityInvestorCategory
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/applicabilityOrderType
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/applicabilityOrderSide
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/applicabilityMarketModel
           minCount: 0
           maxCount: 1
       patternBindings:
@@ -559,9 +880,10 @@ domain:
       localName: RulePrecedence
       label: Rule Precedence
       definition: >-
-        reviewed temporal fact declaring that one exact rule version dominates another exact version of the same rule
-        kind over overlapping normalized scope; active precedence edges must form an irreflexive DAG and the reviewed
-        authority is carried by its ProvenancedFact source
+        Rule Precedence, is a reviewed temporal fact that declares the dominance of one exact rule version over another
+        exact version of the same rule kind over overlapping normalized scope, used for establishing rule priority as an
+        irreflexive directed acyclic graph when cross-authority candidates lack an explicit comparison.
+      cnNote: 规则优先关系，是声明同类型两确切规则版本在重叠规范化作用域上支配关系的经审阅带时序事实，用于在跨权威候选无显式比较时以非自反有向无环图确立规则优先级。
       participantRoles:
         - id: higherRuleVersion
           range: https://axiolune.ai/ontology/finance/market-rules/MarketRule
@@ -588,9 +910,14 @@ domain:
       localName: RuleConflict
       label: Rule Conflict
       definition: >-
-        explicit no-winner fact emitted when at least two surviving applicability versions produce incompatible typed
-        results for one exact evaluation request; logical identity is request logical IRI plus the candidate set digest
-        and generating context is provenance only
+        Rule Conflict, is a no-winner association fact emitted when at least two surviving applicability versions
+        produce incompatible typed results for one exact evaluation request, used for recording rule conflicts that
+        cannot be silently resolved along with the candidate-set fingerprint. It is the association-typed counterpart of
+        the conflict branch of the RuleSelectionOutcome hierarchy: it carries a selectionOutcomeKind of conflict and is
+        bound to its evaluation request by outcomeForRequest, so the conflict path is one branch of the outcome model
+        rather than the only modeled result. The M3 association-type profile does not allow an association to subtype an
+        object type, so RuleConflict aligns with the outcome hierarchy by value rather than by inheritance.
+      cnNote: 规则冲突，是当至少两个存活适用性版本对同一评估请求产生不兼容类型化结果时发出的无胜者关联事实，用于记录不可静默消解的规则冲突及其候选集合指纹。它是规则选择结果层级中冲突分支的关联类型对应物：它携带值为冲突的 selectionOutcomeKind 并由 outcomeForRequest 绑定到其评估请求，使冲突路径成为结果模型的一个分支而非唯一建模结果。M3 关联类型档案不允许关联子类型化对象类型，故 RuleConflict 以取值而非继承与结果层级对齐。
       participantRoles:
         - id: candidateApplicabilityVersion
           range: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability
@@ -614,6 +941,9 @@ domain:
         - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef
           minCount: 1
           maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/market-rules/selectionOutcomeKind
+          minCount: 1
+          maxCount: 1
       patternBindings:
         - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
         - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
@@ -623,7 +953,10 @@ domain:
       namespace: fin-market-rules
       localName: ruleSetAuthority
       label: Rule Set Authority
-      definition: direct reference from a MarketRuleSet version to its exact maintaining Party fact version
+      definition: >-
+        Rule Set Authority, is a direct reference from a market-rule-set version to its exact maintaining party fact
+        version, used for declaring the publishing and maintenance authority of the rule set.
+      cnNote: 规则集权威关系，是从市场规则集版本到其确切维护方事实版本的直接引用，用于声明该规则集的发布与维护权威。
       domain: https://axiolune.ai/ontology/finance/market-rules/MarketRuleSet
       range: https://axiolune.ai/ontology/finance/foundation/Party
       characteristics:
@@ -633,7 +966,10 @@ domain:
       namespace: fin-market-rules
       localName: marketRuleSet
       label: Market Rule Set
-      definition: direct reference from a MarketRule version to the exact containing MarketRuleSet version
+      definition: >-
+        Market Rule Set Relation, is a direct reference from a market-rule version to its exact containing rule-set
+        version, used for establishing the rule's ownership and the comparison boundary of its priority.
+      cnNote: 市场规则集归属关系，是从市场规则版本到其确切所属规则集版本的直接引用，用于确立规则的归属与可比较优先级边界。
       domain: https://axiolune.ai/ontology/finance/market-rules/MarketRule
       range: https://axiolune.ai/ontology/finance/market-rules/MarketRuleSet
       characteristics:
@@ -643,7 +979,10 @@ domain:
       namespace: fin-market-rules
       localName: ruleHasClause
       label: Rule Has Clause
-      definition: direct reference from a MarketRule version to one exact executable RuleClause version
+      definition: >-
+        Rule Has Clause, is a direct reference from a market-rule version to one exact executable clause version, used
+        for decomposing the rule's executable semantics into ordered typed clauses.
+      cnNote: 规则含条款关系，是从市场规则版本到某一确切可执行条款版本的直接引用，用于把规则的执行语义分解为有序类型化条款。
       domain: https://axiolune.ai/ontology/finance/market-rules/MarketRule
       range: https://axiolune.ai/ontology/finance/market-rules/RuleClause
     parameterForClause:
@@ -651,7 +990,10 @@ domain:
       namespace: fin-market-rules
       localName: parameterForClause
       label: Parameter For Clause
-      definition: direct ownership reference from a RuleParameter version to its exact containing RuleClause version
+      definition: >-
+        Parameter For Clause, is a direct ownership reference from a rule-parameter version to its exact containing
+        clause version, used for binding a typed parameter to its execution context.
+      cnNote: 参数归属条款关系，是从规则参数版本到其确切所属条款版本的直接归属引用，用于把类型化参数绑定到其执行上下文。
       domain: https://axiolune.ai/ontology/finance/market-rules/RuleParameter
       range: https://axiolune.ai/ontology/finance/market-rules/RuleClause
       characteristics:
@@ -661,7 +1003,11 @@ domain:
       namespace: fin-market-rules
       localName: parameterClauseReference
       label: Parameter Clause Reference
-      definition: optional exclusive-one-of branch from a RuleParameter version to one exact referenced RuleClause version
+      definition: >-
+        Parameter Clause Reference, is a mutually exclusive choose-one branch from a rule-parameter version to one
+        exact referenced clause version, used for establishing a precise reference when the parameter value is itself
+        another clause.
+      cnNote: 参数条款引用关系，是规则参数版本到某一确切被引用条款版本的互斥择一分支，用于在参数值本身为另一条款时建立精确引用。
       domain: https://axiolune.ai/ontology/finance/market-rules/RuleParameter
       range: https://axiolune.ai/ontology/finance/market-rules/RuleClause
       characteristics:
@@ -671,7 +1017,11 @@ domain:
       namespace: fin-market-rules
       localName: distributionAssessmentMethodAuthority
       label: Distribution Assessment Method Authority
-      definition: exact Party fact version maintaining one reviewed distribution-assessment method version
+      definition: >-
+        Distribution Assessment Method Authority, is a reference to the exact party fact version that maintains one
+        reviewed distribution-assessment method version, used for declaring the publishing authority and accountability
+        of the method.
+      cnNote: 分派评估方法权威关系，是维护某一经审阅分派评估方法版本的确切方事实版本引用，用于声明该方法的发布权威与责任归属。
       domain: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDistributionAssessmentMethod
       range: https://axiolune.ai/ontology/finance/foundation/Party
       characteristics:
@@ -681,7 +1031,11 @@ domain:
       namespace: fin-market-rules
       localName: corporateActionDistributionAssessmentMethod
       label: Corporate Action Distribution Assessment Method
-      definition: optional exact reviewed method version bound iff a CorporateActionScheduleRule authors a percentage interval
+      definition: >-
+        Corporate Action Distribution Assessment Method Relation, is an exact reviewed method version bound if and
+        only if a corporate-action schedule rule authors a percentage interval, used for locking the
+        distribution-percentage calculation method for a candidate schedule.
+      cnNote: 公司行为分派评估方法关系，是当且仅当公司行为日程规则编写百分比区间时绑定的确切经审阅方法版本，用于锁定候选日程的分派比例计算方法。
       domain: https://axiolune.ai/ontology/finance/market-rules/CorporateActionScheduleRule
       range: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDistributionAssessmentMethod
       characteristics:
@@ -691,7 +1045,10 @@ domain:
       namespace: fin-market-rules
       localName: requestAuthority
       label: Request Authority
-      definition: direct reference from a RuleEvaluationRequest to the exact Party fact version that issued it
+      definition: >-
+        Request Authority, is a direct reference from a rule-evaluation request to the exact party fact version that
+        issued it, used for declaring the publishing authority of the evaluation request.
+      cnNote: 请求权威关系，是从规则评估请求到其确切签发方事实版本的直接引用，用于声明该评估请求的发布权威。
       domain: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
       range: https://axiolune.ai/ontology/finance/foundation/Party
       characteristics:
@@ -701,7 +1058,10 @@ domain:
       namespace: fin-market-rules
       localName: requestListingScope
       label: Request Listing Scope
-      definition: optional exact InstrumentListing fact version bound by a RuleEvaluationRequest
+      definition: >-
+        Request Listing Scope, is the exact instrument-listing fact version bound by a rule-evaluation request, used
+        for restricting the evaluation scope to a specific listing.
+      cnNote: 请求上市作用域关系，是规则评估请求绑定的确切挂牌工具事实版本，用于把评估范围限定到特定上市。
       domain: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
       range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
       characteristics:
@@ -711,7 +1071,10 @@ domain:
       namespace: fin-market-rules
       localName: requestInstrumentScope
       label: Request Instrument Scope
-      definition: optional exact FinancialInstrument fact version bound by a RuleEvaluationRequest
+      definition: >-
+        Request Instrument Scope, is the exact financial-instrument fact version bound by a rule-evaluation request,
+        used for restricting the evaluation scope to a specific instrument.
+      cnNote: 请求工具作用域关系，是规则评估请求绑定的确切金融工具事实版本，用于把评估范围限定到特定工具。
       domain: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
       range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
       characteristics:
@@ -721,7 +1084,10 @@ domain:
       namespace: fin-market-rules
       localName: requestSegmentScope
       label: Request Segment Scope
-      definition: optional exact MarketSegment fact version bound by a RuleEvaluationRequest
+      definition: >-
+        Request Segment Scope, is the exact market-segment fact version bound by a rule-evaluation request, used for
+        restricting the evaluation scope to a specific market segment.
+      cnNote: 请求板块作用域关系，是规则评估请求绑定的确切市场板块事实版本，用于把评估范围限定到特定板块。
       domain: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
       range: https://axiolune.ai/ontology/finance/market-structure/MarketSegment
       characteristics:
@@ -731,7 +1097,10 @@ domain:
       namespace: fin-market-rules
       localName: requestVenueScope
       label: Request Venue Scope
-      definition: optional exact TradingFacility fact version bound by a RuleEvaluationRequest
+      definition: >-
+        Request Venue Scope, is the exact trading-facility fact version bound by a rule-evaluation request, used for
+        restricting the evaluation scope to a specific trading venue.
+      cnNote: 请求场所作用域关系，是规则评估请求绑定的确切交易场所事实版本，用于把评估范围限定到特定场所。
       domain: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
       range: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
       characteristics:
@@ -741,18 +1110,207 @@ domain:
       namespace: fin-market-rules
       localName: requestJurisdictionScope
       label: Request Jurisdiction Scope
-      definition: optional exact Jurisdiction fact version bound by a RuleEvaluationRequest
+      definition: >-
+        Request Jurisdiction Scope, is the exact jurisdiction fact version bound by a rule-evaluation request, used
+        for restricting the evaluation scope to a specific jurisdiction.
+      cnNote: 请求司法管辖区作用域关系，是规则评估请求绑定的确切司法管辖区事实版本，用于把评估范围限定到特定法域。
       domain: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
       range: https://axiolune.ai/ontology/finance/foundation/Jurisdiction
       characteristics:
         - functional
+    requestTradingSessionScope:
+      iri: https://axiolune.ai/ontology/finance/market-rules/requestTradingSessionScope
+      namespace: fin-market-rules
+      localName: requestTradingSessionScope
+      label: Request Trading Session Scope
+      definition: >-
+        Request Trading Session Scope, is the exact trading-session template fact version bound by a rule-evaluation
+        request, used for restricting the evaluation scope to a specific recurring trading session.
+      cnNote: 请求交易时段作用域关系，是规则评估请求绑定的确切交易时段模板事实版本，用于把评估范围限定到特定重复交易时段。
+      domain: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      range: https://axiolune.ai/ontology/finance/market-structure/TradingSessionTemplate
+      characteristics:
+        - functional
+    requestTradingPhaseScope:
+      iri: https://axiolune.ai/ontology/finance/market-rules/requestTradingPhaseScope
+      namespace: fin-market-rules
+      localName: requestTradingPhaseScope
+      label: Request Trading Phase Scope
+      definition: >-
+        Request Trading Phase Scope, is the exact trading-session occurrence fact version bound by a rule-evaluation
+        request, used for restricting the evaluation scope to a specific concrete session occurrence or phase.
+      cnNote: 请求交易阶段作用域关系，是规则评估请求绑定的确切交易时段发生事实版本，用于把评估范围限定到特定具体时段发生或阶段。
+      domain: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      range: https://axiolune.ai/ontology/finance/market-structure/TradingSessionOccurrence
+      characteristics:
+        - functional
+    outcomeForRequest:
+      iri: https://axiolune.ai/ontology/finance/market-rules/outcomeForRequest
+      namespace: fin-market-rules
+      localName: outcomeForRequest
+      label: Outcome For Request
+      definition: >-
+        Outcome For Request, is the direct reference from a rule selection outcome to the exact evaluation request fact
+        version it resolves, used for binding every outcome (resolved, no-applicable-rule, conflict, unsupported,
+        indeterminate) to its request.
+      cnNote: 结果对应请求关系，是从规则选择结果到其所消解的确切评估请求事实版本的直接引用，用于把每个结果（已消解、无适用规则、冲突、不支持、不确定）绑定到其请求。
+      domain: https://axiolune.ai/ontology/finance/market-rules/RuleSelectionOutcome
+      range: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      characteristics:
+        - functional
+    resolvedApplicability:
+      iri: https://axiolune.ai/ontology/finance/market-rules/resolvedApplicability
+      namespace: fin-market-rules
+      localName: resolvedApplicability
+      label: Resolved Applicability
+      definition: >-
+        Resolved Applicability, is the direct reference from a resolved selection to the single surviving
+        RuleApplicability fact version that won, used for making the normal-hit winner fully traceable.
+      cnNote: 已消解适用性关系，是从已消解选择到唯一存活规则适用性事实版本的直接引用，用于使正常命中胜者完全可追溯。
+      domain: https://axiolune.ai/ontology/finance/market-rules/ResolvedSelection
+      range: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability
+      characteristics:
+        - functional
+    resolvedRule:
+      iri: https://axiolune.ai/ontology/finance/market-rules/resolvedRule
+      namespace: fin-market-rules
+      localName: resolvedRule
+      label: Resolved Rule
+      definition: >-
+        Resolved Rule, is the direct reference from a resolved selection to the exact MarketRule fact version whose
+        applicability won, used for recording the selected rule in the outcome.
+      cnNote: 已消解规则关系，是从已消解选择到其适用性胜出的确切市场规则事实版本的直接引用，用于在结果中记录所选规则。
+      domain: https://axiolune.ai/ontology/finance/market-rules/ResolvedSelection
+      range: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      characteristics:
+        - functional
+    resolvedClause:
+      iri: https://axiolune.ai/ontology/finance/market-rules/resolvedClause
+      namespace: fin-market-rules
+      localName: resolvedClause
+      label: Resolved Clause
+      definition: >-
+        Resolved Clause, is the direct reference from a resolved selection to the exact RuleClause fact version that
+        produced the effect, used for recording the selected clause in the outcome.
+      cnNote: 已消解条款关系，是从已消解选择到产生效果的确切规则条款事实版本的直接引用，用于在结果中记录所选条款。
+      domain: https://axiolune.ai/ontology/finance/market-rules/ResolvedSelection
+      range: https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      characteristics:
+        - functional
+    clauseOwnerRule:
+      iri: https://axiolune.ai/ontology/finance/market-rules/clauseOwnerRule
+      namespace: fin-market-rules
+      localName: clauseOwnerRule
+      label: Clause Owner Rule
+      definition: >-
+        Clause Owner Rule, is the functional inverse of ruleHasClause that binds each rule clause to its exact one
+        owning market-rule version, used for enforcing that a clause has exactly one owner rule and is never shared
+        across rules.
+      cnNote: 条款归属规则关系，是 ruleHasClause 的泛函逆关系，把每条规则条款绑定到其确切唯一所属市场规则版本，用于强制条款恰有一个归属规则且绝不在多条规则间共享。
+      domain: https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      range: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      characteristics:
+        - functional
+    priceLimitReferencePrice:
+      iri: https://axiolune.ai/ontology/finance/market-rules/priceLimitReferencePrice
+      namespace: fin-market-rules
+      localName: priceLimitReferencePrice
+      label: Price Limit Reference Price
+      definition: >-
+        Price Limit Reference Price, is the direct reference from a price-limit rule to its exact ReferencePriceSpecification
+        fact version, used for making the price band computable from a reference price rather than carrying only a
+        bare percentage or amount.
+      cnNote: 价格限制参考价关系，是从价格限制规则到其确切参考价规范事实版本的直接引用，用于使价格区间可由参考价计算而非仅携带裸百分比或金额。
+      domain: https://axiolune.ai/ontology/finance/market-rules/PriceLimitRule
+      range: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceSpecification
+      characteristics:
+        - functional
+    circuitBreakerReferencePrice:
+      iri: https://axiolune.ai/ontology/finance/market-rules/circuitBreakerReferencePrice
+      namespace: fin-market-rules
+      localName: circuitBreakerReferencePrice
+      label: Circuit Breaker Reference Price
+      definition: >-
+        Circuit Breaker Reference Price, is the direct reference from a circuit-breaker rule to its exact
+        ReferencePriceSpecification fact version, used for making the breaker threshold computable relative to a
+        reference price.
+      cnNote: 熔断参考价关系，是从熔断规则到其确切参考价规范事实版本的直接引用，用于使熔断阈值可相对参考价计算。
+      domain: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerRule
+      range: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceSpecification
+      characteristics:
+        - functional
+    settlementCycleCalendar:
+      iri: https://axiolune.ai/ontology/finance/market-rules/settlementCycleCalendar
+      namespace: fin-market-rules
+      localName: settlementCycleCalendar
+      label: Settlement Cycle Calendar
+      definition: >-
+        Settlement Cycle Calendar, is the direct reference from a settlement-cycle clause to the exact TradingCalendar
+        fact version used to count business days from the trade date, used for replacing the bare business-day count
+        with a calendar-backed computation.
+      cnNote: 结算周期日历关系，是从结算周期条款到用于从交易日计算营业日的确切交易日历事实版本的直接引用，用于以日历支撑计算取代裸营业日计数。
+      domain: https://axiolune.ai/ontology/finance/market-rules/SettlementCycleClause
+      range: https://axiolune.ai/ontology/finance/market-structure/TradingCalendar
+      characteristics:
+        - functional
+    scheduleCalendar:
+      iri: https://axiolune.ai/ontology/finance/market-rules/scheduleCalendar
+      namespace: fin-market-rules
+      localName: scheduleCalendar
+      label: Schedule Calendar
+      definition: >-
+        Schedule Calendar, is the direct reference from a corporate-action schedule rule to the exact TradingCalendar
+        fact version used to resolve business-day offsets and cutoffs, used for backing the schedule's calendar
+        semantics with a real calendar rather than only a contract digest.
+      cnNote: 日程日历关系，是从公司行为日程规则到用于解析营业日偏移与截止的确切交易日历事实版本的直接引用，用于以真实日历而非仅契约摘要支撑日程日历语义。
+      domain: https://axiolune.ai/ontology/finance/market-rules/CorporateActionScheduleRule
+      range: https://axiolune.ai/ontology/finance/market-structure/TradingCalendar
+      characteristics:
+        - functional
+    normativeSourceForRule:
+      iri: https://axiolune.ai/ontology/finance/market-rules/normativeSourceForRule
+      namespace: fin-market-rules
+      localName: normativeSourceForRule
+      label: Normative Source For Rule
+      definition: >-
+        Normative Source For Rule, is a direct reference from a market-rule version to one of its normative source
+        fact versions, used for recording the main text, amendments, notices, interpretations, and effective notices
+        that evidence the rule. A rule may have multiple normative sources.
+      cnNote: 规则规范来源关系，是从市场规则版本到其某一规范来源事实版本的直接引用，用于记录佐证规则的主文、修订、公告、解释与生效通知。一条规则可有多个规范来源。
+      domain: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      range: https://axiolune.ai/ontology/finance/market-rules/NormativeSource
+    normativeSourceForRuleSet:
+      iri: https://axiolune.ai/ontology/finance/market-rules/normativeSourceForRuleSet
+      namespace: fin-market-rules
+      localName: normativeSourceForRuleSet
+      label: Normative Source For Rule Set
+      definition: >-
+        Normative Source For Rule Set, is a direct reference from a market-rule-set version to one of its normative
+        source fact versions, used for recording the authority texts that evidence the rule set as a whole.
+      cnNote: 规则集规范来源关系，是从市场规则集版本到其某一规范来源事实版本的直接引用，用于记录佐证整个规则集的权威文本。
+      domain: https://axiolune.ai/ontology/finance/market-rules/MarketRuleSet
+      range: https://axiolune.ai/ontology/finance/market-rules/NormativeSource
+    scopeExpressionTerm:
+      iri: https://axiolune.ai/ontology/finance/market-rules/scopeExpressionTerm
+      namespace: fin-market-rules
+      localName: scopeExpressionTerm
+      label: Scope Expression Term
+      definition: >-
+        Scope Expression Term, is a direct reference from a scope expression to its constituent scope-term fact
+        versions, used for composing multiple scope dimensions with conjunction, disjunction, and exception.
+      cnNote: 作用域表达式项关系，是从作用域表达式到其组成作用域项事实版本的直接引用，用于以合取、析取与例外组合多个作用域维度。
+      domain: https://axiolune.ai/ontology/finance/market-rules/ScopeExpression
+      range: https://axiolune.ai/ontology/finance/market-rules/ScopeTerm
   attributeTypes:
     ruleSetId:
       iri: https://axiolune.ai/ontology/finance/market-rules/ruleSetId
       namespace: fin-market-rules
       localName: ruleSetId
       label: Rule Set Identifier
-      definition: non-empty NFC authority-scoped identifier of a MarketRuleSet logical identity
+      definition: >-
+        Rule Set Identifier, is the non-empty normalized identifier of a market-rule-set logical identity within an
+        authority scope, used for uniquely identifying a rule set maintained by one authority.
+      cnNote: 规则集标识，是市场规则集逻辑身份在权威作用域内非空的规范化标识符，用于唯一标识某一权威维护的规则集。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -763,7 +1321,10 @@ domain:
       namespace: fin-market-rules
       localName: ruleId
       label: Rule Identifier
-      definition: non-empty NFC identifier of a MarketRule within its exact containing RuleSet
+      definition: >-
+        Rule Identifier, is the non-empty normalized identifier of a market rule within its exact containing rule set,
+        used for uniquely identifying a rule within the rule set.
+      cnNote: 规则标识，是市场规则在其确切所属规则集内非空的规范化标识符，用于在规则集内唯一标识某条规则。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -774,7 +1335,10 @@ domain:
       namespace: fin-market-rules
       localName: ruleClauseId
       label: Rule Clause Identifier
-      definition: non-empty NFC identifier of a RuleClause within its exact owning rule version
+      definition: >-
+        Rule Clause Identifier, is the non-empty normalized identifier of a rule clause within its exact owning rule
+        version, used for uniquely identifying an executable clause within the rule.
+      cnNote: 规则条款标识，是规则条款在其确切所属规则版本内非空的规范化标识符，用于在规则内唯一标识某条可执行条款。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -785,7 +1349,10 @@ domain:
       namespace: fin-market-rules
       localName: ruleParameterId
       label: Rule Parameter Identifier
-      definition: non-empty NFC identifier of a typed RuleParameter within its exact owning clause version
+      definition: >-
+        Rule Parameter Identifier, is the non-empty normalized identifier of a typed rule parameter within its exact
+        owning clause version, used for uniquely identifying a parameter within the clause.
+      cnNote: 规则参数标识，是类型化规则参数在其确切所属条款版本内非空的规范化标识符，用于在条款内唯一标识某个参数。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -796,7 +1363,10 @@ domain:
       namespace: fin-market-rules
       localName: hasRuleType
       label: Has Rule Type
-      definition: reviewed RuleType member required on every MarketRule fact version
+      definition: >-
+        Has Rule Type, is the reviewed rule-type member required on every market-rule fact version, used for
+        classifying a rule's executable specialization.
+      cnNote: 规则类型属性，是每个市场规则事实版本必须携带的经审阅规则类型成员，用于分类规则的可执行特化。
       valueType: https://axiolune.ai/ontology/finance/market-rules/RuleType
       defaultCardinality:
         minCount: 1
@@ -806,7 +1376,10 @@ domain:
       namespace: fin-market-rules
       localName: clauseSequence
       label: Clause Sequence
-      definition: zero-based non-negative order of a RuleClause within one rule version
+      definition: >-
+        Clause Sequence, is the zero-based non-negative ordering number of a rule clause within one rule version, used
+        for establishing the ordered execution order of clauses.
+      cnNote: 条款顺序，是规则条款在某一规则版本内从零开始的非负排序号，用于确立条款的有序执行次序。
       valueType: integer
       defaultCardinality:
         minCount: 1
@@ -816,7 +1389,10 @@ domain:
       namespace: fin-market-rules
       localName: clauseLowerBound
       label: Clause Lower Bound
-      definition: optional typed Quantity lower bound of the ordered clause input range
+      definition: >-
+        Clause Lower Bound, is the optional typed quantity lower bound of a clause's ordered input range, used for
+        marking the start of the clause's effective range.
+      cnNote: 条款下界，是条款有序输入区间的可选类型化数量下界，用于界定条款生效范围的起点。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 0
@@ -826,7 +1402,10 @@ domain:
       namespace: fin-market-rules
       localName: clauseUpperBound
       label: Clause Upper Bound
-      definition: optional typed Quantity upper bound of the ordered clause input range
+      definition: >-
+        Clause Upper Bound, is the optional typed quantity upper bound of a clause's ordered input range, used for
+        marking the end of the clause's effective range.
+      cnNote: 条款上界，是条款有序输入区间的可选类型化数量上界，用于界定条款生效范围的终点。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 0
@@ -836,7 +1415,10 @@ domain:
       namespace: fin-market-rules
       localName: clauseLowerInclusive
       label: Clause Lower Inclusive
-      definition: whether a present lower bound belongs to the clause's half-open or closed input range
+      definition: >-
+        Clause Lower Inclusive, is a Boolean value stating whether a given lower bound belongs to the clause's
+        half-open or closed input range, used for precisely defining the endpoint inclusion of the range.
+      cnNote: 条款下界包含性，是表示所给下界是否属于条款半开或闭输入区间的布尔值，用于精确定义区间的端点归属。
       valueType: boolean
       defaultCardinality:
         minCount: 1
@@ -846,7 +1428,10 @@ domain:
       namespace: fin-market-rules
       localName: clauseUpperInclusive
       label: Clause Upper Inclusive
-      definition: whether a present upper bound belongs to the clause's open or closed input range
+      definition: >-
+        Clause Upper Inclusive, is a Boolean value stating whether a given upper bound belongs to the clause's open or
+        closed input range, used for precisely defining the endpoint inclusion of the range.
+      cnNote: 条款上界包含性，是表示所给上界是否属于条款开或闭输入区间的布尔值，用于精确定义区间的端点归属。
       valueType: boolean
       defaultCardinality:
         minCount: 1
@@ -856,7 +1441,10 @@ domain:
       namespace: fin-market-rules
       localName: ruleGapPolicy
       label: Rule Gap Policy
-      definition: reviewed rule-level decision whether uncovered ranges between its ordered clauses are rejected or allowed
+      definition: >-
+        Rule Gap Policy, is the reviewed rule-level decision of whether uncovered ranges between ordered clauses are
+        rejected or allowed, used for explicitly managing coverage gaps between clauses.
+      cnNote: 规则间隙策略，是规则层对有序条款间未覆盖区间是拒绝还是允许的经审阅决策，用于显式管理条款之间的覆盖空隙。
       valueType: https://axiolune.ai/ontology/finance/market-rules/ClauseGapPolicy
       defaultCardinality:
         minCount: 1
@@ -866,7 +1454,10 @@ domain:
       namespace: fin-market-rules
       localName: ruleMoneyParameterValue
       label: Rule Money Parameter Value
-      definition: optional canonical Money branch of the RuleParameter exclusive-one-of
+      definition: >-
+        Rule Money Parameter Value, is the optional money branch of a rule parameter's mutually exclusive choose-one,
+        used for filling the parameter value as a monetary amount.
+      cnNote: 规则金额参数值，是规则参数互斥择一中的可选金额分支，用于以货币金额形式填充参数值。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 0
@@ -876,7 +1467,10 @@ domain:
       namespace: fin-market-rules
       localName: ruleQuantityParameterValue
       label: Rule Quantity Parameter Value
-      definition: optional canonical Quantity branch of the RuleParameter exclusive-one-of
+      definition: >-
+        Rule Quantity Parameter Value, is the optional quantity branch of a rule parameter's mutually exclusive
+        choose-one, used for filling the parameter value as a measured quantity.
+      cnNote: 规则数量参数值，是规则参数互斥择一中的可选数量分支，用于以度量数量形式填充参数值。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 0
@@ -886,7 +1480,10 @@ domain:
       namespace: fin-market-rules
       localName: ruleCodeParameterValue
       label: Rule Code Parameter Value
-      definition: optional reviewed RuleParameterCode member branch of the RuleParameter exclusive-one-of
+      definition: >-
+        Rule Code Parameter Value, is the optional reviewed code-member branch of a rule parameter's mutually
+        exclusive choose-one, used for filling the parameter value as a controlled code.
+      cnNote: 规则代码参数值，是规则参数互斥择一中的可选经审阅代码成员分支，用于以受控代码形式填充参数值。
       valueType: https://axiolune.ai/ontology/finance/market-rules/RuleParameterCode
       defaultCardinality:
         minCount: 0
@@ -896,7 +1493,10 @@ domain:
       namespace: fin-market-rules
       localName: tickSize
       label: Tick Size
-      definition: positive canonical Quantity representing the minimum price increment in a TickSizeClause
+      definition: >-
+        Tick Size, is the positive canonical quantity representing the minimum quoting step in a tick-size clause, used
+        for specifying the price-increment unit within that range.
+      cnNote: 最小价位变动值，是最小价位变动条款中表示最小报价步长的正规范数量，用于规定该区间内的报价增量单位。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 1
@@ -906,7 +1506,10 @@ domain:
       namespace: fin-market-rules
       localName: lotSize
       label: Lot Size
-      definition: positive canonical Quantity representing the order-size increment in a LotSizeClause
+      definition: >-
+        Lot Size, is the positive canonical quantity representing the order-quantity increment in a lot-size clause,
+        used for specifying the minimum order unit within that range.
+      cnNote: 最小手数值，是最小手数条款中表示申报数量增量的正规范数量，用于规定该区间内的最小申报单位。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 1
@@ -916,7 +1519,10 @@ domain:
       namespace: fin-market-rules
       localName: priceLimitPercentage
       label: Price Limit Percentage
-      definition: optional dimensionless percentage Quantity branch of a PriceLimitClause boundary
+      definition: >-
+        Price Limit Percentage, is the optional dimensionless percentage branch of a price-limit-clause boundary, used
+        for setting the up/down limit relative to a reference price as a percentage.
+      cnNote: 价格限制百分比，是价格限制条款边界中可选的无量纲百分比分支，用于以相对参考价的百分比设定涨跌限幅。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 0
@@ -926,7 +1532,10 @@ domain:
       namespace: fin-market-rules
       localName: priceLimitAmount
       label: Price Limit Amount
-      definition: optional canonical Money branch of a PriceLimitClause boundary
+      definition: >-
+        Price Limit Amount, is the optional money branch of a price-limit-clause boundary, used for setting the price
+        boundary as an absolute monetary amount.
+      cnNote: 价格限制金额，是价格限制条款边界中可选的金额分支，用于以绝对货币金额设定价格边界。
       valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
       defaultCardinality:
         minCount: 0
@@ -936,7 +1545,10 @@ domain:
       namespace: fin-market-rules
       localName: circuitBreakerThreshold
       label: Circuit Breaker Threshold
-      definition: positive dimensionless trigger-threshold Quantity in a CircuitBreakerClause
+      definition: >-
+        Circuit Breaker Threshold, is the positive dimensionless trigger-threshold quantity in a circuit-breaker clause
+        that triggers a temporary market halt, used for specifying the volatility magnitude that triggers the breaker.
+      cnNote: 熔断阈值，是熔断条款中触发临时停市的正无量纲触发阈值数量，用于规定触发熔断的波动幅度。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 1
@@ -946,7 +1558,10 @@ domain:
       namespace: fin-market-rules
       localName: circuitBreakerHaltDuration
       label: Circuit Breaker Halt Duration
-      definition: non-negative duration Quantity applied after a circuit-breaker threshold is met
+      definition: >-
+        Circuit Breaker Halt Duration, is the non-negative duration quantity applied after a circuit-breaker
+        threshold is met, used for specifying the duration of the market halt.
+      cnNote: 熔断暂停时长，是熔断阈值触发后施加的非负时长数量，用于规定停市的持续时间。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 1
@@ -956,7 +1571,10 @@ domain:
       namespace: fin-market-rules
       localName: settlementCycle
       label: Settlement Cycle
-      definition: non-negative business-day Quantity between trade date and contractual settlement date
+      definition: >-
+        Settlement Cycle, is the non-negative business-day quantity between the trade date and the contractual
+        settlement date, used for specifying the number of business days required for settlement.
+      cnNote: 结算周期，是交易日到合约结算日之间的非负营业日数量，用于规定交收所需的工作日天数。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 1
@@ -966,7 +1584,10 @@ domain:
       namespace: fin-market-rules
       localName: sameDayResaleAllowed
       label: Same-day Resale Allowed
-      definition: explicit Boolean outcome of a resale-restriction clause, separate from settlement-cycle semantics
+      definition: >-
+        Same-day Resale Allowed, is the explicit Boolean outcome of a resale-restriction clause, used for declaring
+        whether same-day resale is permitted and distinct from settlement-cycle semantics.
+      cnNote: 同日转售许可，是再销售限制条款显式给出的布尔结果，用于声明是否允许同日转售且区别于结算周期语义。
       valueType: boolean
       defaultCardinality:
         minCount: 1
@@ -976,7 +1597,10 @@ domain:
       namespace: fin-market-rules
       localName: minimumResaleHoldingPeriod
       label: Minimum Resale Holding Period
-      definition: optional non-negative duration Quantity required before resale when same-day resale is prohibited
+      definition: >-
+        Minimum Resale Holding Period, is the optional non-negative duration quantity required to be held before
+        resale when same-day resale is prohibited, used for constraining the minimum holding time before resale.
+      cnNote: 最短再销售持有期，是禁止同日转售时在再销售前要求持有的非负时长数量，用于约束转售前的最短持仓时间。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 0
@@ -986,7 +1610,11 @@ domain:
       namespace: fin-market-rules
       localName: corporateActionEntitlementMode
       label: Corporate Action Entitlement Mode
-      definition: exact entitlement mode selected by the schedule rule's sole entitlement clause
+      definition: >-
+        Corporate Action Entitlement Mode, is the exact entitlement mode selected by a schedule rule's sole
+        entitlement clause, used for deciding whether entitlement ownership is computed by ordinary record position or
+        due-bill adjustment.
+      cnNote: 公司行为权益模式，是日程规则唯一权益条款所选的精确权益模式，用于决定按普通记录头寸或 due-bill 调整方式计算权益归属。
       valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionEntitlementMode
       defaultCardinality:
         minCount: 1
@@ -996,7 +1624,10 @@ domain:
       namespace: fin-market-rules
       localName: entitlementPivotDateField
       label: Entitlement Pivot Date Field
-      definition: exact CorporateActionEvent date-field role from which the entitlement pivot is deterministically resolved
+      definition: >-
+        Entitlement Pivot Date Field, is the exact corporate-action event date-field role from which the entitlement
+        pivot is deterministically resolved, used for locking the time anchor of entitlement ownership.
+      cnNote: 权益基准日期字段，是公司行为事件日期字段中用于确定性解析权益基准日的确切角色，用于锁定权益归属的时间锚点。
       valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionEventDateField
       defaultCardinality:
         minCount: 1
@@ -1006,7 +1637,11 @@ domain:
       namespace: fin-market-rules
       localName: cumEntitlementTradeStartOffset
       label: Cum-entitlement Trade Start Offset
-      definition: due-bill-only signed business-day Quantity resolving the inclusive start of the cum-entitlement interval
+      definition: >-
+        Cum-entitlement Trade Start Offset, is the signed business-day quantity used in due-bill mode to resolve the
+        inclusive start of the cum-entitlement trade interval, used for determining the start time of cum-entitlement
+        trading.
+      cnNote: 含权交易起始偏移，是 due-bill 模式下解析含权交易日区间闭起点的带符号营业日数量，用于确定含权交易的起始时点。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 0
@@ -1016,7 +1651,11 @@ domain:
       namespace: fin-market-rules
       localName: cumEntitlementTradeEndOffset
       label: Cum-entitlement Trade End Offset
-      definition: due-bill-only signed business-day Quantity resolving the exclusive end of the cum-entitlement interval
+      definition: >-
+        Cum-entitlement Trade End Offset, is the signed business-day quantity used in due-bill mode to resolve the
+        exclusive end of the cum-entitlement trade interval, used for determining the end time of cum-entitlement
+        trading.
+      cnNote: 含权交易终止偏移，是 due-bill 模式下解析含权交易日区间开终点的带符号营业日数量，用于确定含权交易的结束时点。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 0
@@ -1026,7 +1665,10 @@ domain:
       namespace: fin-market-rules
       localName: dueBillSettlementQualification
       label: Due-bill Settlement Qualification
-      definition: exact evidence mode required for a trade to qualify for due-bill processing
+      definition: >-
+        Due-bill Settlement Qualification, is the exact evidence mode required for a trade to qualify for due-bill
+        processing, used for specifying the eligibility conditions for due-bill settlement.
+      cnNote: due-bill 结算资格审查，是交易获得 due-bill 处理资格所要求的确切证据模式，用于规定 due-bill 交收的合格性条件。
       valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionSettlementQualification
       defaultCardinality:
         minCount: 0
@@ -1036,7 +1678,10 @@ domain:
       namespace: fin-market-rules
       localName: resolvedDateRole
       label: Resolved Corporate Action Date Role
-      definition: exact schedule-resolution output date role produced by a date-resolution clause
+      definition: >-
+        Resolved Corporate Action Date Role, is the exact schedule-resolution output date role produced by a
+        date-resolution clause, used for identifying the purpose of a determined output date in a schedule.
+      cnNote: 已解析公司行为日期角色，是日期解析条款产出的确切日程解析输出日期角色，用于标识日程中某确定输出日期的用途。
       valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionResolvedDateRole
       defaultCardinality:
         minCount: 1
@@ -1046,7 +1691,10 @@ domain:
       namespace: fin-market-rules
       localName: sourceEventDateField
       label: Source Corporate Action Event Date Field
-      definition: exact published Event date-field role consumed by a date-resolution clause
+      definition: >-
+        Source Corporate Action Event Date Field, is the exact published event date-field role consumed by a
+        date-resolution clause, used for locking the input date source for schedule resolution.
+      cnNote: 来源公司行为事件日期字段，是日期解析条款所消费的已公告事件日期字段角色，用于锁定日程解析的输入日期来源。
       valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionEventDateField
       defaultCardinality:
         minCount: 1
@@ -1056,7 +1704,10 @@ domain:
       namespace: fin-market-rules
       localName: dateResolutionOffset
       label: Corporate Action Date Resolution Offset
-      definition: signed business-day Quantity applied before the explicit adjustment convention
+      definition: >-
+        Corporate Action Date Resolution Offset, is the signed business-day quantity applied before the explicit
+        adjustment convention, used for computing an event date into a candidate resolved date.
+      cnNote: 公司行为日期解析偏移，是在显式调整规则之前施加的带符号营业日数量，用于把事件日期推算到候选解析日期。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 1
@@ -1066,7 +1717,10 @@ domain:
       namespace: fin-market-rules
       localName: dateBusinessDayAdjustment
       label: Corporate Action Date Business-day Adjustment
-      definition: explicit adjustment applied when the offset result is not a business day
+      definition: >-
+        Corporate Action Date Business-day Adjustment, is the explicit adjustment rule applied when the offset result
+        is not a business day, used for normalizing a candidate date onto a valid business day.
+      cnNote: 公司行为日期营业日调整，是当偏移结果非营业日时施加的显式调整规则，用于把候选日期规范化到合法营业日。
       valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionBusinessDayAdjustment
       defaultCardinality:
         minCount: 1
@@ -1076,7 +1730,10 @@ domain:
       namespace: fin-market-rules
       localName: orderingLeftDateRole
       label: Corporate Action Ordering Left Date Role
-      definition: first distinct resolved date role in one executable ordering comparison
+      definition: >-
+        Corporate Action Ordering Left Date Role, is the first of two distinct resolved date roles in one executable
+        ordering comparison, used for participating in the before/after comparison of two dates within a schedule.
+      cnNote: 公司行为排序左日期角色，是一次可执行排序比较中第一个不同的已解析日期角色，用于参与日程内两个日期的先后比较。
       valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionResolvedDateRole
       defaultCardinality:
         minCount: 1
@@ -1086,7 +1743,10 @@ domain:
       namespace: fin-market-rules
       localName: dateOrderingOperator
       label: Corporate Action Date Ordering Operator
-      definition: exact ordering relation applied between the two resolved date roles
+      definition: >-
+        Corporate Action Date Ordering Operator, is the exact ordering relation applied between two resolved date
+        roles, used for expressing the before/after constraint between dates within a schedule.
+      cnNote: 公司行为日期排序算子，是施加于两个已解析日期角色之间的确切排序关系，用于表达日程内日期的先后约束。
       valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDateOrderingOperator
       defaultCardinality:
         minCount: 1
@@ -1096,7 +1756,11 @@ domain:
       namespace: fin-market-rules
       localName: orderingRightDateRole
       label: Corporate Action Ordering Right Date Role
-      definition: second distinct resolved date role in one executable ordering comparison
+      definition: >-
+        Corporate Action Ordering Right Date Role, is the second of two distinct resolved date roles in one
+        executable ordering comparison, used for participating in the before/after comparison of two dates within a
+        schedule.
+      cnNote: 公司行为排序右日期角色，是一次可执行排序比较中第二个不同的已解析日期角色，用于参与日程内两个日期的先后比较。
       valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionResolvedDateRole
       defaultCardinality:
         minCount: 1
@@ -1106,7 +1770,10 @@ domain:
       namespace: fin-market-rules
       localName: corporateActionKind
       label: Corporate Action Kind
-      definition: reviewed CorporateActionKind member selected by one CorporateActionScheduleRule
+      definition: >-
+        Corporate Action Kind, is the reviewed corporate-action kind member selected by a corporate-action schedule
+        rule, used for distinguishing the class of corporate action the schedule targets.
+      cnNote: 公司行为类型，是由公司行为日程规则所选的经审阅公司行为类型成员，用于区分日程所针对的公司行动类别。
       valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionKind
       defaultCardinality:
         minCount: 1
@@ -1116,7 +1783,10 @@ domain:
       namespace: fin-market-rules
       localName: distributionAssessmentMethodId
       label: Distribution Assessment Method Identifier
-      definition: non-empty method identifier unique within the logical method-authority scope
+      definition: >-
+        Distribution Assessment Method Identifier, is the non-empty method identifier unique within the logical
+        method-authority scope, used for identifying one assessment method.
+      cnNote: 分派评估方法标识，是在方法权威逻辑作用域内唯一非空的方法标识符，用于标识某一评估方法。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1127,7 +1797,10 @@ domain:
       namespace: fin-market-rules
       localName: distributionAssessmentInputKind
       label: Distribution Assessment Input Kind
-      definition: exact calculation or official-authority input branch accepted by this reviewed method
+      definition: >-
+        Distribution Assessment Input Kind, is the exact calculation or official-authority input branch accepted by
+        this reviewed method, used for locking the input source of the distribution-percentage calculation.
+      cnNote: 分派评估输入种类，是该经审阅方法所接受的计算或官方权威输入分支，用于锁定分派比例计算所用输入的来源方式。
       valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDistributionAssessmentInputKind
       defaultCardinality:
         minCount: 1
@@ -1137,7 +1810,11 @@ domain:
       namespace: fin-market-rules
       localName: distributionAssessmentPriceSelection
       label: Distribution Assessment Price Selection
-      definition: exact price-selection function; notApplicable is required when the method does not consume market price
+      definition: >-
+        Distribution Assessment Price Selection, is the exact price-selection function frozen by this reviewed method,
+        used for specifying how to select a reference price and required to be marked notApplicable when market price is
+        not consumed.
+      cnNote: 分派评估价格选择，是该经审阅方法冻结的确切价格选择函数，用于规定如何选取参考价格且在不用市价时必须标记为不适用。
       valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionPriceSelectionFunction
       defaultCardinality:
         minCount: 1
@@ -1147,7 +1824,11 @@ domain:
       namespace: fin-market-rules
       localName: distributionAssessmentRequiresMarketPrice
       label: Distribution Assessment Requires Market Price
-      definition: explicit Boolean deciding whether one PIT-eligible affected-security PriceObservation is required
+      definition: >-
+        Distribution Assessment Requires Market Price, is the explicit Boolean that decides whether one
+        point-in-time-eligible affected-security price observation is required, used for declaring whether the method
+        consumes market price.
+      cnNote: 分派评估需市价，是决定是否需要一条 PIT 合格受影响证券价格观测的显式布尔值，用于声明方法是否消费市场价格。
       valueType: boolean
       defaultCardinality:
         minCount: 1
@@ -1158,8 +1839,10 @@ domain:
       localName: distributionAssessmentRequiredPriceKindIri
       label: Distribution Assessment Required Price Kind IRI
       definition: >-
-        absolute IRI of the Market Data PriceKind member required when market price is consumed without importing that
-        downstream module
+        Distribution Assessment Required Price Kind IRI, is the absolute IRI of the market-data price-kind member
+        required when market price is consumed, used for referencing a price type without importing the downstream
+        module.
+      cnNote: 分派评估所需价格种类 IRI，是消费市价时所需的市价价格种类成员的绝对 IRI，用于在不导入下游模块的情况下引用价格类型。
       valueType: string
       defaultCardinality:
         minCount: 0
@@ -1170,7 +1853,10 @@ domain:
       namespace: fin-market-rules
       localName: distributionAssessmentPrecision
       label: Distribution Assessment Precision
-      definition: non-negative decimal precision used by the reviewed percentage calculation
+      definition: >-
+        Distribution Assessment Precision, is the non-negative decimal precision used by the reviewed percentage
+        calculation, used for specifying the number of decimal places in the calculation result.
+      cnNote: 分派评估精度，是该经审阅百分比计算所用的非负小数精度，用于规定计算结果的小数位数。
       valueType: integer
       defaultCardinality:
         minCount: 1
@@ -1180,7 +1866,10 @@ domain:
       namespace: fin-market-rules
       localName: distributionAssessmentRoundingMode
       label: Distribution Assessment Rounding Mode
-      definition: non-empty reviewed rounding-mode identifier used after formula evaluation
+      definition: >-
+        Distribution Assessment Rounding Mode, is the reviewed rounding-mode identifier used after formula evaluation,
+        used for locking the rounding behavior of the calculation result.
+      cnNote: 分派评估舍入模式，是公式求值后使用的经审阅舍入模式标识符，用于锁定计算结果的舍入方式。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1191,7 +1880,10 @@ domain:
       namespace: fin-market-rules
       localName: distributionAssessmentFormulaDigest
       label: Distribution Assessment Formula Digest
-      definition: SHA-256 digest of the exact canonical calculation formula
+      definition: >-
+        Distribution Assessment Formula Digest, is the SHA-256 digest of the exact canonical calculation formula, used
+        for freezing the method's calculation formula for audit.
+      cnNote: 分派评估公式摘要，是确切规范计算公式的 SHA-256 摘要，用于冻结方法的计算公式以供审查。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1202,7 +1894,10 @@ domain:
       namespace: fin-market-rules
       localName: distributionAssessmentImplementationDigest
       label: Distribution Assessment Implementation Digest
-      definition: SHA-256 digest of the exact executable method implementation
+      definition: >-
+        Distribution Assessment Implementation Digest, is the SHA-256 digest of the exact executable method
+        implementation, used for freezing the method's implementation for audit.
+      cnNote: 分派评估实现摘要，是确切可执行方法实现的 SHA-256 摘要，用于冻结方法的实现以供审查。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1213,7 +1908,10 @@ domain:
       namespace: fin-market-rules
       localName: scheduleDateResolutionContractDigest
       label: Schedule Date Resolution Contract Digest
-      definition: SHA-256 digest of the exact event-date-to-resolved-date selection contract
+      definition: >-
+        Schedule Date Resolution Contract Digest, is the SHA-256 digest of the exact event-date-to-resolved-date
+        selection contract, used for freezing the schedule's date-resolution rule for audit.
+      cnNote: 日程日期解析契约摘要，是从事件日期到已解析日期选择契约的确切 SHA-256 摘要，用于冻结日程的日期解析规则以供审查。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1224,7 +1922,10 @@ domain:
       namespace: fin-market-rules
       localName: scheduleDateOrderingContractDigest
       label: Schedule Date Ordering Contract Digest
-      definition: SHA-256 digest of the jurisdiction/profile-specific legal date-ordering contract
+      definition: >-
+        Schedule Date Ordering Contract Digest, is the SHA-256 digest of the jurisdiction- or profile-specific legal
+        date-ordering contract, used for freezing the before/after relations among dates within a schedule for audit.
+      cnNote: 日程日期排序契约摘要，是司法管辖区或档案特定的法定日期排序契约的 SHA-256 摘要，用于冻结日程内日期先后关系以供审查。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1235,7 +1936,10 @@ domain:
       namespace: fin-market-rules
       localName: scheduleCalendarCutoffContractDigest
       label: Schedule Calendar and Cutoff Contract Digest
-      definition: SHA-256 digest of the exact calendar, timezone, and cutoff normalization contract
+      definition: >-
+        Schedule Calendar and Cutoff Contract Digest, is the SHA-256 digest of the exact calendar, timezone, and
+        cutoff normalization contract, used for freezing the schedule's calendar and cutoff rules for audit.
+      cnNote: 日程日历与截止契约摘要，是确切日历、时区与截止规范化契约的 SHA-256 摘要，用于冻结日程的日历与截止规则以供审查。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1246,7 +1950,10 @@ domain:
       namespace: fin-market-rules
       localName: distributionPercentageLowerBound
       label: Distribution Percentage Lower Bound
-      definition: optional dimensionless lower bound of the candidate applicability percentage interval
+      definition: >-
+        Distribution Percentage Lower Bound, is the optional dimensionless lower bound of the candidate applicability
+        percentage interval, used for limiting the minimum acceptable distribution percentage.
+      cnNote: 分派百分比下界，是候选适用性百分比区间可选的无量纲下界，用于限定可接受分派比例的最低值。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 0
@@ -1256,7 +1963,10 @@ domain:
       namespace: fin-market-rules
       localName: distributionPercentageLowerInclusive
       label: Distribution Percentage Lower Inclusive
-      definition: present exactly when a lower bound is authored and states whether that endpoint is included
+      definition: >-
+        Distribution Percentage Lower Inclusive, is the Boolean value that, given a lower bound, states whether that
+        endpoint is included, used for precisely defining the lower-end membership of the percentage interval.
+      cnNote: 分派百分比下界包含性，是在给定下界时声明该端点是否被包含的布尔值，用于精确定义百分比区间的下端归属。
       valueType: boolean
       defaultCardinality:
         minCount: 0
@@ -1266,7 +1976,10 @@ domain:
       namespace: fin-market-rules
       localName: distributionPercentageUpperBound
       label: Distribution Percentage Upper Bound
-      definition: optional dimensionless upper bound of the candidate applicability percentage interval
+      definition: >-
+        Distribution Percentage Upper Bound, is the optional dimensionless upper bound of the candidate applicability
+        percentage interval, used for limiting the maximum acceptable distribution percentage.
+      cnNote: 分派百分比上界，是候选适用性百分比区间可选的无量纲上界，用于限定可接受分派比例的最高值。
       valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
       defaultCardinality:
         minCount: 0
@@ -1276,7 +1989,10 @@ domain:
       namespace: fin-market-rules
       localName: distributionPercentageUpperInclusive
       label: Distribution Percentage Upper Inclusive
-      definition: present exactly when an upper bound is authored and states whether that endpoint is included
+      definition: >-
+        Distribution Percentage Upper Inclusive, is the Boolean value that, given an upper bound, states whether that
+        endpoint is included, used for precisely defining the upper-end membership of the percentage interval.
+      cnNote: 分派百分比上界包含性，是在给定上界时声明该端点是否被包含的布尔值，用于精确定义百分比区间的上端归属。
       valueType: boolean
       defaultCardinality:
         minCount: 0
@@ -1287,8 +2003,9 @@ domain:
       localName: nonTransferableDirectSubscription
       label: Non-transferable Direct Subscription
       definition: >-
-        rights-issue-only Boolean that requires the non-transferable direct-subscription profile and rejects
-        transferable-right models
+        Non-transferable Direct Subscription, is a Boolean attribute used only for rights issues, used for requiring
+        the non-transferable direct-subscription profile and rejecting transferable-right models.
+      cnNote: 不可转让直接认购，是仅用于配股的布尔属性，用于要求采用不可转让直接认购模式并拒绝可转让配股权模型。
       valueType: boolean
       defaultCardinality:
         minCount: 0
@@ -1299,8 +2016,10 @@ domain:
       localName: applicabilityPriority
       label: Applicability Priority
       definition: >-
-        numeric priority comparable only inside one RuleSet version, authoritative source, and byte-identical normalized
-        scope; it never substitutes for computed specificity or cross-authority precedence
+        Applicability Priority, is a numeric priority comparable only within one rule-set version, authoritative
+        source, and byte-identical normalized scope, used for ranking comparable candidates and not substituting for
+        cross-authority precedence.
+      cnNote: 适用性优先级，是仅在单一规则集版本、权威来源与逐字节相同规范化作用域内可比较的数值优先级，用于在可比较候选内排序且不替代跨权威优先关系。
       valueType: integer
       defaultCardinality:
         minCount: 1
@@ -1310,7 +2029,10 @@ domain:
       namespace: fin-market-rules
       localName: applicabilityAccountType
       label: Applicability Account Type
-      definition: optional Foundation AccountType member explicitly scoped by a RuleApplicability
+      definition: >-
+        Applicability Account Type, is the optional foundation account-type member explicitly scoped by a rule
+        applicability, used for restricting a rule's applicability scope to a specific account type.
+      cnNote: 适用性账户类型，是规则适用性显式作用域的可选基础账户类型成员，用于把规则适用范围限定到特定账户类型。
       valueType: https://axiolune.ai/ontology/finance/foundation/AccountType
       defaultCardinality:
         minCount: 0
@@ -1320,7 +2042,10 @@ domain:
       namespace: fin-market-rules
       localName: precedenceReason
       label: Precedence Reason
-      definition: non-empty reviewed explanation supporting one explicit RulePrecedence edge
+      definition: >-
+        Precedence Reason, is the non-empty reviewed explanation supporting one explicit rule-precedence edge, used
+        for recording the basis of a cross-authority rule-priority decision.
+      cnNote: 优先关系理由，是支持某条显式规则优先关系边的非空经审阅说明，用于记录跨权威规则优先级裁决的依据。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1331,7 +2056,10 @@ domain:
       namespace: fin-market-rules
       localName: ruleConflictKind
       label: Rule Conflict Kind
-      definition: reviewed RuleConflictKind member explaining why no silent winner was produced
+      definition: >-
+        Rule Conflict Kind, is the reviewed conflict-kind member explaining why no silent winner was produced, used
+        for classifying the cause of an unresolvable rule-evaluation conflict.
+      cnNote: 规则冲突种类，是说明为何不产生静默胜者的经审阅冲突种类成员，用于分类规则评估中不可消解的冲突原因。
       valueType: https://axiolune.ai/ontology/finance/market-rules/RuleConflictKind
       defaultCardinality:
         minCount: 1
@@ -1341,7 +2069,10 @@ domain:
       namespace: fin-market-rules
       localName: candidateApplicabilitySetDigest
       label: Candidate Applicability Set Digest
-      definition: framed digest of the sorted exact applicability-version IRI set forming a RuleConflict identity
+      definition: >-
+        Candidate Applicability Set Digest, is the framed digest of the ordered exact applicability-version IRI set
+        that forms a rule-conflict identity, used for locking the candidate set involved in the conflict.
+      cnNote: 候选适用性集合摘要，是构成规则冲突身份的有序确切适用性版本 IRI 集合的框架化摘要，用于锁定冲突所涉及的候选集合。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1352,7 +2083,10 @@ domain:
       namespace: fin-market-rules
       localName: ruleEvaluationRequestId
       label: Rule Evaluation Request Identifier
-      definition: non-empty NFC identifier unique within the logical request-authority scope
+      definition: >-
+        Rule Evaluation Request Identifier, is the non-empty normalized identifier unique within the logical
+        request-authority scope, used for identifying one rule-evaluation request.
+      cnNote: 规则评估请求标识，是在请求权威逻辑作用域内唯一非空的规范化标识符，用于标识某次规则评估请求。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -1363,7 +2097,10 @@ domain:
       namespace: fin-market-rules
       localName: asOfValid
       label: As-of Valid Time
-      definition: explicit valid-time pivot of a RuleEvaluationRequest
+      definition: >-
+        As-of Valid Time, is the explicit valid-time point-in-time pivot of a rule-evaluation request, used for
+        specifying the point at which rules and scope are interpreted by valid time.
+      cnNote: 有效时点，是规则评估请求的显式有效时间 PIT 锚点，用于规定按有效时间解读规则与作用域的时点。
       valueType: instant
       defaultCardinality:
         minCount: 1
@@ -1373,7 +2110,10 @@ domain:
       namespace: fin-market-rules
       localName: asOfKnowledge
       label: As-of Knowledge Time
-      definition: explicit knowledge-time pivot of a RuleEvaluationRequest
+      definition: >-
+        As-of Knowledge Time, is the explicit knowledge-time point-in-time pivot of a rule-evaluation request, used for
+        specifying the point at which available knowledge is interpreted by knowledge time.
+      cnNote: 认知时点，是规则评估请求的显式认知时间 PIT 锚点，用于规定按认知时间解读可用知识的时点。
       valueType: instant
       defaultCardinality:
         minCount: 1
@@ -1383,7 +2123,10 @@ domain:
       namespace: fin-market-rules
       localName: asOfAvailable
       label: As-of Availability Time
-      definition: explicit availability-time pivot of a RuleEvaluationRequest
+      definition: >-
+        As-of Availability Time, is the explicit availability-time point-in-time pivot of a rule-evaluation request,
+        used for specifying the point at which data reachability is interpreted by availability time.
+      cnNote: 可用时点，是规则评估请求的显式可用时间 PIT 锚点，用于规定按可用时间解读数据可达性的时点。
       valueType: instant
       defaultCardinality:
         minCount: 1
@@ -1393,7 +2136,10 @@ domain:
       namespace: fin-market-rules
       localName: requestAccountType
       label: Request Account Type
-      definition: optional Foundation AccountType member supplied as an exact rule-evaluation scope
+      definition: >-
+        Request Account Type, is the optional foundation account-type member supplied as an exact rule-evaluation
+        scope, used for restricting the account dimension in an evaluation request.
+      cnNote: 请求账户类型，是作为确切规则评估作用域提供的基础账户类型成员，用于在评估请求中限定账户维度。
       valueType: https://axiolune.ai/ontology/finance/foundation/AccountType
       defaultCardinality:
         minCount: 0
@@ -1403,10 +2149,378 @@ domain:
       namespace: fin-market-rules
       localName: requestedCorporateActionKind
       label: Requested Corporate Action Kind
-      definition: optional exact CorporateActionKind typed parameter required for a corporate-action schedule evaluation
+      definition: >-
+        Requested Corporate Action Kind, is the optional exact corporate-action-kind typed parameter required for a
+        corporate-action schedule evaluation, used for restricting the schedule category in an evaluation request.
+      cnNote: 请求公司行为类型，是公司行为日程评估所要求的可选确切公司行为类型参数，用于在评估请求中限定日程类别。
       valueType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionKind
       defaultCardinality:
         minCount: 0
+        maxCount: 1
+    selectionOutcomeKind:
+      iri: https://axiolune.ai/ontology/finance/market-rules/selectionOutcomeKind
+      namespace: fin-market-rules
+      localName: selectionOutcomeKind
+      label: Selection Outcome Kind
+      definition: >-
+        Selection Outcome Kind, is the reviewed outcome-kind member carried by every rule selection outcome, used for
+        classifying the result as resolved, no-applicable-rule, conflict, unsupported, or indeterminate.
+      cnNote: 选择结果种类，是每个规则选择结果携带的经审阅结果种类成员，用于把结果分类为已消解、无适用规则、冲突、不支持或不确定。
+      valueType: https://axiolune.ai/ontology/finance/market-rules/SelectionOutcomeKind
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    resolvedSpecificityVector:
+      iri: https://axiolune.ai/ontology/finance/market-rules/resolvedSpecificityVector
+      namespace: fin-market-rules
+      localName: resolvedSpecificityVector
+      label: Resolved Specificity Vector
+      definition: >-
+        Resolved Specificity Vector, is the platform-derived specificity vector computed from the authored scope
+        dimensions of the winning applicability, used for ranking comparable candidates without accepting a
+        caller-authored specificity value.
+      cnNote: 已消解特异性向量，是由胜出适用性的已编写作用域维度派生的平台特异性向量，用于在可比较候选内排序且不接受调用方编写的特异性值。
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    selectionBasis:
+      iri: https://axiolune.ai/ontology/finance/market-rules/selectionBasis
+      namespace: fin-market-rules
+      localName: selectionBasis
+      label: Selection Basis
+      definition: >-
+        Selection Basis, is the reviewed basis member explaining how the resolved selection was chosen among
+        comparable candidates, used for recording whether resolution used numeric priority, explicit precedence, or
+        specificity.
+      cnNote: 选择依据，是说明已消解选择如何在可比较候选中选出的经审阅依据成员，用于记录消解是否使用数值优先级、显式优先关系或特异性。
+      valueType: https://axiolune.ai/ontology/finance/market-rules/PrecedenceBasis
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    noMatchReason:
+      iri: https://axiolune.ai/ontology/finance/market-rules/noMatchReason
+      namespace: fin-market-rules
+      localName: noMatchReason
+      label: No Match Reason
+      definition: >-
+        No Match Reason, is the non-empty explanation recorded when no surviving applicability matches the request,
+        used for distinguishing a genuine coverage gap from an error.
+      cnNote: 无匹配理由，是无存活适用性匹配请求时记录的非空说明，用于区分真正覆盖空隙与错误。
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    unsupportedReason:
+      iri: https://axiolune.ai/ontology/finance/market-rules/unsupportedReason
+      namespace: fin-market-rules
+      localName: unsupportedReason
+      label: Unsupported Reason
+      definition: >-
+        Unsupported Reason, is the non-empty explanation recorded when the request targets an unsupported rule kind or
+        clause shape, used for distinguishing an unsupported request from a coverage gap or conflict.
+      cnNote: 不支持理由，是当请求针对不支持的规则类型或条款形状时记录的非空说明，用于区分不支持请求与覆盖空隙或冲突。
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    indeterminacyReason:
+      iri: https://axiolune.ai/ontology/finance/market-rules/indeterminacyReason
+      namespace: fin-market-rules
+      localName: indeterminacyReason
+      label: Indeterminacy Reason
+      definition: >-
+        Indeterminacy Reason, is the non-empty explanation recorded when evaluation cannot complete due to missing
+        inputs or an unresolved reference, used for distinguishing indeterminacy from a definitive conflict.
+      cnNote: 不确定理由，是当评估因输入缺失或引用未解析而无法完成时记录的非空说明，用于区分不确定性与确定性冲突。
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    referencePriceSource:
+      iri: https://axiolune.ai/ontology/finance/market-rules/referencePriceSource
+      namespace: fin-market-rules
+      localName: referencePriceSource
+      label: Reference Price Source
+      definition: >-
+        Reference Price Source, is the reviewed price-source member identifying where the reference price is drawn
+        from (previous close, opening auction, fixed price), used for making the price limit computable.
+      cnNote: 参考价来源，是标识参考价取自何处（前收盘价、开盘集合竞价、固定价）的经审阅价格来源成员，用于使价格限制可计算。
+      valueType: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceSource
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    referencePriceWindow:
+      iri: https://axiolune.ai/ontology/finance/market-rules/referencePriceWindow
+      namespace: fin-market-rules
+      localName: referencePriceWindow
+      label: Reference Price Window
+      definition: >-
+        Reference Price Window, is the optional observation window over which the reference price is selected, used
+        for pinning the price selection to a point or interval.
+      cnNote: 参考价窗口，是选取参考价的可选观测窗口，用于把价格选择固定到某一时点或区间。
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    referencePriceMissingPolicy:
+      iri: https://axiolune.ai/ontology/finance/market-rules/referencePriceMissingPolicy
+      namespace: fin-market-rules
+      localName: referencePriceMissingPolicy
+      label: Reference Price Missing Policy
+      definition: >-
+        Reference Price Missing Policy, is the reviewed policy applied when the reference price is unavailable at the
+        evaluation point (reject, fall back to a prior observation, suspend), used for making missing-reference
+        behavior explicit rather than silent.
+      cnNote: 参考价缺失策略，是当评估时点参考价不可用时施加的经审阅策略（拒绝、回退到先前观测、暂停），用于使缺失参考价行为显式而非静默。
+      valueType: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceMissingPolicy
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    referencePriceCurrency:
+      iri: https://axiolune.ai/ontology/finance/market-rules/referencePriceCurrency
+      namespace: fin-market-rules
+      localName: referencePriceCurrency
+      label: Reference Price Currency
+      definition: >-
+        Reference Price Currency, is the optional currency in which the reference price and the resulting band are
+        quoted, used for ensuring the band is computed in the correct quote currency.
+      cnNote: 参考价币种，是参考价与所得区间所用的可选报价币种，用于确保区间以正确报价币种计算。
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    referencePriceRounding:
+      iri: https://axiolune.ai/ontology/finance/market-rules/referencePriceRounding
+      namespace: fin-market-rules
+      localName: referencePriceRounding
+      label: Reference Price Rounding
+      definition: >-
+        Reference Price Rounding, is the optional rounding convention applied to the computed band (round to nearest
+        tick, floor, ceiling), used for making the limit up/down a valid quotable price.
+      cnNote: 参考价取整，是对计算区间施加的可选取整规则（按最小变动单位四舍五入、向下、向上），用于使涨跌幅成为合法可报价价格。
+      valueType: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceRounding
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    priceBandSide:
+      iri: https://axiolune.ai/ontology/finance/market-rules/priceBandSide
+      namespace: fin-market-rules
+      localName: priceBandSide
+      label: Price Band Side
+      definition: >-
+        Price Band Side, is the reviewed side member stating whether a price-limit clause sets the upper limit, lower
+        limit, or both, used for distinguishing limit up from limit down.
+      cnNote: 价格区间方向，是说明价格限制条款设定上限、下限或两者的经审阅方向成员，用于区分涨停与跌停。
+      valueType: https://axiolune.ai/ontology/finance/market-rules/PriceBandSide
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    circuitBreakerMonitor:
+      iri: https://axiolune.ai/ontology/finance/market-rules/circuitBreakerMonitor
+      namespace: fin-market-rules
+      localName: circuitBreakerMonitor
+      label: Circuit Breaker Monitor
+      definition: >-
+        Circuit Breaker Monitor, is the reviewed monitor member identifying the observed value that triggers the
+        breaker (index level, single-security price, percentage move), used for making the trigger object explicit.
+      cnNote: 熔断监测对象，是标识触发熔断的被监测值（指数点位、单证券价格、百分比波动）的经审阅监测对象成员，用于使触发对象显式。
+      valueType: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerMonitor
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    circuitBreakerDirection:
+      iri: https://axiolune.ai/ontology/finance/market-rules/circuitBreakerDirection
+      namespace: fin-market-rules
+      localName: circuitBreakerDirection
+      label: Circuit Breaker Direction
+      definition: >-
+        Circuit Breaker Direction, is the reviewed direction member stating whether the breaker triggers on a
+        downward move, an upward move, or either, used for distinguishing downside halts from upside halts.
+      cnNote: 熔断方向，是说明熔断在下跌、上涨或任一方向触发经审阅方向成员，用于区分下行停市与上行停市。
+      valueType: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerDirection
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    circuitBreakerTier:
+      iri: https://axiolune.ai/ontology/finance/market-rules/circuitBreakerTier
+      namespace: fin-market-rules
+      localName: circuitBreakerTier
+      label: Circuit Breaker Tier
+      definition: >-
+        Circuit Breaker Tier, is the optional non-negative tier number for multi-level breakers, used for arranging
+        tiered halts such as 7/13/20 percent market-wide circuit breakers.
+      cnNote: 熔断层级，是多级熔断的可选非负层级号，用于编排如 7/13/20 百分比全市场熔断的分级停市。
+      valueType: integer
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    circuitBreakerTriggerCount:
+      iri: https://axiolune.ai/ontology/finance/market-rules/circuitBreakerTriggerCount
+      namespace: fin-market-rules
+      localName: circuitBreakerTriggerCount
+      label: Circuit Breaker Trigger Count
+      definition: >-
+        Circuit Breaker Trigger Count, is the optional non-negative number of threshold touches required before the
+        halt is applied, used for breakers that require repeated touches rather than a single crossing.
+      cnNote: 熔断触发次数，是施加停市前所需触阈的可选非负次数，用于需要重复触阈而非单次穿越的熔断。
+      valueType: integer
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    circuitBreakerResumeMechanism:
+      iri: https://axiolune.ai/ontology/finance/market-rules/circuitBreakerResumeMechanism
+      namespace: fin-market-rules
+      localName: circuitBreakerResumeMechanism
+      label: Circuit Breaker Resume Mechanism
+      definition: >-
+        Circuit Breaker Resume Mechanism, is the reviewed resume member identifying how trading resumes after a halt
+        (manual, timed, opening auction, price-band), used for making resume behavior explicit.
+      cnNote: 熔断复市机制，是标识停市后如何恢复交易（手动、定时、开盘集合竞价、价格区间）的经审阅复市成员，用于使复市行为显式。
+      valueType: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerResumeMechanism
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    applicabilityInvestorCategory:
+      iri: https://axiolune.ai/ontology/finance/market-rules/applicabilityInvestorCategory
+      namespace: fin-market-rules
+      localName: applicabilityInvestorCategory
+      label: Applicability Investor Category
+      definition: >-
+        Applicability Investor Category, is the optional investor-category member explicitly scoped by a rule
+        applicability, used for restricting a rule's applicability scope to a specific investor category distinct from
+        account type.
+      cnNote: 适用性投资者类别，是规则适用性显式作用域的可选投资者类别成员，用于把规则适用范围限定到区别于账户类型的特定投资者类别。
+      valueType: https://axiolune.ai/ontology/finance/market-rules/InvestorCategory
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    applicabilityOrderType:
+      iri: https://axiolune.ai/ontology/finance/market-rules/applicabilityOrderType
+      namespace: fin-market-rules
+      localName: applicabilityOrderType
+      label: Applicability Order Type
+      definition: >-
+        Applicability Order Type, is the optional order-type member explicitly scoped by a rule applicability, used
+        for restricting a rule's applicability scope to a specific order type.
+      cnNote: 适用性订单类型，是规则适用性显式作用域的可选订单类型成员，用于把规则适用范围限定到特定订单类型。
+      valueType: https://axiolune.ai/ontology/finance/market-rules/OrderType
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    applicabilityOrderSide:
+      iri: https://axiolune.ai/ontology/finance/market-rules/applicabilityOrderSide
+      namespace: fin-market-rules
+      localName: applicabilityOrderSide
+      label: Applicability Order Side
+      definition: >-
+        Applicability Order Side, is the optional order-side member explicitly scoped by a rule applicability, used
+        for restricting a rule's applicability scope to buy, sell, or both.
+      cnNote: 适用性买卖方向，是规则适用性显式作用域的可选买卖方向成员，用于把规则适用范围限定到买、卖或两者。
+      valueType: https://axiolune.ai/ontology/finance/market-rules/OrderSide
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    applicabilityMarketModel:
+      iri: https://axiolune.ai/ontology/finance/market-rules/applicabilityMarketModel
+      namespace: fin-market-rules
+      localName: applicabilityMarketModel
+      label: Applicability Market Model
+      definition: >-
+        Applicability Market Model, is the optional market-model member explicitly scoped by a rule applicability,
+        used for restricting a rule's applicability scope to a specific market model (continuous, auction, dark).
+      cnNote: 适用性市场模型，是规则适用性显式作用域的可选市场模型成员，用于把规则适用范围限定到特定市场模型（连续、集合竞价、暗盘）。
+      valueType: https://axiolune.ai/ontology/finance/market-rules/MarketModel
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    scopeExpressionForm:
+      iri: https://axiolune.ai/ontology/finance/market-rules/scopeExpressionForm
+      namespace: fin-market-rules
+      localName: scopeExpressionForm
+      label: Scope Expression Form
+      definition: >-
+        Scope Expression Form, is the reviewed boolean form of a scope expression (conjunction, disjunction,
+        exception), used for declaring how the constituent scope terms are combined.
+      cnNote: 作用域表达式形式，是作用域表达式的经审阅布尔形式（合取、析取、例外），用于声明组成作用域项的组合方式。
+      valueType: https://axiolune.ai/ontology/finance/market-rules/ScopeExpressionForm
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    scopeTermDimension:
+      iri: https://axiolune.ai/ontology/finance/market-rules/scopeTermDimension
+      namespace: fin-market-rules
+      localName: scopeTermDimension
+      label: Scope Term Dimension
+      definition: >-
+        Scope Term Dimension, is the reviewed scope-dimension member identifying which dimension a scope term binds
+        (trading session, trading phase, instrument classification, investor category, order type, order side, market
+        model, or any of the legacy dimensions), used for typing the atomic unit of a scope expression.
+      cnNote: 作用域项维度，是标识作用域项绑定哪个维度的经审阅作用域维度成员（交易时段、交易阶段、工具分类、投资者类别、订单类型、买卖方向、市场模型或任何既有维度），用于类型化作用域表达式的原子单元。
+      valueType: https://axiolune.ai/ontology/finance/market-rules/ScopeDimension
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    scopeTermPolarity:
+      iri: https://axiolune.ai/ontology/finance/market-rules/scopeTermPolarity
+      namespace: fin-market-rules
+      localName: scopeTermPolarity
+      label: Scope Term Polarity
+      definition: >-
+        Scope Term Polarity, is the Boolean stating whether a scope term is a positive include or a negative exception,
+        used for supporting exception branches in a scope expression.
+      cnNote: 作用域项极性，是声明作用域项为正向包含还是负向例外的布尔值，用于支持作用域表达式中的例外分支。
+      valueType: boolean
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    normativeSourceLocator:
+      iri: https://axiolune.ai/ontology/finance/market-rules/normativeSourceLocator
+      namespace: fin-market-rules
+      localName: normativeSourceLocator
+      label: Normative Source Locator
+      definition: >-
+        Normative Source Locator, is the non-empty document locator of a normative source, used for locating the
+        authoritative text that evidences a rule or rule set.
+      cnNote: 规范来源定位符，是规范来源的非空文档定位符，用于定位佐证规则或规则集的权威文本。
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    normativeSourceSection:
+      iri: https://axiolune.ai/ontology/finance/market-rules/normativeSourceSection
+      namespace: fin-market-rules
+      localName: normativeSourceSection
+      label: Normative Source Section
+      definition: >-
+        Normative Source Section, is the optional section reference within the located document, used for pinpointing
+        the clause that evidences a rule.
+      cnNote: 规范来源条款，是已定位文档内的可选条款引用，用于精确定位佐证规则的条款。
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    normativeSourceRole:
+      iri: https://axiolune.ai/ontology/finance/market-rules/normativeSourceRole
+      namespace: fin-market-rules
+      localName: normativeSourceRole
+      label: Normative Source Role
+      definition: >-
+        Normative Source Role, is the reviewed role member identifying the function of a normative source (main text,
+        amendment, notice, interpretation, effective notice), used for recording the multiple evidence roles a rule may
+        have.
+      cnNote: 规范来源角色，是标识规范来源功能的经审阅角色成员（主文、修订、公告、解释、生效通知），用于记录规则可具有的多个证据角色。
+      valueType: https://axiolune.ai/ontology/finance/market-rules/NormativeSourceRole
+      defaultCardinality:
+        minCount: 1
         maxCount: 1
   identifierTypes: {}
   codeLists:
@@ -1415,7 +2529,10 @@ domain:
       namespace: fin-market-rules
       localName: RuleType
       label: Rule Type
-      definition: closed classification of rule specializations supported by the executable market-rule profile
+      definition: >-
+        Rule Type, is a closed classification of rule specializations supported by the executable market-rule profile,
+        used for classifying each market rule into its legal subtype and clause set.
+      cnNote: 规则类型，是可执行市场规则档案所支持的规则特化封闭分类，用于把每条市场规则归入其合法的子类型与条款集合。
       vocabulary: Rule Type
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1454,7 +2571,11 @@ domain:
       namespace: fin-market-rules
       localName: RuleParameterCode
       label: Rule Parameter Code
-      definition: closed generic code branch for executable RuleParameter values that are neither Money nor Quantity
+      definition: >-
+        Rule Parameter Code, is a closed controlled table of generic code branches for executable rule-parameter
+        values that are neither money nor quantity, used for expressing rule-parameter switch or calendar semantics
+        as a controlled code.
+      cnNote: 规则参数代码，是既非金额又非数量的可执行规则参数值所用的通用代码分支封闭受控表，用于以受控代码形式表达规则参数的开关或日历语义。
       vocabulary: Rule Parameter Code
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1481,7 +2602,10 @@ domain:
       namespace: fin-market-rules
       localName: ClauseGapPolicy
       label: Clause Gap Policy
-      definition: closed decision for uncovered ranges between ordered clauses
+      definition: >-
+        Clause Gap Policy, is a closed decision for uncovered ranges between ordered clauses, used for specifying
+        whether range gaps are rejected or intentionally allowed.
+      cnNote: 条款间隙策略，是对有序条款间未覆盖区间的封闭决策，用于规定区间空隙是被拒绝还是被有意允许。
       vocabulary: Clause Gap Policy
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1500,7 +2624,10 @@ domain:
       namespace: fin-market-rules
       localName: RuleConflictKind
       label: Rule Conflict Kind
-      definition: closed classification of no-winner rule-resolution outcomes
+      definition: >-
+        Rule Conflict Kind, is a closed classification of no-winner rule-resolution outcomes, used for explaining the
+        specific cause of an unresolvable conflict in rule evaluation.
+      cnNote: 规则冲突种类，是无胜者规则消解结果的封闭分类，用于说明规则评估中不可消解冲突的具体原因。
       vocabulary: Rule Conflict Kind
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1519,7 +2646,10 @@ domain:
       namespace: fin-market-rules
       localName: CorporateActionKind
       label: Corporate Action Kind
-      definition: closed classification used by schedule-rule requests and clauses rather than downstream Event identity
+      definition: >-
+        Corporate Action Kind, is a closed classification used by schedule-rule requests and clauses rather than
+        downstream event identity, used for restricting the schedule rule to the supported corporate-action categories.
+      cnNote: 公司行为类型，是日程规则请求与条款所用的封闭分类而非下游事件身份，用于把日程规则限定到所支持的公司行动类别。
       vocabulary: Corporate Action Kind
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1542,7 +2672,11 @@ domain:
       namespace: fin-market-rules
       localName: CorporateActionDistributionAssessmentInputKind
       label: Corporate Action Distribution Assessment Input Kind
-      definition: closed source-input branch consumed by one reviewed assessment method
+      definition: >-
+        Corporate Action Distribution Assessment Input Kind, is a closed classification of source-input branches
+        consumed by one reviewed assessment method, used for locking the input source of the distribution-percentage
+        calculation.
+      cnNote: 公司行为分派评估输入种类，是某一经审阅评估方法所消费的来源输入分支封闭分类，用于锁定分派比例计算的输入来源方式。
       vocabulary: Corporate Action Distribution Assessment Input Kind
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1573,7 +2707,11 @@ domain:
       namespace: fin-market-rules
       localName: CorporateActionPriceSelectionFunction
       label: Corporate Action Price Selection Function
-      definition: closed temporal price-selection function frozen by one reviewed assessment method
+      definition: >-
+        Corporate Action Price Selection Function, is a closed temporal price-selection function frozen by one
+        reviewed assessment method, used for specifying how to select the reference price of an affected security by
+        point-in-time.
+      cnNote: 公司行为价格选择函数，是由某一经审阅评估方法冻结的封闭时态价格选择函数，用于规定如何按 PIT 选取受影响证券的参考价格。
       vocabulary: Corporate Action Price Selection Function
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1597,7 +2735,11 @@ domain:
       namespace: fin-market-rules
       localName: CorporateActionEntitlementMode
       label: Corporate Action Entitlement Mode
-      definition: closed classification of ordinary-record-date and due-bill entitlement calculation modes
+      definition: >-
+        Corporate Action Entitlement Mode, is a closed classification of ordinary-record-position and due-bill
+        entitlement calculation modes, used for deciding whether entitlement ownership is computed by record position
+        or due-bill adjustment.
+      cnNote: 公司行为权益模式，是普通记录头寸与 due-bill 权益计算模式的封闭分类，用于决定权益归属是否按记录头寸或 due-bill 调整方式计算。
       vocabulary: Corporate Action Entitlement Mode
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1617,7 +2759,10 @@ domain:
       namespace: fin-market-rules
       localName: CorporateActionEventDateField
       label: Corporate Action Event Date Field
-      definition: closed downstream-neutral event date-field roles a schedule contract may select
+      definition: >-
+        Corporate Action Event Date Field, is a closed classification of downstream-neutral event date-field roles a
+        schedule contract may select, used for locking the event date source that schedule resolution may reference.
+      cnNote: 公司行为事件日期字段，是日程契约可选的下游中立事件日期字段角色封闭分类，用于锁定日程解析可引用的事件日期来源。
       vocabulary: Corporate Action Event Date Field
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1652,7 +2797,11 @@ domain:
       namespace: fin-market-rules
       localName: CorporateActionResolvedDateRole
       label: Corporate Action Resolved Date Role
-      definition: closed schedule-resolution output date roles, including the two rights-fulfillment dates
+      definition: >-
+        Corporate Action Resolved Date Role, is a closed classification of schedule-resolution output date roles,
+        including the two rights-fulfillment dates, used for identifying the purpose of a determined output date in a
+        schedule.
+      cnNote: 公司行为已解析日期角色，是含两项配股履行日期在内的日程解析输出日期角色封闭分类，用于标识日程中确定输出日期的用途。
       vocabulary: Corporate Action Resolved Date Role
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1697,7 +2846,10 @@ domain:
       namespace: fin-market-rules
       localName: CorporateActionBusinessDayAdjustment
       label: Corporate Action Business-day Adjustment
-      definition: closed business-day adjustment convention for schedule date resolution
+      definition: >-
+        Corporate Action Business-day Adjustment, is a closed business-day adjustment convention for schedule
+        date resolution, used for normalizing a candidate date onto a valid business day.
+      cnNote: 公司行为营业日调整，是日程日期解析所用的封闭营业日调整规则，用于把候选日期规范化到合法营业日。
       vocabulary: Corporate Action Business-day Adjustment
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1720,7 +2872,10 @@ domain:
       namespace: fin-market-rules
       localName: CorporateActionDateOrderingOperator
       label: Corporate Action Date Ordering Operator
-      definition: closed comparison operator between two resolved date roles
+      definition: >-
+        Corporate Action Date Ordering Operator, is a closed comparison operator between two resolved date roles, used
+        for expressing the before/after or equality constraint between dates within a schedule.
+      cnNote: 公司行为日期排序算子，是两个已解析日期角色之间的封闭比较算子，用于表达日程内日期的先后或相等约束。
       vocabulary: Corporate Action Date Ordering Operator
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1751,7 +2906,10 @@ domain:
       namespace: fin-market-rules
       localName: CorporateActionSettlementQualification
       label: Corporate Action Settlement Qualification
-      definition: closed evidence requirement for a due-bill trade qualification
+      definition: >-
+        Corporate Action Settlement Qualification, is a closed evidence requirement for a due-bill trade
+        qualification, used for specifying the evidence type required to qualify for due-bill processing.
+      cnNote: 公司行为结算资格审查，是 due-bill 交易合格性的封闭证据要求，用于规定获得 due-bill 处理资格所需的证据类型。
       vocabulary: Corporate Action Settlement Qualification
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -1766,6 +2924,487 @@ domain:
           notation: settlementEvidence
           label: Settlement evidence
           definition: exact eligible settlement-status and DVP atomic evidence are required
+    SelectionOutcomeKind:
+      iri: https://axiolune.ai/ontology/finance/market-rules/SelectionOutcomeKind
+      namespace: fin-market-rules
+      localName: SelectionOutcomeKind
+      label: Selection Outcome Kind
+      definition: >-
+        Selection Outcome Kind, is a closed classification of rule selection outcomes, used for classifying each
+        evaluation result as a resolved selection, no-applicable-rule, conflict, unsupported, or indeterminate.
+      cnNote: 选择结果种类，是规则选择结果的封闭分类，用于把每次评估结果分类为已消解选择、无适用规则、冲突、不支持或不确定。
+      vocabulary: Selection Outcome Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/SelectionOutcomeKind/value/resolvedSelection
+          notation: resolvedSelection
+          label: Resolved selection
+          definition: exactly one surviving applicability version won
+        - iri: https://axiolune.ai/ontology/finance/market-rules/SelectionOutcomeKind/value/noApplicableRule
+          notation: noApplicableRule
+          label: No applicable rule
+          definition: no surviving applicability version matched the request
+        - iri: https://axiolune.ai/ontology/finance/market-rules/SelectionOutcomeKind/value/conflict
+          notation: conflict
+          label: Conflict
+          definition: at least two surviving applicability versions produced incompatible results
+        - iri: https://axiolune.ai/ontology/finance/market-rules/SelectionOutcomeKind/value/unsupported
+          notation: unsupported
+          label: Unsupported
+          definition: the request targets a rule kind or clause shape the profile does not support
+        - iri: https://axiolune.ai/ontology/finance/market-rules/SelectionOutcomeKind/value/indeterminate
+          notation: indeterminate
+          label: Indeterminate
+          definition: evaluation could not complete due to missing inputs or unresolved references
+    PrecedenceBasis:
+      iri: https://axiolune.ai/ontology/finance/market-rules/PrecedenceBasis
+      namespace: fin-market-rules
+      localName: PrecedenceBasis
+      label: Precedence Basis
+      definition: >-
+        Precedence Basis, is a closed classification of the basis on which a resolved selection or precedence edge was
+        chosen, used for recording whether resolution used numeric priority, an explicit reviewed precedence edge, or
+        derived specificity.
+      cnNote: 优先依据，是已消解选择或优先关系边所选依据的封闭分类，用于记录消解是否使用数值优先级、显式经审阅优先关系边或派生特异性。
+      vocabulary: Precedence Basis
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/PrecedenceBasis/value/numericPriority
+          notation: numericPriority
+          label: Numeric priority
+          definition: the winning applicability had the highest numeric priority within one comparable set
+        - iri: https://axiolune.ai/ontology/finance/market-rules/PrecedenceBasis/value/explicitPrecedence
+          notation: explicitPrecedence
+          label: Explicit precedence
+          definition: a reviewed RulePrecedence edge declared the winner
+        - iri: https://axiolune.ai/ontology/finance/market-rules/PrecedenceBasis/value/derivedSpecificity
+          notation: derivedSpecificity
+          label: Derived specificity
+          definition: the winning applicability had the most specific authored scope
+    ReferencePriceSource:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceSource
+      namespace: fin-market-rules
+      localName: ReferencePriceSource
+      label: Reference Price Source
+      definition: >-
+        Reference Price Source, is a closed classification of where a price-limit or circuit-breaker reference price is
+        drawn from, used for making the reference price computable.
+      cnNote: 参考价来源，是价格限制或熔断参考价取自何处的封闭分类，用于使参考价可计算。
+      vocabulary: Reference Price Source
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceSource/value/previousClose
+          notation: previousClose
+          label: Previous close
+          definition: the reference price is the previous trading day close
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceSource/value/openingAuction
+          notation: openingAuction
+          label: Opening auction
+          definition: the reference price is the opening auction price
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceSource/value/fixedPrice
+          notation: fixedPrice
+          label: Fixed price
+          definition: the reference price is a authority-declared fixed price
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceSource/value/intradaySnapshot
+          notation: intradaySnapshot
+          label: Intraday snapshot
+          definition: the reference price is a locked intraday observation snapshot
+    ReferencePriceMissingPolicy:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceMissingPolicy
+      namespace: fin-market-rules
+      localName: ReferencePriceMissingPolicy
+      label: Reference Price Missing Policy
+      definition: >-
+        Reference Price Missing Policy, is a closed decision for when the reference price is unavailable at the
+        evaluation point, used for making missing-reference behavior explicit rather than silent.
+      cnNote: 参考价缺失策略，是当评估时点参考价不可用时的封闭决策，用于使缺失参考价行为显式而非静默。
+      vocabulary: Reference Price Missing Policy
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceMissingPolicy/value/reject
+          notation: reject
+          label: Reject
+          definition: evaluation fails with an indeterminate outcome
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceMissingPolicy/value/fallbackPrior
+          notation: fallbackPrior
+          label: Fallback to prior
+          definition: fall back to the latest strictly-prior eligible observation
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceMissingPolicy/value/suspend
+          notation: suspend
+          label: Suspend
+          definition: suspend trading until a reference price becomes available
+    ReferencePriceRounding:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceRounding
+      namespace: fin-market-rules
+      localName: ReferencePriceRounding
+      label: Reference Price Rounding
+      definition: >-
+        Reference Price Rounding, is a closed rounding convention applied to the computed price band, used for making
+        the limit up/down a valid quotable price.
+      cnNote: 参考价取整，是对计算价格区间施加的封闭取整规则，用于使涨跌幅成为合法可报价价格。
+      vocabulary: Reference Price Rounding
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceRounding/value/nearestTick
+          notation: nearestTick
+          label: Nearest tick
+          definition: round to the nearest minimum price increment
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceRounding/value/floor
+          notation: floor
+          label: Floor
+          definition: round down to the minimum price increment
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceRounding/value/ceiling
+          notation: ceiling
+          label: Ceiling
+          definition: round up to the minimum price increment
+    PriceBandSide:
+      iri: https://axiolune.ai/ontology/finance/market-rules/PriceBandSide
+      namespace: fin-market-rules
+      localName: PriceBandSide
+      label: Price Band Side
+      definition: >-
+        Price Band Side, is a closed classification of whether a price-limit clause sets the upper limit, lower limit,
+        or both, used for distinguishing limit up from limit down.
+      cnNote: 价格区间方向，是价格限制条款设定上限、下限或两者的封闭分类，用于区分涨停与跌停。
+      vocabulary: Price Band Side
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/PriceBandSide/value/upperLimit
+          notation: upperLimit
+          label: Upper limit
+          definition: the clause sets the limit up
+        - iri: https://axiolune.ai/ontology/finance/market-rules/PriceBandSide/value/lowerLimit
+          notation: lowerLimit
+          label: Lower limit
+          definition: the clause sets the limit down
+        - iri: https://axiolune.ai/ontology/finance/market-rules/PriceBandSide/value/bothSides
+          notation: bothSides
+          label: Both sides
+          definition: the clause sets both limit up and limit down
+    CircuitBreakerMonitor:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerMonitor
+      namespace: fin-market-rules
+      localName: CircuitBreakerMonitor
+      label: Circuit Breaker Monitor
+      definition: >-
+        Circuit Breaker Monitor, is a closed classification of the observed value that triggers a circuit breaker,
+        used for making the trigger object explicit.
+      cnNote: 熔断监测对象，是触发熔断的被监测值的封闭分类，用于使触发对象显式。
+      vocabulary: Circuit Breaker Monitor
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerMonitor/value/indexLevel
+          notation: indexLevel
+          label: Index level
+          definition: the breaker monitors a market index level
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerMonitor/value/singleSecurityPrice
+          notation: singleSecurityPrice
+          label: Single-security price
+          definition: the breaker monitors a single security price
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerMonitor/value/percentageMove
+          notation: percentageMove
+          label: Percentage move
+          definition: the breaker monitors a percentage move from the reference
+    CircuitBreakerDirection:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerDirection
+      namespace: fin-market-rules
+      localName: CircuitBreakerDirection
+      label: Circuit Breaker Direction
+      definition: >-
+        Circuit Breaker Direction, is a closed classification of the direction that triggers a circuit breaker, used
+        for distinguishing downside halts from upside halts.
+      cnNote: 熔断方向，是触发熔断方向的封闭分类，用于区分下行停市与上行停市。
+      vocabulary: Circuit Breaker Direction
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerDirection/value/downward
+          notation: downward
+          label: Downward
+          definition: the breaker triggers on a downward move
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerDirection/value/upward
+          notation: upward
+          label: Upward
+          definition: the breaker triggers on an upward move
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerDirection/value/either
+          notation: either
+          label: Either
+          definition: the breaker triggers in either direction
+    CircuitBreakerResumeMechanism:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerResumeMechanism
+      namespace: fin-market-rules
+      localName: CircuitBreakerResumeMechanism
+      label: Circuit Breaker Resume Mechanism
+      definition: >-
+        Circuit Breaker Resume Mechanism, is a closed classification of how trading resumes after a halt, used for
+        making resume behavior explicit.
+      cnNote: 熔断复市机制，是停市后如何恢复交易的封闭分类，用于使复市行为显式。
+      vocabulary: Circuit Breaker Resume Mechanism
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerResumeMechanism/value/manual
+          notation: manual
+          label: Manual
+          definition: trading resumes only on manual authority approval
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerResumeMechanism/value/timed
+          notation: timed
+          label: Timed
+          definition: trading resumes after the halt duration elapses
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerResumeMechanism/value/openingAuction
+          notation: openingAuction
+          label: Opening auction
+          definition: trading resumes via an opening auction
+        - iri: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerResumeMechanism/value/priceBand
+          notation: priceBand
+          label: Price band
+          definition: trading resumes with a price-band collar
+    InvestorCategory:
+      iri: https://axiolune.ai/ontology/finance/market-rules/InvestorCategory
+      namespace: fin-market-rules
+      localName: InvestorCategory
+      label: Investor Category
+      definition: >-
+        Investor Category, is a closed classification of investor categories scoped by a rule applicability, used
+        for restricting rules by investor category distinct from account type.
+      cnNote: 投资者类别，是规则适用性按投资者类别作用域的封闭分类，用于按区别于账户类型的投资者类别限定规则。
+      vocabulary: Investor Category
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/InvestorCategory/value/retail
+          notation: retail
+          label: Retail
+          definition: retail investor
+        - iri: https://axiolune.ai/ontology/finance/market-rules/InvestorCategory/value/institutional
+          notation: institutional
+          label: Institutional
+          definition: institutional investor
+        - iri: https://axiolune.ai/ontology/finance/market-rules/InvestorCategory/value/qualifiedForeign
+          notation: qualifiedForeign
+          label: Qualified foreign
+          definition: qualified foreign investor
+    OrderType:
+      iri: https://axiolune.ai/ontology/finance/market-rules/OrderType
+      namespace: fin-market-rules
+      localName: OrderType
+      label: Order Type
+      definition: >-
+        Order Type, is a closed classification of order types scoped by a rule applicability, used for restricting
+        rules by order type.
+      cnNote: 订单类型，是规则适用性按订单类型作用域的封闭分类，用于按订单类型限定规则。
+      vocabulary: Order Type
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/OrderType/value/market
+          notation: market
+          label: Market
+          definition: market order
+        - iri: https://axiolune.ai/ontology/finance/market-rules/OrderType/value/limit
+          notation: limit
+          label: Limit
+          definition: limit order
+        - iri: https://axiolune.ai/ontology/finance/market-rules/OrderType/value/stop
+          notation: stop
+          label: Stop
+          definition: stop order
+    OrderSide:
+      iri: https://axiolune.ai/ontology/finance/market-rules/OrderSide
+      namespace: fin-market-rules
+      localName: OrderSide
+      label: Order Side
+      definition: >-
+        Order Side, is a closed classification of order sides scoped by a rule applicability, used for restricting
+        rules to buy, sell, or both.
+      cnNote: 买卖方向，是规则适用性按买卖方向作用域的封闭分类，用于把规则限定到买、卖或两者。
+      vocabulary: Order Side
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/OrderSide/value/buy
+          notation: buy
+          label: Buy
+          definition: buy side
+        - iri: https://axiolune.ai/ontology/finance/market-rules/OrderSide/value/sell
+          notation: sell
+          label: Sell
+          definition: sell side
+        - iri: https://axiolune.ai/ontology/finance/market-rules/OrderSide/value/both
+          notation: both
+          label: Both
+          definition: both buy and sell
+    MarketModel:
+      iri: https://axiolune.ai/ontology/finance/market-rules/MarketModel
+      namespace: fin-market-rules
+      localName: MarketModel
+      label: Market Model
+      definition: >-
+        Market Model, is a closed classification of market models scoped by a rule applicability, used for restricting
+        rules to continuous, auction, or dark markets.
+      cnNote: 市场模型，是规则适用性按市场模型作用域的封闭分类，用于把规则限定到连续、集合竞价或暗盘市场。
+      vocabulary: Market Model
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/MarketModel/value/continuous
+          notation: continuous
+          label: Continuous
+          definition: continuous trading market
+        - iri: https://axiolune.ai/ontology/finance/market-rules/MarketModel/value/auction
+          notation: auction
+          label: Auction
+          definition: auction market
+        - iri: https://axiolune.ai/ontology/finance/market-rules/MarketModel/value/dark
+          notation: dark
+          label: Dark
+          definition: dark market
+    ScopeExpressionForm:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ScopeExpressionForm
+      namespace: fin-market-rules
+      localName: ScopeExpressionForm
+      label: Scope Expression Form
+      definition: >-
+        Scope Expression Form, is a closed classification of the boolean form of a scope expression, used for declaring
+        how constituent scope terms are combined.
+      cnNote: 作用域表达式形式，是作用域表达式布尔形式的封闭分类，用于声明组成作用域项的组合方式。
+      vocabulary: Scope Expression Form
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ScopeExpressionForm/value/conjunction
+          notation: conjunction
+          label: Conjunction
+          definition: all scope terms must match
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ScopeExpressionForm/value/disjunction
+          notation: disjunction
+          label: Disjunction
+          definition: at least one scope term must match
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ScopeExpressionForm/value/exception
+          notation: exception
+          label: Exception
+          definition: the positive terms match except the negative terms
+    ScopeDimension:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ScopeDimension
+      namespace: fin-market-rules
+      localName: ScopeDimension
+      label: Scope Dimension
+      definition: >-
+        Scope Dimension, is a closed classification of the dimensions a scope term can bind, used for typing the atomic
+        unit of a scope expression across legacy and new scope dimensions.
+      cnNote: 作用域维度，是作用域项可绑定维度的封闭分类，用于跨既有与新作用域维度类型化作用域表达式的原子单元。
+      vocabulary: Scope Dimension
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ScopeDimension/value/listing
+          notation: listing
+          label: Listing
+          definition: instrument listing dimension
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ScopeDimension/value/instrument
+          notation: instrument
+          label: Instrument
+          definition: financial instrument dimension
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ScopeDimension/value/segment
+          notation: segment
+          label: Segment
+          definition: market segment dimension
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ScopeDimension/value/venue
+          notation: venue
+          label: Venue
+          definition: trading venue dimension
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ScopeDimension/value/jurisdiction
+          notation: jurisdiction
+          label: Jurisdiction
+          definition: jurisdiction dimension
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ScopeDimension/value/accountType
+          notation: accountType
+          label: Account type
+          definition: account type dimension
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ScopeDimension/value/tradingSession
+          notation: tradingSession
+          label: Trading session
+          definition: trading session template dimension
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ScopeDimension/value/tradingPhase
+          notation: tradingPhase
+          label: Trading phase
+          definition: trading session occurrence or phase dimension
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ScopeDimension/value/instrumentClassification
+          notation: instrumentClassification
+          label: Instrument classification
+          definition: instrument classification assertion dimension
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ScopeDimension/value/investorCategory
+          notation: investorCategory
+          label: Investor category
+          definition: investor category dimension
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ScopeDimension/value/orderType
+          notation: orderType
+          label: Order type
+          definition: order type dimension
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ScopeDimension/value/orderSide
+          notation: orderSide
+          label: Order side
+          definition: order side dimension
+        - iri: https://axiolune.ai/ontology/finance/market-rules/ScopeDimension/value/marketModel
+          notation: marketModel
+          label: Market model
+          definition: market model dimension
+    NormativeSourceRole:
+      iri: https://axiolune.ai/ontology/finance/market-rules/NormativeSourceRole
+      namespace: fin-market-rules
+      localName: NormativeSourceRole
+      label: Normative Source Role
+      definition: >-
+        Normative Source Role, is a closed classification of the function of a normative source, used for recording the
+        multiple evidence roles a rule may have beyond a single sole evidence.
+      cnNote: 规范来源角色，是规范来源功能的封闭分类，用于记录规则可具有的超越单一唯一证据的多个证据角色。
+      vocabulary: Normative Source Role
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/market-rules/NormativeSourceRole/value/mainText
+          notation: mainText
+          label: Main text
+          definition: the primary normative text
+        - iri: https://axiolune.ai/ontology/finance/market-rules/NormativeSourceRole/value/amendment
+          notation: amendment
+          label: Amendment
+          definition: a formal amendment to the main text
+        - iri: https://axiolune.ai/ontology/finance/market-rules/NormativeSourceRole/value/notice
+          notation: notice
+          label: Notice
+          definition: a public notice clarifying the rule
+        - iri: https://axiolune.ai/ontology/finance/market-rules/NormativeSourceRole/value/interpretation
+          notation: interpretation
+          label: Interpretation
+          definition: an authoritative interpretation
+        - iri: https://axiolune.ai/ontology/finance/market-rules/NormativeSourceRole/value/effectiveNotice
+          notation: effectiveNotice
+          label: Effective notice
+          definition: a notice declaring the effective date
   constraints:
     RuleApplicabilityRequiresExplicitScope:
       iri: https://axiolune.ai/ontology/finance/market-rules/RuleApplicabilityRequiresExplicitScope
@@ -1773,15 +3412,22 @@ domain:
       localName: RuleApplicabilityRequiresExplicitScope
       label: Rule Applicability Requires Explicit Scope
       definition: >-
-        requires at least one authored listing, instrument, segment, venue, Foundation AccountType, or jurisdiction
-        scope and rejects classifier, investor-category, and implicit-global substitutes
+        requires at least one authored scope among listing, instrument, segment, venue, Foundation AccountType,
+        jurisdiction, trading session, trading phase, instrument classification, investor category, order type, order
+        side, or market model, or a single scope expression that composes such terms, and rejects implicit-global
+        substitutes. Classifier and investor-category dimensions are now supported scope dimensions rather than
+        rejected.
+      cnNote: 要求至少编写一个上市、工具、板块、场所、基础账户类型、司法管辖区、交易时段、交易阶段、工具分类、投资者类别、订单类型、买卖方向或市场模型作用域，或一个组合此类作用域项的作用域表达式，并拒绝隐含全局替代。工具分类与投资者类别现为受支持作用域维度而非被拒绝。
       constraintType: CrossField
       scope: Association
       expression:
         language: Custom
-        expression: contract=rfc001-rule-scope-nonempty-v1;scopeOrder=listing,instrument,segment,venue,accountType,jurisdiction
+        expression: >-
+          contract=rfc002-rule-scope-nonempty-v2;scopeOrder=listing,instrument,segment,venue,accountType,jurisdiction,
+          tradingSession,tradingPhase,instrumentClassification,investorCategory,orderType,orderSide,marketModel,
+          scopeExpression;rejectImplicitGlobal=true
       severity: Error
-      message: RuleApplicability must carry at least one explicit supported scope
+      message: RuleApplicability must carry at least one explicit supported scope or scope expression
     RuleApplicabilityMustMatchRequest:
       iri: https://axiolune.ai/ontology/finance/market-rules/RuleApplicabilityMustMatchRequest
       namespace: fin-market-rules
@@ -2008,6 +3654,109 @@ domain:
         expression: contract=rfc001-corporate-action-date-ordering-clause-v1;distinctRoles=true
       severity: Error
       message: corporate-action date-ordering clause has missing or identical roles or an unsupported operator
+    RuleSelectionOutcomeIntegrity:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RuleSelectionOutcomeIntegrity
+      namespace: fin-market-rules
+      localName: RuleSelectionOutcomeIntegrity
+      label: Rule Selection Outcome Integrity
+      definition: >-
+        requires each rule evaluation request to produce exactly one rule selection outcome among resolved selection,
+        no-applicable-rule, conflict, unsupported, and indeterminate; a resolved selection must reference exactly one
+        surviving applicability, one selected rule, one selected clause, and a derived specificity vector; no
+        evaluation request may be left without an outcome
+      cnNote: 要求每次规则评估请求恰产生一个规则选择结果（已消解选择、无适用规则、冲突、不支持、不确定之一）；已消解选择必须引用唯一存活适用性、一个所选规则、一个所选条款与派生特异性向量；任何评估请求不得无结果。
+      constraintType: CrossField
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          contract=rfc002-rule-selection-outcome-v1;exactlyOneOutcomePerRequest=true;
+          resolvedSelectionReferences=singleApplicability,rule,clause,specificity; noSilentWinner=true
+      severity: Error
+      message: a rule evaluation request produced zero, multiple, or an incomplete selection outcome
+    ClauseOwnerUniqueness:
+      iri: https://axiolune.ai/ontology/finance/market-rules/ClauseOwnerUniqueness
+      namespace: fin-market-rules
+      localName: ClauseOwnerUniqueness
+      label: Clause Owner Uniqueness
+      definition: >-
+        requires each rule clause to be owned by exactly one market-rule version via the clauseOwnerRule relation, so
+        that a clause is never shared across rules
+      cnNote: 要求每条规则条款通过 clauseOwnerRule 关系恰由一个市场规则版本归属，使条款绝不在多条规则间共享。
+      constraintType: CrossField
+      scope: Object
+      expression:
+        language: Custom
+        expression: contract=rfc002-clause-owner-unique-v1;clauseOwnerRule=functional,required
+      severity: Error
+      message: a rule clause has zero or multiple owning rules
+    RangeClauseGapPolicyApplicability:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RangeClauseGapPolicyApplicability
+      namespace: fin-market-rules
+      localName: RangeClauseGapPolicyApplicability
+      label: Range Clause Gap Policy Applicability
+      definition: >-
+        requires the rule gap policy to apply only to range-bearing clauses; trigger, date, and entitlement clauses
+        are exempt from the ordered-range completeness check
+      cnNote: 要求规则间隙策略仅适用于承载区间的条款；触发、日期与权益条款豁免有序区间完整性检查。
+      constraintType: CrossField
+      scope: Object
+      expression:
+        language: Custom
+        expression: contract=rfc002-clause-range-scoped-v2;gapPolicyAppliesTo=RangeClause;exempt=TriggerClause,DateClause,EntitlementClause
+      severity: Error
+      message: the rule gap policy was applied to a non-range clause or a range clause skipped the completeness check
+    PriceLimitReferencePriceBinding:
+      iri: https://axiolune.ai/ontology/finance/market-rules/PriceLimitReferencePriceBinding
+      namespace: fin-market-rules
+      localName: PriceLimitReferencePriceBinding
+      label: Price Limit Reference Price Binding
+      definition: >-
+        requires a price-limit rule that carries a percentage boundary to bind a ReferencePriceSpecification, so that
+        the band is computable; a price-limit clause may additionally carry a price band side
+      cnNote: 要求携带百分比边界的价格限制规则绑定一个参考价规范，使区间可计算；价格限制条款可额外携带价格区间方向。
+      constraintType: CrossField
+      scope: Object
+      expression:
+        language: Custom
+        expression: contract=rfc002-price-limit-reference-price-v1;percentageRequiresReferencePrice=true;priceBandSide=optional
+      severity: Error
+      message: a percentage price-limit rule lacks a reference price specification
+    CircuitBreakerEffectCompleteness:
+      iri: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerEffectCompleteness
+      namespace: fin-market-rules
+      localName: CircuitBreakerEffectCompleteness
+      label: Circuit Breaker Effect Completeness
+      definition: >-
+        requires a circuit-breaker rule to carry a monitor, a direction, and a resume mechanism, and allows optional
+        tiering, trigger count, and a reference price specification, so that the breaker is a complete trigger-effect
+        rule rather than only threshold and duration values
+      cnNote: 要求熔断规则携带监测对象、方向与复市机制，并允许可选分级、触发次数与参考价规范，使熔断为完整触发-效果规则而非仅阈值与时长值。
+      constraintType: CrossField
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          contract=rfc002-circuit-breaker-effect-v1;monitor=required;direction=required;resumeMechanism=required;
+          tier=optional;triggerCount=optional;referencePrice=optional
+      severity: Error
+      message: a circuit-breaker rule is missing its monitor, direction, or resume mechanism
+    RuleParameterRoleBinding:
+      iri: https://axiolune.ai/ontology/finance/market-rules/RuleParameterRoleBinding
+      namespace: fin-market-rules
+      localName: RuleParameterRoleBinding
+      label: Rule Parameter Role Binding
+      definition: >-
+        extends the exclusive-one-of parameter rule with an optional parameter role and an acyclicity guard on
+        clause references; the existing money/quantity/code/clauseReference exclusive one-of is retained
+      cnNote: 以可选参数角色与条款引用无环保护扩展参数择一规则；既有金额/数量/代码/条款引用互斥择一保留。
+      constraintType: CrossField
+      scope: Object
+      expression:
+        language: Custom
+        expression: contract=rfc002-rule-parameter-role-v1;exclusiveOneOf=money,quantity,code,clauseReference;parameterRole=optional;clauseReferenceAcyclic=true;clauseReferenceNonSelf=true
+      severity: Error
+      message: a rule parameter carries a self-referential or cyclic clause reference or an inconsistent role
   relationUses:
     - relation: https://axiolune.ai/ontology/finance/market-rules/ruleSetAuthority
       subjectType: https://axiolune.ai/ontology/finance/market-rules/MarketRuleSet
@@ -2126,6 +3875,132 @@ domain:
       constraints:
         - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
           targetElement: https://axiolune.ai/ontology/finance/market-rules/requestJurisdictionScope
+    - relation: https://axiolune.ai/ontology/finance/market-rules/requestTradingSessionScope
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      objectType: https://axiolune.ai/ontology/finance/market-structure/TradingSessionTemplate
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/requestTradingSessionScope
+    - relation: https://axiolune.ai/ontology/finance/market-rules/requestTradingPhaseScope
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      objectType: https://axiolune.ai/ontology/finance/market-structure/TradingSessionOccurrence
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/requestTradingPhaseScope
+    - relation: https://axiolune.ai/ontology/finance/market-rules/outcomeForRequest
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/RuleSelectionOutcome
+      objectType: https://axiolune.ai/ontology/finance/market-rules/RuleEvaluationRequest
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/outcomeForRequest
+    - relation: https://axiolune.ai/ontology/finance/market-rules/resolvedApplicability
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/ResolvedSelection
+      objectType: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/resolvedApplicability
+    - relation: https://axiolune.ai/ontology/finance/market-rules/resolvedRule
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/ResolvedSelection
+      objectType: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/resolvedRule
+    - relation: https://axiolune.ai/ontology/finance/market-rules/resolvedClause
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/ResolvedSelection
+      objectType: https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/resolvedClause
+    - relation: https://axiolune.ai/ontology/finance/market-rules/clauseOwnerRule
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      objectType: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/clauseOwnerRule
+    - relation: https://axiolune.ai/ontology/finance/market-rules/priceLimitReferencePrice
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/PriceLimitRule
+      objectType: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceSpecification
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/priceLimitReferencePrice
+    - relation: https://axiolune.ai/ontology/finance/market-rules/circuitBreakerReferencePrice
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerRule
+      objectType: https://axiolune.ai/ontology/finance/market-rules/ReferencePriceSpecification
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/circuitBreakerReferencePrice
+    - relation: https://axiolune.ai/ontology/finance/market-rules/settlementCycleCalendar
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/SettlementCycleClause
+      objectType: https://axiolune.ai/ontology/finance/market-structure/TradingCalendar
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/settlementCycleCalendar
+    - relation: https://axiolune.ai/ontology/finance/market-rules/scheduleCalendar
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/CorporateActionScheduleRule
+      objectType: https://axiolune.ai/ontology/finance/market-structure/TradingCalendar
+      outboundCardinality:
+        minCount: 0
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/scheduleCalendar
+    - relation: https://axiolune.ai/ontology/finance/market-rules/normativeSourceForRule
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      objectType: https://axiolune.ai/ontology/finance/market-rules/NormativeSource
+      outboundCardinality:
+        minCount: 0
+        maxCount: null
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/normativeSourceForRule
+    - relation: https://axiolune.ai/ontology/finance/market-rules/normativeSourceForRuleSet
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/MarketRuleSet
+      objectType: https://axiolune.ai/ontology/finance/market-rules/NormativeSource
+      outboundCardinality:
+        minCount: 0
+        maxCount: null
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/normativeSourceForRuleSet
+    - relation: https://axiolune.ai/ontology/finance/market-rules/scopeExpressionTerm
+      subjectType: https://axiolune.ai/ontology/finance/market-rules/ScopeExpression
+      objectType: https://axiolune.ai/ontology/finance/market-rules/ScopeTerm
+      outboundCardinality:
+        minCount: 0
+        maxCount: null
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/market-rules/scopeExpressionTerm
   constraintBindings:
     - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
       targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability/role/applicableRuleVersion
@@ -2144,6 +4019,18 @@ domain:
       enforcementLevel: Mandatory
     - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
       targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability/role/scopeJurisdictionVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability/role/scopeTradingSessionVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability/role/scopeTradingPhaseVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability/role/scopeInstrumentClassificationVersion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleApplicability/role/scopeExpressionVersion
       enforcementLevel: Mandatory
     - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
       targetElement: https://axiolune.ai/ontology/finance/market-rules/RulePrecedence/role/higherRuleVersion
@@ -2201,4 +4088,22 @@ domain:
       enforcementLevel: Mandatory
     - constraintRef: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDateOrderingClauseIntegrity
       targetElement: https://axiolune.ai/ontology/finance/market-rules/CorporateActionDateOrderingClause
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/RuleSelectionOutcomeIntegrity
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleSelectionOutcome
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/ClauseOwnerUniqueness
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/RangeClauseGapPolicyApplicability
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleClause
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/PriceLimitReferencePriceBinding
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/PriceLimitRule
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerEffectCompleteness
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/CircuitBreakerRule
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/market-rules/RuleParameterRoleBinding
+      targetElement: https://axiolune.ai/ontology/finance/market-rules/RuleParameter
       enforcementLevel: Mandatory

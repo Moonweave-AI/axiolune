@@ -1,5 +1,5 @@
 module: fin-market-rules
-version: 0.3.0
+version: 1.1.0
 alignments:
   - targetIri: https://spec.edmcouncil.org/fibo/ontology/SEC/Securities/SecuritiesListings/Listing/hasTickSize
     relation: skos:closeMatch
@@ -24,3 +24,33 @@ alignments:
     sourceRelease: internal
     rationale: Scoped rule binding with three-axis intervals is Axiolune-native where FIBO lacks market-rule ontology.
     reviewStatus: accepted
+  - targetIri: FIX::TradingSessionStatus
+    relation: skos:relatedMatch
+    sourceRelease: FIX 5.0 SP2
+    rationale: scopeTradingSession/scopeTradingPhase reference market-structure session templates; live session status remains in orders-execution. FIX distinguishes trading session from trading session status.
+    reviewStatus: accepted
+    bibliographyRef: fix-local
+  - targetIri: internal::RuleSelectionOutcome
+    relation: skos:closeMatch
+    sourceRelease: internal
+    rationale: Rule selection outcome hierarchy (resolved, no-applicable-rule, conflict, unsupported, indeterminate) is Axiolune-native; no FIBO/FIX equivalent for auditable rule selection.
+    reviewStatus: accepted
+    bibliographyRef: axiolune-native
+  - targetIri: internal::ReferencePriceSpecification
+    relation: skos:closeMatch
+    sourceRelease: internal
+    rationale: Reference price source/window/missing-policy/rounding is Axiolune-native; FIBO and FIX carry price limit values but not the reference-price computation contract.
+    reviewStatus: accepted
+    bibliographyRef: axiolune-native
+  - targetIri: internal::ScopeExpression
+    relation: skos:closeMatch
+    sourceRelease: internal
+    rationale: Scope expression with conjunction/disjunction/exception is Axiolune-native; FIBO has no multi-dimension rule scope.
+    reviewStatus: accepted
+    bibliographyRef: axiolune-native
+  - targetIri: internal::NormativeSource
+    relation: skos:relatedMatch
+    sourceRelease: internal
+    rationale: Multi-role normative source (main text, amendment, notice, interpretation, effective notice) aligns with PROV-O source/provenance; replaces single sole-evidence assumption.
+    reviewStatus: accepted
+    bibliographyRef: prov-o

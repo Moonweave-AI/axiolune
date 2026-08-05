@@ -2,15 +2,37 @@
 # M2-PLAN §3.3: Each term has ISO 704 definition, genus/differentia, excludes, and sources.
 
 terms:
+  - term: "Market Data Stream"
+    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/MarketDataStream"
+    definition: "immutable version of a market-data channel owned by a data provider and bound to a locked source contract, used for defining the supply source and normalization rules for all downstream observation facts"
+    genus: "object type"
+    differentia:
+      - "owned by exactly one provider Party via the functional streamProvider relation"
+      - "carries a locked source contract reference and digest that fix field mapping and normalization rules"
+      - "declares a closed streamPurpose limiting the kinds of records it admits"
+      - "declares a sourceRecordRevisionMode (immutable or revisioned) governing revision-chain semantics"
+      - "binds TemporalFact and ProvenancedFact patterns so stream identity is version-keyed"
+    excludes:
+      - "an individual observation fact (which is an AssociationType scoped to a stream)"
+      - "a bar specification (which references a stream rather than being one)"
+      - "a physical data feed or socket (which is a runtime delivery artifact, not a semantic identity)"
+    sources:
+      - reference: "ADR-012"
+        locator: "three-axis temporal and provenance patterns for stream identity"
+      - reference: "nautilus-trader"
+        locator: "model/data/ DataEngine base path for streaming context"
+    status: "accepted"
+
   - term: "Price Observation"
     canonicalIri: "https://axiolune.ai/ontology/finance/market-data/PriceObservation"
-    definition: "time-stamped observation of a price for a financial instrument at a specific venue with a defined price kind, currency, and data source"
-    genus: "observation fact"
+    definition: "namable association that records a quoted price of a financial instrument at a venue and a point in time, used for modeling who quoted what price, where, and when as a fact carrying timestamps and provenance"
+    genus: "association fact"
     differentia:
-      - "has a specific price kind (Last, Bid, Ask, Mid, Open, High, Low, Close, Settlement, VWAP, TWAP)"
-      - "scoped to an instrument and optionally a venue"
+      - "has a specific price kind (Last, Mid, Open, High, Low, Close, Settlement, VWAP, TWAP)"
+      - "scoped to an instrument, optionally a listing or OTC context, and a quotationContract"
       - "has three-axis temporal semantics (valid/knowledge/availability time per ADR-012)"
-      - "has provenance (source, revision, evidence)"
+      - "has provenance (source stream, provider observation id, revision, evidence)"
+      - "carries a single price value (priceValue) denominated in the contract currency"
     excludes:
       - "the instrument itself"
       - "a quote observation (which has bid/ask structure)"
@@ -25,16 +47,18 @@ terms:
 
   - term: "Quote Observation"
     canonicalIri: "https://axiolune.ai/ontology/finance/market-data/QuoteObservation"
-    definition: "time-stamped observation of bid and/or ask prices with sizes for a financial instrument at a specific venue"
-    genus: "market data observation"
+    definition: "namable association that records the complete paired bid and ask at a point in time, used for modeling the four-field structure of bid price, bid size, ask price, and ask size as a market-data fact with provenance and a quality finding"
+    genus: "association fact"
     differentia:
-      - "contains bid price and/or ask price (at least one required)"
-      - "contains bid size and/or ask size"
+      - "contains exactly one bid price, one bid size, one ask price, and one ask size (all four required)"
+      - "represents a complete paired top-of-book L1 snapshot, not a single-sided price"
       - "represents a market maker's or exchange's quote, not an executed trade"
+      - "scoped to an instrument, optionally a listing or OTC context, and a quotationContract"
     excludes:
       - "executed trade (which is TradeObservation)"
-      - "aggregated bar data (which is Bar)"
+      - "aggregated bar data (which is TradeBar or QuoteBar)"
       - "single-sided price without bid/ask structure (which is PriceObservation)"
+      - "a partial quote missing any of bid/ask price or size"
     sources:
       - reference: "nautilus-trader"
         locator: "model/data/tick.pyx QuoteTick (bid, ask, bid_size, ask_size)"
@@ -44,12 +68,13 @@ terms:
 
   - term: "Trade Observation"
     canonicalIri: "https://axiolune.ai/ontology/finance/market-data/TradeObservation"
-    definition: "time-stamped observation of an executed trade for a financial instrument at a specific venue with price, size, and currency"
-    genus: "market data observation"
+    definition: "namable association that records a trade event, used for modeling the provider-declared trade price, trade size, and event identifier as a fact carrying timestamps and a normalized ordering"
+    genus: "association fact"
     differentia:
-      - "represents an actual executed trade (transaction)"
-      - "has a single execution price and quantity"
-      - "has a trade timestamp (validTime)"
+      - "represents an actual executed trade (transaction) as reported by the provider"
+      - "has a single execution price (tradePrice) and quantity (tradeSize)"
+      - "has a trade timestamp (observedAt) and a source trade identifier for final-order tiebreaking"
+      - "scoped to an instrument, optionally a listing or OTC context, and a quotationContract"
     excludes:
       - "quote (which is a market maker's bid/ask, not an execution)"
       - "bar (which aggregates multiple trades)"
@@ -61,36 +86,117 @@ terms:
         locator: "Data/Market/Tick.cs (trade tick with TickType.Trade)"
     status: "accepted"
 
-  - term: "Bar"
-    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/Bar"
-    definition: "aggregated market data observation over a time period, tick count, volume, or dollar amount, with open/high/low/close prices and volume"
-    genus: "aggregated observation"
+  - term: "Bar Specification"
+    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/BarSpecification"
+    definition: "structured value describing how a bar is aggregated, used for specifying the aggregation kind, price basis, timestamp convention, and source calendar of a bar, and for selecting either a time-interval or a non-time threshold branch"
+    genus: "object type"
     differentia:
-      - "aggregates multiple trades or quotes into OHLCV structure"
-      - "has an aggregation method (Time, Tick, Volume, Dollar, Range, Renko)"
-      - "represents an interval [validFrom, validTo) not a point-in-time"
-      - "has bar duration for time-based bars"
+      - "carries exactly one barAggregation (time, tick, volume, notional, range, or renko)"
+      - "carries exactly one barPriceBasis (trade or bidAsk) distinguishing trade OHLCV from paired bid/ask OHLC"
+      - "carries exactly one barTimestampConvention (intervalStart or intervalEnd) fixing observedAt semantics"
+      - "requires exactly one of barInterval (for time bars) or barThreshold (for non-time bars)"
+      - "references a source MarketDataStream and a TradingCalendar for aggregation boundaries"
+    excludes:
+      - "a bar observation itself (which is TradeBar or QuoteBar)"
+      - "a raw tick (which is unaggregated)"
+    sources:
+      - reference: "nautilus-trader"
+        locator: "model/data/bar.pyx BarSpecification (step, price_type, aggregation_source)"
+      - reference: "lean"
+        locator: "Data/Market/TradeBar.cs, Data/Market/QuoteBar.cs (consolidator settings)"
+    status: "accepted"
+
+  - term: "Trade Bar"
+    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/TradeBar"
+    definition: "OHLCV bar that aggregates trade prices under one bar specification, used for recording the open, high, low, and close prices together with the traded volume within either a time window or a non-time window"
+    genus: "association fact"
+    differentia:
+      - "carries tradeOpenPrice, tradeHighPrice, tradeLowPrice, tradeClosePrice, and tradeVolume"
+      - "references exactly one BarSpecification controlling aggregation, basis, calendar, and timestamp semantics"
+      - "represents an interval [intervalStart, intervalEnd) for time bars, not a point-in-time"
+      - "scoped to an instrument, optionally a listing or OTC context, and a quotationContract"
     excludes:
       - "single trade tick (which is TradeObservation)"
-      - "single quote tick (which is QuoteObservation)"
+      - "quote bar (which aggregates bid/ask OHLC, not trade prices)"
       - "unaggregated raw data"
     sources:
       - reference: "nautilus-trader"
         locator: "model/data/bar.pyx Bar (open, high, low, close, volume, ts_event, ts_init)"
       - reference: "lean"
-        locator: "Data/Market/TradeBar.cs, Data/Market/QuoteBar.cs"
+        locator: "Data/Market/TradeBar.cs (OHLCV consolidator output)"
+    status: "accepted"
+
+  - term: "Quote Bar"
+    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/QuoteBar"
+    definition: "bar that aggregates the bid and ask sides of a quote into separate OHLC series under one bar specification, used for preserving the open, high, low, and close series and a representative size for each side, and kept strictly distinct from a trade bar"
+    genus: "association fact"
+    differentia:
+      - "carries bid OHLC (bidOpenPrice, bidHighPrice, bidLowPrice, bidClosePrice) and ask OHLC (askOpenPrice, askHighPrice, askLowPrice, askClosePrice)"
+      - "carries lastBidSize and lastAskSize as representative side sizes at window end"
+      - "references exactly one BarSpecification with barPriceBasis = bidAsk"
+      - "kept strictly distinct from TradeBar to prevent mixing trade and quote OHLC"
+    excludes:
+      - "single quote tick (which is QuoteObservation)"
+      - "trade bar (which aggregates trade prices, not bid/ask)"
+    sources:
+      - reference: "nautilus-trader"
+        locator: "model/data/bar.pyx Bar (bid/ask OHLC variant)"
+      - reference: "lean"
+        locator: "Data/Market/QuoteBar.cs (bid/ask OHLC consolidator output)"
+    status: "accepted"
+
+  - term: "FX Rate Observation"
+    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/FXRateObservation"
+    definition: "namable association that records how many units of a quote currency exchange for one unit of a base currency, used for modeling the exchange rate as a strictly positive dimensionless quantity that follows the same time and source contracts as other market observations"
+    genus: "association fact"
+    differentia:
+      - "carries a single fxRate value as a strictly positive dimensionless ratio of quote-currency units to one base-currency unit"
+      - "has exactly one baseCurrency and one quoteCurrency as participant roles"
+      - "has three-axis temporal semantics and provenance identical to other observations"
+      - "may reference an observedListing or observedOtcContext for listed or OTC FX contexts"
+    excludes:
+      - "a price observation (which carries a monetary price value, not a dimensionless ratio)"
+      - "a currency pair identifier (which is a stable identity, not an observation fact)"
+      - "a derived FX rate from local bid/ask (which would require a separate calculation definition)"
+    sources:
+      - reference: "ADR-012"
+        locator: "three-axis temporal and provenance contracts shared with other observations"
+      - reference: "fibo-2026Q1"
+        locator: "FND/CurrencyAmount/ExchangeRate (FX rate concept informing base/quote currency semantics)"
+    status: "accepted"
+
+  - term: "Market Data Quality Finding"
+    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFinding"
+    definition: "immutable judgment generated over a set of observation versions on one data stream, used for surfacing quality issues such as crossed quotes, duplicate conflicts, and ordering collisions through a closed set of predicates"
+    genus: "association fact"
+    differentia:
+      - "carries exactly one qualityFindingKind (crossedQuote, duplicateConflict, or orderingCollision)"
+      - "references one findingStream (MarketDataStream) whose policy and observations determine the finding"
+      - "references affected observation versions (price, quote, trade, trade bar, quote bar, or FX rate) as the subject set"
+      - "carries an affectedSubjectDigest locking the exact-version IRI set of the subject set"
+    excludes:
+      - "a validation report (which is a runtime artifact, not a semantic fact)"
+      - "a correction action (which is a downstream operation, not a judgment)"
+      - "an observation itself (which is the subject of the finding, not the finding)"
+    sources:
+      - reference: "ADR-012"
+        locator: "provenance and immutability patterns for quality findings"
+      - reference: "nautilus-trader"
+        locator: "model/quality QualityHandler (quality-checking pipeline informing predicate set)"
     status: "accepted"
 
   - term: "Price Kind"
     canonicalIri: "https://axiolune.ai/ontology/finance/market-data/PriceKind"
-    definition: "controlled vocabulary of price observation types that distinguish the semantic role of a price value in market data"
+    definition: "closed vocabulary of price semantics grouped into tick, reference, and derived categories, used for annotating the type of a price observation, with bid and ask deliberately excluded because they belong to the quote structure"
     genus: "code list"
     differentia:
-      - "distinguishes Last, Bid, Ask, Mid, Open, High, Low, Close, Settlement, VWAP, TWAP"
+      - "distinguishes Last, Mid, Open, High, Low, Close, Settlement, VWAP, TWAP"
+      - "bid and ask are excluded because they are quote structure fields, not price kinds"
       - "defines the interpretation of a price value"
     excludes:
       - "price value itself (which is a decimal with currency)"
-      - "quote side (which is Bid/Ask for quote observations)"
+      - "bid and ask (which are quote observation structure fields)"
+      - "quote side (which is a structural role, not a price semantic)"
     sources:
       - reference: "nautilus-trader"
         locator: "model/enums.pyx PriceType enum"

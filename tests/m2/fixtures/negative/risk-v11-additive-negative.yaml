@@ -1,0 +1,103 @@
+schemaVersion: '1.1'
+description: >-
+  fin-risk v1.1.0 additive negative staging fixtures (ADR-032). Stages negative instances that the
+  v1.1.0 contracts reject: a band rule with only one threshold, a bucket comparison collapsed to a
+  scalar, a historical measurement evaluated against a superseded limit, a stress run whose output
+  was not shocked by the scenario, and a preliminary result rejected because closure proof is
+  mandatory. Structural/cardinality enforcement is verified by validate-m2-core --strict.
+fixtures:
+  # --- D6: band rule missing a threshold ---
+  - id: risk-v11-limit-rule-band-missing-upper-negative
+    expectedResult: rejected
+    type: RiskLimitRule
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RiskLimitRule
+          versionIri: https://example.test/risk/limit-rule/band-incomplete/v1
+          riskLimitRuleId: BAND-INCOMPLETE
+          comparisonOperator: withinBand
+          lowerThresholdMoney:
+            amount: '-1000000'
+            currency: USD
+          # upperThresholdMoney omitted — withinBand requires both bounds
+          limitSeverity: hard
+          riskLimitLifecycleStatus: effective
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'
+
+  # --- D5: bucket comparison with no policy (scalar collapse) ---
+  - id: risk-v11-bucket-eval-no-policy-negative
+    expectedResult: rejected
+    type: RiskLimitEvaluation
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RiskLimitEvaluation
+          versionIri: https://example.test/risk/eval/bucket-no-policy/v1
+          evaluationResult: breach
+          scopeMatchRule: exactMatch
+          # bucket-vs-bucket branch but no evaluationComparisonPolicy — rejected by RiskLimitEvaluationContract
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'
+
+  # --- D4: historical measurement vs superseded limit ---
+  - id: risk-v11-historical-eval-superseded-limit-negative
+    expectedResult: rejected
+    type: RiskLimitEvaluation
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RiskLimitEvaluation
+          versionIri: https://example.test/risk/eval/historical-superseded/v1
+          evaluationResult: breach
+          scopeMatchRule: exactMatch
+          # evaluatedLimit was superseded before the measurement as-of — rejected by RiskLimitEvaluationContract
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'
+
+  # --- D8: stress run output not shocked by scenario ---
+  - id: risk-v11-stress-run-no-application-negative
+    expectedResult: rejected
+    type: StressTestRun
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/StressTestRun
+          versionIri: https://example.test/risk/stress-run/no-application/v1
+          stressRunId: STRESS-NOAPP-1
+          # no stressRunApplicationEvidence and output inputContext not shocked — rejected by StressTestRunContract
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'
+
+  # --- D9: preliminary result rejected because closure mandatory ---
+  - id: risk-v11-preliminary-requiring-closure-negative
+    expectedResult: rejected
+    type: RiskMeasurement
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RiskMeasurement
+          versionIri: https://example.test/risk/measurement/prelim-closure/v1
+          measuredMoney:
+            amount: '750000'
+            currency: USD
+          measurementStatus: preliminary
+          # under ValidatedReproducibleRiskMeasurement profile, inputContextCompleted=true required but absent
+          validFrom: '2026-08-05T11:00:00Z'
+          knowledgeFrom: '2026-08-05T11:00:01Z'
+          availableFrom: '2026-08-05T11:00:02Z'
+
+  # --- D7: breach case without a LimitBreach reference ---
+  - id: risk-v11-breach-case-no-breach-negative
+    expectedResult: rejected
+    type: RiskLimitBreachCase
+    instance:
+      records:
+        - typeIri: https://axiolune.ai/ontology/finance/risk/RiskLimitBreachCase
+          versionIri: https://example.test/risk/breach-case/no-breach/v1
+          breachCaseId: BREACH-CASE-NOBREACH
+          breachCaseStatus: open
+          # breachCaseBreach omitted — RiskLimitBreachCaseContract requires exactly one LimitBreach
+          validFrom: '2026-08-05T00:00:00Z'
+          knowledgeFrom: '2026-08-05T00:00:01Z'
+          availableFrom: '2026-08-05T00:00:02Z'

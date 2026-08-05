@@ -5,6 +5,9 @@ module:
   version: 0.6.0
   imports: []
   exports: []
+  label: Core Meta-Model
+  definition: the foundational meta-model defining ontology structure, types, and alignment
+  cnNote: 核心元模型，是本体工程中定义本体结构、类型与对齐的元模型层，旨在为上层模式、行为与数据绑定提供共同的类型语法基础，是整个元本体的根层。
 MetaModel:
   version: 0.6.0
   description: Semantic core meta-model defining ontology structure, types, and alignment
@@ -27,8 +30,9 @@ MetaModel:
     - "v0.3.0: Updated module system with moduleIri, baseIri, preferredPrefix"
     - "v0.3.0: Added LocalizedTextDefinition"
   OntologyModuleDefinition:
-    definition: a named collection of ontology elements with versioning and
-      dependency management
+    iri: https://axiolune.ai/ontology/meta/core/OntologyModuleDefinition
+    cnNote: 本体模块，是本体工程中一组带版本与依赖管理的本体元素集合，旨在为可复用、可组合的本体片段提供命名与边界。Axiolune 的每个金融领域模块都是它的一个实例，通过版本锁定导入实现可复现的符号解析。
+    definition: a named collection of ontology elements with versioning and dependency management, intended to provide naming and boundaries for reusable, composable ontology fragments; every finance domain module is an instance of it
     owlProjection:
       kind: ontology
     note: Updated in ADR-004 to support version-locked imports and symbol resolution
@@ -86,7 +90,9 @@ MetaModel:
         type: GovernanceMetadata
         description: owner, approvers, change history
   ModuleImportDefinition:
-    definition: a version-locked import of another ontology module
+    iri: https://axiolune.ai/ontology/meta/core/ModuleImportDefinition
+    cnNote: 模块导入，是本体工程中对另一本体模块的版本锁定引用，旨在确保符号解析的可复现性，防止被导入模块的隐式升级破坏既有本体的一致性。
+    definition: a version-locked import of another ontology module, intended to ensure reproducible symbol resolution and prevent implicit upstream upgrades from breaking existing ontologies
     note: Ensures deterministic symbol resolution and prevents breaking changes from
       implicit updates
     requiredFields:
@@ -120,7 +126,9 @@ MetaModel:
         type: list[SymbolImportSpec]
         description: symbols to import (required if importMode=Selective)
   SymbolImportSpec:
-    definition: specification of a single imported symbol with optional local alias
+    iri: https://axiolune.ai/ontology/meta/core/SymbolImportSpec
+    cnNote: 符号导入规格，是本体工程中从其他模块选择性引入单个符号并可起本地别名的机制，用于精确控制引入范围，避免命名冲突。
+    definition: a specification for selectively importing a single symbol with an optional local alias, used to precisely control the import scope and avoid naming collisions
     requiredFields:
       symbolIri:
         type: iri
@@ -135,7 +143,9 @@ MetaModel:
         example: isIssuedBy
         note: Allows 'fibo:FinancialInstrument as Instrument' style imports
   LocalizedTextDefinition:
-    definition: a value object for multi-language text with language tags
+    iri: https://axiolune.ai/ontology/meta/core/LocalizedTextDefinition
+    cnNote: 本地化文本，是本体工程中带语言标签的多语言文本值对象，旨在让本体定义与变更记录支持多语言表达，是跨语言本体治理的基础。
+    definition: a value object for multi-language text with language tags, intended to let ontology definitions and change records support multilingual expression; it is the foundation for cross-language ontology governance
     kind: StructuredValueType
     owlProjection:
       kind: rdfLangString
@@ -161,7 +171,9 @@ MetaModel:
         default: en
         description: fallback language if requested language not available
   ValueType:
-    definition: a meta-classifier for primitive value types used in attributes
+    iri: https://axiolune.ai/ontology/meta/core/ValueType
+    cnNote: 原语值类型，是本体工程中用于属性取值的最基本标量类型集合，旨在为属性提供到 XML Schema 的标准映射，是构建复杂值类型的底层基础。
+    definition: a meta-classifier for primitive value types used in attributes, intended to provide the standard mapping from ontology properties to XML Schema primitives; it is the base layer for building complex value types
     owlProjection:
       kind: datatype
     builtinTypes:
@@ -193,8 +205,9 @@ MetaModel:
       defined as IdentifierTypeDefinition, MoneyTypeDefinition,
       QuantityTypeDefinition
   IdentifierTypeDefinition:
-    definition: a meta-classifier for standard identifiers with validation rules and
-      issuing authorities
+    iri: https://axiolune.ai/ontology/meta/core/IdentifierTypeDefinition
+    cnNote: 标识符类型，是本体工程中带校验规则与发码机构的标准标识符元类型，旨在为金融领域标准代码（如 ISIN、LEI）提供可校验、可追溯的类型化定义。
+    definition: a meta-classifier for standard identifiers with validation rules and issuing authorities, intended to provide verifiable, traceable typed definitions for finance-domain standard codes such as ISIN and LEI
     owlProjection:
       kind: datatype
     requiredFields:
@@ -230,7 +243,9 @@ MetaModel:
       alignments:
         type: list[Alignment]
   MoneyTypeDefinition:
-    definition: a meta-classifier for monetary amounts with currency and scale
+    iri: https://axiolune.ai/ontology/meta/core/MoneyTypeDefinition
+    cnNote: 货币金额类型，是本体工程中带币种与精度的结构化金融金额类型，旨在把"数额、币种、精度"三者独立保留，避免用裸数值表示金额而丢失币种语义。
+    definition: a meta-classifier for monetary amounts with currency and scale, intended to preserve amount, currency, and scale independently so that financial amounts are never represented as bare numbers
     owlProjection:
       kind: structuredValueClass
       classIri: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
@@ -261,7 +276,9 @@ MetaModel:
         default: 2
         description: decimal places for rounding
   QuantityTypeDefinition:
-    definition: a meta-classifier for measurements with units and precision
+    iri: https://axiolune.ai/ontology/meta/core/QuantityTypeDefinition
+    cnNote: 量值类型，是本体工程中带单位与精度的结构化测量值类型，旨在把"数值、单位、精度、舍入方式"独立保留，用于表达股数、桶数等非货币量。
+    definition: a meta-classifier for measurements with units and precision, intended to preserve value, unit, precision, and rounding independently for non-monetary quantities such as share counts
     owlProjection:
       kind: structuredValueClass
       classIri: https://axiolune.ai/ontology/meta/core/values/QuantityValue
@@ -306,8 +323,9 @@ MetaModel:
           - half-even
         default: half-even
   CodeListTypeDefinition:
-    definition: a meta-classifier for controlled vocabularies with versioning and
-      maintenance
+    iri: https://axiolune.ai/ontology/meta/core/CodeListTypeDefinition
+    cnNote: 受控词表类型，是本体工程中带版本、维护方与证据锁的枚举元类型，旨在为金融领域的标准代码表（如交易所代码、币种代码）提供可版本化、可审计的类型化定义。
+    definition: a meta-classifier for controlled vocabularies with versioning and maintenance, intended to provide versionable, auditable typed definitions for finance-domain standard code tables such as exchange codes
     owlProjection:
       kind: class
       stereotype: enumeration
@@ -348,8 +366,9 @@ MetaModel:
       alignments:
         type: list[Alignment]
   CodeValueDefinition:
-    definition: a stable member of one versioned CodeListTypeDefinition, identified
-      by an IRI and canonical notation
+    iri: https://axiolune.ai/ontology/meta/core/CodeValueDefinition
+    cnNote: 词表成员，是受控词表中的一个稳定枚举项，旨在为每个代码赋予规范记法、定义与弃用追踪，是受控词表类型的基本构成单元。
+    definition: a stable member of a controlled vocabulary, intended to give each code a canonical notation, a definition, and deprecation tracking; it is the basic unit of a code-list type
     owlProjection:
       kind: namedIndividual
     requiredFields:
@@ -375,8 +394,9 @@ MetaModel:
         type: uri
         description: optional evidence narrowing within the containing code-list snapshot
   ObjectTypeDefinition:
-    definition: a meta-classifier that defines domain entity types with identity,
-      properties, and constraints
+    iri: https://axiolune.ai/ontology/meta/core/ObjectTypeDefinition
+    cnNote: 对象类型，是本体工程中带同一性的领域实体元类型，旨在为金融领域中可独立识别、可描述的事物（如证券、账户、订单）提供类型化定义，是整个领域本体的核心构造。
+    definition: a meta-classifier for domain entity types with identity, properties, and constraints, intended to provide typed definitions for independently identifiable, describable things such as securities, accounts, and orders; it is the core construct of the entire domain ontology
     owlProjection:
       kind: class
     requiredFields:
@@ -443,8 +463,9 @@ MetaModel:
         description: true only for a non-instantiable semantic supertype; abstract types
           do not receive generated logical-identity companion classes
   AttributeTypeDefinition:
-    definition: a meta-classifier for typed properties that attach literal values or
-      structured value objects to entities
+    iri: https://axiolune.ai/ontology/meta/core/AttributeTypeDefinition
+    cnNote: 属性类型，是本体工程中附挂字面值或结构化值的类型化属性元类型，旨在为实体的可描述特征提供全局可复用的属性定义，与属性使用分离以区分"定义"与"在具体类型上的使用"。
+    definition: a meta-classifier for typed properties that attach literal or structured values to entities, intended to provide globally reusable property definitions; it is separated from attribute use to distinguish definition from contextual usage
     owlProjection:
       note: "Projection kind depends on valueType category: primitives and
         IdentifierTypeDefinition project to datatype properties;
@@ -557,8 +578,9 @@ MetaModel:
       minCount: 0
       maxCount: 1
   AttributeUse:
-    definition: a binding of an AttributeTypeDefinition to an ObjectTypeDefinition
-      with contextual constraints
+    iri: https://axiolune.ai/ontology/meta/core/AttributeUse
+    cnNote: 属性使用，是本体工程中把全局属性类型绑定到具体对象类型的上下文记录，旨在允许同一属性在不同类型上有不同必填性与约束，是属性"定义"与"使用"之间的桥梁。
+    definition: a binding of an AttributeTypeDefinition to a specific ObjectTypeDefinition with contextual constraints, intended to let the same property have different requiredness and constraints on different types; it bridges attribute definition and contextual usage
     note: Separates global attribute definition from context-specific usage
     requiredFields:
       attribute:
@@ -980,7 +1002,9 @@ MetaModel:
     note: Used to declare breaking changes; multiple incompatibilities expressed via
       cardinality > 1
   RelationTypeDefinition:
-    definition: a meta-classifier for binary semantic relationships between entity types
+    iri: https://axiolune.ai/ontology/meta/core/RelationTypeDefinition
+    cnNote: 关系类型，是本体工程中两个实体类型间的二元纯语义关系元类型，旨在为领域概念间的关联（如"由…发行"）提供不带上下文的简洁关系定义。
+    definition: a meta-classifier for binary semantic relationships between entity types, intended to provide concise relation definitions without context for associations such as "is issued by"
     owlProjection:
       kind: objectProperty
     note: For pure semantic relations; use AssociationTypeDefinition for relations
@@ -1035,8 +1059,9 @@ MetaModel:
       alignments:
         type: list[Alignment]
   RelationUse:
-    definition: a contextual application of a RelationTypeDefinition with specific
-      cardinality constraints
+    iri: https://axiolune.ai/ontology/meta/core/RelationUse
+    cnNote: 关系使用，是本体工程中关系类型在具体类型间的上下文应用，旨在为关系声明上下文相关的基数约束，是关系"定义"与"使用"之间的桥梁。
+    definition: a contextual application of a RelationTypeDefinition with specific cardinality constraints, intended to declare context-dependent cardinality for relations; it bridges relation definition and contextual usage
     note: Cardinality is contextual, not global, because subclasses may have
       different constraints
     requiredFields:
@@ -1078,8 +1103,9 @@ MetaModel:
       constraints:
         type: list[ConstraintBinding]
   AssociationTypeDefinition:
-    definition: a meta-classifier for reifiable n-ary relations with identity,
-      context, and lifecycle
+    iri: https://axiolune.ai/ontology/meta/core/AssociationTypeDefinition
+    cnNote: 关联类型，是本体工程中可具名的 n 元关系元类型，旨在为关系本身需要时间戳、来源或数量等上下文的情况（如价格观测、持仓）提供可具体化的关联定义。
+    definition: a meta-classifier for reifiable n-ary relations with identity, context, and lifecycle, intended to provide reifiable association definitions for relations that themselves need timestamps, provenance, or quantities, such as price observations and holdings
     owlProjection:
       kind: class
       stereotype: association
@@ -1138,8 +1164,9 @@ MetaModel:
       alignments:
         type: list[Alignment]
   ParticipantRole:
-    definition: a typed slot in an AssociationTypeDefinition specifying the role and
-      type of a participant
+    iri: https://axiolune.ai/ontology/meta/core/ParticipantRole
+    cnNote: 参与者角色，是关联类型中的一个有类型参与槽，旨在为 n 元关联中的每个参与方声明角色名与类型约束，是关联类型的基本构成单元。
+    definition: a typed slot in an AssociationTypeDefinition specifying the role and type of a participant, intended to declare a role name and type constraint for each party in an n-ary association; it is the basic unit of an association type
     requiredFields:
       id:
         type: string
@@ -1165,8 +1192,9 @@ MetaModel:
       definition:
         type: string
   PatternBinding:
-    definition: a declaration that an ObjectTypeDefinition or
-      AssociationTypeDefinition adheres to a cross-domain pattern
+    iri: https://axiolune.ai/ontology/meta/core/PatternBinding
+    cnNote: 模式绑定，是本体工程中声明某类型遵循一个跨域模式的机制，旨在让时间、来源、证据等通用能力通过绑定自动注入到具体类型，避免在每个领域重复定义。
+    definition: a declaration that an ObjectTypeDefinition or AssociationTypeDefinition adheres to a cross-domain pattern, intended to let capabilities such as time, provenance, and evidence be automatically injected into types without redefining them in each domain
     note: Patterns from Layer 2 (Temporal, Provenance, Evidence) inject attribute
       requirements and constraints
     requiredFields:
@@ -1183,8 +1211,9 @@ MetaModel:
           granularity: instant
           requireValidTo: false
   Alignment:
-    definition: a documented mapping between a local ontology element and an
-      external standard
+    iri: https://axiolune.ai/ontology/meta/core/Alignment
+    cnNote: 对齐，是本体工程中本地概念与外部标准之间的有据映射，旨在支持审计、版本控制与语义互操作，要求版本锁定、字节定位与人工审核，而非简单的链接等同。
+    definition: a documented mapping between a local ontology element and an external standard, intended to support audit, version control, and semantic interoperability; it requires version locking, byte-level location, and human review rather than a simple link
     note: Supports audit, version control, and semantic interoperability without
       requiring exactMatch for all concepts
     requiredFields:
@@ -1249,8 +1278,9 @@ MetaModel:
           type: string
         description: mandatory review state; proposed is not approval
   ConstraintDefinition:
-    definition: a meta-classifier for semantic validation rules that can be applied
-      to types, attributes, relations, or associations
+    iri: https://axiolune.ai/ontology/meta/core/ConstraintDefinition
+    cnNote: 约束定义，是本体工程中可复用的语义校验规则元类型，旨在为类型、属性、关系等本体元素提供可形式化表达、可绑定复用的校验逻辑。
+    definition: a meta-classifier for semantic validation rules that can be applied to types, attributes, relations, or associations, intended to provide formal, reusable validation logic for ontology elements
     owlProjection:
       kind: class
       stereotype: constraint
@@ -1339,7 +1369,9 @@ MetaModel:
       alignments:
         type: list[Alignment]
   ConstraintExpression:
-    definition: the formal expression of a constraint rule
+    iri: https://axiolune.ai/ontology/meta/core/ConstraintExpression
+    cnNote: 约束表达式，是本体工程中约束规则的形式化表达载体，旨在用 SHACL、SPARQL、正则等语言精确描述校验逻辑，并可带摘要以防篡改。
+    definition: the formal expression of a constraint rule, intended to precisely describe validation logic in languages such as SHACL, SPARQL, or regex, with an optional digest for tamper resistance
     fields:
       language:
         type: enum
@@ -1360,7 +1392,9 @@ MetaModel:
         type: string
         description: SHA256 hash of expression for versioning
   ConstraintParameter:
-    definition: a parameter for parameterized constraints
+    iri: https://axiolune.ai/ontology/meta/core/ConstraintParameter
+    cnNote: 约束参数，是本体工程中参数化约束的参数定义，旨在让约束（如防前视偏差的时间阈值）能在运行时由校验器绑定具体值，实现上下文相关的校验。
+    definition: a parameter for parameterized constraints, intended to let constraints such as look-ahead-bias time thresholds be bound at runtime by the validator, enabling context-dependent validation
     fields:
       name:
         type: string
@@ -1375,8 +1409,9 @@ MetaModel:
       defaultValue:
         type: any
   ConstraintBinding:
-    definition: the application of a ConstraintDefinition to a specific ontology
-      element with parameter values
+    iri: https://axiolune.ai/ontology/meta/core/ConstraintBinding
+    cnNote: 约束绑定，是本体工程中把约束定义应用到具体本体元素的机制，旨在声明校验的执行级别与时机，是约束"定义"与"使用"之间的桥梁。
+    definition: the application of a ConstraintDefinition to a specific ontology element with parameter values, intended to declare the enforcement level and timing of validation; it bridges constraint definition and contextual usage
     requiredFields:
       constraintRef:
         type: uri
@@ -1414,7 +1449,9 @@ MetaModel:
           - Export
         description: when to enforce this constraint
   ChangeRecord:
-    definition: a record of a change to an ontology element for audit and version control
+    iri: https://axiolune.ai/ontology/meta/core/ChangeRecord
+    cnNote: 变更记录，是本体工程中对本体元素一次变更的审计记录，旨在为本体演化提供可追溯的变更链，记录变更类型、是否破坏性与审批状态。
+    definition: a record of a change to an ontology element for audit and version control, intended to provide a traceable change chain for ontology evolution, recording change type, breakingness, and approval state
     requiredFields:
       changeId:
         type: string
@@ -1467,7 +1504,9 @@ MetaModel:
         type: list[string]
         description: IDs of related changes
   GovernanceMetadata:
-    definition: ownership, approval, and change tracking metadata for ontology elements
+    iri: https://axiolune.ai/ontology/meta/core/GovernanceMetadata
+    cnNote: 治理元数据，是本体工程中挂在任何元素上的责任与审批信息，旨在为本体元素的所有权、审批状态与变更历史提供标准化的治理追踪。
+    definition: ownership, approval, and change tracking metadata for ontology elements, intended to provide standardized governance tracking of ownership, approval status, and change history for any element
     fields:
       ownerRef:
         type: string

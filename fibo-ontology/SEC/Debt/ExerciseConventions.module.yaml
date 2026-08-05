@@ -1,0 +1,134 @@
+module:
+  moduleIri: https://spec.edmcouncil.org/fibo/ontology/SEC/Debt/ExerciseConventions/
+  baseIri: https://spec.edmcouncil.org/fibo/ontology/SEC/Debt/ExerciseConventions/
+  preferredPrefix: fibo-sec-debexe
+  version: '20250301'
+  label: Exercise Conventions Ontology
+  definition: This ontology defines the various kinds of exercise conventions that are common to debt and options instruments.
+    They are distinguished primarily in terms of the date period during which an optional contract clause may be exercised.
+  imports:
+  - moduleIri: https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/
+    version: external
+  - moduleIri: https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/
+    version: external
+  - moduleIri: https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/BusinessDates/
+    version: external
+  - moduleIri: https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/
+    version: external
+  - moduleIri: https://www.omg.org/spec/Commons/AnnotationVocabulary/
+    version: external
+  - moduleIri: https://www.omg.org/spec/Commons/ContextualDesignators/
+    version: external
+  - moduleIri: https://www.omg.org/spec/Commons/DatesAndTimes/
+    version: external
+  exports: []
+  status: reference
+  governance:
+    ownerRef: urn:axiolune:authority:fibo-edmcouncil
+    status: reference
+  sourceArtifact: ExerciseConventions.rdf
+  sourceDigest: sha256:0395ee04f86926124c2cd57c375e7a7b90cf9a5818aada6c44b2ba5b71876bcb
+  sourcePath: SEC/Debt/ExerciseConventions.rdf
+  fiboDomain: SEC
+domain:
+  objectTypes:
+    AmericanExerciseTerms:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Debt/ExerciseConventions/AmericanExerciseTerms
+      namespace: fibo-sec-debexe
+      localName: AmericanExerciseTerms
+      label: American exercise terms
+      definition: exercise terms that stipulate that an option may be exercised on or before the date of expiration
+      superTypes:
+      - https://spec.edmcouncil.org/fibo/ontology/SEC/Debt/ExerciseConventions/ExerciseTerms
+      attributeUses: []
+      patternBindings: []
+    BermudanExerciseTerms:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Debt/ExerciseConventions/BermudanExerciseTerms
+      namespace: fibo-sec-debexe
+      localName: BermudanExerciseTerms
+      label: Bermudan exercise terms
+      definition: exercise terms that stipulate that an option may only be exercised on predetermined dates within some exercise
+        window, often on one day each month or at the date of expiration
+      superTypes:
+      - https://spec.edmcouncil.org/fibo/ontology/SEC/Debt/ExerciseConventions/ExerciseTerms
+      attributeUses: []
+      patternBindings: []
+    CanaryExerciseTerms:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Debt/ExerciseConventions/CanaryExerciseTerms
+      namespace: fibo-sec-debexe
+      localName: CanaryExerciseTerms
+      label: canary exercise terms
+      definition: exercise terms that stipulate that an option may only be exercised on predetermined dates until the first
+        step is reached, but not after that point
+      superTypes:
+      - https://spec.edmcouncil.org/fibo/ontology/SEC/Debt/ExerciseConventions/BermudanExerciseTerms
+      attributeUses: []
+      patternBindings: []
+    EuropeanExerciseTerms:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Debt/ExerciseConventions/EuropeanExerciseTerms
+      namespace: fibo-sec-debexe
+      localName: EuropeanExerciseTerms
+      label: European exercise terms
+      definition: exercise terms that stipulate that an option may only be exercised at the date of expiration
+      superTypes:
+      - https://spec.edmcouncil.org/fibo/ontology/SEC/Debt/ExerciseConventions/ExerciseTerms
+      attributeUses: []
+      patternBindings: []
+    ExerciseConvention:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Debt/ExerciseConventions/ExerciseConvention
+      namespace: fibo-sec-debexe
+      localName: ExerciseConvention
+      label: exercise convention
+      definition: convention that determines when the holder or future holder of an option can implement the rights defined
+        in the option
+      superTypes:
+      - https://spec.edmcouncil.org/fibo/ontology/FND/DatesAndTimes/BusinessDates/Convention
+      attributeUses: []
+      patternBindings: []
+    ExerciseTerms:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Debt/ExerciseConventions/ExerciseTerms
+      namespace: fibo-sec-debexe
+      localName: ExerciseTerms
+      label: exercise terms
+      definition: contract terms specific to the conditions, conventions and other stipulations related to the exercise of
+        an option or entitlement
+      superTypes:
+      - https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/ContractualCommitment
+      attributeUses: []
+      patternBindings: []
+  associationTypes: {}
+  relationTypes:
+    hasExerciseDate:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Debt/ExerciseConventions/hasExerciseDate
+      namespace: fibo-sec-debexe
+      localName: hasExerciseDate
+      label: has exercise date
+      definition: indicates a date on which an option may be exercised as specified in the terms of the contract
+      domain: ''
+      range: https://www.omg.org/spec/Commons/DatesAndTimes/ExplicitDate
+      inverseOf: ''
+      characteristics: []
+    hasExerciseTerms:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Debt/ExerciseConventions/hasExerciseTerms
+      namespace: fibo-sec-debexe
+      localName: hasExerciseTerms
+      label: has exercise terms
+      definition: links a derivative, such as an option or entitlement, to any exercise terms that are specified therein
+      domain: https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/DerivativeInstrument
+      range: https://spec.edmcouncil.org/fibo/ontology/SEC/Debt/ExerciseConventions/ExerciseTerms
+      inverseOf: ''
+      characteristics: []
+    hasExerciseWindow:
+      iri: https://spec.edmcouncil.org/fibo/ontology/SEC/Debt/ExerciseConventions/hasExerciseWindow
+      namespace: fibo-sec-debexe
+      localName: hasExerciseWindow
+      label: has exercise window
+      definition: indicates a period of time during which the option may be exercised as specified in the terms of the contract
+      domain: ''
+      range: https://www.omg.org/spec/Commons/DatesAndTimes/DatePeriod
+      inverseOf: ''
+      characteristics: []
+  attributeTypes: {}
+  identifierTypes: {}
+  codeLists: {}
+  constraints: {}

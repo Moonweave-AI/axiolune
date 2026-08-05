@@ -1,5 +1,5 @@
-# Axiolune M2 Risk ? Competency Questions
-# Module: fin-risk | Version: 0.3.0 | Status: active (semantic approval)
+# Axiolune M2 Risk — Competency Questions
+# Module: fin-risk | Version: 1.1.0 | Status: active (semantic approval; v1.1.0 per ADR-032)
 
 cqs:
   - id: CQ-R1
@@ -9,14 +9,14 @@ cqs:
     businessContext: Pre-trade and intraday risk aggregation; must not use future knowledge or unavailable inputs
     scopeConstraints:
       - RiskMeasurement must satisfy TemporalFact three-axis bounds
-      - availableFrom required (fail-closed)
+      - availableFrom required (fail-closed) under the ValidatedReproducibleRiskMeasurement profile; preliminary results may carry measurementStatus
       - contributing holdings must be explicit, not inferred "current position"
     expectedResult: RiskMeasurement with measure, amount, currency, contributing holding references, or explicit empty
-    negativeExample: Measurement with asOfKnowledge before knowledgeFrom or missing availableFrom is rejected
+    negativeExample: Measurement with asOfKnowledge before knowledgeFrom or missing availableFrom is rejected (under the high-assurance profile)
     dependsOnElements:
       - https://axiolune.ai/ontology/finance/risk/RiskMeasurement
-      - https://axiolune.ai/ontology/finance/risk/measuredForPortfolio
-      - https://axiolune.ai/ontology/finance/risk/appliesRiskMeasure
+      - https://axiolune.ai/ontology/finance/risk/RiskMeasurement/role/measurementPortfolio
+      - https://axiolune.ai/ontology/finance/risk/RiskMeasurement/role/measurementDefinition
       - https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
     testFixtures:
       - fixture: risk-v03-positive-exposure
@@ -31,30 +31,32 @@ cqs:
       Does a risk measurement breach a risk limit, and what evidence supports the breach decision?
     businessContext: Limit monitoring and compliance escalation
     scopeConstraints:
-      - LimitBreach must reference limit definition, risk measurement, and evidence
-      - limit must be effective at evaluation valid time
-    expectedResult: LimitBreach chain (limit, measurement, evidence) or no breach
-    negativeExample: Breach without evidence or with expired limit definition must not be confirmed
+      - LimitBreach must reference limit evaluation, risk measurement, and limit
+      - limit must be effective at evaluation valid time (not suspended/superseded)
+    expectedResult: LimitBreach chain (evaluation, measurement, limit) or no breach
+    negativeExample: Breach without evaluation or with suspended/superseded limit must not be confirmed
     dependsOnElements:
       - https://axiolune.ai/ontology/finance/risk/LimitBreach
-      - https://axiolune.ai/ontology/finance/risk/RiskLimitDefinition
+      - https://axiolune.ai/ontology/finance/risk/RiskLimit
+      - https://axiolune.ai/ontology/finance/risk/RiskLimitEvaluation
       - https://axiolune.ai/ontology/finance/risk/RiskMeasurement
     testFixtures:
       - fixture: risk-v03-positive-breach
-        expectedOutcome: returns breach with evidence chain
+        expectedOutcome: returns breach with evaluation chain
       - fixture: risk-v03-negative-missing-evidence
         expectedOutcome: rejected
     riskLevel: high
     status: active
 
   - id: CQ-R3
-    question: What risk limits apply to a portfolio or mandate at a given valid time?
+    question: What risk limits apply to a portfolio or scope at a given valid time?
     businessContext: Limit inventory before order placement
-    expectedResult: list of RiskLimitDefinition IRIs effective for scope
-    negativeExample: limit without effective interval or scope is not returned as active
+    expectedResult: list of RiskLimit IRIs effective (not suspended/superseded) for the scope at the valid time
+    negativeExample: limit without effective interval or with superseded status is not returned as active
     dependsOnElements:
-      - https://axiolune.ai/ontology/finance/risk/RiskLimitDefinition
-      - https://axiolune.ai/ontology/finance/portfolio-positions/ManagementMandate
+      - https://axiolune.ai/ontology/finance/risk/RiskLimit
+      - https://axiolune.ai/ontology/finance/risk/RiskLimit/role/limitScopeDefinition
+      - https://axiolune.ai/ontology/finance/risk/riskLimitLifecycleStatus
     riskLevel: medium
     status: active
 
@@ -79,22 +81,147 @@ cqs:
   - id: CQ-R5
     question: >-
       For a stress scenario definition, which stress test run was executed against a portfolio and what
-      RiskMeasurement output did it produce?
+      RiskMeasurement output did it produce, and did the scenario actually act on the output?
     businessContext: Regulatory and internal stress testing explainability (Basel ICAAP / internal risk policy)
     scopeConstraints:
       - StressTestRun must reference exact ScenarioDefinition, Portfolio, and output RiskMeasurement versions
-      - scenario shock parameters are fixed on ScenarioDefinition, not recomputed on the run
-    expectedResult: StressTestRun chain (scenario, portfolio, output measurement) or explicit empty
-    negativeExample: stress run without output measurement or without scenario version must not be confirmed
+      - scenario shock parameters are fixed on ScenarioDefinition (ScenarioShock members), not recomputed on the run
+      - output generatingContextRef must equal the run's; definition.scenarioRef must equal the run's exact scenario
+    expectedResult: StressTestRun chain (scenario, portfolio, output measurement, application evidence) or explicit empty
+    negativeExample: stress run without output measurement, without scenario version, or whose output was not shocked by the scenario must not be confirmed
     dependsOnElements:
       - https://axiolune.ai/ontology/finance/risk/ScenarioDefinition
+      - https://axiolune.ai/ontology/finance/risk/ScenarioShock
       - https://axiolune.ai/ontology/finance/risk/StressTestRun
+      - https://axiolune.ai/ontology/finance/risk/ScenarioApplicationEvidence
       - https://axiolune.ai/ontology/finance/risk/RiskMeasurement
       - https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
     testFixtures:
       - fixture: risk-stress-scenario-v03-positive
-        expectedOutcome: returns stress run with scenario and output measurement
+        expectedOutcome: returns stress run with scenario, application evidence, and output measurement
       - fixture: risk-stress-scenario-v03-negative
-        expectedOutcome: orphan run without output rejected
+        expectedOutcome: orphan run without output or without application evidence rejected
     riskLevel: medium
+    status: active
+
+  - id: CQ-R6
+    question: >-
+      Which risk factors, position exposures, market-data snapshots, and parameter sets drove a given
+      risk measurement, and are their valuation as-of, availability, and data quality frozen and traceable?
+    businessContext: Risk attribution and reproducibility (BCBS 239 risk-data aggregation)
+    scopeConstraints:
+      - RiskMeasurement may carry measurementInputSet, measurementRiskFactor, measurementRiskExposure roles
+      - RiskInputSet records inputValuationAsOf, inputDataQualityStatus, and the positions/market-data members
+    expectedResult: the input set, factor universe, and exposures behind a result, with frozen as-of and quality
+    negativeExample: a measurement whose inputs are only an opaque digest with no queryable input set
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/risk/RiskInputSet
+      - https://axiolune.ai/ontology/finance/risk/RiskFactor
+      - https://axiolune.ai/ontology/finance/risk/RiskExposure
+      - https://axiolune.ai/ontology/finance/risk/RiskMeasurement/role/measurementInputSet
+    riskLevel: high
+    status: active
+
+  - id: CQ-R7
+    question: >-
+      Is a given limit an upper bound, lower bound, band, absolute-value, two-sided, warning, or hard
+      limit, and what comparison operator, basis, tolerance, rounding, and unit/currency conversion
+      does it apply?
+    businessContext: Limit governance — limits are not all single upper thresholds
+    expectedResult: the RiskLimitRule (operator, thresholds, severity, basis) and any RiskLimitComparisonPolicy
+    negativeExample: a band limit expressed as a single upper threshold, or a hard limit with no severity
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/risk/RiskLimitRule
+      - https://axiolune.ai/ontology/finance/risk/RiskLimitComparisonPolicy
+      - https://axiolune.ai/ontology/finance/risk/RiskLimit/role/limitRule
+    riskLevel: medium
+    status: active
+
+  - id: CQ-R8
+    question: >-
+      For a bucketed measurement versus a bucketed limit, what key alignment, missing-bucket handling,
+      per-bucket vs aggregate, tolerance, rounding, and unit/currency conversion rule governs the
+      comparison?
+    businessContext: Bucket-set vs bucket-set limit comparison (FRTB-style bucketed risk)
+    expectedResult: the BucketComparisonMode, MissingBucketHandling, and conversion policy for the evaluation
+    negativeExample: a bucket-vs-bucket comparison collapsed to a scalar value<=threshold with no policy
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/risk/RiskLimitComparisonPolicy
+      - https://axiolune.ai/ontology/finance/risk/bucketSetPurpose
+      - https://axiolune.ai/ontology/finance/risk/RiskLimitEvaluation/role/evaluationComparisonPolicy
+    riskLevel: high
+    status: active
+
+  - id: CQ-R9
+    question: >-
+      Did a historical measurement use the limit version actually effective at the measurement as-of,
+      rather than a post-hoc superseding version, and was the measurement scope compatible with the
+      limit scope?
+    businessContext: Limit evaluation integrity across time
+    scopeConstraints:
+      - RiskLimitEvaluation must use the limit effective at the measurement as-of
+      - scope compatibility is defined by scopeMatchRule (exactMatch/approvedRollup/contains)
+    expectedResult: the effective limit version and the scope-match rule used
+    negativeExample: a historical measurement evaluated against a limit superseded before the measurement as-of
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/risk/RiskLimitEvaluation
+      - https://axiolune.ai/ontology/finance/risk/scopeMatchRule
+      - https://axiolune.ai/ontology/finance/risk/effectiveAt
+    riskLevel: high
+    status: active
+
+  - id: CQ-R10
+    question: >-
+      After a limit breach, is there a complete acknowledgement, escalation, waiver, remediation,
+      close, and reopen governance chain?
+    businessContext: Breach governance lifecycle
+    expectedResult: the RiskLimitBreachCase with its BreachAcknowledgement, LimitWaiver, RemediationAction, EscalationEvent, and status transitions
+    negativeExample: a LimitBreach with no case, or a case with no acknowledgement/escalation
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/risk/RiskLimitBreachCase
+      - https://axiolune.ai/ontology/finance/risk/BreachAcknowledgement
+      - https://axiolune.ai/ontology/finance/risk/LimitWaiver
+      - https://axiolune.ai/ontology/finance/risk/RemediationAction
+      - https://axiolune.ai/ontology/finance/risk/EscalationEvent
+    riskLevel: high
+    status: active
+
+  - id: CQ-R11
+    question: >-
+      Can preliminary, data-quality-limited, revised, failed, estimated, and audit-grade validated
+      risk numbers be distinguished, and is the audit-grade closure evidence present only when the
+      ValidatedReproducibleRiskMeasurement profile is active?
+    businessContext: Mixed-quality risk results (intraday estimates vs end-of-day audited)
+    expectedResult: the measurementStatus and, when validated, the digest/closure evidence
+    negativeExample: a preliminary intraday estimate rejected because closure proof is mandatory
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/risk/RiskMeasurementStatus
+      - https://axiolune.ai/ontology/finance/risk/RiskMeasurement
+    riskLevel: medium
+    status: active
+
+  - id: CQ-R12
+    question: >-
+      What risk category, source, and appetite does a measure, limit, exposure, or scenario belong
+      to, and what is the institution's stated risk appetite and tolerance?
+    businessContext: Risk classification and appetite governance (FSB Risk Appetite Framework)
+    expectedResult: the RiskCategory, RiskSource, RiskAppetite, and RiskTolerance for the object
+    negativeExample: a limit with no risk category or appetite anchor
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/risk/RiskCategory
+      - https://axiolune.ai/ontology/finance/risk/RiskSource
+      - https://axiolune.ai/ontology/finance/risk/RiskAppetite
+      - https://axiolune.ai/ontology/finance/risk/RiskTolerance
+    riskLevel: medium
+    status: active
+
+  - id: CQ-R13
+    question: >-
+      What risk report views exist for a given as-of and audience, and which risk results do they cover?
+    businessContext: BCBS 239 risk reporting (lightweight report-view hook)
+    expectedResult: the RiskReport with its reportAsOf, reportAudience, and covered results
+    negativeExample: a report with no as-of or audience
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/risk/RiskReport
+    riskLevel: low
     status: active

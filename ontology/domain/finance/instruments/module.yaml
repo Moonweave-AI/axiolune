@@ -2,11 +2,13 @@ module:
   moduleIri: https://axiolune.ai/ontology/finance/instruments
   baseIri: https://axiolune.ai/ontology/finance/instruments/
   preferredPrefix: fin-instruments
-  version: 1.0.0
+  version: 2.0.0
   label: Financial Instruments
   definition: >-
-    instrument vocabulary for financial instruments, security offerings, issuance facts, independently referenceable
-    listings, and the direct unit-price quotation contract admitted by the v0.3 equity slice
+    Financial Instruments, is a domain module in ontology engineering that defines the types of tradable financial
+    instruments such as securities, equities, and listings, used to provide identifiable and classifiable typed
+    definitions for tradable financial instruments.
+  cnNote: 金融工具模块，是本体工程中定义证券、股权、上市等金融工具类型的领域模块，旨在为可交易的金融工具提供可识别、可分类的类型化定义。
   imports:
     - moduleIri: https://axiolune.ai/ontology/finance/foundation
     - moduleIri: https://axiolune.ai/ontology/finance/market-structure
@@ -23,8 +25,10 @@ domain:
       localName: FinancialInstrument
       label: Financial Instrument
       definition: >-
-        identifiable financial contract that may be issued, offered, listed, observed, traded, or valued without
-        conflating its identity with any particular listing
+        Financial Instrument, is an identifiable financial contract object that can be issued, quoted, listed,
+        traded, or valued, used to represent a financial instrument whose identity is independent of any particular
+        listing.
+      cnNote: 金融工具，是可识别的金融合约类对象，用于表示可被发行、报价、上市、交易或估值，且其身份独立于任何具体上市的金融工具。
       superTypes:
         - https://axiolune.ai/ontology/finance/foundation/IdentifiableSubject
       attributeUses: []
@@ -36,7 +40,10 @@ domain:
       namespace: fin-instruments
       localName: Security
       label: Security
-      definition: FinancialInstrument that can be offered and issued as a security
+      definition: >-
+        Security, is a subclass of Financial Instrument that can be quoted and issued as a security, used to
+        identify financial instruments admitted to the issuance and listing workflow and treated as securities.
+      cnNote: 证券，是可作为证券类被报价与发行的金融工具子类，用于标识可纳入发行与上市流程、按证券处理的金融工具。
       superTypes:
         - https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
       attributeUses: []
@@ -48,7 +55,10 @@ domain:
       namespace: fin-instruments
       localName: EquitySecurity
       label: Equity Security
-      definition: Security that represents an ownership interest in an entity or pool of assets
+      definition: >-
+        Equity Security, is a kind of Security that represents an ownership interest in an issuing entity or a
+        pool of assets, used to identify tradable equity financial instruments in the market.
+      cnNote: 股权证券，是代表对某发行实体或资产池所有权的证券类，用于在市场中标识可交易的股权类金融工具。
       superTypes:
         - https://axiolune.ai/ontology/finance/instruments/Security
       attributeUses: []
@@ -61,8 +71,9 @@ domain:
       localName: SecurityOffering
       label: Security Offering
       definition: >-
-        temporal offering record that offers exactly one exact Security version and remains distinct from both issuance
-        and venue listing
+        Security Offering, is a temporal offering record class directed at one exact Security version, used to
+        record the fact of an issuance offering, and kept distinct from formal issuance and venue listing.
+      cnNote: 证券要约，是针对某一确切证券版本的时态要约记录类，用于记录发行要约事实，且与正式发行和场所上市相互区分。
       superTypes: []
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/instruments/offeringId
@@ -86,8 +97,10 @@ domain:
       localName: InstrumentListing
       label: Instrument Listing
       definition: >-
-        independently referenceable versioned listing whose logical identity is exactly the listing facility,
-        venue-listing identifier scheme, and venue-listing identifier value logical identities
+        Instrument Listing, is a nameable versioned object recording the listing of a financial instrument on a
+        specific trading facility, used to record which instrument is listed on which venue, under which venue-listing
+        identifier scheme and value.
+      cnNote: 工具上市，是某一金融工具在特定交易场所挂牌的可具名版本化对象，用于记录哪个工具在哪个场所、以何种场所上市标识方案与取值完成上市。
       superTypes:
         - https://axiolune.ai/ontology/finance/foundation/IdentifiableSubject
       attributeUses:
@@ -115,9 +128,12 @@ domain:
       localName: DirectUnitPriceQuotationContract
       label: Direct Unit Price Quotation Contract
       definition: >-
-        versioned quotation application in which one instrument unit is priced directly as an amount of one quote
-        currency for one controlled denominator Quantity-unit IRI in exactly one listing or OTC context
-      superTypes: []
+        Direct Unit Price Quotation Contract, is a versioned quotation application class that expresses a quotation
+        contract pricing a single controlled quantity unit directly in a given quote currency, used for listing or
+        over-the-counter contexts.
+      cnNote: 直接单位报价合约，是版本化的报价应用类，用于表示以某一计价货币对单个受控数量单位直接定价的报价契约，适用于上市或场外语境。
+      superTypes:
+        - https://axiolune.ai/ontology/finance/instruments/QuotationConvention
       attributeUses:
         - attribute: https://axiolune.ai/ontology/finance/instruments/quotationDenominatorUnit
           minCount: 1
@@ -147,6 +163,23 @@ domain:
       patternBindings:
         - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
         - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    QuotationConvention:
+      iri: https://axiolune.ai/ontology/finance/instruments/QuotationConvention
+      namespace: fin-instruments
+      localName: QuotationConvention
+      label: Quotation Convention
+      definition: Quotation Convention, is an abstract quotation expression profile
+        that governs how a price is quoted for a financial instrument, intended as the
+        common parent of all quotation profiles so that future types such as yield,
+        par, and notional-scaled quotations can be added without breaking downstream
+        references
+      cnNote: 报价约定，是治理金融工具价格如何报出的抽象报价表达轮廓，旨在作为所有报价方式的共同父类型，使未来收益率、面值、名义缩放等报价方式可扩展而不破坏下游引用。
+      superTypes: []
+      abstract: true
+      attributeUses: []
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
   associationTypes:
     InstrumentIssuance:
       iri: https://axiolune.ai/ontology/finance/instruments/InstrumentIssuance
@@ -154,8 +187,10 @@ domain:
       localName: InstrumentIssuance
       label: Instrument Issuance
       definition: >-
-        temporal issuance fact that links one exact Security version to its exact issuer LegalEntity version and
-        optionally to its exact originating SecurityOffering version
+        Instrument Issuance, is a temporal issuance fact that links one exact Security version to its exact issuer
+        LegalEntity version and optionally to its exact originating SecurityOffering version, used to record the
+        issuance relationship by which a security is brought into existence.
+      cnNote: 工具发行，是关联某一确切证券版本与其确切发行人法律实体版本的时态发行事实，可选关联其起源要约版本，用于记录证券被创设出来的发行关系。
       participantRoles:
         - id: issuedSecurity
           range: https://axiolune.ai/ontology/finance/instruments/Security
@@ -191,13 +226,65 @@ domain:
       patternBindings:
         - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
         - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    InstrumentClassificationAssertion:
+      iri: https://axiolune.ai/ontology/finance/instruments/InstrumentClassificationAssertion
+      namespace: fin-instruments
+      localName: InstrumentClassificationAssertion
+      label: Instrument Classification Assertion
+      definition: Instrument Classification Assertion, is a temporal fact asserting
+        that a financial instrument is classified under a classification scheme (e.g.
+        CFI) at a specific code, with a scheme release, an authority or source, and a
+        valid-time interval, used for recording the classification of an instrument
+        independently of its persistent identity
+      cnNote: 工具分类断言，是断言某一金融工具在特定分类方案（如 CFI）下被归为某一代码的时态事实，带方案版次、权威来源与有效区间，用于独立于持久身份记录工具的分类。
+      participantRoles:
+        - id: classifiedInstrument
+          range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+          minCount: 1
+          maxCount: 1
+          label: classified instrument
+          definition: exact FinancialInstrument version being classified
+        - id: classificationScheme
+          range: https://axiolune.ai/ontology/finance/foundation/IdentifierScheme
+          minCount: 1
+          maxCount: 1
+          label: classification scheme
+          definition: logical IdentifierScheme identity governing the classification
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/instruments/classificationCode
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/instruments/classificationCategory
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/instruments/classificationEffectiveFrom
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/instruments/classificationEffectiveTo
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
   relationTypes:
     offeredSecurity:
       iri: https://axiolune.ai/ontology/finance/instruments/offeredSecurity
       namespace: fin-instruments
       localName: offeredSecurity
       label: Offered Security
-      definition: relates a SecurityOffering version to the exact Security version that it offers
+      definition: >-
+        Offered Security, is a relation that links a SecurityOffering version to the exact Security version it
+        offers, used to specify which Security version the offering is directed at.
+      cnNote: 所约证券，是关联证券要约版本与其所约确切证券版本的关系，用于指明该要约具体针对哪一证券版本。
       domain: https://axiolune.ai/ontology/finance/instruments/SecurityOffering
       range: https://axiolune.ai/ontology/finance/instruments/Security
       characteristics:
@@ -208,8 +295,10 @@ domain:
       localName: listingIdentifierScheme
       label: Listing Identifier Scheme
       definition: >-
-        direct identity slot relating an InstrumentListing to exactly one venue-listing IdentifierScheme logical
-        identity
+        Listing Identifier Scheme, is a direct identity slot relating an InstrumentListing to exactly one
+        venue-listing IdentifierScheme logical identity, used to determine which identifier scheme the listing
+        adopts.
+      cnNote: 上市标识方案，是关联工具上市与其唯一场所上市标识方案逻辑身份的直接身份槽，用于确定该上市采用何种标识体系。
       domain: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
       range: https://axiolune.ai/ontology/finance/foundation/IdentifierScheme
       characteristics:
@@ -220,8 +309,10 @@ domain:
       localName: listingIdentifierValue
       label: Listing Identifier Value
       definition: >-
-        direct identity slot relating an InstrumentListing to exactly one LocalIdentifierValue logical identity governed
-        by its listing scheme
+        Listing Identifier Value, is a direct identity slot relating an InstrumentListing to exactly one
+        LocalIdentifierValue logical identity governed by its listing scheme, used to determine the specific value
+        the listing carries under that scheme.
+      cnNote: 上市标识取值，是关联工具上市与其受上市方案管辖的本地标识取值逻辑身份的直接身份槽，用于确定上市在该方案下的具体取值。
       domain: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
       range: https://axiolune.ai/ontology/finance/foundation/LocalIdentifierValue
       characteristics:
@@ -231,7 +322,10 @@ domain:
       namespace: fin-instruments
       localName: listedInstrument
       label: Listed Instrument
-      definition: relates an InstrumentListing version to the exact FinancialInstrument version admitted by that listing
+      definition: >-
+        Listed Instrument, is a relation that links an InstrumentListing version to the exact FinancialInstrument
+        version admitted by that listing, used to specify which financial instrument the listing admits.
+      cnNote: 上市工具，是关联工具上市版本与其所接纳的确切金融工具版本的关系，用于指明该上市接纳的是哪一金融工具。
       domain: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
       range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
       characteristics:
@@ -241,7 +335,10 @@ domain:
       namespace: fin-instruments
       localName: listingFacility
       label: Listing Facility
-      definition: relates an InstrumentListing version to the exact TradingFacility version at which it is listed
+      definition: >-
+        Listing Facility, is a relation that links an InstrumentListing version to the exact TradingFacility
+        version at which it is listed, used to record the trading facility to which the listing belongs.
+      cnNote: 上市场所，是关联工具上市版本与其挂牌的确切交易场所版本的关系，用于记录该上市所属的交易设施。
       domain: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
       range: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
       characteristics:
@@ -251,7 +348,10 @@ domain:
       namespace: fin-instruments
       localName: originatingOffering
       label: Originating Offering
-      definition: relates an InstrumentListing version to its optional exact originating SecurityOffering version
+      definition: >-
+        Originating Offering, is a relation that links an InstrumentListing version to its optional exact
+        originating SecurityOffering version, used to trace which offering the listing originates from.
+      cnNote: 起源要约，是关联工具上市版本与其可选的确切起源证券要约版本的关系，用于追溯该上市来自哪一要约。
       domain: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
       range: https://axiolune.ai/ontology/finance/instruments/SecurityOffering
       characteristics:
@@ -262,8 +362,10 @@ domain:
       localName: listingQuoteCurrency
       label: Listing Quote Currency
       definition: >-
-        sole stored relation from an InstrumentListing version to the Currency logical identity in which that listing is
-        quoted
+        Listing Quote Currency, is the sole stored relation from an InstrumentListing version to the Currency
+        logical identity in which that listing is quoted, used to record the currency in which the listing is
+        priced.
+      cnNote: 上市计价货币，是工具上市版本到其计价货币逻辑身份的唯一存储关系，用于记录该上市以何种货币计价。
       domain: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
       range: https://axiolune.ai/ontology/finance/foundation/Currency
       characteristics:
@@ -274,8 +376,10 @@ domain:
       localName: isTradedOn
       label: Is Traded On
       definition: >-
-        derived convenience relation from a FinancialInstrument to a TradingFacility, computed only from PIT-eligible
-        active listings and never stored as an independent truth
+        Is Traded On, is a derived convenience relation from a FinancialInstrument to a TradingFacility, used to
+        derive where the instrument can be traded based on point-in-time-eligible active listings, and is never
+        stored as an independent truth.
+      cnNote: 交易场所派生关系，是由金融工具到交易场所的派生便利关系，用于基于时点合格的有效上市推导工具可在何处交易，不作为独立事实存储。
       domain: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
       range: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
     quotationInstrument:
@@ -283,7 +387,10 @@ domain:
       namespace: fin-instruments
       localName: quotationInstrument
       label: Quotation Instrument
-      definition: relates a DirectUnitPriceQuotationContract to its FinancialInstrument logical identity
+      definition: >-
+        Quotation Instrument, is a relation that links a DirectUnitPriceQuotationContract to its FinancialInstrument
+        logical identity, used to specify which financial instrument the quotation is directed at.
+      cnNote: 报价工具，是关联直接单位报价合约与其金融工具逻辑身份的关系，用于指明该报价针对哪一金融工具。
       domain: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
       range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
       characteristics:
@@ -293,7 +400,10 @@ domain:
       namespace: fin-instruments
       localName: quotationListingContext
       label: Quotation Listing Context
-      definition: relates a quotation contract to its optional exact InstrumentListing context version
+      definition: >-
+        Quotation Listing Context, is a relation that links a quotation contract to its optional exact
+        InstrumentListing context version, used to situate the quotation within a specific listing scene.
+      cnNote: 报价上市语境，是关联报价合约与其可选的确切工具上市语境版本的关系，用于将报价置于特定上市场景。
       domain: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
       range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
       characteristics:
@@ -303,7 +413,10 @@ domain:
       namespace: fin-instruments
       localName: quotationOTCContext
       label: Quotation OTC Context
-      definition: relates a quotation contract to its optional exact OTCTradingContext version
+      definition: >-
+        Quotation OTC Context, is a relation that links a quotation contract to its optional exact OTCTradingContext
+        version, used to situate the quotation within a specific over-the-counter scene.
+      cnNote: 报价场外语境，是关联报价合约与其可选的确切场外交易语境版本的关系，用于将报价置于特定场外场景。
       domain: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
       range: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
       characteristics:
@@ -313,18 +426,36 @@ domain:
       namespace: fin-instruments
       localName: quotationQuoteCurrency
       label: Quotation Quote Currency
-      definition: relates a quotation contract to its exact quote Currency logical identity
+      definition: >-
+        Quotation Quote Currency, is a relation that links a quotation contract to its exact quote Currency
+        logical identity, used to record the currency in which the quotation is priced.
+      cnNote: 报价计价货币，是关联报价合约与其确切计价货币逻辑身份的关系，用于记录该报价以何种货币计价。
       domain: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
       range: https://axiolune.ai/ontology/finance/foundation/Currency
       characteristics:
         - functional
+    isAdmittedToTradingOn:
+      iri: https://axiolune.ai/ontology/finance/instruments/isAdmittedToTradingOn
+      namespace: fin-instruments
+      localName: isAdmittedToTradingOn
+      label: Is Admitted To Trading On
+      definition: Is Admitted To Trading On, is a derived convenience relation from a
+        FinancialInstrument to a TradingFacility, holding when the instrument has at
+        least one point-in-time-eligible active listing at the given as-of time, used
+        for indicating admission to trading rather than actual tradeability
+      cnNote: 准入交易场所关系，是由金融工具到交易场所的派生便利关系，当工具在给定时间点至少有一个合格有效上市时成立，用于表示准入交易而非实际可交易性。
+      domain: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+      range: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
   attributeTypes:
     offeringId:
       iri: https://axiolune.ai/ontology/finance/instruments/offeringId
       namespace: fin-instruments
       localName: offeringId
       label: Offering Identifier
-      definition: non-empty source-scoped identifier for one logical SecurityOffering
+      definition: >-
+        Offering Identifier, is a non-empty source-scoped identifier for one logical SecurityOffering, used to
+        uniquely denote a single security offering within source data.
+      cnNote: 要约标识，是某一逻辑证券要约在来源数据作用域内的非空标识，用于在来源数据中唯一指认一个证券要约。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -335,7 +466,10 @@ domain:
       namespace: fin-instruments
       localName: issuanceId
       label: Issuance Identifier
-      definition: non-empty source-scoped identifier for one logical InstrumentIssuance
+      definition: >-
+        Issuance Identifier, is a non-empty source-scoped identifier for one logical InstrumentIssuance, used to
+        uniquely denote a single instrument issuance within source data.
+      cnNote: 发行标识，是某一逻辑工具发行在来源数据作用域内的非空标识，用于在来源数据中唯一指认一次工具发行。
       valueType: string
       defaultCardinality:
         minCount: 1
@@ -346,7 +480,10 @@ domain:
       namespace: fin-instruments
       localName: listingBusinessFrom
       label: Listing Business From
-      definition: inclusive business date from which an InstrumentListing is in force
+      definition: >-
+        Listing Business From, is the inclusive business date from which an InstrumentListing comes into force,
+        used to mark the business day on which a listing enters its valid state.
+      cnNote: 上市生效起始日，是工具上市开始生效的含起始业务日期，用于标记某一上市从哪一业务日起进入有效状态。
       valueType: date
       defaultCardinality:
         minCount: 1
@@ -356,7 +493,10 @@ domain:
       namespace: fin-instruments
       localName: listingBusinessTo
       label: Listing Business To
-      definition: optional exclusive business date at which an InstrumentListing ceases to be in force
+      definition: >-
+        Listing Business To, is the optional exclusive business date at which an InstrumentListing ceases to be
+        in force, used to mark the business day on which a listing leaves its valid state.
+      cnNote: 上市生效截止日，是工具上市失效的可选不含截止业务日期，用于标记某一上市于哪一业务日不再处于有效状态。
       valueType: date
       defaultCardinality:
         minCount: 0
@@ -366,7 +506,10 @@ domain:
       namespace: fin-instruments
       localName: quotationDenominatorUnit
       label: Quotation Denominator Unit
-      definition: absolute controlled unit IRI denoting the one Quantity unit against which direct price is quoted
+      definition: >-
+        Quotation Denominator Unit, is a controlled unit IRI denoting the single Quantity unit against which the
+        direct price is quoted, used to determine the unit of measurement in which the price is expressed.
+      cnNote: 报价分母单位，是表示直接报价所针对的唯一数量单位的受控单位 IRI，用于确定价格以何种计量单位计报。
       valueType: uri
       defaultCardinality:
         minCount: 1
@@ -376,7 +519,10 @@ domain:
       namespace: fin-instruments
       localName: quotationKind
       label: Quotation Kind
-      definition: closed quotation application member required on a direct unit-price contract
+      definition: >-
+        Quotation Kind, is a closed-set quotation application classification value required on a direct unit-price
+        contract, used to constrain the quotation method of that contract.
+      cnNote: 报价类型，是直接单位报价合约上所要求的封闭式报价应用分类取值，用于限定该合约的报价方式。
       valueType: https://axiolune.ai/ontology/finance/instruments/QuotationKind
       defaultCardinality:
         minCount: 1
@@ -386,7 +532,10 @@ domain:
       namespace: fin-instruments
       localName: contractMultiplier
       label: Contract Multiplier
-      definition: dimensionless multiplier constrained to decimal one by the direct-unit quotation profile
+      definition: >-
+        Contract Multiplier, is a dimensionless multiplier constrained to decimal one by the direct-unit quotation
+        profile, used to ensure scale consistency of unit-price quotations.
+      cnNote: 合约乘数，是直接单位报价轮廓约束为十进制一的无量纲乘数，用于确保单位报价的标度一致性。
       valueType: decimal
       defaultCardinality:
         minCount: 1
@@ -396,7 +545,10 @@ domain:
       namespace: fin-instruments
       localName: normalizationContractRef
       label: Normalization Contract Reference
-      definition: absolute IRI of the immutable normalization contract used to materialize quotation semantics
+      definition: >-
+        Normalization Contract Reference, is the absolute IRI of the immutable normalization contract used to
+        materialize quotation semantics, used to anchor the normalization definition on which the quotation rests.
+      cnNote: 规范化合约引用，是用于实体化报价语义的不可变规范化合约的绝对 IRI，用于锚定报价所依据的规范化定义。
       valueType: uri
       defaultCardinality:
         minCount: 1
@@ -406,12 +558,68 @@ domain:
       namespace: fin-instruments
       localName: normalizationContractDigest
       label: Normalization Contract Digest
-      definition: lowercase SHA-256 digest authenticating the exact quotation normalization contract bytes
+      definition: >-
+        Normalization Contract Digest, is a lowercase SHA-256 digest authenticating the exact bytes of the
+        quotation normalization contract, used to verify the integrity of the referenced normalization contract.
+      cnNote: 规范化合约摘要，是认证确切报价规范化合约字节的 SHA-256 小写摘要，用于校验所引用规范化合约的完整性。
       valueType: string
       defaultCardinality:
         minCount: 1
         maxCount: 1
       pattern: ^sha256:[0-9a-f]{64}$
+    classificationCode:
+      iri: https://axiolune.ai/ontology/finance/instruments/classificationCode
+      namespace: fin-instruments
+      localName: classificationCode
+      label: Classification Code
+      definition: Classification Code, is a non-empty code string assigned under a
+        classification scheme (e.g., a 6-character CFI code per ISO 10962), used for
+        carrying the classification value of an instrument
+      cnNote: 分类码，是在分类方案下分配的非空代码字符串（如依ISO 10962的六字符CFI代码），用于承载工具的分类取值。
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^\S(?:.*\S)?$
+    classificationCategory:
+      iri: https://axiolune.ai/ontology/finance/instruments/classificationCategory
+      namespace: fin-instruments
+      localName: classificationCategory
+      label: Classification Category
+      definition: Classification Category, is a reviewed asset-level category member
+        required on an instrument classification assertion, used for characterizing the
+        top-level asset class of the classified instrument
+      cnNote: 分类类别，是工具分类断言上必备的受审资产层类别成员，用于刻画被分类工具的顶层资产类别。
+      valueType: https://axiolune.ai/ontology/finance/instruments/CFICategory
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    classificationEffectiveFrom:
+      iri: https://axiolune.ai/ontology/finance/instruments/classificationEffectiveFrom
+      namespace: fin-instruments
+      localName: classificationEffectiveFrom
+      label: Classification Effective From
+      definition: Classification Effective From, is the inclusive date from which an
+        instrument classification assertion comes into force, used to mark the start of
+        the classification's valid interval
+      cnNote: 分类生效起始日，是工具分类断言开始生效的含起始日期，用于标记分类有效区间的起点。
+      valueType: date
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    classificationEffectiveTo:
+      iri: https://axiolune.ai/ontology/finance/instruments/classificationEffectiveTo
+      namespace: fin-instruments
+      localName: classificationEffectiveTo
+      label: Classification Effective To
+      definition: Classification Effective To, is the optional exclusive date at which
+        an instrument classification assertion ceases to be in force, used to mark the
+        end of the classification's valid interval
+      cnNote: 分类生效截止日，是工具分类断言失效的可选不含截止日期，用于标记分类有效区间的终点。
+      valueType: date
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
   identifierTypes: {}
   codeLists:
     QuotationKind:
@@ -419,7 +627,10 @@ domain:
       namespace: fin-instruments
       localName: QuotationKind
       label: Quotation Kind
-      definition: closed quotation application classification admitting only direct unit price
+      definition: >-
+        Quotation Kind, is a closed controlled vocabulary admitting only direct unit price, used to provide a
+        classification scheme of quotation methods for direct unit-price quotation contracts.
+      cnNote: 报价类型表，是仅允许直接单位报价的封闭式受控词汇，用于为直接单位报价合约提供报价方式的分类体系。
       vocabulary: Quotation Kind
       version: 1.0.0
       maintainer: Axiolune ontology maintainers
@@ -429,6 +640,40 @@ domain:
           notation: directUnitPrice
           label: Direct Unit Price
           definition: quotation kind expressing one quote-currency amount per one denominator Quantity unit
+    CFICategory:
+      iri: https://axiolune.ai/ontology/finance/instruments/CFICategory
+      namespace: fin-instruments
+      localName: CFICategory
+      label: CFI Category
+      definition: CFI Category, is a controlled vocabulary of ISO 10962 asset-level
+        categories, used for classifying the top-level asset class of a financial
+        instrument in an instrument classification assertion
+      cnNote: CFI类别，是ISO 10962资产层类别的受控词表，用于在工具分类断言中分类金融工具的顶层资产类别。
+      vocabulary: CFI Category
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/instruments/CFICategory/value/equity
+          notation: equity
+          label: Equity
+          definition: instruments representing ownership interests (ISO 10962 category E)
+        - iri: https://axiolune.ai/ontology/finance/instruments/CFICategory/value/debt
+          notation: debt
+          label: Debt
+          definition: instruments representing claims on the issuer (ISO 10962 category D)
+        - iri: https://axiolune.ai/ontology/finance/instruments/CFICategory/value/derivative
+          notation: derivative
+          label: Derivative
+          definition: instruments whose value derives from an underlying (ISO 10962 category S for futures, O for options)
+        - iri: https://axiolune.ai/ontology/finance/instruments/CFICategory/value/fund
+          notation: fund
+          label: Fund
+          definition: instruments representing collective investment vehicles (ISO 10962 category C)
+        - iri: https://axiolune.ai/ontology/finance/instruments/CFICategory/value/other
+          notation: other
+          label: Other
+          definition: instruments not falling into equity, debt, derivative, or fund categories
   constraints:
     InstrumentIssuanceContract:
       iri: https://axiolune.ai/ontology/finance/instruments/InstrumentIssuanceContract

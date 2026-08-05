@@ -1,9 +1,10 @@
 # ADR-013: M2 Authoring Profile
 
-**Status**: Accepted (G0 baseline)  
+**Status**: Superseded by ADR-016 (typed-container authoring profile)  
 **Date**: 2026-07-30  
 **Supersedes**: none  
-**Governance**: M2-PLAN §4 (G0 gate)
+**Superseded by**: ADR-016-typed-container-authoring-profile (RFC-001 typed-container migration)  
+**Governance**: M2-PLAN §4 (G0 gate) — historical inferred-type profile; see ADR-016 for the active profile
 
 ## Context
 

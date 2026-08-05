@@ -4,15 +4,17 @@ cards:
   - term: TradingVenue
     canonicalIri: https://axiolune.ai/ontology/finance/market-structure/TradingVenue
     definition: >-
-      organization, association, or group that constitutes, maintains, or provides a facility for bringing together
-      purchasers and sellers of financial instruments
-    genus: facility
+      market system or venue that constitutes, maintains, or provides a facility for bringing together purchasers and
+      sellers of financial instruments, distinct from the legal entity that operates it
+    genus: market system
     differentia:
       - brings together purchasers and sellers
-      - identified by a MIC (ISO 10383)
-      - may be a regulated exchange, MTF, OTF, ATS, or other venue type
+      - identified by an Operating MIC (ISO 10383)
+      - may be a regulated market, MTF, OTF, ATS, or other venue category
+      - operator and regulatory category modeled separately as temporal facts via VenueOperation
     excludes:
-      - data reporting services (not trading venues)
+      - the operating legal entity (modeled via VenueOperation/operatedBy)
+      - data reporting services (use TradeReportingFacility)
       - internal matching engines without external clients
     sources:
       - reference: fibo-local-evidence
@@ -23,19 +25,124 @@ cards:
   - term: MarketSegment
     canonicalIri: https://axiolune.ai/ontology/finance/market-structure/MarketSegment
     definition: >-
-      section of a trading venue that specializes in one or more specific instruments or that is regulated differently
-      from other sections of the same venue
+      section or component of an operating market infrastructure entity (a trading venue or a trade reporting facility),
+      modeled as a TradingFacility subtype for shared reference range but carrying its part-of semantics through the
+      componentOf relation
     genus: market section
     differentia:
-      - part of a trading venue
-      - specialized by instrument type or regulation
-      - identified by a segment MIC (4+4 character)
+      - a section/component of an operating entity, not an independent facility
+      - specialized by instrument type, regulation, or reporting section
+      - identified by a Segment MIC (ISO 10383)
+      - belongs to exactly one operating entity via marketSegmentVenue or componentOf
     excludes:
       - a standalone exchange (not a segment)
     sources:
       - reference: fibo-local-evidence
         locator: FIBO FBC/FunctionalEntities/Markets/MarketSegmentLevelMarket
     candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: MICIdentifiedMarketInfrastructure
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/MICIdentifiedMarketInfrastructure
+    definition: >-
+      abstract base class for any operating or reporting market infrastructure entity identifiable by an ISO 10383
+      Market Identifier Code
+    genus: market infrastructure
+    differentia:
+      - identified by an ISO 10383 MIC
+      - broadens the MIC target taxonomy beyond trading venues to include reporting facilities
+    excludes:
+      - entities not identifiable by a MIC
+    sources:
+      - reference: iso-10383-mic
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: TradeReportingFacility
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/TradeReportingFacility
+    definition: >-
+      market infrastructure entity to which trade reports are made but which does not itself operate a trading market
+    genus: market infrastructure
+    differentia:
+      - receives trade reports
+      - does not operate a trading market
+      - may be identified by an ISO 10383 Operating MIC
+    excludes:
+      - trading venues (use TradingVenue)
+    sources:
+      - reference: iso-10383-mic
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: VenueOperation
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/VenueOperation
+    definition: >-
+      temporal provenance-bearing association recording one Party operating one TradingVenue over a validity interval
+      with an optional regulatory venue category
+    genus: operation fact
+    differentia:
+      - binds one logical Party to one logical TradingVenue
+      - carries a validity interval
+      - carries an optional VenueCategory
+    excludes:
+      - venue identity (belongs to TradingVenue)
+    sources:
+      - reference: w3c-org
+        locator: W3C ORG organization-role-temporal pattern
+    candidateM3Type: AssociationTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: NonVenueMarketContext
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/NonVenueMarketContext
+    definition: >-
+      stable non-venue market context characterizing the market-convention orientation of over-the-counter quoting
+      without carrying provider source contracts, concrete currencies, counterparty pairs, or execution semantics
+    genus: market context
+    differentia:
+      - non-venue (not a TradingFacility)
+      - carries only market-convention orientation and provider logical reference
+      - replaces the deprecated OTCTradingContext for the stable-structure part
+    excludes:
+      - counterparty pairs (belong to orders-execution/post-trade)
+      - concrete currencies (belong to instruments)
+      - source contracts (belong to Layer 4)
+    sources:
+      - reference: axiolune-adr
+        locator: ADR-024 D8
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: TradingScheduleOverrideNotice
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/TradingScheduleOverrideNotice
+    definition: >-
+      n-ary association recording one pre-announced schedule override applying to one or more session occurrences,
+      carrying an announcement order and a supersession order with an optional replacement interval
+    genus: schedule override fact
+    differentia:
+      - applies to one or more TradingSessionOccurrence versions
+      - carries announcement and supersession order
+      - synthesizes a single final effective interval or cancellation
+    excludes:
+      - real-time status/halt (belongs to market-data)
+    sources:
+      - reference: axiolune-adr
+        locator: ADR-024 D7/D9
+    candidateM3Type: AssociationTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ScheduledTradingPhase
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/ScheduledTradingPhase
+    definition: >-
+      closed controlled vocabulary of scheduled trading-session phases (preOpen, openingAuction, continuousTrading,
+      closingAuction, postClose, maintenance, reportingOnly)
+    genus: phase classification
+    differentia:
+      - carried by a session template
+      - distinguishes order-acceptance vs matching vs reporting phases
+    excludes: []
+    sources:
+      - reference: nyse-trading-hours
+    candidateM3Type: CodeList
     status: accepted
     owner: axiolune-m2-team
   - term: TradingSession

@@ -1,0 +1,3641 @@
+module:
+  moduleIri: https://axiolune.ai/ontology/finance/portfolio-positions
+  baseIri: https://axiolune.ai/ontology/finance/portfolio-positions/
+  preferredPrefix: fin-portfolio
+  version: 1.0.0
+  label: Portfolio and Positions
+  definition: >-
+    Portfolio membership and mandate, external holding and signed position snapshots, execution-derived lots, closed
+    allocation and fee accounting, valuation header and lines, FX conversion, cost basis, unrealized PnL, and typed
+    reconciliation semantics.
+  imports:
+    - moduleIri: https://axiolune.ai/ontology/finance/foundation
+    - moduleIri: https://axiolune.ai/ontology/finance/instruments
+    - moduleIri: https://axiolune.ai/ontology/finance/market-data
+    - moduleIri: https://axiolune.ai/ontology/finance/orders-execution
+  exports: []
+  status: approved
+  governance:
+    ownerRef: urn:axiolune:principal:repository-owner
+    status: approved
+domain:
+  objectTypes:
+    Portfolio:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
+      namespace: fin-portfolio
+      localName: Portfolio
+      label: Portfolio
+      definition: >-
+        Stable managed collection whose logical identity is an authority-scoped portfolio identifier and whose account
+        membership and management authority are represented only by temporal associations.
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioName
+          minCount: 0
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    PortfolioObservationStream:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioObservationStream
+      namespace: fin-portfolio
+      localName: PortfolioObservationStream
+      label: Portfolio Observation Stream
+      definition: >-
+        Versioned provider-owned stream that scopes source identifiers for holding, signed-position, and external
+        cost-basis observations. Its logical identity is provider, immutable source contract, and provider stream ID;
+        completeness and pagination contracts are byte-locked version content.
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationStreamId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationSourceContractRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationSourceContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationCompletenessContractRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationCompletenessContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationPaginationContractRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationPaginationContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    ValuationCalculationDefinition:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/ValuationCalculationDefinition
+      namespace: fin-portfolio
+      localName: ValuationCalculationDefinition
+      label: Valuation Calculation Definition
+      definition: >-
+        Authority-scoped versioned valuation specification that is the sole valuation-method truth and fixes direct-unit
+        quotation-input closure, formula or implementation, input/output contracts, precision and rounding, runtime, and
+        tool lock.
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/valuationDefinitionId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/valuationMethod
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/valuationQuotationContractCount
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/valuationQuotationContractVersionSetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/formulaDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/inputContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/outputContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/precisionPolicyRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/precisionPolicyDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/roundingPolicyRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/roundingPolicyDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/toolLockRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/toolLockDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/runtimeDigest
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    CostBasisCalculationDefinition:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition
+      namespace: fin-portfolio
+      localName: CostBasisCalculationDefinition
+      label: Cost Basis Calculation Definition
+      definition: >-
+        Authority-scoped versioned sole execution-derived cost-basis specification fixing the reviewed method,
+        direct-unit quotation input, fee treatment, lot opening and consumption, currency and FX policy, precision and
+        rounding, implementation, runtime, tool, and input/output contracts.
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/costBasisDefinitionId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/costBasisMethod
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/feeTreatment
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/lotOpeningPolicy
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/lotConsumptionPolicy
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/currencyPolicy
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/fxPolicy
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/precisionPolicyRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/precisionPolicyDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/roundingPolicyRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/roundingPolicyDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/implementationDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/inputContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/outputContractDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/toolLockRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/toolLockDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/runtimeDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    ExecutionLotAllocationClosure:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure
+      namespace: fin-portfolio
+      localName: ExecutionLotAllocationClosure
+      label: Execution Lot Allocation Closure
+      definition: >-
+        Closed-world header for one exact Execution and CostBasisCalculationDefinition version containing the complete
+        eligible PositionLot set, deterministic selection evidence, and all current PositionLotAllocation, Fee, and
+        PositionLotFeeAllocation exact versions, with completed probes that prove selection, quantity, fee, gross, and
+        basis conservation.
+      superTypes: []
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/allocationVersionSetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/allocationCount
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/eligibleLotVersionSetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/eligibleLotCount
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/feeVersionSetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/feeCount
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/feeAllocationVersionSetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/feeAllocationCount
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/allocationClosureProbeRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/allocationClosureProbeDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/feeClosureProbeRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/feeClosureProbeDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/consumptionSelectionProbeRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/consumptionSelectionProbeDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/specificSelectionRef
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/specificSelectionDigest
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/specificSelectionVersionSetDigest
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/specificSelectionCount
+          minCount: 0
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/pitRequestRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/pitRequestRecordDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/inputContextRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/inputContextRecordDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+  associationTypes:
+    PortfolioAccountMembership:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembership
+      namespace: fin-portfolio
+      localName: PortfolioAccountMembership
+      label: Portfolio Account Membership
+      definition: >-
+        Effective-dated and source-approved membership of one FinancialAccount in one Portfolio, providing the sole
+        graph path used to resolve member accounts at a PIT pivot.
+      participantRoles:
+        - id: membershipPortfolio
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
+          minCount: 1
+          maxCount: 1
+          label: membership portfolio
+          definition: logical Portfolio whose membership is asserted
+        - id: memberAccount
+          range: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+          minCount: 1
+          maxCount: 1
+          label: member account
+          definition: logical FinancialAccount included in the Portfolio
+        - id: membershipAuthority
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 1
+          maxCount: 1
+          label: membership authority
+          definition: logical Party authorized to assert the membership
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/membershipId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/authorityScope
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/approvalRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/approvalDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    PortfolioManagementMandate:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioManagementMandate
+      namespace: fin-portfolio
+      localName: PortfolioManagementMandate
+      label: Portfolio Management Mandate
+      definition: >-
+        Effective-dated, source-approved authority of one managing Party over one Portfolio with explicit mandate
+        authority and scope, providing the sole management path used by portfolio governance queries.
+      participantRoles:
+        - id: managedPortfolio
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
+          minCount: 1
+          maxCount: 1
+          label: managed portfolio
+          definition: logical Portfolio governed by the mandate
+        - id: managingParty
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 1
+          maxCount: 1
+          label: managing party
+          definition: logical Party receiving management authority
+        - id: mandateAuthority
+          range: https://axiolune.ai/ontology/finance/foundation/Party
+          minCount: 1
+          maxCount: 1
+          label: mandate authority
+          definition: logical Party granting or approving the mandate
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/mandateId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/authorityScope
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/approvalRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/approvalDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    PortfolioAccountMembershipClosure:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembershipClosure
+      namespace: fin-portfolio
+      localName: PortfolioAccountMembershipClosure
+      label: Portfolio Account Membership Closure
+      definition: >-
+        PIT-scoped complete exact-version set of all effective account memberships for one Portfolio, with sorted-set
+        digest and a completed closure probe that makes account absence closed-world evidence.
+      participantRoles:
+        - id: closurePortfolio
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
+          minCount: 1
+          maxCount: 1
+          label: closure portfolio
+          definition: logical Portfolio whose membership is closed
+        - id: closedMembership
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembership
+          minCount: 0
+          maxCount: null
+          label: closed membership
+          definition: exact current membership version included in the complete set
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/membershipVersionSetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/membershipCount
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/membershipClosureProbeRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/membershipClosureProbeDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/pitRequestRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/pitRequestRecordDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/inputContextRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/inputContextRecordDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    HoldingSnapshot:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
+      namespace: fin-portfolio
+      localName: HoldingSnapshot
+      label: Holding Snapshot
+      definition: >-
+        Source-observed owned financial interest from exactly one typed observation stream for exactly one account and
+        instrument with a non-negative Quantity and optional consistent exact listing; it is not a Portfolio membership
+        edge and is not equivalent to signed execution-derived exposure.
+      participantRoles:
+        - id: holdingObservationStream
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioObservationStream
+          minCount: 1
+          maxCount: 1
+          label: holding observation stream
+          definition: exact provider-owned stream FactVersion whose locked closure contains the selected holding row
+        - id: holdingAccount
+          range: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+          minCount: 1
+          maxCount: 1
+          label: holding account
+          definition: logical FinancialAccount owning the interest
+        - id: holdingInstrument
+          range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+          minCount: 1
+          maxCount: 1
+          label: holding instrument
+          definition: logical FinancialInstrument owned by the account
+        - id: holdingListing
+          range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+          minCount: 0
+          maxCount: 1
+          label: holding listing
+          definition: optional exact PIT-eligible listing version for the instrument
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/snapshotId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/holdingQuantity
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/positionSourceKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    PositionSnapshot:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshot
+      namespace: fin-portfolio
+      localName: PositionSnapshot
+      label: Position Snapshot
+      definition: >-
+        Signed exposure snapshot from exactly one typed observation stream for exactly one account and instrument whose
+        signed Quantity is the sole stored directional truth: positive is long, negative is short, and zero is flat; any
+        side label is derived.
+      participantRoles:
+        - id: positionObservationStream
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioObservationStream
+          minCount: 1
+          maxCount: 1
+          label: position observation stream
+          definition: logical provider-owned stream that scopes snapshotId
+        - id: positionAccount
+          range: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+          minCount: 1
+          maxCount: 1
+          label: position account
+          definition: logical FinancialAccount exposed to the instrument
+        - id: positionInstrument
+          range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+          minCount: 1
+          maxCount: 1
+          label: position instrument
+          definition: logical FinancialInstrument to which the account is exposed
+        - id: positionListing
+          range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+          minCount: 0
+          maxCount: 1
+          label: position listing
+          definition: optional exact PIT-eligible listing version for the instrument
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/snapshotId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/positionQuantity
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/positionSourceKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    PositionLot:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot
+      namespace: fin-portfolio
+      localName: PositionLot
+      label: Position Lot
+      definition: >-
+        Execution-derived opening exposure whose logical identity is exactly account logical IRI, instrument logical
+        IRI, opening Execution logical IRI, CostBasisCalculationDefinition logical IRI, and the fixed openingRemainder
+        discriminator; quantity, gross, signed basis, exact versions, context, and source are immutable version content.
+      participantRoles:
+        - id: lotInAccount
+          range: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+          minCount: 1
+          maxCount: 1
+          label: lot in account
+          definition: logical FinancialAccount holding the lot
+        - id: lotForInstrument
+          range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+          minCount: 1
+          maxCount: 1
+          label: lot for instrument
+          definition: logical FinancialInstrument represented by the lot
+        - id: lotAtListing
+          range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+          minCount: 0
+          maxCount: 1
+          label: lot at listing
+          definition: optional exact listing version used by the opening execution
+        - id: openingExecution
+          range: https://axiolune.ai/ontology/finance/orders-execution/Execution
+          minCount: 1
+          maxCount: 1
+          label: opening execution
+          definition: exact Execution version that opened the residual exposure
+        - id: costBasisDefinition
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition
+          minCount: 1
+          maxCount: 1
+          label: cost basis definition
+          definition: exact calculation-definition version governing the lot
+        - id: lotQuotationContract
+          range: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+          minCount: 1
+          maxCount: 1
+          label: lot quotation contract
+          definition: exact quotation contract shared with the opening Execution and definition
+        - id: openingGrossFxConversion
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/FXConversion
+          minCount: 0
+          maxCount: 1
+          label: opening gross FX conversion
+          definition: exact conversion required only when execution price and cost-basis currencies differ
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/lotDiscriminator
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/originalQuantity
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/openingGross
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/openingCostBasis
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/calculationContextRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    PortfolioValuation:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuation
+      namespace: fin-portfolio
+      localName: PortfolioValuation
+      label: Portfolio Valuation
+      definition: >-
+        Valuation run header fixing one Portfolio, complete member-account closure, exact
+        ValuationCalculationDefinition, reporting Currency, exact PIT and input context, FX/conversion context, and
+        generating run.
+      participantRoles:
+        - id: valuedPortfolio
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
+          minCount: 1
+          maxCount: 1
+          label: valued portfolio
+          definition: logical Portfolio evaluated by the run
+        - id: memberAccountClosure
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembershipClosure
+          minCount: 1
+          maxCount: 1
+          label: member account closure
+          definition: exact PIT-complete account membership closure used by the run
+        - id: valuationDefinition
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/ValuationCalculationDefinition
+          minCount: 1
+          maxCount: 1
+          label: valuation definition
+          definition: exact valuation calculation definition version
+        - id: reportingCurrency
+          range: https://axiolune.ai/ontology/finance/foundation/Currency
+          minCount: 1
+          maxCount: 1
+          label: reporting currency
+          definition: logical Currency in which header totals and lines are reported
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/valuationRunId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/conversionContextRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/conversionContextDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/pitRequestRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/pitRequestRecordDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/inputContextRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/inputContextRecordDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    PositionValuation:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation
+      namespace: fin-portfolio
+      localName: PositionValuation
+      label: Position Valuation
+      definition: >-
+        Valuation line whose logical identity is the exact PortfolioValuation version and exact input snapshot version,
+        with an xone of HoldingSnapshot or PositionSnapshot, one exact PIT price, optional exact FXConversion only for
+        cross-currency use, and Money market value; it carries no independent method or calculation context truth.
+      participantRoles:
+        - id: valuationHeader
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuation
+          minCount: 1
+          maxCount: 1
+          label: valuation header
+          definition: exact PortfolioValuation header version
+        - id: valuedHoldingSnapshot
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
+          minCount: 0
+          maxCount: 1
+          label: valued holding snapshot
+          definition: exact holding snapshot version selected by the input xone
+        - id: valuedPositionSnapshot
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshot
+          minCount: 0
+          maxCount: 1
+          label: valued position snapshot
+          definition: exact position snapshot version selected by the input xone
+        - id: valuationPrice
+          range: https://axiolune.ai/ontology/finance/market-data/PriceObservation
+          minCount: 1
+          maxCount: 1
+          label: valuation price
+          definition: exact PIT-eligible PriceObservation version used by the line
+        - id: valuationFxConversion
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/FXConversion
+          minCount: 0
+          maxCount: 1
+          label: valuation FX conversion
+          definition: exact conversion version required only when price and reporting currencies differ
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/marketValue
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    FXConversion:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/FXConversion
+      namespace: fin-portfolio
+      localName: FXConversion
+      label: FX Conversion
+      definition: >-
+        Auditable conversion of one input Money to one output Money using one exact FXRateObservation version, a
+        direction code, completed prior input context, explicit scale and rounding, and generating context. Exactly one
+        valuation line, opening lot, or fee allocation consumes the conversion and points back to this exact conversion
+        version.
+      participantRoles:
+        - id: conversionValuationLine
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation
+          minCount: 0
+          maxCount: 1
+          label: conversion valuation line
+          definition: exact valuation-line version consuming this conversion
+        - id: conversionOpeningLot
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot
+          minCount: 0
+          maxCount: 1
+          label: conversion opening lot
+          definition: exact opening-lot version consuming this conversion for opening gross
+        - id: conversionFeeAllocation
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotFeeAllocation
+          minCount: 0
+          maxCount: 1
+          label: conversion fee allocation
+          definition: exact fee-allocation version consuming this conversion
+        - id: conversionRate
+          range: https://axiolune.ai/ontology/finance/market-data/FXRateObservation
+          minCount: 1
+          maxCount: 1
+          label: conversion rate
+          definition: exact PIT-eligible FX rate observation version
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/inputMoney
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/outputMoney
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/fxConversionDirection
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/roundingPolicyRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/roundingPolicyDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/inputContextRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/inputContextRecordDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    PositionLotAllocation:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocation
+      namespace: fin-portfolio
+      localName: PositionLotAllocation
+      label: Position Lot Allocation
+      definition: >-
+        Opening or consumption allocation between one exact Execution and PositionLot under one exact cost-basis
+        definition and calculation context, with strictly positive allocated Quantity and identity exactly Execution
+        version, PositionLot version, and allocation kind.
+      participantRoles:
+        - id: allocationExecution
+          range: https://axiolune.ai/ontology/finance/orders-execution/Execution
+          minCount: 1
+          maxCount: 1
+          label: allocation execution
+          definition: exact Execution version allocated to a lot
+        - id: allocatedLot
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot
+          minCount: 1
+          maxCount: 1
+          label: allocated lot
+          definition: exact PositionLot version opened or consumed
+        - id: allocationCostBasisDefinition
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition
+          minCount: 1
+          maxCount: 1
+          label: allocation cost basis definition
+          definition: exact calculation-definition version shared by execution and lot
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/lotAllocationKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/allocatedQuantity
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/calculationContextRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    PositionLotFeeAllocation:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotFeeAllocation
+      namespace: fin-portfolio
+      localName: PositionLotFeeAllocation
+      label: Position Lot Fee Allocation
+      definition: >-
+        Allocation of a strictly positive Money magnitude from one exact Fee version to one exact PositionLotAllocation
+        under the same cost-basis definition and context, with an optional exact FXConversion only when the fee and
+        basis currencies differ.
+      participantRoles:
+        - id: allocatedFee
+          range: https://axiolune.ai/ontology/finance/orders-execution/Fee
+          minCount: 1
+          maxCount: 1
+          label: allocated fee
+          definition: exact Fee version whose magnitude is allocated
+        - id: feeLotAllocation
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocation
+          minCount: 1
+          maxCount: 1
+          label: fee lot allocation
+          definition: exact lot allocation version receiving the fee effect
+        - id: feeCostBasisDefinition
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition
+          minCount: 1
+          maxCount: 1
+          label: fee cost basis definition
+          definition: exact cost-basis definition shared with the lot allocation
+        - id: feeFxConversion
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/FXConversion
+          minCount: 0
+          maxCount: 1
+          label: fee FX conversion
+          definition: exact conversion required only for differing fee and basis currencies
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/allocatedFeeAmount
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/calculationContextRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    PositionLotStateClosure:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotStateClosure
+      namespace: fin-portfolio
+      localName: PositionLotStateClosure
+      label: Position Lot State Closure
+      definition: >-
+        Closed-world bridge from all non-zero PositionLot versions and their opening/consumption allocations and
+        execution closures to one exact execution-derived PositionSnapshot, conserving signed quantity and remaining
+        cost basis at the exact snapshot pivot.
+      participantRoles:
+        - id: closedPositionSnapshot
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshot
+          minCount: 1
+          maxCount: 1
+          label: closed position snapshot
+          definition: exact execution-derived PositionSnapshot version proved by the closure
+        - id: stateCostBasisDefinition
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition
+          minCount: 1
+          maxCount: 1
+          label: state cost basis definition
+          definition: exact cost-basis definition governing all included lots
+        - id: stateQuotationContract
+          range: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+          minCount: 1
+          maxCount: 1
+          label: state quotation contract
+          definition: exact quotation contract shared across the closure
+        - id: stateAccount
+          range: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+          minCount: 1
+          maxCount: 1
+          label: state account
+          definition: logical FinancialAccount shared by the snapshot, lots, and allocations
+        - id: stateInstrument
+          range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+          minCount: 1
+          maxCount: 1
+          label: state instrument
+          definition: logical FinancialInstrument shared by the snapshot, lots, and allocations
+        - id: stateListing
+          range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+          minCount: 0
+          maxCount: 1
+          label: state listing
+          definition: optional exact listing version shared by every listed input in the closure
+        - id: openLot
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot
+          minCount: 0
+          maxCount: null
+          label: open lot
+          definition: exact non-zero remaining PositionLot version in the complete set
+        - id: stateAllocation
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocation
+          minCount: 0
+          maxCount: null
+          label: state allocation
+          definition: exact opening or consumption allocation used by the closure
+        - id: stateExecutionClosure
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure
+          minCount: 0
+          maxCount: null
+          label: state execution closure
+          definition: exact execution allocation closure supporting the lot state
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/openLotVersionSetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/stateAllocationVersionSetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/stateExecutionClosureVersionSetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/remainingCostBasis
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/calculationContextRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/snapshotPivotRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/lotClosureProbeRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/lotClosureProbeDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/stateAllocationClosureProbeRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/stateAllocationClosureProbeDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/pitRequestRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/pitRequestRecordDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/inputContextRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/inputContextRecordDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    UnrealizedPnLObservation:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/UnrealizedPnLObservation
+      namespace: fin-portfolio
+      localName: UnrealizedPnLObservation
+      label: Unrealized PnL Observation
+      definition: >-
+        Reproducible unrealized-PnL fact joining one exact PositionValuation and PositionLotStateClosure under one exact
+        cost-basis definition, where market value, remaining cost basis, and unrealized PnL use the header reporting
+        currency and satisfy PnL equals market value minus basis.
+      participantRoles:
+        - id: pnlValuation
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation
+          minCount: 1
+          maxCount: 1
+          label: PnL valuation
+          definition: exact position valuation version supplying market value
+        - id: pnlLotStateClosure
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotStateClosure
+          minCount: 1
+          maxCount: 1
+          label: PnL lot state closure
+          definition: exact lot-state closure supplying remaining cost basis
+        - id: pnlCostBasisDefinition
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition
+          minCount: 1
+          maxCount: 1
+          label: PnL cost basis definition
+          definition: exact definition shared with the lot-state closure
+        - id: pnlQuotationContract
+          range: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+          minCount: 1
+          maxCount: 1
+          label: PnL quotation contract
+          definition: exact quotation contract shared by valuation and lot-state closure
+        - id: pnlFxConversion
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/FXConversion
+          minCount: 0
+          maxCount: 1
+          label: PnL FX conversion
+          definition: optional exact conversion version shared by cross-currency valuation and basis
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/marketValue
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/remainingCostBasis
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/unrealizedPnl
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/openLotVersionSetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/stateAllocationVersionSetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/stateExecutionClosureVersionSetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/calculationContextRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/conversionContextRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/conversionContextDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    ExternalCostBasisObservation:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/ExternalCostBasisObservation
+      namespace: fin-portfolio
+      localName: ExternalCostBasisObservation
+      label: External Cost Basis Observation
+      definition: >-
+        Source-provided basis observation from exactly one typed observation stream for one account and instrument that
+        is retained independently from execution-derived cost basis and may only be compared through typed
+        reconciliation.
+      participantRoles:
+        - id: externalBasisObservationStream
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioObservationStream
+          minCount: 1
+          maxCount: 1
+          label: external basis observation stream
+          definition: logical provider-owned stream that scopes externalBasisId
+        - id: externalBasisAccount
+          range: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+          minCount: 1
+          maxCount: 1
+          label: external basis account
+          definition: logical account reported by the external source
+        - id: externalBasisInstrument
+          range: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+          minCount: 1
+          maxCount: 1
+          label: external basis instrument
+          definition: logical instrument whose basis was externally reported
+        - id: externalBasisListing
+          range: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
+          minCount: 0
+          maxCount: 1
+          label: external basis listing
+          definition: optional exact listing version consistent with the instrument
+        - id: externalBasisDefinition
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition
+          minCount: 1
+          maxCount: 1
+          label: external basis definition
+          definition: exact calculation-definition version used by the source to produce this basis amount
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/externalBasisId
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/externalCostBasis
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceArtifactDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/sourceLocator
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+    PortfolioPositionReconciliationFinding:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioPositionReconciliationFinding
+      namespace: fin-portfolio
+      localName: PortfolioPositionReconciliationFinding
+      label: Portfolio Position Reconciliation Finding
+      definition: >-
+        Typed comparison finding between externally sourced holding, position, or basis evidence and execution-derived
+        position or basis evidence, preventing silent merge or overwrite.
+      participantRoles:
+        - id: comparedExternalSnapshot
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
+          minCount: 0
+          maxCount: 1
+          label: compared external holding snapshot
+          definition: optional exact externally reported HoldingSnapshot version
+        - id: comparedExternalPositionSnapshot
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshot
+          minCount: 0
+          maxCount: 1
+          label: compared external position snapshot
+          definition: optional exact externally reported signed PositionSnapshot version
+        - id: comparedDerivedSnapshot
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshot
+          minCount: 0
+          maxCount: 1
+          label: compared derived snapshot
+          definition: optional exact execution-derived PositionSnapshot version
+        - id: comparedExternalBasis
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/ExternalCostBasisObservation
+          minCount: 0
+          maxCount: 1
+          label: compared external basis
+          definition: optional exact external basis observation
+        - id: comparedLotStateClosure
+          range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotStateClosure
+          minCount: 0
+          maxCount: 1
+          label: compared lot state closure
+          definition: optional exact execution-derived basis closure
+      attributeUses:
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioReconciliationKind
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationSubjectDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationExternalCandidateCount
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationExternalCandidateVersionSetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationDerivedCandidateCount
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationDerivedCandidateVersionSetDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationExternalSourceScopeRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationDerivedSourceScopeRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationCandidateGraphRecordCount
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationCandidateGraphRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationCandidateGraphDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationExternalSnapshotManifestRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationExternalSnapshotManifestDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationDerivedOutputManifestRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationDerivedOutputManifestDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationQueryDefinitionRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationQueryDefinitionDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationQueryToolLockRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationQueryToolLockDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationClosureProbeRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationClosureProbeDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationContextRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationContextDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/pitRequestRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/pitRequestRecordDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/inputContextRef
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/inputContextRecordDigest
+          minCount: 1
+          maxCount: 1
+        - attribute: https://axiolune.ai/ontology/meta/data-binding/attributes/generatingContextRef
+          minCount: 1
+          maxCount: 1
+      patternBindings:
+        - pattern: https://axiolune.ai/ontology/meta/patterns/TemporalFact
+        - pattern: https://axiolune.ai/ontology/meta/patterns/ProvenancedFact
+  relationTypes:
+    portfolioObservationStreamProvider:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationStreamProvider
+      namespace: fin-portfolio
+      localName: portfolioObservationStreamProvider
+      label: portfolio observation stream provider
+      definition: logical Party that owns the namespace of a portfolio observation stream
+      domain: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioObservationStream
+      range: https://axiolune.ai/ontology/finance/foundation/Party
+      characteristics:
+        - functional
+    valuationDefinitionAuthority:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/valuationDefinitionAuthority
+      namespace: fin-portfolio
+      localName: valuationDefinitionAuthority
+      label: valuation definition authority
+      definition: relationship to the logical Party whose namespace governs the stable valuation definition identifier
+      domain: https://axiolune.ai/ontology/finance/portfolio-positions/ValuationCalculationDefinition
+      range: https://axiolune.ai/ontology/finance/foundation/Party
+      characteristics:
+        - functional
+    costBasisDefinitionAuthority:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/costBasisDefinitionAuthority
+      namespace: fin-portfolio
+      localName: costBasisDefinitionAuthority
+      label: cost basis definition authority
+      definition: relationship to the logical Party whose namespace governs the stable cost-basis definition identifier
+      domain: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition
+      range: https://axiolune.ai/ontology/finance/foundation/Party
+      characteristics:
+        - functional
+    valuationDefinitionQuotationContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/valuationDefinitionQuotationContract
+      namespace: fin-portfolio
+      localName: valuationDefinitionQuotationContract
+      label: valuation definition quotation contract
+      definition: >-
+        relationship from a valuation definition to every member of its closed exact-version direct-unit quotation input
+        set
+      domain: https://axiolune.ai/ontology/finance/portfolio-positions/ValuationCalculationDefinition
+      range: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+    costBasisDefinitionQuotationContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/costBasisDefinitionQuotationContract
+      namespace: fin-portfolio
+      localName: costBasisDefinitionQuotationContract
+      label: cost basis definition quotation contract
+      definition: relationship from a cost-basis definition to its exact direct-unit quotation input
+      domain: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition
+      range: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+      characteristics:
+        - functional
+    costBasisDefinitionBasisCurrency:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/costBasisDefinitionBasisCurrency
+      namespace: fin-portfolio
+      localName: costBasisDefinitionBasisCurrency
+      label: cost basis definition basis currency
+      definition: >-
+        relationship from a cost-basis definition to the one logical Currency in which opening gross, fee effects,
+        remaining basis, and PnL basis terms are grouped after explicit FX conversion
+      domain: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition
+      range: https://axiolune.ai/ontology/finance/foundation/Currency
+      characteristics:
+        - functional
+    closureExecution:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/closureExecution
+      namespace: fin-portfolio
+      localName: closureExecution
+      label: closure execution
+      definition: relationship from an allocation closure to its exact Execution version
+      domain: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure
+      range: https://axiolune.ai/ontology/finance/orders-execution/Execution
+      characteristics:
+        - functional
+    closureCostBasisDefinition:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/closureCostBasisDefinition
+      namespace: fin-portfolio
+      localName: closureCostBasisDefinition
+      label: closure cost basis definition
+      definition: relationship from an allocation closure to its exact calculation definition
+      domain: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure
+      range: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition
+      characteristics:
+        - functional
+    closureEligibleLot:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/closureEligibleLot
+      namespace: fin-portfolio
+      localName: closureEligibleLot
+      label: closure eligible lot
+      definition: >-
+        relationship from an allocation closure to every exact PositionLot version eligible for consumption before its
+        Execution under the exact account, instrument, listing, unit, and calculation-definition context
+      domain: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure
+      range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot
+    closureSelectedLot:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/closureSelectedLot
+      namespace: fin-portfolio
+      localName: closureSelectedLot
+      label: closure selected lot
+      definition: >-
+        exact PositionLot version explicitly selected by specific-identification evidence; forbidden for FIFO and LIFO
+        closures
+      domain: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure
+      range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot
+    closureAllocation:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/closureAllocation
+      namespace: fin-portfolio
+      localName: closureAllocation
+      label: closure allocation
+      definition: relationship from an allocation closure to every included exact lot allocation
+      domain: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure
+      range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocation
+    closureFee:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/closureFee
+      namespace: fin-portfolio
+      localName: closureFee
+      label: closure fee
+      definition: relationship from an allocation closure to every included exact Fee
+      domain: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure
+      range: https://axiolune.ai/ontology/finance/orders-execution/Fee
+    closureFeeAllocation:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/closureFeeAllocation
+      namespace: fin-portfolio
+      localName: closureFeeAllocation
+      label: closure fee allocation
+      definition: relationship from an allocation closure to every included exact fee allocation
+      domain: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure
+      range: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotFeeAllocation
+  attributeTypes:
+    portfolioObservationStreamId:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationStreamId
+      namespace: fin-portfolio
+      localName: portfolioObservationStreamId
+      label: portfolio observation stream identifier
+      definition: provider-scoped immutable identifier of a portfolio observation stream
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    portfolioObservationSourceContractRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationSourceContractRef
+      namespace: fin-portfolio
+      localName: portfolioObservationSourceContractRef
+      label: portfolio observation source contract reference
+      definition: immutable absolute reference to the provider schema and source semantics contract
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    portfolioObservationSourceContractDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationSourceContractDigest
+      namespace: fin-portfolio
+      localName: portfolioObservationSourceContractDigest
+      label: portfolio observation source contract digest
+      definition: SHA-256 digest of the immutable portfolio observation source contract
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    portfolioObservationCompletenessContractRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationCompletenessContractRef
+      namespace: fin-portfolio
+      localName: portfolioObservationCompletenessContractRef
+      label: portfolio observation completeness contract reference
+      definition: immutable absolute reference defining full, incremental, and partial snapshot completeness semantics
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    portfolioObservationCompletenessContractDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationCompletenessContractDigest
+      namespace: fin-portfolio
+      localName: portfolioObservationCompletenessContractDigest
+      label: portfolio observation completeness contract digest
+      definition: SHA-256 digest of the immutable portfolio observation completeness contract
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    portfolioObservationPaginationContractRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationPaginationContractRef
+      namespace: fin-portfolio
+      localName: portfolioObservationPaginationContractRef
+      label: portfolio observation pagination contract reference
+      definition: immutable absolute reference defining page ordering, cursor, termination, and replay semantics
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    portfolioObservationPaginationContractDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationPaginationContractDigest
+      namespace: fin-portfolio
+      localName: portfolioObservationPaginationContractDigest
+      label: portfolio observation pagination contract digest
+      definition: SHA-256 digest of the immutable portfolio observation pagination contract
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    portfolioId:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioId
+      namespace: fin-portfolio
+      localName: portfolioId
+      label: portfolio identifier
+      definition: authority-scoped stable identifier of a Portfolio
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    portfolioName:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioName
+      namespace: fin-portfolio
+      localName: portfolioName
+      label: portfolio name
+      definition: optional human-readable display name of a Portfolio
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    membershipId:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/membershipId
+      namespace: fin-portfolio
+      localName: membershipId
+      label: membership identifier
+      definition: authority-scoped stable identifier of a portfolio-account membership
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    mandateId:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/mandateId
+      namespace: fin-portfolio
+      localName: mandateId
+      label: mandate identifier
+      definition: authority-scoped stable identifier of a portfolio management mandate
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    authorityScope:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/authorityScope
+      namespace: fin-portfolio
+      localName: authorityScope
+      label: authority scope
+      definition: canonical scope expression limiting a membership or management mandate
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    approvalRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/approvalRef
+      namespace: fin-portfolio
+      localName: approvalRef
+      label: approval reference
+      definition: immutable reference to the authority approval record
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    approvalDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/approvalDigest
+      namespace: fin-portfolio
+      localName: approvalDigest
+      label: approval digest
+      definition: SHA-256 digest of the canonical approval record
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    membershipVersionSetDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/membershipVersionSetDigest
+      namespace: fin-portfolio
+      localName: membershipVersionSetDigest
+      label: membership version set digest
+      definition: digest of the sorted unique exact membership version set
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    membershipCount:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/membershipCount
+      namespace: fin-portfolio
+      localName: membershipCount
+      label: membership count
+      definition: cardinality of the closed exact membership version set
+      valueType: integer
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    membershipClosureProbeRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/membershipClosureProbeRef
+      namespace: fin-portfolio
+      localName: membershipClosureProbeRef
+      label: membership closure probe reference
+      definition: immutable reference to the completed member-account closure probe
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    membershipClosureProbeDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/membershipClosureProbeDigest
+      namespace: fin-portfolio
+      localName: membershipClosureProbeDigest
+      label: membership closure probe digest
+      definition: SHA-256 digest of the completed membership closure probe record
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    snapshotId:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/snapshotId
+      namespace: fin-portfolio
+      localName: snapshotId
+      label: snapshot identifier
+      definition: source-scoped stable identifier of a holding or position snapshot
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    holdingQuantity:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/holdingQuantity
+      namespace: fin-portfolio
+      localName: holdingQuantity
+      label: holding quantity
+      definition: non-negative Quantity of an owned financial interest
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    positionQuantity:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/positionQuantity
+      namespace: fin-portfolio
+      localName: positionQuantity
+      label: signed position quantity
+      definition: signed Quantity that is the sole long, short, or flat directional truth
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    positionSourceKind:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/positionSourceKind
+      namespace: fin-portfolio
+      localName: positionSourceKind
+      label: position source kind
+      definition: external-reported or execution-derived source branch of a snapshot
+      valueType: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSourceKind
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    valuationDefinitionId:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/valuationDefinitionId
+      namespace: fin-portfolio
+      localName: valuationDefinitionId
+      label: valuation definition identifier
+      definition: stable identifier within the logical valuation definition authority namespace
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    valuationMethod:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/valuationMethod
+      namespace: fin-portfolio
+      localName: valuationMethod
+      label: valuation method
+      definition: sole reviewed method member stored on a valuation definition
+      valueType: https://axiolune.ai/ontology/finance/portfolio-positions/ValuationMethod
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    valuationQuotationContractCount:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/valuationQuotationContractCount
+      namespace: fin-portfolio
+      localName: valuationQuotationContractCount
+      label: valuation quotation contract count
+      definition: exact number of quotation-contract versions in the valuation definition input closure
+      valueType: integer
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    valuationQuotationContractVersionSetDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/valuationQuotationContractVersionSetDigest
+      namespace: fin-portfolio
+      localName: valuationQuotationContractVersionSetDigest
+      label: valuation quotation contract version-set digest
+      definition: >-
+        section-5.8 framed IRI-set digest over all exact quotation-contract versions in the valuation definition input
+        closure
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    formulaDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/formulaDigest
+      namespace: fin-portfolio
+      localName: formulaDigest
+      label: formula digest
+      definition: SHA-256 digest of the canonical valuation formula or implementation
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    inputContractDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/inputContractDigest
+      namespace: fin-portfolio
+      localName: inputContractDigest
+      label: input contract digest
+      definition: SHA-256 digest of a calculation input contract
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    outputContractDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/outputContractDigest
+      namespace: fin-portfolio
+      localName: outputContractDigest
+      label: output contract digest
+      definition: SHA-256 digest of a calculation output contract
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    precisionPolicyRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/precisionPolicyRef
+      namespace: fin-portfolio
+      localName: precisionPolicyRef
+      label: precision policy reference
+      definition: immutable reference to exact rational and decimal precision policy
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    precisionPolicyDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/precisionPolicyDigest
+      namespace: fin-portfolio
+      localName: precisionPolicyDigest
+      label: precision policy digest
+      definition: SHA-256 digest of the exact rational and decimal precision policy
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    roundingPolicyRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/roundingPolicyRef
+      namespace: fin-portfolio
+      localName: roundingPolicyRef
+      label: rounding policy reference
+      definition: immutable reference to the exact rounding mode, scale, and stage policy
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    roundingPolicyDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/roundingPolicyDigest
+      namespace: fin-portfolio
+      localName: roundingPolicyDigest
+      label: rounding policy digest
+      definition: SHA-256 digest of the exact rounding mode, scale, and stage policy
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    implementationDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/implementationDigest
+      namespace: fin-portfolio
+      localName: implementationDigest
+      label: implementation digest
+      definition: SHA-256 digest of canonical calculation implementation bytes
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    toolLockRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/toolLockRef
+      namespace: fin-portfolio
+      localName: toolLockRef
+      label: tool lock reference
+      definition: immutable reference to the exact calculation tool lock
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    toolLockDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/toolLockDigest
+      namespace: fin-portfolio
+      localName: toolLockDigest
+      label: tool lock digest
+      definition: SHA-256 digest of the exact calculation tool lock bytes
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    runtimeDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/runtimeDigest
+      namespace: fin-portfolio
+      localName: runtimeDigest
+      label: runtime digest
+      definition: SHA-256 digest of the calculation runtime environment
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    costBasisDefinitionId:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/costBasisDefinitionId
+      namespace: fin-portfolio
+      localName: costBasisDefinitionId
+      label: cost basis definition identifier
+      definition: stable identifier within the logical cost-basis definition authority namespace
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    costBasisMethod:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/costBasisMethod
+      namespace: fin-portfolio
+      localName: costBasisMethod
+      label: cost basis method
+      definition: reviewed cost-basis calculation method member
+      valueType: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisMethod
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    feeTreatment:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/feeTreatment
+      namespace: fin-portfolio
+      localName: feeTreatment
+      label: fee treatment
+      definition: included or excluded branch governing fee allocation into basis
+      valueType: https://axiolune.ai/ontology/finance/portfolio-positions/FeeTreatment
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    lotOpeningPolicy:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/lotOpeningPolicy
+      namespace: fin-portfolio
+      localName: lotOpeningPolicy
+      label: lot opening policy
+      definition: reviewed policy for residual exposure opened by an Execution
+      valueType: https://axiolune.ai/ontology/finance/portfolio-positions/LotOpeningPolicy
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    lotConsumptionPolicy:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/lotConsumptionPolicy
+      namespace: fin-portfolio
+      localName: lotConsumptionPolicy
+      label: lot consumption policy
+      definition: reviewed deterministic policy selecting lots for consumption
+      valueType: https://axiolune.ai/ontology/finance/portfolio-positions/LotConsumptionPolicy
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    currencyPolicy:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/currencyPolicy
+      namespace: fin-portfolio
+      localName: currencyPolicy
+      label: currency policy
+      definition: canonical basis-currency grouping and aggregation policy
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    fxPolicy:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/fxPolicy
+      namespace: fin-portfolio
+      localName: fxPolicy
+      label: FX policy
+      definition: policy requiring explicit PIT-eligible FXConversion for differing currencies
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    lotDiscriminator:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/lotDiscriminator
+      namespace: fin-portfolio
+      localName: lotDiscriminator
+      label: lot discriminator
+      definition: fixed NFC discriminator identifying one opening residual PositionLot
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^openingRemainder$
+    originalQuantity:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/originalQuantity
+      namespace: fin-portfolio
+      localName: originalQuantity
+      label: original signed quantity
+      definition: non-zero signed Quantity opened by the opening Execution
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    openingGross:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/openingGross
+      namespace: fin-portfolio
+      localName: openingGross
+      label: opening gross
+      definition: positive Money gross computed from allocated quantity and exact execution price
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    openingCostBasis:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/openingCostBasis
+      namespace: fin-portfolio
+      localName: openingCostBasis
+      label: signed opening cost basis
+      definition: signed Money basis after exact fee, FX, precision, and rounding policy
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    calculationContextRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/calculationContextRef
+      namespace: fin-portfolio
+      localName: calculationContextRef
+      label: calculation context reference
+      definition: immutable reference to a completed calculation input context
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    valuationRunId:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/valuationRunId
+      namespace: fin-portfolio
+      localName: valuationRunId
+      label: valuation run identifier
+      definition: stable identifier of a PortfolioValuation run header
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    conversionContextRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/conversionContextRef
+      namespace: fin-portfolio
+      localName: conversionContextRef
+      label: conversion context reference
+      definition: immutable reference to the complete valuation FX conversion context
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    conversionContextDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/conversionContextDigest
+      namespace: fin-portfolio
+      localName: conversionContextDigest
+      label: conversion context digest
+      definition: SHA-256 digest of the complete FX conversion context
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    marketValue:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/marketValue
+      namespace: fin-portfolio
+      localName: marketValue
+      label: market value
+      definition: Money output of the exact direct-unit valuation calculation
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    inputMoney:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/inputMoney
+      namespace: fin-portfolio
+      localName: inputMoney
+      label: input money
+      definition: Money value before an exact FXConversion
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    outputMoney:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/outputMoney
+      namespace: fin-portfolio
+      localName: outputMoney
+      label: output money
+      definition: Money value after the declared FX direction and rounding policy
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    fxConversionDirection:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/fxConversionDirection
+      namespace: fin-portfolio
+      localName: fxConversionDirection
+      label: FX conversion direction
+      definition: base-to-quote or quote-to-base orientation of an FX conversion
+      valueType: https://axiolune.ai/ontology/finance/portfolio-positions/FXConversionDirection
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    lotAllocationKind:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/lotAllocationKind
+      namespace: fin-portfolio
+      localName: lotAllocationKind
+      label: lot allocation kind
+      definition: opening or consumption branch of a lot allocation
+      valueType: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocationKind
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    allocatedQuantity:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/allocatedQuantity
+      namespace: fin-portfolio
+      localName: allocatedQuantity
+      label: allocated quantity
+      definition: strictly positive Quantity allocated by an opening or consumption fact
+      valueType: https://axiolune.ai/ontology/meta/core/values/QuantityValue
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    allocatedFeeAmount:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/allocatedFeeAmount
+      namespace: fin-portfolio
+      localName: allocatedFeeAmount
+      label: allocated fee amount
+      definition: strictly positive Money magnitude allocated from one exact Fee
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    allocationVersionSetDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/allocationVersionSetDigest
+      namespace: fin-portfolio
+      localName: allocationVersionSetDigest
+      label: allocation version set digest
+      definition: digest of all exact lot allocation versions for an Execution
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    allocationCount:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/allocationCount
+      namespace: fin-portfolio
+      localName: allocationCount
+      label: allocation count
+      definition: cardinality of the exact allocation version set
+      valueType: integer
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    eligibleLotVersionSetDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/eligibleLotVersionSetDigest
+      namespace: fin-portfolio
+      localName: eligibleLotVersionSetDigest
+      label: eligible lot version set digest
+      definition: digest of the complete exact PositionLot version set eligible for consumption by one Execution
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    eligibleLotCount:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/eligibleLotCount
+      namespace: fin-portfolio
+      localName: eligibleLotCount
+      label: eligible lot count
+      definition: cardinality of the complete exact eligible-lot version set
+      valueType: integer
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    feeVersionSetDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/feeVersionSetDigest
+      namespace: fin-portfolio
+      localName: feeVersionSetDigest
+      label: fee version set digest
+      definition: digest of all exact Fee versions for an Execution
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    feeCount:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/feeCount
+      namespace: fin-portfolio
+      localName: feeCount
+      label: fee count
+      definition: cardinality of the exact Fee version set
+      valueType: integer
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    feeAllocationVersionSetDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/feeAllocationVersionSetDigest
+      namespace: fin-portfolio
+      localName: feeAllocationVersionSetDigest
+      label: fee allocation version set digest
+      definition: digest of all exact PositionLotFeeAllocation versions in the closure
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    feeAllocationCount:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/feeAllocationCount
+      namespace: fin-portfolio
+      localName: feeAllocationCount
+      label: fee allocation count
+      definition: cardinality of the exact fee allocation version set
+      valueType: integer
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    allocationClosureProbeRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/allocationClosureProbeRef
+      namespace: fin-portfolio
+      localName: allocationClosureProbeRef
+      label: allocation closure probe reference
+      definition: immutable reference to the completed allocation completeness probe
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    allocationClosureProbeDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/allocationClosureProbeDigest
+      namespace: fin-portfolio
+      localName: allocationClosureProbeDigest
+      label: allocation closure probe digest
+      definition: SHA-256 digest of the completed allocation closure probe
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    feeClosureProbeRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/feeClosureProbeRef
+      namespace: fin-portfolio
+      localName: feeClosureProbeRef
+      label: fee closure probe reference
+      definition: immutable reference to the completed Fee completeness probe
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    feeClosureProbeDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/feeClosureProbeDigest
+      namespace: fin-portfolio
+      localName: feeClosureProbeDigest
+      label: fee closure probe digest
+      definition: SHA-256 digest of the completed Fee closure probe
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    consumptionSelectionProbeRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/consumptionSelectionProbeRef
+      namespace: fin-portfolio
+      localName: consumptionSelectionProbeRef
+      label: consumption selection probe reference
+      definition: immutable reference to the completed eligible-lot and deterministic consumption-selection probe
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    consumptionSelectionProbeDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/consumptionSelectionProbeDigest
+      namespace: fin-portfolio
+      localName: consumptionSelectionProbeDigest
+      label: consumption selection probe digest
+      definition: SHA-256 digest of the completed eligible-lot and selection probe
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    specificSelectionRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/specificSelectionRef
+      namespace: fin-portfolio
+      localName: specificSelectionRef
+      label: specific selection reference
+      definition: immutable reference to reviewed specific-identification instructions
+      valueType: uri
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    specificSelectionDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/specificSelectionDigest
+      namespace: fin-portfolio
+      localName: specificSelectionDigest
+      label: specific selection digest
+      definition: SHA-256 digest of reviewed specific-identification instructions
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    specificSelectionVersionSetDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/specificSelectionVersionSetDigest
+      namespace: fin-portfolio
+      localName: specificSelectionVersionSetDigest
+      label: specific selection version set digest
+      definition: digest of the exact PositionLot versions selected by specific-identification evidence
+      valueType: string
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    specificSelectionCount:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/specificSelectionCount
+      namespace: fin-portfolio
+      localName: specificSelectionCount
+      label: specific selection count
+      definition: cardinality of the exact specific-identification selected-lot set
+      valueType: integer
+      defaultCardinality:
+        minCount: 0
+        maxCount: 1
+    openLotVersionSetDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/openLotVersionSetDigest
+      namespace: fin-portfolio
+      localName: openLotVersionSetDigest
+      label: open lot version set digest
+      definition: digest of the complete non-zero PositionLot exact-version set
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    stateAllocationVersionSetDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/stateAllocationVersionSetDigest
+      namespace: fin-portfolio
+      localName: stateAllocationVersionSetDigest
+      label: state allocation version set digest
+      definition: digest of all allocation exact versions used by a lot-state closure
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    stateExecutionClosureVersionSetDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/stateExecutionClosureVersionSetDigest
+      namespace: fin-portfolio
+      localName: stateExecutionClosureVersionSetDigest
+      label: state execution closure version set digest
+      definition: digest of all execution allocation closure exact versions used by lot state
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    remainingCostBasis:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/remainingCostBasis
+      namespace: fin-portfolio
+      localName: remainingCostBasis
+      label: remaining cost basis
+      definition: Money basis remaining after all exact consumption allocations
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    snapshotPivotRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/snapshotPivotRef
+      namespace: fin-portfolio
+      localName: snapshotPivotRef
+      label: snapshot pivot reference
+      definition: immutable reference to the exact three-axis snapshot pivot
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    lotClosureProbeRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/lotClosureProbeRef
+      namespace: fin-portfolio
+      localName: lotClosureProbeRef
+      label: lot closure probe reference
+      definition: immutable reference to the completed open-lot completeness probe
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    lotClosureProbeDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/lotClosureProbeDigest
+      namespace: fin-portfolio
+      localName: lotClosureProbeDigest
+      label: lot closure probe digest
+      definition: SHA-256 digest of the completed open-lot closure probe
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    stateAllocationClosureProbeRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/stateAllocationClosureProbeRef
+      namespace: fin-portfolio
+      localName: stateAllocationClosureProbeRef
+      label: state allocation closure probe reference
+      definition: immutable reference to the completed lot-allocation completeness probe
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    stateAllocationClosureProbeDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/stateAllocationClosureProbeDigest
+      namespace: fin-portfolio
+      localName: stateAllocationClosureProbeDigest
+      label: state allocation closure probe digest
+      definition: SHA-256 digest of the completed lot-allocation closure probe
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    unrealizedPnl:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/unrealizedPnl
+      namespace: fin-portfolio
+      localName: unrealizedPnl
+      label: unrealized PnL
+      definition: Money difference between exact market value and remaining cost basis
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    externalBasisId:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/externalBasisId
+      namespace: fin-portfolio
+      localName: externalBasisId
+      label: external basis identifier
+      definition: source-scoped stable identifier of an external cost-basis observation
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    externalCostBasis:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/externalCostBasis
+      namespace: fin-portfolio
+      localName: externalCostBasis
+      label: external cost basis
+      definition: source-provided Money basis retained apart from execution-derived basis
+      valueType: https://axiolune.ai/ontology/meta/core/values/MonetaryAmount
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    portfolioReconciliationKind:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioReconciliationKind
+      namespace: fin-portfolio
+      localName: portfolioReconciliationKind
+      label: portfolio reconciliation kind
+      definition: closed typed result of external-versus-derived comparison
+      valueType: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioReconciliationKind
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    reconciliationSubjectDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationSubjectDigest
+      namespace: fin-portfolio
+      localName: reconciliationSubjectDigest
+      label: reconciliation subject digest
+      definition: digest of the exact kind-discriminated versions compared
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    reconciliationExternalCandidateCount:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationExternalCandidateCount
+      namespace: fin-portfolio
+      localName: reconciliationExternalCandidateCount
+      label: reconciliation external candidate count
+      definition: >-
+        count of the complete PIT-eligible external candidate-version set for the selected family, subject, and external
+        source scope
+      valueType: integer
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    reconciliationExternalCandidateVersionSetDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationExternalCandidateVersionSetDigest
+      namespace: fin-portfolio
+      localName: reconciliationExternalCandidateVersionSetDigest
+      label: reconciliation external candidate version set digest
+      definition: >-
+        digest of the sorted complete PIT-eligible external candidate-version set for the selected family, subject, and
+        source scope
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    reconciliationDerivedCandidateCount:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationDerivedCandidateCount
+      namespace: fin-portfolio
+      localName: reconciliationDerivedCandidateCount
+      label: reconciliation derived candidate count
+      definition: >-
+        count of the complete PIT-eligible execution-derived candidate-version set for the selected family, subject, and
+        derived source scope
+      valueType: integer
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    reconciliationDerivedCandidateVersionSetDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationDerivedCandidateVersionSetDigest
+      namespace: fin-portfolio
+      localName: reconciliationDerivedCandidateVersionSetDigest
+      label: reconciliation derived candidate version set digest
+      definition: >-
+        digest of the sorted complete PIT-eligible execution-derived candidate-version set for the selected family,
+        subject, and source scope
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    reconciliationExternalSourceScopeRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationExternalSourceScopeRef
+      namespace: fin-portfolio
+      localName: reconciliationExternalSourceScopeRef
+      label: reconciliation external source scope reference
+      definition: immutable reference to the external observation stream or source namespace whose candidates are closed
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    reconciliationDerivedSourceScopeRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationDerivedSourceScopeRef
+      namespace: fin-portfolio
+      localName: reconciliationDerivedSourceScopeRef
+      label: reconciliation derived source scope reference
+      definition: immutable reference to the derivation run or namespace whose candidates are closed
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    reconciliationCandidateGraphRecordCount:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationCandidateGraphRecordCount
+      namespace: fin-portfolio
+      localName: reconciliationCandidateGraphRecordCount
+      label: reconciliation candidate graph record count
+      definition: count of every canonical candidate record bound into the reconciliation candidate graph before PIT selection
+      valueType: integer
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    reconciliationCandidateGraphRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationCandidateGraphRef
+      namespace: fin-portfolio
+      localName: reconciliationCandidateGraphRef
+      label: reconciliation candidate graph reference
+      definition: >-
+        immutable reference to the canonical graph containing the complete external and derived candidate-record
+        universe
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    reconciliationCandidateGraphDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationCandidateGraphDigest
+      namespace: fin-portfolio
+      localName: reconciliationCandidateGraphDigest
+      label: reconciliation candidate graph digest
+      definition: SHA-256 digest of the canonical candidate-graph artifact and its record-level digests
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    reconciliationExternalSnapshotManifestRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationExternalSnapshotManifestRef
+      namespace: fin-portfolio
+      localName: reconciliationExternalSnapshotManifestRef
+      label: reconciliation external snapshot manifest reference
+      definition: immutable reference to the terminal complete-response manifest supplied under the external source contract
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    reconciliationExternalSnapshotManifestDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationExternalSnapshotManifestDigest
+      namespace: fin-portfolio
+      localName: reconciliationExternalSnapshotManifestDigest
+      label: reconciliation external snapshot manifest digest
+      definition: SHA-256 digest of the terminal external full-snapshot response manifest
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    reconciliationDerivedOutputManifestRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationDerivedOutputManifestRef
+      namespace: fin-portfolio
+      localName: reconciliationDerivedOutputManifestRef
+      label: reconciliation derived output manifest reference
+      definition: immutable reference to the completed derivation-run output manifest for the compared subject and source scope
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    reconciliationDerivedOutputManifestDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationDerivedOutputManifestDigest
+      namespace: fin-portfolio
+      localName: reconciliationDerivedOutputManifestDigest
+      label: reconciliation derived output manifest digest
+      definition: SHA-256 digest of the completed derivation-run output manifest
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    reconciliationQueryDefinitionRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationQueryDefinitionRef
+      namespace: fin-portfolio
+      localName: reconciliationQueryDefinitionRef
+      label: reconciliation query definition reference
+      definition: immutable reference to the exact family, scope, source, and three-axis PIT candidate-selection definition
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    reconciliationQueryDefinitionDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationQueryDefinitionDigest
+      namespace: fin-portfolio
+      localName: reconciliationQueryDefinitionDigest
+      label: reconciliation query definition digest
+      definition: SHA-256 digest of the exact candidate-selection query definition
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    reconciliationQueryToolLockRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationQueryToolLockRef
+      namespace: fin-portfolio
+      localName: reconciliationQueryToolLockRef
+      label: reconciliation query tool lock reference
+      definition: immutable reference to the implementation and dependency lock used to execute the candidate-selection query
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    reconciliationQueryToolLockDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationQueryToolLockDigest
+      namespace: fin-portfolio
+      localName: reconciliationQueryToolLockDigest
+      label: reconciliation query tool lock digest
+      definition: SHA-256 digest of the candidate-selection implementation and dependency lock
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    reconciliationClosureProbeRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationClosureProbeRef
+      namespace: fin-portfolio
+      localName: reconciliationClosureProbeRef
+      label: reconciliation closure probe reference
+      definition: immutable reference to the completed probe proving the exact candidate universe and role selection
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    reconciliationClosureProbeDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationClosureProbeDigest
+      namespace: fin-portfolio
+      localName: reconciliationClosureProbeDigest
+      label: reconciliation closure probe digest
+      definition: SHA-256 digest of the completed reconciliation candidate-universe closure probe
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+    reconciliationContextRef:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationContextRef
+      namespace: fin-portfolio
+      localName: reconciliationContextRef
+      label: reconciliation context reference
+      definition: immutable reference to the exact comparison context for a reconciliation finding
+      valueType: uri
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+    reconciliationContextDigest:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationContextDigest
+      namespace: fin-portfolio
+      localName: reconciliationContextDigest
+      label: reconciliation context digest
+      definition: SHA-256 digest of the exact comparison-context bytes for a reconciliation finding
+      valueType: string
+      defaultCardinality:
+        minCount: 1
+        maxCount: 1
+      pattern: ^sha256:[0-9a-f]{64}$
+  identifierTypes: {}
+  codeLists:
+    PositionSourceKind:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSourceKind
+      namespace: fin-portfolio
+      localName: PositionSourceKind
+      label: Position Source Kind
+      definition: Closed source branch for holding and position snapshots.
+      vocabulary: Position Source Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSourceKind/value/externalReported
+          notation: externalReported
+          label: external reported
+          definition: snapshot supplied by an external account or custody source
+        - iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSourceKind/value/executionDerived
+          notation: executionDerived
+          label: execution derived
+          definition: snapshot derived from closed Execution lot state
+    ValuationMethod:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/ValuationMethod
+      namespace: fin-portfolio
+      localName: ValuationMethod
+      label: Valuation Method
+      definition: Closed classification of the calculation method used to derive a PortfolioValuation from its locked inputs.
+      vocabulary: Valuation Method
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/portfolio-positions/ValuationMethod/value/directUnitPriceTimesQuantity
+          notation: directUnitPriceTimesQuantity
+          label: direct unit price times quantity
+          definition: signed snapshot quantity multiplied by exact direct-unit Money price
+    CostBasisMethod:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisMethod
+      namespace: fin-portfolio
+      localName: CostBasisMethod
+      label: Cost Basis Method
+      definition: >-
+        Closed classification of methods that derive position cost basis from exact Executions, allocations, fees,
+        foreign-exchange conversions, and rounding rules.
+      vocabulary: Cost Basis Method
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: >-
+            https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisMethod/value/executionAllocatedDirectUnitCost
+          notation: executionAllocatedDirectUnitCost
+          label: execution allocated direct unit cost
+          definition: basis derived from exact execution price, allocation quantity, fees, FX, and rounding
+    FeeTreatment:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/FeeTreatment
+      namespace: fin-portfolio
+      localName: FeeTreatment
+      label: Fee Treatment
+      definition: Closed branch controlling whether exact Fee facts enter basis.
+      vocabulary: Fee Treatment
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/portfolio-positions/FeeTreatment/value/included
+          notation: included
+          label: included
+          definition: every exact Fee is fully allocated into opening basis
+        - iri: https://axiolune.ai/ontology/finance/portfolio-positions/FeeTreatment/value/excluded
+          notation: excluded
+          label: excluded
+          definition: no Fee allocation enters opening basis
+    LotOpeningPolicy:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/LotOpeningPolicy
+      namespace: fin-portfolio
+      localName: LotOpeningPolicy
+      label: Lot Opening Policy
+      definition: Closed classification of policies governing how residual signed exposure from an Execution opens a PositionLot.
+      vocabulary: Lot Opening Policy
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/portfolio-positions/LotOpeningPolicy/value/openingRemainder
+          notation: openingRemainder
+          label: opening remainder
+          definition: at most one residual lot is opened per execution account instrument and definition tuple
+    LotConsumptionPolicy:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/LotConsumptionPolicy
+      namespace: fin-portfolio
+      localName: LotConsumptionPolicy
+      label: Lot Consumption Policy
+      definition: Closed reviewed deterministic lot selection policies.
+      vocabulary: Lot Consumption Policy
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/portfolio-positions/LotConsumptionPolicy/value/fifo
+          notation: fifo
+          label: FIFO
+          definition: consume oldest eligible lot first by reviewed key
+        - iri: https://axiolune.ai/ontology/finance/portfolio-positions/LotConsumptionPolicy/value/lifo
+          notation: lifo
+          label: LIFO
+          definition: consume newest eligible lot first by reviewed key
+        - iri: https://axiolune.ai/ontology/finance/portfolio-positions/LotConsumptionPolicy/value/specificIdentification
+          notation: specificIdentification
+          label: specific identification
+          definition: consume exact explicitly identified lots
+    PositionLotAllocationKind:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocationKind
+      namespace: fin-portfolio
+      localName: PositionLotAllocationKind
+      label: Position Lot Allocation Kind
+      definition: >-
+        Closed classification distinguishing an allocation that opens a new PositionLot from one that consumes an
+        existing PositionLot.
+      vocabulary: Position Lot Allocation Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocationKind/value/opening
+          notation: opening
+          label: opening
+          definition: allocation opens the original signed lot quantity
+        - iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocationKind/value/consumption
+          notation: consumption
+          label: consumption
+          definition: allocation consumes prior remaining lot quantity
+    FXConversionDirection:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/FXConversionDirection
+      namespace: fin-portfolio
+      localName: FXConversionDirection
+      label: FX Conversion Direction
+      definition: Closed orientation for applying the canonical FX rate equation.
+      vocabulary: FX Conversion Direction
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/portfolio-positions/FXConversionDirection/value/baseToQuote
+          notation: baseToQuote
+          label: base to quote
+          definition: output amount equals input amount multiplied by the rate
+        - iri: https://axiolune.ai/ontology/finance/portfolio-positions/FXConversionDirection/value/quoteToBase
+          notation: quoteToBase
+          label: quote to base
+          definition: output amount equals input amount divided by the rate
+    PortfolioReconciliationKind:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioReconciliationKind
+      namespace: fin-portfolio
+      localName: PortfolioReconciliationKind
+      label: Portfolio Reconciliation Kind
+      definition: Closed external-versus-derived position and basis comparison results.
+      vocabulary: Portfolio Reconciliation Kind
+      version: 1.0.0
+      maintainer: Axiolune ontology maintainers
+      sourceEvidenceRef: https://axiolune.ai/references/axiolune-m2-controlled-vocabularies
+      values:
+        - iri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioReconciliationKind/value/matched
+          notation: matched
+          label: matched
+          definition: exact compared values agree
+        - iri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioReconciliationKind/value/quantityMismatch
+          notation: quantityMismatch
+          label: quantity mismatch
+          definition: external and derived signed quantities differ
+        - iri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioReconciliationKind/value/basisMismatch
+          notation: basisMismatch
+          label: basis mismatch
+          definition: external and derived cost basis differ
+        - iri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioReconciliationKind/value/missingExternal
+          notation: missingExternal
+          label: missing external
+          definition: complete comparison has no external evidence
+        - iri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioReconciliationKind/value/missingDerived
+          notation: missingDerived
+          label: missing derived
+          definition: complete comparison has no execution-derived evidence
+  constraints:
+    PortfolioContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioContract
+      namespace: fin-portfolio
+      localName: PortfolioContract
+      label: Portfolio Contract
+      definition: validation contract for stable Portfolio identity
+      constraintType: Logical
+      scope: Object
+      expression:
+        language: Custom
+        expression: stable(portfolioId); logicalKey(portfolioId); versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: portfolio identity or standard version key is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
+    PortfolioObservationStreamContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioObservationStreamContract
+      namespace: fin-portfolio
+      localName: PortfolioObservationStreamContract
+      label: Portfolio Observation Stream Contract
+      definition: validation contract for provider-scoped observation-stream identity and byte-locked ingestion semantics
+      constraintType: Logical
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(portfolioObservationStreamProvider.logicalIri,portfolioObservationSourceContractRef,
+          portfolioObservationStreamId); source-contract, completeness-contract, pagination-contract, and
+          source-artifact reference/digest pairs are complete and immutable; sourceLocator is present;
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: portfolio observation stream identity, source contract, completeness, pagination, or provenance is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioObservationStream
+    PortfolioAccountMembershipContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembershipContract
+      namespace: fin-portfolio
+      localName: PortfolioAccountMembershipContract
+      label: Portfolio Account Membership Contract
+      definition: validation contract for the sole temporal portfolio-to-account membership path
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(membershipPortfolio.logicalIri,memberAccount.logicalIri, membershipId); membershipAuthority,
+          authorityScope, approval, and source evidence are complete; versionKey(validFrom,knowledgeFrom,
+          availableFrom,revision)
+      severity: Error
+      message: portfolio account membership identity, authority, approval, or source evidence is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembership
+    PortfolioManagementMandateContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioManagementMandateContract
+      namespace: fin-portfolio
+      localName: PortfolioManagementMandateContract
+      label: Portfolio Management Mandate Contract
+      definition: validation contract for temporal managing-party authority and approval
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(managedPortfolio.logicalIri,managingParty.logicalIri, mandateId); mandateAuthority, authorityScope,
+          approval, and source evidence are complete; versionKey(validFrom,knowledgeFrom, availableFrom,revision)
+      severity: Error
+      message: portfolio mandate identity, authority, scope, approval, or source evidence is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioManagementMandate
+    PortfolioAccountMembershipClosureContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembershipClosureContract
+      namespace: fin-portfolio
+      localName: PortfolioAccountMembershipClosureContract
+      label: Portfolio Account Membership Closure Contract
+      definition: validation contract for the exact PIT-eligible membership set used by valuation
+      constraintType: Dependency
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          closedMembership equals the sorted exact-version set of all PIT-eligible memberships for closurePortfolio
+          under pitRequestRef and strictly prior completed inputContextRef; membershipCount equals set cardinality;
+          membershipVersionSetDigest verifies the section 5.8 digest; completed membershipClosureProbe proves no
+          omission; generatingContextRef is the producer
+      severity: Error
+      message: portfolio membership closure set, digest, probe, or temporal input context is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembershipClosure
+    HoldingSnapshotContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshotContract
+      namespace: fin-portfolio
+      localName: HoldingSnapshotContract
+      label: Holding Snapshot Contract
+      definition: validation contract for non-negative owned-interest snapshots
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          holdingQuantity.value >= 0; exactly one holdingObservationStream, holdingAccount, and holdingInstrument;
+          supplied holdingListing is PIT-eligible and lists holdingInstrument; account, instrument, optional listing,
+          quantity, source kind, and source evidence are immutable version content; no outgoing edge may target a
+          Portfolio or Portfolio/LogicalIdentity, and fin-orders:orderSide plus fin-portfolio:positionSide are absent;
+          logicalKey(holdingObservationStream.logicalIri,snapshotId) is a key-to-logical-identity bijection across
+          versions; versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: holding snapshot scope, non-negative quantity, listing, source, or identity is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
+    PositionSnapshotContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshotContract
+      namespace: fin-portfolio
+      localName: PositionSnapshotContract
+      label: Position Snapshot Contract
+      definition: validation contract for signed-exposure snapshots with one directional truth
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          exactly one positionObservationStream; positionQuantity is the sole signed directional truth; supplied
+          positionListing is PIT-eligible and lists positionInstrument; account, instrument, optional listing, quantity,
+          source kind, and source evidence are immutable version content; direct Portfolio, stored side, stored basis,
+          and stored PnL duplicate truths are forbidden; logicalKey(positionObservationStream.logicalIri,snapshotId);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: position snapshot signed quantity, scope, listing, source, or identity is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshot
+    PositionLotContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotContract
+      namespace: fin-portfolio
+      localName: PositionLotContract
+      label: Position Lot Contract
+      definition: validation contract for exact execution-derived lot identity and immutable basis content
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          lotDiscriminator NFC lexical value = openingRemainder;
+          logicalKey(lotInAccount.logicalIri,lotForInstrument.logicalIri,
+          openingExecution.logicalIri,costBasisDefinition.logicalIri, lotDiscriminator); originalQuantity.value != 0;
+          openingGross.amount > 0; sign(openingCostBasis.amount)=sign(originalQuantity.value); execution price currency
+          = basis currency forbids openingGrossFxConversion and computes openingGross directly; differing currencies
+          require exactly one direction-correct exact openingGrossFxConversion whose input is allocated quantity times
+          execution price and whose output equals openingGross in the basis currency; lotQuotationContract =
+          openingExecution.executionQuotationContract = costBasisDefinitionQuotationContract; supplied lotAtListing is
+          PIT-eligible and lists lotForInstrument; exact opening execution and definition versions, original quantity,
+          gross, signed basis, calculation context, quotation, listing, and source are immutable version content;
+          forbidden(cost,side,strategy,rowNumber,arrivalOrder);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: position lot identity, immutable execution/quotation/basis chain, sign, or source is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot
+    PositionLotOpeningAllocationCompletenessContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotOpeningAllocationCompletenessContract
+      namespace: fin-portfolio
+      localName: PositionLotOpeningAllocationCompletenessContract
+      label: Position Lot Opening Allocation Completeness Contract
+      definition: >-
+        Closed inverse-cardinality contract requiring each PositionLot version to be targeted by exactly one opening
+        PositionLotAllocation version with the same opening Execution, definition, context, listing, and absolute
+        original Quantity.
+      constraintType: Cardinality
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          exactlyOne(inverse PositionLotAllocation.allocatedLot = this PositionLot version and
+          lotAllocationKind=opening); allocationExecution = openingExecution; allocatedQuantity=abs(originalQuantity);
+          allocationCostBasisDefinition=costBasisDefinition; calculation context, account, instrument, optional listing,
+          unit, and quotation contract agree
+      severity: Error
+      message: position lot lacks exactly one matching opening allocation
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot
+    ValuationCalculationDefinitionContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/ValuationCalculationDefinitionContract
+      namespace: fin-portfolio
+      localName: ValuationCalculationDefinitionContract
+      label: Valuation Calculation Definition Contract
+      definition: validation contract for one locked direct-unit valuation method
+      constraintType: Dependency
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(valuationDefinitionAuthority.logicalIri, valuationDefinitionId);
+          valuationMethod=directUnitPriceTimesQuantity; exactly one logical valuationDefinitionAuthority; at least one
+          exact valuationDefinitionQuotationContract and
+          closedSet(valuationDefinitionQuotationContract,valuationQuotationContractCount,
+          valuationQuotationContractVersionSetDigest) under RFC section 5.8; formulaDigest, inputContractDigest,
+          outputContractDigest, precision and rounding ref/digest pairs, tool lock ref/digest, and runtimeDigest verify
+          locked executable evidence; versionKey(validFrom,knowledgeFrom, availableFrom,revision)
+      severity: Error
+      message: valuation definition method, quotation input, policy, or executable evidence closure is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/ValuationCalculationDefinition
+    CostBasisCalculationDefinitionContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinitionContract
+      namespace: fin-portfolio
+      localName: CostBasisCalculationDefinitionContract
+      label: Cost Basis Calculation Definition Contract
+      definition: validation contract for the sole execution-derived cost-basis specification
+      constraintType: Dependency
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          logicalKey(costBasisDefinitionAuthority.logicalIri, costBasisDefinitionId);
+          costBasisMethod=executionAllocatedDirectUnitCost; lotOpeningPolicy=openingRemainder; exactly one reviewed fee
+          treatment and lot-consumption policy; exactly one logical costBasisDefinitionAuthority, one exact
+          costBasisDefinitionQuotationContract and one logical costBasisDefinitionBasisCurrency; currencyPolicy and
+          fxPolicy require explicit direction-correct FXConversion before grouping; precision, rounding, implementation,
+          input/output contract, tool lock, runtime, and source evidence digests are complete;
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: cost-basis definition method, basis currency, quotation, policies, or evidence closure is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition
+    PortfolioValuationContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuationContract
+      namespace: fin-portfolio
+      localName: PortfolioValuationContract
+      label: Portfolio Valuation Contract
+      definition: validation contract for a closed valuation header and calculation run
+      constraintType: Dependency
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          memberAccountClosure.closurePortfolio=valuedPortfolio; exact valuationDefinition fixes the sole
+          valuationMethod and closed quotation-input set; exactly one reportingCurrency; conversion context ref/digest,
+          PIT request ref/digest, strictly prior completed input context ref/digest, valuationRunId, and
+          generatingContextRef are complete; logicalKey(valuedPortfolio.logicalIri,valuationRunId);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: portfolio valuation header, member closure, definition, currency, or run evidence is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuation
+    PositionValuationInputXone:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuationInputXone
+      namespace: fin-portfolio
+      localName: PositionValuationInputXone
+      label: Position Valuation Input Xone
+      definition: executable exclusive branch requiring one exact holding or position snapshot
+      constraintType: Cardinality
+      scope: Association
+      expression:
+        language: SHACL
+        expression: sh:xone(valuedHoldingSnapshot,valuedPositionSnapshot)
+      severity: Error
+      message: position valuation must select exactly one holding or position snapshot
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation
+    PositionValuationContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuationContract
+      namespace: fin-portfolio
+      localName: PositionValuationContract
+      label: Position Valuation Contract
+      definition: validation contract for direct-unit same- or cross-currency valuation lines
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          input snapshot account belongs to valuationHeader.memberAccountClosure; snapshot instrument and supplied exact
+          listing equal valuationPrice truths; snapshot Quantity unit equals the exact quotation denominator;
+          valuationPrice quotation contract is a member of the valuation definition's RFC-section-5.8 closed exact
+          quotation-contract set; same currency forbids valuationFxConversion and
+          marketValue.amount=quantity.value*price.amount; differing currencies require exactly one direction-correct
+          exact valuationFxConversion and apply the header rounding policy; marketValue currency equals
+          reportingCurrency; forbidden(line valuation method,par,accrued,inverse,notional,multiplier fallback);
+          logicalKey(valuationHeader.versionIri,inputSnapshot.versionIri);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: valuation line snapshot, price, quotation, currency, FX, arithmetic, or identity is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation
+    FXConversionContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/FXConversionContract
+      namespace: fin-portfolio
+      localName: FXConversionContract
+      label: FX Conversion Contract
+      definition: validation contract for exact PIT FX evidence and direction-correct arithmetic
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          conversionRate is PIT-eligible and base Currency != quote Currency; baseToQuote requires input currency=base,
+          output currency=quote, and output.amount=input.amount*rate; quoteToBase requires input currency=quote, output
+          currency=base, and output.amount=input.amount/rate; inputContextRef/digest identifies a strictly prior
+          completed context; rounding policy ref/digest and generatingContextRef are complete;
+          exactlyOne(conversionValuationLine, conversionOpeningLot,conversionFeeAllocation), and that consumer's exact
+          forward conversion role points back here; logicalKey( conversionConsumer.versionIri,inputMoney,outputMoney,
+          fxConversionDirection,conversionRate.versionIri, roundingPolicyDigest,inputContextRecordDigest);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: FX conversion orientation, arithmetic, context, rounding, or identity is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/FXConversion
+    PositionLotAllocationContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocationContract
+      namespace: fin-portfolio
+      localName: PositionLotAllocationContract
+      label: Position Lot Allocation Contract
+      definition: validation contract for opening and consumption allocation branches
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          allocatedQuantity.value > 0; allocationCostBasisDefinition equals the lot definition and calculationContextRef
+          is equal across allocation, lot, and closure; opening requires allocationExecution =
+          allocatedLot.openingExecution, side creates sign(originalQuantity), and quantity=abs(originalQuantity);
+          consumption requires opposite execution side, equal account/instrument/listing/unit, and quantity <= prior
+          remaining quantity; logicalKey(allocationExecution.versionIri, allocatedLot.versionIri,lotAllocationKind);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: lot allocation kind, positive quantity, exact definition/context, side, or identity is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocation
+    PositionLotFeeAllocationContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotFeeAllocationContract
+      namespace: fin-portfolio
+      localName: PositionLotFeeAllocationContract
+      label: Position Lot Fee Allocation Contract
+      definition: validation contract for positive fee allocation and optional exact basis conversion
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          allocatedFeeAmount.amount > 0 and currency=allocatedFee.feeAmount.currency; feeCostBasisDefinition and
+          calculationContextRef equal the target lot allocation truths; same basis currency forbids feeFxConversion and
+          differing currency requires one exact direction-correct conversion; feeLotAllocation must be a member of the
+          governing ExecutionLotAllocationClosure.closureAllocation;
+          logicalKey(allocatedFee.versionIri,feeLotAllocation.versionIri);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: fee allocation magnitude, currency, definition, context, conversion, or identity is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotFeeAllocation
+    ExecutionLotAllocationClosureContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosureContract
+      namespace: fin-portfolio
+      localName: ExecutionLotAllocationClosureContract
+      label: Execution Lot Allocation Closure Contract
+      definition: validation contract for eligible-lot selection and closed allocation, Fee, and fee-allocation sets
+      constraintType: Dependency
+      scope: Object
+      expression:
+        language: Custom
+        expression: >-
+          closureEligibleLot equals the complete exact-version set eligible at closureExecution under account,
+          instrument, optional listing, unit, side, and closureCostBasisDefinition; eligibleLotCount and set digest
+          agree and the completed selection probe proves no omission; FIFO sorts by lot opening time then exact version
+          IRI and exhausts each earlier lot before a later lot; LIFO applies the reverse order; specificIdentification
+          requires specificSelectionRef/digest plus closureSelectedLot count and set digest, every consumed lot is
+          selected and every selected lot is eligible; FIFO/LIFO forbid specific selection evidence and all policies
+          forbid row-number or arrival-order proxies; closureAllocation, closureFee, and closureFeeAllocation equal
+          their sorted complete exact-version sets for closureExecution and closureCostBasisDefinition; counts and
+          section 5.8 set digests agree; completed allocation and fee probes prove no omission in the exact strictly
+          prior input context; allocation quantities conserve Execution Quantity once each; every fee allocation targets
+          a member closureAllocation and an existing Fee; every Fee follows exactly the definition-selected excluded or
+          included branch; included positive allocations may legally split one Fee across multiple distinct lot
+          allocations and their per-Fee aggregate exactly conserves Fee magnitude and currency before direction-correct
+          FX conversion; logicalKey(closureExecution.versionIri, closureCostBasisDefinition.versionIri);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: execution allocation closure set, probe, conservation, fee branch, or identity is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure
+    PositionLotStateClosureContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotStateClosureContract
+      namespace: fin-portfolio
+      localName: PositionLotStateClosureContract
+      label: Position Lot State Closure Contract
+      definition: validation contract for complete open-lot state and snapshot conservation
+      constraintType: Dependency
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          openLot, stateAllocation, and stateExecutionClosure equal their sorted complete exact-version sets and section
+          5.8 digests at snapshotPivotRef; completed lot/allocation probes prove no omissions; all facts agree on
+          account, instrument, optional exact listing, unit, definition, quotation, pivot, and calculation context;
+          remainingQuantity = sign(originalQuantity)*(abs(originalQuantity)-sum(consumption)); consumption <=
+          abs(originalQuantity); zero lots excluded; remainingCostBasis sums openingCostBasis*
+          abs(remainingQuantity)/abs(originalQuantity) after exact FX; closedPositionSnapshot.quantity sums
+          remainingQuantity; external source snapshots forbid this branch; logicalKey(
+          closedPositionSnapshot.versionIri,stateCostBasisDefinition.versionIri);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: position lot state closure sets, probes, equality chain, conservation, basis, or identity is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotStateClosure
+    UnrealizedPnLObservationContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/UnrealizedPnLObservationContract
+      namespace: fin-portfolio
+      localName: UnrealizedPnLObservationContract
+      label: Unrealized PnL Observation Contract
+      definition: validation contract for exact valuation-to-lot-state PnL recomputation
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          pnlValuation input is pnlLotStateClosure.closedPositionSnapshot; definition, quotation, calculation context,
+          generating run, optional FX conversion, reporting currency, and all three closed set digests agree;
+          marketValue=pnlValuation.marketValue; remainingCostBasis=pnlLotStateClosure.remainingCostBasis;
+          unrealizedPnl.amount=marketValue.amount-remainingCostBasis.amount;
+          logicalKey(pnlValuation.versionIri,openLotVersionSetDigest);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: unrealized PnL valuation, lot closure, context, digest, currency, arithmetic, or identity is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/UnrealizedPnLObservation
+    ExternalCostBasisObservationContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/ExternalCostBasisObservationContract
+      namespace: fin-portfolio
+      localName: ExternalCostBasisObservationContract
+      label: External Cost Basis Observation Contract
+      definition: validation contract preserving external basis as a distinct source-provided observation
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          exactly one externalBasisObservationStream; supplied externalBasisListing is PIT-eligible and lists
+          externalBasisInstrument; externalBasisDefinition is the exact immutable calculation-definition version used by
+          the source; account, instrument, optional listing, definition, external cost-basis measurement, and source
+          evidence are immutable version content; logicalKey(externalBasisObservationStream.logicalIri,externalBasisId);
+          never overwrites PositionLotStateClosure or execution-derived basis; versionKey(validFrom,knowledgeFrom,
+          availableFrom,revision)
+      severity: Error
+      message: external basis scope, listing, source evidence, separation, or identity is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/ExternalCostBasisObservation
+    PortfolioPositionReconciliationFindingContract:
+      iri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioPositionReconciliationFindingContract
+      namespace: fin-portfolio
+      localName: PortfolioPositionReconciliationFindingContract
+      label: Portfolio Position Reconciliation Finding Contract
+      definition: validation contract for explicit external-versus-derived quantity or basis comparison
+      constraintType: Logical
+      scope: Association
+      expression:
+        language: Custom
+        expression: >-
+          exactly one comparison family is present: quantity ((comparedExternalSnapshot xor
+          comparedExternalPositionSnapshot),comparedDerivedSnapshot) or basis
+          (comparedExternalBasis,comparedLotStateClosure), and each selected family has at least one side; the
+          digest-bound input context inventories the complete canonical candidate graph and the digest-bound
+          PITValidationRequest supplies the exact validAt, knowledgeAt, and availableAt pivot; the runtime independently
+          selects every PIT-eligible candidate matching family, account, instrument, optional listing, and source
+          branch, rejects more than one candidate per side, and requires the selected roles to equal that closed
+          candidate set; separate external and derived candidate counts and version-set digests equal the independently
+          recomputed sorted sets for explicit source scopes, and the completed reconciliationClosureProbe binds that
+          set, the input context, PIT request, selected nullable roles, scope, and finding version; two-sided
+          comparisons agree on account, instrument, optional listing, and unit/currency, and basis comparisons
+          additionally require comparedExternalBasis.externalBasisDefinition to equal
+          comparedLotStateClosure.stateCostBasisDefinition exactly; the digest-bound reconciliation context binds the
+          same request, candidate set, scope, exact values, and generating context; one-sided comparisons recompute to
+          missingExternal or missingDerived only when the closed candidate set proves the corresponding side empty;
+          two-sided comparisons recompute to matched, quantityMismatch, or basisMismatch; reconciliationSubjectDigest
+          domain-separates the family, external record type, and exact nullable compared versions; generatingContextRef
+          is an exact version; every selected and candidate input is PIT-eligible for the request and every
+          context/probe completes after its locked inputs and strictly before the finding;
+          logicalKey(reconciliationQueryDefinitionRef,pitRequestRef,reconciliationSubjectDigest);
+          versionKey(validFrom,knowledgeFrom,availableFrom,revision)
+      severity: Error
+      message: portfolio reconciliation comparison branch, equality scope, result, or subject digest is invalid
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioPositionReconciliationFinding
+  relationUses:
+    - relation: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationStreamProvider
+      subjectType: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioObservationStream
+      objectType: https://axiolune.ai/ontology/finance/foundation/Party
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationStreamProvider
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/portfolio-positions/valuationDefinitionAuthority
+      subjectType: https://axiolune.ai/ontology/finance/portfolio-positions/ValuationCalculationDefinition
+      objectType: https://axiolune.ai/ontology/finance/foundation/Party
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/valuationDefinitionAuthority
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/portfolio-positions/costBasisDefinitionAuthority
+      subjectType: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition
+      objectType: https://axiolune.ai/ontology/finance/foundation/Party
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/costBasisDefinitionAuthority
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/portfolio-positions/valuationDefinitionQuotationContract
+      subjectType: https://axiolune.ai/ontology/finance/portfolio-positions/ValuationCalculationDefinition
+      objectType: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+      outboundCardinality:
+        minCount: 1
+        maxCount: null
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/valuationDefinitionQuotationContract
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/portfolio-positions/costBasisDefinitionQuotationContract
+      subjectType: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition
+      objectType: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/costBasisDefinitionQuotationContract
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/portfolio-positions/costBasisDefinitionBasisCurrency
+      subjectType: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition
+      objectType: https://axiolune.ai/ontology/finance/foundation/Currency
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+          targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/costBasisDefinitionBasisCurrency
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/portfolio-positions/closureExecution
+      subjectType: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure
+      objectType: https://axiolune.ai/ontology/finance/orders-execution/Execution
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/closureExecution
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/portfolio-positions/closureCostBasisDefinition
+      subjectType: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure
+      objectType: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition
+      outboundCardinality:
+        minCount: 1
+        maxCount: 1
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/closureCostBasisDefinition
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/portfolio-positions/closureEligibleLot
+      subjectType: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure
+      objectType: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot
+      outboundCardinality:
+        minCount: 0
+        maxCount: null
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/closureEligibleLot
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/portfolio-positions/closureSelectedLot
+      subjectType: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure
+      objectType: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot
+      outboundCardinality:
+        minCount: 0
+        maxCount: null
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/closureSelectedLot
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/portfolio-positions/closureAllocation
+      subjectType: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure
+      objectType: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocation
+      outboundCardinality:
+        minCount: 1
+        maxCount: null
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/closureAllocation
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/portfolio-positions/closureFee
+      subjectType: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure
+      objectType: https://axiolune.ai/ontology/finance/orders-execution/Fee
+      outboundCardinality:
+        minCount: 0
+        maxCount: null
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/closureFee
+          enforcementLevel: Mandatory
+    - relation: https://axiolune.ai/ontology/finance/portfolio-positions/closureFeeAllocation
+      subjectType: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure
+      objectType: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotFeeAllocation
+      outboundCardinality:
+        minCount: 0
+        maxCount: null
+      constraints:
+        - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+          targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/closureFeeAllocation
+          enforcementLevel: Mandatory
+  constraintBindings:
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot/role/holdingObservationStream
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshot/role/positionObservationStream
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: >-
+        https://axiolune.ai/ontology/finance/portfolio-positions/ExternalCostBasisObservation/role/externalBasisObservationStream
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembership/role/membershipPortfolio
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembership/role/memberAccount
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembership/role/membershipAuthority
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioManagementMandate/role/managedPortfolio
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioManagementMandate/role/managingParty
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioManagementMandate/role/mandateAuthority
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembershipClosure/role/closurePortfolio
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembershipClosure/role/closedMembership
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot/role/holdingAccount
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot/role/holdingInstrument
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot/role/holdingListing
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshot/role/positionAccount
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshot/role/positionInstrument
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshot/role/positionListing
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot/role/lotInAccount
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot/role/lotForInstrument
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot/role/lotAtListing
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot/role/openingExecution
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot/role/costBasisDefinition
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot/role/lotQuotationContract
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot/role/openingGrossFxConversion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuation/role/valuedPortfolio
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuation/role/memberAccountClosure
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuation/role/valuationDefinition
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuation/role/reportingCurrency
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation/role/valuationHeader
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation/role/valuedHoldingSnapshot
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation/role/valuedPositionSnapshot
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation/role/valuationPrice
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation/role/valuationFxConversion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/FXConversion/role/conversionRate
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/FXConversion/role/conversionValuationLine
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/FXConversion/role/conversionOpeningLot
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/FXConversion/role/conversionFeeAllocation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocation/role/allocationExecution
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocation/role/allocatedLot
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: >-
+        https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocation/role/allocationCostBasisDefinition
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotFeeAllocation/role/allocatedFee
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotFeeAllocation/role/feeLotAllocation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotFeeAllocation/role/feeCostBasisDefinition
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotFeeAllocation/role/feeFxConversion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotStateClosure/role/closedPositionSnapshot
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotStateClosure/role/stateCostBasisDefinition
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotStateClosure/role/stateQuotationContract
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotStateClosure/role/stateAccount
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotStateClosure/role/stateInstrument
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotStateClosure/role/stateListing
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotStateClosure/role/openLot
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotStateClosure/role/stateAllocation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotStateClosure/role/stateExecutionClosure
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/UnrealizedPnLObservation/role/pnlValuation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/UnrealizedPnLObservation/role/pnlLotStateClosure
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/UnrealizedPnLObservation/role/pnlCostBasisDefinition
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/UnrealizedPnLObservation/role/pnlQuotationContract
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/UnrealizedPnLObservation/role/pnlFxConversion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/ExternalCostBasisObservation/role/externalBasisAccount
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/LogicalReference
+      targetElement: >-
+        https://axiolune.ai/ontology/finance/portfolio-positions/ExternalCostBasisObservation/role/externalBasisInstrument
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/ExternalCostBasisObservation/role/externalBasisListing
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: >-
+        https://axiolune.ai/ontology/finance/portfolio-positions/ExternalCostBasisObservation/role/externalBasisDefinition
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: >-
+        https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioPositionReconciliationFinding/role/comparedExternalSnapshot
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: >-
+        https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioPositionReconciliationFinding/role/comparedExternalPositionSnapshot
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: >-
+        https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioPositionReconciliationFinding/role/comparedDerivedSnapshot
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: >-
+        https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioPositionReconciliationFinding/role/comparedExternalBasis
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/meta/core/constraints/ExactVersionReference
+      targetElement: >-
+        https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioPositionReconciliationFinding/role/comparedLotStateClosure
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioObservationStreamContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioObservationStream
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembershipContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembership
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioManagementMandateContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioManagementMandate
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembershipClosureContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembershipClosure
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshotContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshotContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshot
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotOpeningAllocationCompletenessContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/ValuationCalculationDefinitionContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/ValuationCalculationDefinition
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinitionContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuationContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuationInputXone
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuationContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/FXConversionContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/FXConversion
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocationContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotFeeAllocationContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotFeeAllocation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosureContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotStateClosureContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotStateClosure
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/UnrealizedPnLObservationContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/UnrealizedPnLObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/ExternalCostBasisObservationContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/ExternalCostBasisObservation
+      enforcementLevel: Mandatory
+    - constraintRef: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioPositionReconciliationFindingContract
+      targetElement: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioPositionReconciliationFinding
+      enforcementLevel: Mandatory

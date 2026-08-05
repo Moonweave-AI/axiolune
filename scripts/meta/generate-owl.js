@@ -57,6 +57,7 @@ function expandRange(r) {
 
 const core = yaml.load(fs.readFileSync(path.join(META_DIR, 'core-meta-model.yaml'), 'utf8'));
 const patterns = yaml.load(fs.readFileSync(path.join(META_DIR, 'cross-domain-patterns.yaml'), 'utf8'));
+const behavior = yaml.load(fs.readFileSync(path.join(META_DIR, 'behavior-meta-model.yaml'), 'utf8'));
 const dataBinding = yaml.load(fs.readFileSync(path.join(META_DIR, 'data-binding-meta-model.yaml'), 'utf8'));
 const quads = [];
 
@@ -108,6 +109,62 @@ for (const pattern of (patterns.CrossDomainPatterns && patterns.CrossDomainPatte
   if (pattern.label) add(cls, namedNode(RDFS + 'label'), literal(pattern.label));
   if (pattern.definition) add(cls, namedNode(RDFS + 'comment'), literal(pattern.definition));
   patternClassCount++;
+}
+
+// ---- R0: Meta-type schemas -> OWL declarations ----
+// Each meta-type schema (ObjectTypeDefinition, AttributeTypeDefinition, etc.) defines
+// the GRAMMAR for domain ontologies. With v0.6.0 they now carry their own canonical IRI
+// and are projected as first-class OWL declarations so the meta-model itself is a
+// referenceable, alignable ontology. This does NOT project their concrete individuals
+// (handled by R1-R4) — it projects the schema types themselves.
+const projectedIris = new Set();
+let schemaClassCount = 0, schemaPropertyCount = 0;
+const META_SECTIONS = [
+  { doc: core, section: 'MetaModel' },
+  { doc: patterns, section: 'CrossDomainPatterns' },
+  { doc: behavior, section: 'PlatformBehavior' },
+  { doc: dataBinding, section: 'DataBinding' },
+];
+const SCALAR_SECTION_META = new Set([
+  'version', 'description', 'layer', 'changes', 'note', 'notes', 'purpose',
+  'curiePrefixes', 'label', 'definition', 'validationRules', 'ValidationRules',
+  'Notes', 'validation', 'examples', 'structures', 'ImplementationNotes',
+  'examples', 'constraints', 'patterns',
+]);
+for (const { doc, section } of META_SECTIONS) {
+  const sec = doc[section];
+  if (!sec || typeof sec !== 'object') continue;
+  for (const [name, def] of Object.entries(sec)) {
+    if (SCALAR_SECTION_META.has(name)) continue;
+    if (!def || typeof def !== 'object' || !def.iri || typeof def.iri !== 'string') continue;
+    // Skip concrete attribute instances (they have valueType + owlProjectionOverride) —
+    // those are handled by R1 / Layer4 attribute projection below.
+    if (def.valueType && (def.owlProjectionOverride || def.namespace)) continue;
+    if (def.constraintType || def.scope) continue; // constraint instances, not schemas
+    if (Array.isArray(def)) continue;
+    // Skip concrete class/property definitions that are just {definition, owlProjection}
+    // with classIri/propertyIri but no grammar fields — those are projected by R2/R3/R-Layer4.
+    // We only want schemas that DEFINE a type-classifier (have requiredFields/optionalFields/
+    // fields/variants/builtinTypes/structure/commonRequiredFields).
+    const isSchema = def.requiredFields || def.optionalFields || def.fields ||
+      def.variants || def.builtinTypes || def.structure || def.commonRequiredFields ||
+      def.discriminator;
+    if (!isSchema) continue;
+    if (projectedIris.has(def.iri)) continue;
+    projectedIris.add(def.iri);
+    const node = namedNode(def.iri);
+    const proj = def.owlProjection || {};
+    const kind = proj.kind;
+    let declType;
+    if (kind === 'objectProperty') declType = OWL + 'ObjectProperty';
+    else if (kind === 'datatype' || kind === 'rdfLangString') declType = OWL + 'DatatypeProperty';
+    else declType = OWL + 'Class'; // class, structuredValueClass, ontology, namedIndividual-as-schema, or unspecified
+    add(node, namedNode(RDF + 'type'), namedNode(declType));
+    add(node, namedNode(RDFS + 'label'), literal(name));
+    if (def.definition) add(node, namedNode(RDFS + 'comment'), literal(def.definition));
+    if (declType === OWL + 'Class') schemaClassCount++;
+    else schemaPropertyCount++;
+  }
 }
 
 // ---- R2/R3: Structured value classes ----
@@ -193,6 +250,7 @@ writer.end((error, result) => {
   fs.writeFileSync(OUT, result);
   console.log(`✓ OWL projected: ${attrCount} attribute properties (${depCount} deprecated), ` +
     `MonetaryAmount (${moneyN} terms), QuantityValue (${qtyN} terms), ` +
-    `Layer4 ${bindingClassCount} classes/${bindingPropertyCount} properties -> ${path.basename(OUT)}`);
+    `Layer4 ${bindingClassCount} classes/${bindingPropertyCount} properties, ` +
+    `R0 meta-type schemas (${schemaClassCount} classes/${schemaPropertyCount} properties) -> ${path.basename(OUT)}`);
   console.log(`  ${quads.length} triples`);
 });

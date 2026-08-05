@@ -63,15 +63,29 @@ function codes(result) {
   return result.issues.map((issue) => issue.code);
 }
 
-test('current repository governance drift is an executable Stop-Ship', () => {
+test('current repository governance baseline is aligned to M3 v0.6.0 / RFC-001 / typed-container ADRs', () => {
   const result = auditM2GovernanceBaseline(ROOT);
-  assert.equal(result.outcome, 'failed');
-  assert.ok(codes(result).includes('M2_GOV_RFC001_NOT_ACCEPTED'));
-  assert.ok(codes(result).includes('M2_GOV_META_ADR013_MISSING'));
-  assert.ok(codes(result).includes('M2_GOV_DOMAIN_ADR013_NOT_SUPERSEDED'));
-  assert.ok(codes(result).includes('M2_GOV_DOMAIN_ADR016_MISSING'));
-  assert.ok(codes(result).includes('M2_GOV_M2_PLAN_HEADER_BASELINE_DRIFT'));
-  assert.ok(codes(result).includes('M2_GOV_M2_PLAN_E0_BASELINE_DRIFT'));
+  const driftCodes = codes(result);
+  const stopShipCodes = [
+    'M2_GOV_RFC001_NOT_ACCEPTED',
+    'M2_GOV_META_ADR013_MISSING',
+    'M2_GOV_META_ADR013_NOT_ACCEPTED',
+    'M2_GOV_META_ADR013_WRONG_BASELINE',
+    'M2_GOV_DOMAIN_ADR013_NOT_SUPERSEDED',
+    'M2_GOV_DOMAIN_ADR016_MISSING',
+    'M2_GOV_DOMAIN_ADR016_NOT_ACCEPTED',
+    'M2_GOV_DOMAIN_ADR016_CONTRACT_MISMATCH',
+    'M2_GOV_M2_PLAN_HEADER_BASELINE_DRIFT',
+    'M2_GOV_M2_PLAN_E0_BASELINE_DRIFT',
+    'M2_GOV_M2_PLAN_RFC001_UNBOUND',
+  ];
+  const leaks = stopShipCodes.filter((c) => driftCodes.includes(c));
+  assert.deepEqual(
+    leaks,
+    [],
+    `repository regressed to a governance Stop-Ship: ${leaks.join(', ')}`,
+  );
+  assert.equal(result.outcome, 'passed', `governance baseline must pass after M3 v0.6.0 alignment; issues: ${driftCodes.join(', ')}`);
 });
 
 test('an internally consistent accepted v0.6/RFC/ADR/plan transaction passes', (context) => {

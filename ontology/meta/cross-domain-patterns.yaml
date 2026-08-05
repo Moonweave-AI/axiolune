@@ -3,6 +3,9 @@ module:
   baseIri: https://axiolune.ai/ontology/meta/patterns/
   preferredPrefix: ax-pattern
   version: 0.6.0
+  label: Cross-Domain Patterns
+  definition: reusable patterns for time, provenance, evidence, and lifecycle across domain objects
+  cnNote: 跨域模式层，是本体工程中定义时间、来源、证据、生命周期等通用关注点的可复用模式层，旨在把这些与具体领域无关的能力形式化为一等本体元素，供各领域通过绑定复用。
   curiePrefixes:
     ax-meta: https://axiolune.ai/ontology/meta/
     ax-pattern: https://axiolune.ai/ontology/meta/patterns/
@@ -50,8 +53,9 @@ CrossDomainPatterns:
     - Injected attributes/relations
     - OWL/SHACL projection rules
   PatternDefinition:
-    definition: a meta-classifier for reusable cross-domain semantic patterns that
-      can be bound to ObjectTypes and AssociationTypes
+    iri: https://axiolune.ai/ontology/meta/patterns/PatternDefinition
+    cnNote: 模式定义，是本体工程中可绑定到对象类型与关联类型的跨域语义模式元类型，旨在把时间、来源、证据等通用关注点形式化为一等本体元素，供各领域复用。
+    definition: a meta-classifier for reusable cross-domain semantic patterns that can be bound to ObjectTypes and AssociationTypes, intended to formalize cross-cutting concerns such as time, provenance, and evidence as first-class ontology elements for reuse across domains
     purpose: Formalizes patterns like Temporal, Provenance, Evidence as first-class
       ontology elements with IRIs, versions, and composition rules
     owlProjection:
@@ -132,7 +136,9 @@ CrossDomainPatterns:
         type: list[PatternExample]
         description: example usages of this pattern
   PatternParameter:
-    definition: a configuration parameter for customizing pattern behavior
+    iri: https://axiolune.ai/ontology/meta/patterns/PatternParameter
+    cnNote: 模式参数，是本体工程中自定义模式行为的配置参数，旨在让同一模式在不同类型上以不同精度或配置生效，提升模式的复用灵活性。
+    definition: a configuration parameter for customizing pattern behavior, intended to let the same pattern take effect on different types with different precision or configuration, improving reuse flexibility
     requiredFields:
       name:
         type: string
@@ -159,7 +165,9 @@ CrossDomainPatterns:
       description:
         type: string
   PatternOWLProjection:
-    definition: specification of how a pattern maps to OWL constructs
+    iri: https://axiolune.ai/ontology/meta/patterns/PatternOWLProjection
+    cnNote: 模式 OWL 投影，是本体工程中模式到 OWL 构造的映射规格，旨在描述模式绑定时贡献哪些 OWL 公理，使模式语义可被推理机理解。
+    definition: a specification of how a pattern maps to OWL constructs, intended to describe which OWL axioms a pattern contributes when bound, so that pattern semantics can be understood by reasoners
     fields:
       kind:
         type: enum
@@ -179,8 +187,9 @@ CrossDomainPatterns:
         type: list[OWLRestriction]
         description: OWL property restrictions
   OWLRestriction:
-    definition: closed OWL restriction emitted when a pattern is projected onto a
-      bound domain type
+    iri: https://axiolune.ai/ontology/meta/patterns/OWLRestriction
+    cnNote: OWL 限制，是本体工程中模式投影到绑定类型时发出的闭 OWL 限制，旨在把模式语义固化为可推理的公理，如基数约束与存在性约束。
+    definition: a closed OWL restriction emitted when a pattern is projected onto a bound domain type, intended to solidify pattern semantics into inferable axioms such as cardinality and existential restrictions
     requiredFields:
       onProperty:
         type: uri
@@ -196,7 +205,9 @@ CrossDomainPatterns:
       value:
         type: union[uri,nonNegativeSafeInteger]
   PatternSHACLShape:
-    definition: SHACL shape for validating instances that use this pattern
+    iri: https://axiolune.ai/ontology/meta/patterns/PatternSHACLShape
+    cnNote: 模式 SHACL 形状，是本体工程中模式贡献的校验形状，旨在让使用该模式的实例可被机器校验，是模式"可执行"的一面。
+    definition: a SHACL shape for validating instances that use this pattern, intended to make pattern-conforming instances machine-verifiable; it is the executable side of a pattern
     fields:
       shapeIri:
         type: uri
@@ -208,8 +219,9 @@ CrossDomainPatterns:
         type: list[SHACLPropertyShape]
         description: property-level constraints
   SHACLPropertyShape:
-    definition: closed property-level SHACL projection contributed by one
-      cross-domain pattern
+    iri: https://axiolune.ai/ontology/meta/patterns/SHACLPropertyShape
+    cnNote: SHACL 属性形状，是本体工程中模式贡献的属性级校验投影，旨在把模式注入属性的基数与类型约束固化为可校验形状。
+    definition: a closed property-level SHACL projection contributed by one cross-domain pattern, intended to solidify the cardinality and type constraints of pattern-injected properties into verifiable shapes
     requiredFields:
       path:
         type: uri
@@ -231,7 +243,9 @@ CrossDomainPatterns:
       hasValue:
         type: any
   PatternExample:
-    definition: an example of how this pattern is used
+    iri: https://axiolune.ai/ontology/meta/patterns/PatternExample
+    cnNote: 模式示例，是本体工程中展示模式使用方式的示例记录，旨在帮助理解模式如何落到具体类型上，是模式文档的一部分。
+    definition: an example of how this pattern is used, intended to help understand how a pattern applies to concrete types; it is part of pattern documentation
     fields:
       description:
         type: string
@@ -439,6 +453,7 @@ CrossDomainPatterns:
       label: Publication Timing Pattern
       definition: foundational pattern for tracking when information was published by
         its source and received by the platform
+      cnNote: 发布时序模式，是本体工程中跟踪信息发布与接收时序的跨域模式，旨在为数据流记录"源何时发布、平台何时接收"，支撑发布先于接收的时序一致性校验。
       version: 1.0.0
       appliesTo:
         - ObjectTypeDefinition
@@ -470,6 +485,7 @@ CrossDomainPatterns:
       definition: pattern for bi-temporal semantics distinguishing business validity
         time (when the fact was true in the world) from system knowledge time
         (when the platform learned about it)
+      cnNote: 双时态事实模式，是本体工程中区分业务有效时间与系统获知时间的双时态跨域模式，旨在为事实建立"何时为真"与"何时被知"两条时间轴，是回测与审计防前视偏差的核心。
       version: 1.0.0
       appliesTo:
         - ObjectTypeDefinition
@@ -611,6 +627,7 @@ CrossDomainPatterns:
       label: Temporal Observation Pattern
       definition: pattern for single-timestamp observations without explicit validity
         periods (e.g., sensor readings, event timestamps)
+      cnNote: 时态观测模式，是本体工程中带单一时间戳的观测跨域模式，旨在为传感器读数、行情快照等无需双时态的观测提供轻量时序标注。
       version: 1.0.0
       appliesTo:
         - AssociationTypeDefinition
@@ -640,6 +657,7 @@ CrossDomainPatterns:
       label: Provenance Tracking Pattern
       definition: pattern for tracking the origin, authority, lineage, and confidence
         of information
+      cnNote: 溯源事实模式，是本体工程中跟踪事实来源、权威与谱系的跨域模式，旨在为每个事实记录"来自哪里、由谁负责、可信程度"，支撑数据可追溯与可审计。
       version: 1.0.0
       appliesTo:
         - ObjectTypeDefinition
@@ -692,6 +710,7 @@ CrossDomainPatterns:
       label: Evidence Tracking Pattern
       definition: pattern for linking facts to supporting evidence, documents, and
         data artifacts for audit and reproducibility
+      cnNote: 证据模式，是本体工程中把事实链接到支持证据的跨域模式，旨在为断言提供带加密摘要的证据绑定，使每个事实都可追溯到不可篡改的证据工件。
       version: 1.0.0
       appliesTo:
         - ObjectTypeDefinition
@@ -734,6 +753,7 @@ CrossDomainPatterns:
       localName: Lifecycle
       label: Lifecycle State Management Pattern
       definition: pattern for managing entity lifecycle states, transitions, and history
+      cnNote: 生命周期模式，是本体工程中管理实体状态与状态转移的跨域模式，旨在为实体提供"草稿、活跃、弃用、退役"等状态的类型化追踪，支撑本体演化的可审计。
       version: 1.0.0
       appliesTo:
         - ObjectTypeDefinition
@@ -773,6 +793,7 @@ CrossDomainPatterns:
       label: Semantic Versioning Pattern
       definition: pattern for tracking semantic versions of ontology artifacts (not
         business fact revisions)
+      cnNote: 版本化模式，是本体工程中跟踪本体工件语义版本的跨域模式，旨在为本体工件本身（区别于业务事实）提供版本链与不兼容声明，支撑本体的兼容性管理。
       version: 1.0.0
       appliesTo:
         - ObjectTypeDefinition

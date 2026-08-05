@@ -1,0 +1,156 @@
+# Orders Execution v1.1.0 (ADR-025) negative staging fixtures.
+# Structural negatives for the new v1.1.0 association/object types. These
+# fixtures use the instances: dialect with typed predicates. Cardinality /
+# minCount enforcement is verified by validate-m2-core --all --strict and the
+# generated SHACL shapes; the v1.1.0-specific logical contracts
+# (OrderRevisionContract, MatchedTradeContract, ExecutionAllocationConservation,
+# OrderIntentRoutingPolicy, FillSnapshotConsistency) are Custom-language
+# constraints verified by the strict structural validator (parse-verified for
+# the SHACL Tier-2 components; pySHACL enforcement of parameterized components
+# is pending a SPARQL-capable engine per ADR-025).
+
+fixtures:
+  # --- OrderRevision: cancel kind must NOT carry replacedTerms ---
+  - id: oe-v11-neg-revision-cancel-with-replaced-terms
+    description: An OrderRevision with revisionKind=cancel must not carry replacedTerms.
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderRevision
+    expectedResult: rejected
+    expectedViolation:
+      component: https://axiolune.ai/ontology/finance/orders-execution/OrderRevisionContract
+      focus: https://axiolune.ai/data/orders/v11-neg-revision-cancel-with-terms/version/v1
+      severity: http://www.w3.org/ns/shacl#Violation
+    instances:
+      - iri: https://axiolune.ai/data/orders/v11-neg-revision-cancel-with-terms/version/v1
+        type: https://axiolune.ai/ontology/finance/orders-execution/OrderRevision
+        revisionOrder: https://axiolune.ai/orders/external/v11-neg-order-1/version/v1
+        revisionRequestId: req-cancel-001
+        revisionKind: https://axiolune.ai/ontology/finance/orders-execution/RevisionKind/value/cancel
+        replacedTerms: limitPrice 100 -> 101
+        observedAt: '2026-08-01T09:45:00Z'
+        validFrom: '2026-08-01T09:45:00Z'
+        knowledgeFrom: '2026-08-01T09:45:01Z'
+        availableFrom: '2026-08-01T09:45:02Z'
+
+  # --- OrderRevision: missing required revisionRequestId ---
+  - id: oe-v11-neg-revision-missing-request-id
+    description: An OrderRevision requires exactly one revisionRequestId (minCount 1).
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderRevision
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/orders/v11-neg-revision-no-id/version/v1
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/orders-execution/revisionRequestId
+    instances:
+      - iri: https://axiolune.ai/data/orders/v11-neg-revision-no-id/version/v1
+        type: https://axiolune.ai/ontology/finance/orders-execution/OrderRevision
+        revisionOrder: https://axiolune.ai/orders/external/v11-neg-order-2/version/v1
+        revisionKind: https://axiolune.ai/ontology/finance/orders-execution/RevisionKind/value/replace
+        observedAt: '2026-08-01T09:50:00Z'
+        validFrom: '2026-08-01T09:50:00Z'
+        knowledgeFrom: '2026-08-01T09:50:01Z'
+        availableFrom: '2026-08-01T09:50:02Z'
+
+  # --- MatchedTrade: missing required disclosureStatus ---
+  - id: oe-v11-neg-matched-trade-missing-disclosure
+    description: A MatchedTrade requires exactly one disclosureStatus (minCount 1).
+    type: https://axiolune.ai/ontology/finance/orders-execution/MatchedTrade
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/orders/v11-neg-matched-no-disclosure/version/v1
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/orders-execution/disclosureStatus
+    instances:
+      - iri: https://axiolune.ai/data/orders/v11-neg-matched-no-disclosure/version/v1
+        type: https://axiolune.ai/ontology/finance/orders-execution/MatchedTrade
+        matchedExecution: https://axiolune.ai/orders/executions/v11-neg-buy/version/v1
+        matchedContraParty: https://axiolune.ai/parties/contra-seller
+        matchedContraAccount: https://axiolune.ai/accounts/CONTRA-seller
+        matchId: match-neg-001
+        observedAt: '2026-08-01T10:15:00Z'
+        validFrom: '2026-08-01T10:15:00Z'
+        knowledgeFrom: '2026-08-01T10:15:01Z'
+        availableFrom: '2026-08-01T10:15:02Z'
+
+  # --- MatchedTrade: missing required matchId ---
+  - id: oe-v11-neg-matched-trade-missing-match-id
+    description: A MatchedTrade requires exactly one matchId (minCount 1).
+    type: https://axiolune.ai/ontology/finance/orders-execution/MatchedTrade
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/orders/v11-neg-matched-no-matchid/version/v1
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/orders-execution/matchId
+    instances:
+      - iri: https://axiolune.ai/data/orders/v11-neg-matched-no-matchid/version/v1
+        type: https://axiolune.ai/ontology/finance/orders-execution/MatchedTrade
+        matchedExecution: https://axiolune.ai/orders/executions/v11-neg-buy-2/version/v1
+        matchedContraParty: https://axiolune.ai/parties/contra-seller
+        matchedContraAccount: https://axiolune.ai/accounts/CONTRA-seller
+        disclosureStatus: https://axiolune.ai/ontology/finance/orders-execution/DisclosureStatus/value/disclosed
+        observedAt: '2026-08-01T10:20:00Z'
+        validFrom: '2026-08-01T10:20:00Z'
+        knowledgeFrom: '2026-08-01T10:20:01Z'
+        availableFrom: '2026-08-01T10:20:02Z'
+
+  # --- OrderRoute: missing required routedQuantity ---
+  - id: oe-v11-neg-route-missing-quantity
+    description: An OrderRoute requires exactly one routedQuantity (minCount 1).
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderRoute
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/orders/v11-neg-route-no-qty/version/v1
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/orders-execution/routedQuantity
+    instances:
+      - iri: https://axiolune.ai/data/orders/v11-neg-route-no-qty/version/v1
+        type: https://axiolune.ai/ontology/finance/orders-execution/OrderRoute
+        routeParentIntent: https://axiolune.ai/data/orders/v11-neg-sor-intent/version/v1
+        routeChildExternalOrder: https://axiolune.ai/data/orders/v11-neg-sor-child/version/v1
+        routeStatus: https://axiolune.ai/ontology/finance/orders-execution/RouteStatus/value/routed
+        routeTime: '2026-08-01T09:30:00Z'
+        validFrom: '2026-08-01T09:30:00Z'
+        knowledgeFrom: '2026-08-01T09:30:01Z'
+        availableFrom: '2026-08-01T09:30:02Z'
+
+  # --- OrderRoute: missing required routeStatus ---
+  - id: oe-v11-neg-route-missing-status
+    description: An OrderRoute requires exactly one routeStatus (minCount 1).
+    type: https://axiolune.ai/ontology/finance/orders-execution/OrderRoute
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/orders/v11-neg-route-no-status/version/v1
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/orders-execution/routeStatus
+    instances:
+      - iri: https://axiolune.ai/data/orders/v11-neg-route-no-status/version/v1
+        type: https://axiolune.ai/ontology/finance/orders-execution/OrderRoute
+        routeParentIntent: https://axiolune.ai/data/orders/v11-neg-sor-intent-2/version/v1
+        routeChildExternalOrder: https://axiolune.ai/data/orders/v11-neg-sor-child-2/version/v1
+        routedQuantity: '100'
+        routeTime: '2026-08-01T09:35:00Z'
+        validFrom: '2026-08-01T09:35:00Z'
+        knowledgeFrom: '2026-08-01T09:35:01Z'
+        availableFrom: '2026-08-01T09:35:02Z'
+
+  # --- ExecutionAllocation: missing required allocationStatus ---
+  - id: oe-v11-neg-allocation-missing-status
+    description: An ExecutionAllocation requires exactly one allocationStatus (minCount 1).
+    type: https://axiolune.ai/ontology/finance/orders-execution/ExecutionAllocation
+    expectedResult: rejected
+    expectedViolation:
+      component: http://www.w3.org/ns/shacl#MinCountConstraintComponent
+      focus: https://axiolune.ai/data/orders/v11-neg-alloc-no-status/version/v1
+      severity: http://www.w3.org/ns/shacl#Violation
+      path: https://axiolune.ai/ontology/finance/orders-execution/allocationStatus
+    instances:
+      - iri: https://axiolune.ai/data/orders/v11-neg-alloc-no-status/version/v1
+        type: https://axiolune.ai/ontology/finance/orders-execution/ExecutionAllocation
+        allocationSourceExecution: https://axiolune.ai/orders/executions/v11-neg-block/version/v1
+        validFrom: '2026-08-01T10:00:00Z'
+        knowledgeFrom: '2026-08-01T10:00:01Z'
+        availableFrom: '2026-08-01T10:00:02Z'

@@ -3,6 +3,9 @@ module:
   baseIri: https://axiolune.ai/ontology/meta/data-binding/
   preferredPrefix: ax-binding
   version: 0.6.0
+  label: Data Binding Meta-Model
+  definition: the meta-model mapping physical data sources to ontology concepts
+  cnNote: 数据绑定元模型层，是本体工程中把物理数据映射到本体概念的元模型层，旨在为数据物化提供带身份、时序、溯源与证据锁的可复现映射，是物理与语义之间的桥梁。
   imports:
     - moduleIri: https://axiolune.ai/ontology/meta/core
       version: 0.6.0
@@ -81,8 +84,9 @@ DataBinding:
     - MaterializationRun provides immutable runtime context for reproducible
     queries
   ArtifactRef:
-    definition: closed reference to either an absolute artifact IRI or one path
-      below an explicitly named build root
+    iri: https://axiolune.ai/ontology/meta/data-binding/ArtifactRef
+    cnNote: 工件引用，是本体工程中对一个绝对工件或构建根下相对路径的闭引用，旨在为本体构建产物的引用提供可校验、可复现的基本单元。
+    definition: a closed reference to either an absolute artifact IRI or one path below an explicitly named build root, intended to provide the verifiable, reproducible basic unit of reference for all build-artifact evidence locking in Layer 4
     owlProjection:
       kind: structuredValueClass
       classIri: https://axiolune.ai/ontology/meta/data-binding/structures/ArtifactRef
@@ -110,8 +114,9 @@ DataBinding:
           path:
             type: posixRelativePath
   SourceLocator:
-    definition: closed media-aware selector for one canonical non-empty byte
-      selection inside a locked source artifact
+    iri: https://axiolune.ai/ontology/meta/data-binding/SourceLocator
+    cnNote: 来源定位器，是本体工程中在锁定源工件内精确选定一段非空字节的闭媒体感知选择器，旨在让"证据来自哪几个字节"可复现、可审计。
+    definition: a closed media-aware selector for one canonical non-empty byte selection inside a locked source artifact, intended to make "which exact bytes the evidence came from" reproducible and auditable
     owlProjection:
       kind: structuredValueClass
       classIri: https://axiolune.ai/ontology/meta/data-binding/structures/SourceLocator
@@ -242,8 +247,9 @@ DataBinding:
       identifies the exact supporting bytes
     valueType: SourceLocator
   SemanticValueDefinition:
-    definition: closed semantic locator for one visible ontology value used by an
-      identity component or derivation
+    iri: https://axiolune.ai/ontology/meta/data-binding/SemanticValueDefinition
+    cnNote: 语义值定义，是本体工程中描述一个可见本体值的闭定位器，旨在为身份组件与派生提供语义输入，是身份契约与派生的基本构成单元。
+    definition: a closed semantic locator for one visible ontology value used by an identity component or derivation, intended to provide the semantic input for identity contracts and derivations
     discriminator: valueKind
     variants:
       attributeUse:
@@ -300,7 +306,9 @@ DataBinding:
           outputName:
             type: asciiIdentifier
   IdentityComponentDefinition:
-    definition: one ordered semantic component of a target logical or version identity
+    iri: https://axiolune.ai/ontology/meta/data-binding/IdentityComponentDefinition
+    cnNote: 身份组件，是本体工程中逻辑身份或版本身份的一个有序语义分量，旨在为事实的稳定 IRI 构造提供可组合的砖块。
+    definition: one ordered semantic component of a target logical or version identity, intended to provide composable bricks for constructing a fact's stable IRI
     requiredFields:
       name:
         type: asciiIdentifier
@@ -315,7 +323,9 @@ DataBinding:
       normalizationRuleDigest:
         type: digest
   IdentityTermContractDefinition:
-    definition: versioned closed RDF-term contract used by identity components
+    iri: https://axiolune.ai/ontology/meta/data-binding/IdentityTermContractDefinition
+    cnNote: 身份术语契约，是本体工程中版本化的闭 RDF 项契约，旨在规定身份组件如何成帧为规范 RDF 项，保证身份的可复现性。
+    definition: a versioned closed RDF-term contract used by identity components, intended to prescribe how identity components frame into canonical RDF terms, ensuring identity reproducibility
     requiredFields:
       iri:
         type: uri
@@ -365,8 +375,9 @@ DataBinding:
               languageTag:
                 type: canonicalBcp47
   IdentityNormalizationRuleDefinition:
-    definition: versioned deterministic normalization rule applied before
-      identity-term framing
+    iri: https://axiolune.ai/ontology/meta/data-binding/IdentityNormalizationRuleDefinition
+    cnNote: 身份规范化规则，是本体工程中成帧前施加的确定性规范化，旨在把输入术语转成输出术语，保证身份归一化的可复现。
+    definition: a versioned deterministic normalization rule applied before identity-term framing, intended to convert input terms into output terms, ensuring identity normalization is reproducible
     requiredFields:
       iri:
         type: uri
@@ -400,8 +411,9 @@ DataBinding:
       testVectorsDigest:
         type: digest
   IdentityDerivationDefinition:
-    definition: versioned deterministic derivation from declared semantic inputs to
-      one or more named identity outputs
+    iri: https://axiolune.ai/ontology/meta/data-binding/IdentityDerivationDefinition
+    cnNote: 身份派生，是本体工程中从语义输入确定性派生命名身份输出的闭规则，旨在规定"如何由语义算出 IRI"，使身份构造可审计。
+    definition: a versioned deterministic derivation from declared semantic inputs to one or more named identity outputs, intended to prescribe "how to compute an IRI from semantics", making identity construction auditable
     requiredFields:
       iri:
         type: uri
@@ -441,8 +453,9 @@ DataBinding:
           termContractDigest:
             type: digest
   ControlledIriSetDefinition:
-    definition: versioned non-empty canonical set of IRIs authorized for controlled
-      identity components
+    iri: https://axiolune.ai/ontology/meta/data-binding/ControlledIriSetDefinition
+    cnNote: 受控 IRI 集合，是本体工程中版本化的非空规范 IRI 集合，旨在为受控身份组件提供可版本化、带证据锁的 IRI 白名单。
+    definition: a versioned non-empty canonical set of IRIs authorized for controlled identity components, intended to provide a versionable, evidence-locked IRI whitelist for controlled identity
     requiredFields:
       iri:
         type: uri
@@ -470,8 +483,9 @@ DataBinding:
         unique: true
         order: unsignedUtf8
   TargetIdentityContractDefinition:
-    definition: static contract that determines stable logical and immutable version
-      identity for one materialized target type
+    iri: https://axiolune.ai/ontology/meta/data-binding/TargetIdentityContractDefinition
+    cnNote: 目标身份契约，是本体工程中为某物化目标类型决定稳定逻辑身份与不可变版本身份的静态契约，旨在为身份规格提供权威依据。
+    definition: a static contract that determines stable logical and immutable version identity for one materialized target type, intended to provide the authoritative basis for identity specs
     requiredFields:
       iri:
         type: uri
@@ -492,8 +506,9 @@ DataBinding:
         type: list[IdentityComponentDefinition]
         ordered: true
   ReferenceIdentityBinding:
-    definition: mapping binding that resolves a referenced target through its
-      accepted identity contract
+    iri: https://axiolune.ai/ontology/meta/data-binding/ReferenceIdentityBinding
+    cnNote: 引用身份绑定，是本体工程中通过已接受身份契约解析被引用目标的机制，旨在声明"引用走哪条身份"，支持逻辑或版本两种引用模式。
+    definition: a mapping binding that resolves a referenced target through its accepted identity contract, intended to declare "which identity a reference follows", supporting both logical and version reference modes
     requiredFields:
       bindingType:
         type: const
@@ -508,23 +523,29 @@ DataBinding:
       keyBindings:
         type: map[string,ValueBinding]
   FactIdentity:
-    definition: generic stable logical identity anchor for one versioned
-      materialized object or association
+    iri: https://axiolune.ai/ontology/meta/data-binding/FactIdentity
+    cnNote: 事实身份，是本体工程中一个版本化物化对象的稳定逻辑身份锚，旨在把"同一个事实的不同版本"归并到同一逻辑身份之下。
+    definition: a generic stable logical identity anchor for one versioned materialized object or association, intended to unify "different versions of the same fact" under one logical identity
     owlProjection:
       kind: class
       classIri: https://axiolune.ai/ontology/meta/data-binding/FactIdentity
   FactVersion:
-    definition: generic marker class for one immutable materialized fact version
+    iri: https://axiolune.ai/ontology/meta/data-binding/FactVersion
+    cnNote: 事实版本，是本体工程中一个不可变物化事实版本的标记类型，旨在作为实际的数据载体，通过取代关系形成版本链。
+    definition: a generic marker class for one immutable materialized fact version, intended to serve as the actual data carrier, forming a version chain through the supersedes relation
     owlProjection:
       kind: class
       classIri: https://axiolune.ai/ontology/meta/data-binding/FactVersion
   FactClosureAssertion:
-    definition: immutable evidence that closes one knowledge-time or
-      availability-time interval without mutating the older fact version
+    iri: https://axiolune.ai/ontology/meta/data-binding/FactClosureAssertion
+    cnNote: 事实闭包断言，是本体工程中不修改旧版本即可关闭其时间区间的不变证据，旨在支持"超时不改写只追加闭包"的审计语义。
+    definition: immutable evidence that closes one knowledge-time or availability-time interval without mutating the older fact version, intended to support the audit semantics of "append closure without rewriting the old version"
     owlProjection:
       kind: class
       classIri: https://axiolune.ai/ontology/meta/data-binding/FactClosureAssertion
   versionOf:
+    iri: https://axiolune.ai/ontology/meta/data-binding/properties/versionOf
+    cnNote: 版本归属关系，是从一个不可变事实版本指向其稳定事实身份锚的函数式语义关系，用于把同一个事实的不同版本归并到同一逻辑身份之下。
     definition: functional relation from one immutable FactVersion to its stable
       FactIdentity anchor
     owlProjection:
@@ -535,6 +556,8 @@ DataBinding:
       characteristics:
         - functional
   supersedes:
+    iri: https://axiolune.ai/ontology/meta/data-binding/properties/supersedes
+    cnNote: 取代关系，是从一个不可变事实版本指向其同一身份锚下直接前一版本的有向语义关系，用于构成版本链、记录新版本替换了哪个旧版本。
     definition: relation from one immutable FactVersion to its direct previous
       version with the same FactIdentity anchor
     owlProjection:
@@ -585,8 +608,9 @@ DataBinding:
     valueType: string
     pattern: ^sha256:[0-9a-f]{64}$
   DataSource:
-    definition: a meta-classifier for external or internal data providers with
-      connection and authentication metadata
+    iri: https://axiolune.ai/ontology/meta/data-binding/DataSource
+    cnNote: 数据源，是本体工程中外部或内部数据提供方的元类型，旨在为数据的来源与访问方式提供带连接与认证的类型化定义。
+    definition: a meta-classifier for external or internal data providers with connection and authentication metadata, intended to provide typed definitions for where data originates and how to access it
     purpose: Defines where data originates and how to access it
     requiredFields:
       iri:
@@ -706,7 +730,9 @@ DataBinding:
           type: duration
           default: PT30S
   DatasetDefinition:
-    definition: a meta-classifier for logical collections of data within a data source
+    iri: https://axiolune.ai/ontology/meta/data-binding/DatasetDefinition
+    cnNote: 数据集定义，是本体工程中数据源内逻辑数据集合的元类型，旨在为物理数据提供带 schema、分区与更新模式的逻辑视图。
+    definition: a meta-classifier for logical collections of data within a data source, intended to provide a logical view of physical data with schema, partitioning, and update patterns
     purpose: Represents tables, collections, topics, or files that contain entity data
     requiredFields:
       iri:
@@ -800,7 +826,9 @@ DataBinding:
           partitionKeys:
             - trade_date
   FieldDefinition:
-    definition: a meta-classifier for physical field definitions in dataset schemas
+    iri: https://axiolune.ai/ontology/meta/data-binding/FieldDefinition
+    cnNote: 字段定义，是本体工程中物理数据集 schema 里的字段元类型，旨在描述字段的物理结构，本身不含语义注解，语义由语义映射表达。
+    definition: a meta-classifier for physical field definitions in dataset schemas, intended to describe the physical structure of fields; it contains no semantic annotations, as all semantics are expressed by SemanticMappingDefinition
     purpose: Defines the structure of fields in physical datasets
     requiredFields:
       name:
@@ -852,7 +880,9 @@ DataBinding:
             - restrict
           default: restrict
   IndexDefinition:
-    definition: a meta-classifier for physical index structures in datasets
+    iri: https://axiolune.ai/ontology/meta/data-binding/IndexDefinition
+    cnNote: 索引定义，是本体工程中物理数据集索引结构的元类型，旨在为查询性能优化提供索引的类型化定义。
+    definition: a meta-classifier for physical index structures in datasets, intended to provide typed definitions of index structures for query performance optimization
     purpose: Defines indexes for query performance optimization
     requiredFields:
       name:
@@ -883,8 +913,9 @@ DataBinding:
         type: string
         description: partial index predicate expression
   SourceBinding:
-    definition: specification of physical data sources and row-set operations for
-      semantic mapping according to genus-differentia form
+    iri: https://axiolune.ai/ontology/meta/data-binding/SourceBinding
+    cnNote: 来源绑定，是本体工程中语义映射的物理数据源与行集操作规格，旨在声明"从哪些表如何取行"，支持多表连接与聚合。
+    definition: a specification of physical data sources and row-set operations for semantic mapping, intended to declare "which tables and how to read rows from them", supporting multi-table joins and aggregation
     purpose: Enables multi-table joins, filtering, and aggregation before field mapping
     requiredFields:
       datasets:
@@ -907,8 +938,9 @@ DataBinding:
           required: true
           description: alias for use in field references and expressions
   RowSetSpec:
-    definition: row-level operations applied to source datasets before slot mapping
-      according to genus-differentia form
+    iri: https://axiolune.ai/ontology/meta/data-binding/RowSetSpec
+    cnNote: 行集规格，是本体工程中在槽映射前施加的行级操作，旨在表达字段级映射无法表达的多表连接、过滤与分组逻辑。
+    definition: a specification of row-level operations applied before slot mapping, intended to express multi-table joins, filters, and grouping logic that field-level mapping cannot express
     purpose: Expresses joins, filters, and aggregations that field-level mappings
       cannot express
     optionalFields:
@@ -1025,8 +1057,9 @@ DataBinding:
           required: true
           description: field name in dataset
   IdentitySpec:
-    definition: contract-bound specification that maps physical values to the
-      ordered components of one accepted TargetIdentityContractDefinition
+    iri: https://axiolune.ai/ontology/meta/data-binding/IdentitySpec
+    cnNote: 身份规格，是本体工程中把物理值映射到目标身份契约有序组件的机制，旨在防止不同映射各自发明不兼容的身份键，强制走统一契约。
+    definition: a contract-bound specification that maps physical values to the ordered components of one accepted TargetIdentityContractDefinition, intended to prevent independent mappings from inventing incompatible identity keys, enforcing a unified contract
     purpose: Prevents independent mappings from inventing incompatible logical keys,
       version keys, or IRI templates
     requiredFields:
@@ -1043,8 +1076,9 @@ DataBinding:
         required: true
         description: exact one-to-one bindings for all ordered version components
   ValueBinding:
-    definition: specification of value computation for slot population according to
-      genus-differentia form
+    iri: https://axiolune.ai/ontology/meta/data-binding/ValueBinding
+    cnNote: 值绑定，是本体工程中槽取值的计算规格，旨在用闭联合类型声明"这个槽怎么填值"，支持直接取值、变换、字面量与运行时上下文。
+    definition: a specification of value computation for slot population, intended to declare "how to fill this slot" via a closed union of direct field, transformation, literal, runtime context, and reference identity
     purpose: Union type supporting direct fields, transformations, literals, and
       runtime context
     discriminator: bindingType
@@ -1120,7 +1154,9 @@ DataBinding:
             type: map[string,ValueBinding]
             required: true
   SlotMapping:
-    definition: specification of target slot population according to genus-differentia form
+    iri: https://axiolune.ai/ontology/meta/data-binding/SlotMapping
+    cnNote: 槽映射，是本体工程中把源数据映射到本体槽的机制，旨在支持属性、参与者角色、关系与模式字段等多种映射目标。
+    definition: a specification of target slot population, intended to support mapping to attributes, participant roles, relations, and pattern fields
     purpose: Maps source data to ontology slots (attributes, participant roles,
       relations, pattern fields)
     requiredFields:
@@ -1133,8 +1169,9 @@ DataBinding:
         required: true
         description: value computation specification
   TransformationDefinition:
-    definition: versioned reusable transformation logic for data mapping according
-      to genus-differentia form
+    iri: https://axiolune.ai/ontology/meta/data-binding/TransformationDefinition
+    cnNote: 变换定义，是本体工程中版本化的可复用变换逻辑，旨在为数据映射提供带类型化输入输出、实现摘要与测试用量的可复现变换。
+    definition: a versioned reusable transformation logic for data mapping, intended to provide reproducible transformations with typed inputs, outputs, an implementation digest, and test cases
     purpose: Defines reproducible transformations with explicit inputs, outputs,
       version, digest, and test cases
     requiredFields:
@@ -1273,8 +1310,9 @@ DataBinding:
         description:
           type: string
   TargetSlot:
-    definition: a union type representing different kinds of mapping targets
-      (attributes, participant roles, relations, or pattern fields)
+    iri: https://axiolune.ai/ontology/meta/data-binding/TargetSlot
+    cnNote: 目标槽，是本体工程中映射目标的闭联合类型，旨在让语义映射不仅能映射到属性，还能映射到参与者角色、关系与模式字段。
+    definition: a union type representing different kinds of mapping targets, intended to let SemanticMappingDefinition map to not just attributes but also participant roles, relations, and pattern fields
     purpose: Allows SemanticMappingDefinition to target not just attributes but also
       Association participant roles, relations, and pattern-injected fields
     note: "Replaces simple targetAttribute: IRI with a discriminated union to
@@ -1334,8 +1372,9 @@ DataBinding:
             required: true
             description: injected attribute local name
   TimeAxisBinding:
-    definition: binding specification for one temporal axis (from/to intervals)
-      according to genus-differentia form
+    iri: https://axiolune.ai/ontology/meta/data-binding/TimeAxisBinding
+    cnNote: 时间轴绑定，是本体工程中一个时间轴区间的绑定规格，旨在为三轴时间映射的每条轴声明起止与闭包策略。
+    definition: a binding specification for one temporal axis (from/to interval), intended to declare the start, end, and close policy for each of the three axes in a temporal mapping spec
     purpose: Expresses how to populate one of three time axes per ADR-012
     requiredFields:
       from:
@@ -1355,8 +1394,9 @@ DataBinding:
           only)
         default: closePreviousVersion
   ProvenanceBinding:
-    definition: specification of data provenance metadata capture according to
-      genus-differentia form
+    iri: https://axiolune.ai/ontology/meta/data-binding/ProvenanceBinding
+    cnNote: 溯源绑定，是本体工程中把物理字段映射到来源模式字段的机制，旨在捕获数据的来源、采集时间与责任方等溯源元数据。
+    definition: a specification of data provenance metadata capture, intended to map physical fields to Layer 2 provenance pattern fields, capturing source, acquisition time, and responsible agent
     purpose: Maps physical fields to Layer 2 provenance pattern fields
     optionalFields:
       sourceSystem:
@@ -1372,8 +1412,9 @@ DataBinding:
         type: ValueBinding
         description: confidence score or quality metric
   TemporalMappingSpec:
-    definition: specification of three-axis temporal semantics mapping according to
-      genus-differentia form and ADR-012
+    iri: https://axiolune.ai/ontology/meta/data-binding/TemporalMappingSpec
+    cnNote: 时序映射规格，是本体工程中三轴时间模型的显式源绑定，旨在为有效时间、知识时间与可用时间三条轴同时声明来源，防止前视偏差。
+    definition: a specification of three-axis temporal semantics mapping, intended to explicitly bind sources for valid time, knowledge time, and availability time simultaneously, preventing look-ahead bias
     purpose: Maps physical time fields to valid time, knowledge time, and
       availability time axes
     note: >
@@ -1410,8 +1451,9 @@ DataBinding:
         description: when consumers can use this data (regulatory/access control time) —
           required; prevents look-ahead bias
   SemanticMappingDefinition:
-    definition: canonical specification of mapping between physical data and
-      ontology concepts according to genus-differentia form
+    iri: https://axiolune.ai/ontology/meta/data-binding/SemanticMappingDefinition
+    cnNote: 语义映射定义，是本体工程中物理数据到本体概念的唯一权威映射结构，旨在把所有映射能力统一到单一真相源，是物理到语义的桥梁。
+    definition: the canonical specification of mapping between physical data and ontology concepts, intended to unify all mapping capabilities into a single truth source; it is the bridge from physical data to semantics
     purpose: Single truth source for all semantic mappings per ADR-011
     note: Replaces all field-level, dataset-level, and inline mappings with unified
       structure
@@ -1504,9 +1546,9 @@ DataBinding:
             - info
           default: error
   MaterializationBatchDefinition:
-    definition: static atomic composition of multiple module-scoped
-      MaterializationPlanDefinitions over one source snapshot and one temporal
-      context
+    iri: https://axiolune.ai/ontology/meta/data-binding/MaterializationBatchDefinition
+    cnNote: 物化批次定义，是本体工程中多个物化计划在单一快照与时间上下文上的原子组合，旨在保证跨计划的事务一致性。
+    definition: a static atomic composition of multiple module-scoped MaterializationPlanDefinitions over one source snapshot and one temporal context, intended to guarantee transactional consistency across plans
     requiredFields:
       iri:
         type: uri
@@ -1526,8 +1568,9 @@ DataBinding:
         type: const
         value: Transactional
   MaterializationRun:
-    definition: immutable standalone control record for one completed or failed
-      module-scoped materialization
+    iri: https://axiolune.ai/ontology/meta/data-binding/MaterializationRun
+    cnNote: 物化运行，是本体工程中一次完成或失败的物化的不可变控制记录，旨在为可复现查询提供显式的时间上下文与输入证据锁。
+    definition: an immutable standalone control record for one completed or failed module-scoped materialization, intended to provide explicit time context and input evidence locking for reproducible queries
     requiredFields:
       schemaVersion:
         type: const
@@ -1594,8 +1637,9 @@ DataBinding:
       result:
         type: MaterializationResult
   MaterializationPlanDefinition:
-    definition: declarative specification of ontology instance materialization from
-      physical data sources according to genus-differentia form
+    iri: https://axiolune.ai/ontology/meta/data-binding/MaterializationPlanDefinition
+    cnNote: 物化计划定义，是本体工程中声明式物化规格，旨在定义"物化什么、数据如何映射"的静态配置，运行时状态与编排分离到运行与外部工具。
+    definition: a declarative specification of ontology instance materialization from physical data sources, intended to define "what to materialize and how data maps to the ontology" as static configuration only; runtime state and orchestration are separated
     purpose: Defines WHAT should be materialized and HOW data maps to ontology
       (static configuration only per ADR-011)
     note: Runtime state moved to MaterializationRun per ADR-011; orchestration moved
@@ -1689,7 +1733,9 @@ DataBinding:
 
       or the platform's runtime execution layer.
   DataLineage:
-    definition: a meta-classifier for tracking data flow and transformation chains
+    iri: https://axiolune.ai/ontology/meta/data-binding/DataLineage
+    cnNote: 数据血缘，是本体工程中跟踪数据流向与变换链的元类型，旨在为影响分析与调试提供从源到本体实例的可追溯链路。
+    definition: a meta-classifier for tracking data flow and transformation chains, intended to provide a traceable link from sources through transformations to ontology instances for impact analysis and debugging
     purpose: Documents how data moves from sources through transformations to
       ontology instances
     requiredFields:
@@ -1726,9 +1772,9 @@ DataBinding:
         recordsFailed:
           type: integer
   PITValidationRequest:
-    definition: immutable standalone request that binds exact materialization
-      evidence, RDF bytes, explicit three-axis pivots, and a locked PIT
-      validator
+    iri: https://axiolune.ai/ontology/meta/data-binding/PITValidationRequest
+    cnNote: PIT 校验请求，是本体工程中绑定物化证据、RDF 字节与三轴枢轴的不可变请求，旨在授权点-in-time 消费并防止前视偏差。
+    definition: an immutable standalone request that binds exact materialization evidence, RDF bytes, explicit three-axis pivots, and a locked PIT validator, intended to authorize point-in-time consumption and prevent look-ahead bias
     requiredFields:
       schemaVersion:
         type: const
@@ -1767,8 +1813,9 @@ DataBinding:
       materializationContext:
         type: MaterializationContext
   MaterializationBatchRun:
-    definition: immutable standalone control record for one completed or failed
-      atomic materialization batch
+    iri: https://axiolune.ai/ontology/meta/data-binding/MaterializationBatchRun
+    cnNote: 物化批次运行，是本体工程中一次完成或失败的原子物化批次的不可变控制记录，旨在为批次执行提供成员清单与输出摘要。
+    definition: an immutable standalone control record for one completed or failed atomic materialization batch, intended to provide the member list and output digest for batch execution
     requiredFields:
       schemaVersion:
         type: const
@@ -1861,8 +1908,9 @@ DataBinding:
                 type: list[ExecutionError]
                 minCount: 1
   ValidationReport:
-    definition: immutable common machine-evidence envelope for one actually executed
-      validation gate
+    iri: https://axiolune.ai/ontology/meta/data-binding/ValidationReport
+    cnNote: 校验报告，是本体工程中一次实际执行的校验门的不可变机器证据信封，旨在为校验结果提供带规范化的可复现证据。
+    definition: an immutable common machine-evidence envelope for one actually executed validation gate, intended to provide reproducible evidence with canonicalization and digest locking for validation results
     requiredFields:
       schemaVersion:
         type: const
@@ -1960,7 +2008,9 @@ DataBinding:
         outputDatasetDigest
       - all other report kinds forbid PIT- and batch-specific optional fields
   FailureReport:
-    definition: immutable standalone evidence record for a failed execution stage
+    iri: https://axiolune.ai/ontology/meta/data-binding/FailureReport
+    cnNote: 失败报告，是本体工程中失败执行阶段的不可变独立证据记录，旨在为失败诊断提供阶段、输入与错误清单。
+    definition: an immutable standalone evidence record for a failed execution stage, intended to provide the stage, inputs, and error list for failure diagnosis
     requiredFields:
       schemaVersion:
         type: const
@@ -1996,7 +2046,9 @@ DataBinding:
         type: list[ExecutionError]
         minCount: 1
   ReplayReport:
-    definition: immutable standalone comparison of original and replayed semantic artifacts
+    iri: https://axiolune.ai/ontology/meta/data-binding/ReplayReport
+    cnNote: 重放报告，是本体工程中原始与重放产物的不可变比对，旨在验证确定性可复现，是数据管道可信的基础。
+    definition: an immutable standalone comparison of original and replayed semantic artifacts, intended to verify deterministic reproducibility; it is the foundation of data-pipeline trust
     requiredFields:
       schemaVersion:
         type: const
@@ -2040,8 +2092,9 @@ DataBinding:
       result:
         type: ReplayResult
   EvidenceLedger:
-    definition: detached immutable root that indexes every finalized standalone
-      control record except itself
+    iri: https://axiolune.ai/ontology/meta/data-binding/EvidenceLedger
+    cnNote: 证据账本，是本体工程中索引所有已定稿控制记录的不可变根，旨在为整套证据体系提供内容寻址的目录。
+    definition: a detached immutable root that indexes every finalized standalone control record except itself, intended to provide a content-addressed directory for the entire evidence system
     requiredFields:
       schemaVersion:
         type: const
@@ -2072,8 +2125,9 @@ DataBinding:
         uniqueBy: slotId
         order: slotId
   BuildEvidenceBinding:
-    definition: exact build identity and immutable control-plan bindings shared by
-      every control record
+    iri: https://axiolune.ai/ontology/meta/data-binding/BuildEvidenceBinding
+    cnNote: 构建证据绑定，是本体工程中每个控制记录共享的精确构建身份，旨在为所有控制记录绑定不可变的构建来源。
+    definition: the exact build identity and immutable control-plan bindings shared by every control record, intended to bind an immutable build provenance to all control records
     requiredFields:
       buildId:
         type: digest
@@ -2096,7 +2150,9 @@ DataBinding:
       controlRecordPlanDigest:
         type: digest
   ArtifactBinding:
-    definition: named immutable artifact input with explicit media type and digest
+    iri: https://axiolune.ai/ontology/meta/data-binding/ArtifactBinding
+    cnNote: 工件绑定，是本体工程中命名的不可变工件输入，旨在为校验报告等记录的输入清单提供带类型与摘要的绑定。
+    definition: a named immutable artifact input with explicit media type and digest, intended to provide typed, digested bindings for the input manifests of validation reports and similar records
     requiredFields:
       name:
         type: asciiIdentifier
@@ -2107,8 +2163,9 @@ DataBinding:
       artifactDigest:
         type: digest
   MappingClosureEntry:
-    definition: one semantic mapping and its complete transformation closure inside
-      a materialization run
+    iri: https://axiolune.ai/ontology/meta/data-binding/MappingClosureEntry
+    cnNote: 映射闭包条目，是本体工程中物化运行内一个语义映射及其变换闭包，旨在为每个映射锁定完整的变换依赖。
+    definition: one semantic mapping and its complete transformation closure inside a materialization run, intended to lock the full transformation dependency for each mapping
     requiredFields:
       mappingRef:
         type: uri
@@ -2119,8 +2176,9 @@ DataBinding:
       transformationClosureDigest:
         type: digest
   MaterializationResult:
-    definition: closed final outcome of one immutable MaterializationRun;
-      orchestration states are not evidence
+    iri: https://axiolune.ai/ontology/meta/data-binding/MaterializationResult
+    cnNote: 物化结果，是本体工程中一次物化运行的闭最终结果，旨在区分"已完成的证据"与"运行中的编排状态"。
+    definition: a closed final outcome of one immutable MaterializationRun, intended to distinguish "completed evidence" from "in-flight orchestration state"
     discriminator: outcome
     variants:
       completed:
@@ -2154,7 +2212,9 @@ DataBinding:
             minCount: 1
             order: executionErrorCanonicalTuple
   CompletedBatchMember:
-    definition: one completed plan/run/graph member of an atomic materialization batch
+    iri: https://axiolune.ai/ontology/meta/data-binding/CompletedBatchMember
+    cnNote: 已完成批次成员，是原子物化批次中一个完成的成员，旨在记录每个成功成员的运行与输出摘要。
+    definition: one completed plan/run/graph member of an atomic materialization batch, intended to record the run and output digest of each successful member
     requiredFields:
       planRef:
         type: uri
@@ -2167,7 +2227,9 @@ DataBinding:
       outputGraphDigest:
         type: digest
   AttemptedBatchMember:
-    definition: one attempted plan member recorded by a failed materialization batch
+    iri: https://axiolune.ai/ontology/meta/data-binding/AttemptedBatchMember
+    cnNote: 已尝试批次成员，是失败物化批次中记录的一个已尝试成员，旨在保留失败时的部分执行证据。
+    definition: one attempted plan member recorded by a failed materialization batch, intended to preserve partial execution evidence upon failure
     requiredFields:
       planRef:
         type: uri
@@ -2179,8 +2241,9 @@ DataBinding:
     invariants:
       - runRef and runRecordDigest are both present or both absent
   MaterializationContext:
-    definition: closed PIT binding to either one completed materialization graph or
-      one completed batch dataset
+    iri: https://axiolune.ai/ontology/meta/data-binding/MaterializationContext
+    cnNote: 物化上下文，是本体工程中到完成物化产物的闭 PIT 绑定，旨在为点-in-time 校验精确锁定被校验的产物。
+    definition: a closed PIT binding to either one completed materialization graph or one completed batch dataset, intended to precisely lock the materialized product being validated for point-in-time checks
     discriminator: contextKind
     variants:
       materializationRun:
@@ -2210,7 +2273,9 @@ DataBinding:
           targetDatasetDigest:
             type: digest
   KindEvidenceBinding:
-    definition: gate-kind-specific strict schema and machine result artifact
+    iri: https://axiolune.ai/ontology/meta/data-binding/KindEvidenceBinding
+    cnNote: 种类证据绑定，是本体工程中门禁种类特定的严格证据工件，旨在为不同校验种类绑定对应的 schema 与结果。
+    definition: a gate-kind-specific strict schema and machine result artifact, intended to bind the corresponding schema and result for each validation kind
     requiredFields:
       schemaRef:
         type: ArtifactRef
@@ -2221,8 +2286,9 @@ DataBinding:
       artifactDigest:
         type: digest
   GateCounts:
-    definition: recomputed non-negative counts over the complete gate subject
-      inventory and result
+    iri: https://axiolune.ai/ontology/meta/data-binding/GateCounts
+    cnNote: 门禁计数，是本体工程中在完整门禁主体上重算的非负计数，旨在为校验结果提供可复现的通过、失败与跳过统计。
+    definition: recomputed non-negative counts over the complete gate subject inventory and result, intended to provide reproducible passed, failed, and skipped statistics for validation results
     requiredFields:
       discovered:
         type: nonNegativeSafeInteger
@@ -2239,8 +2305,9 @@ DataBinding:
       warnings:
         type: nonNegativeSafeInteger
   GateCheck:
-    definition: one actually executed capability check for one independently
-      discovered semantic subject
+    iri: https://axiolune.ai/ontology/meta/data-binding/GateCheck
+    cnNote: 门禁检查，是本体工程中对一个语义主体实际执行的一次能力检查，旨在为每个被检查主体留下带输入输出的证据。
+    definition: one actually executed capability check for one independently discovered semantic subject, intended to leave input-and-output evidence for each checked subject
     requiredFields:
       checkId:
         type: asciiIdentifier
@@ -2283,8 +2350,9 @@ DataBinding:
       diagnosticCode:
         type: asciiIdentifier
   GateViolation:
-    definition: one deterministically sortable semantic violation produced by a
-      failed gate check
+    iri: https://axiolune.ai/ontology/meta/data-binding/GateViolation
+    cnNote: 门禁违规，是本体工程中失败检查产生的一条可排序语义违规，旨在为每个违规提供严重级、消息与定位信息。
+    definition: one deterministically sortable semantic violation produced by a failed gate check, intended to provide severity, message, and location for each violation
     requiredFields:
       checkId:
         type: asciiIdentifier
@@ -2313,7 +2381,9 @@ DataBinding:
       component:
         type: union[uri,asciiIdentifier]
   GateResult:
-    definition: closed final result of one machine-executed validation gate
+    iri: https://axiolune.ai/ontology/meta/data-binding/GateResult
+    cnNote: 门禁结果，是本体工程中一次机器校验门的闭最终结果，旨在区分通过、失败与引擎故障三种结局。
+    definition: a closed final result of one machine-executed validation gate, intended to distinguish passed, failed, and engine-failure outcomes
     discriminator: outcome
     variants:
       passed:
@@ -2366,7 +2436,9 @@ DataBinding:
             minCount: 1
             order: executionErrorCanonicalTuple
   ReplayComparison:
-    definition: one named original-versus-replay artifact digest comparison
+    iri: https://axiolune.ai/ontology/meta/data-binding/ReplayComparison
+    cnNote: 重放比对，是本体工程中原始对重放工件摘要的命名比对，旨在为每项产物的可复现性留下逐项判定。
+    definition: one named original-versus-replay artifact digest comparison, intended to leave a per-artifact verdict for the reproducibility of each product
     requiredFields:
       name:
         type: asciiIdentifier
@@ -2379,7 +2451,9 @@ DataBinding:
       equal:
         type: boolean
   ReplayResult:
-    definition: closed final result of deterministic replay comparison
+    iri: https://axiolune.ai/ontology/meta/data-binding/ReplayResult
+    cnNote: 重放结果，是本体工程中确定性重放比对的闭最终结果，旨在区分一致、不一致与引擎故障三种结局。
+    definition: a closed final result of deterministic replay comparison, intended to distinguish identical, mismatch, and engine-failure outcomes
     discriminator: outcome
     variants:
       identical:
@@ -2422,8 +2496,9 @@ DataBinding:
             minCount: 1
             order: executionErrorCanonicalTuple
   EvidenceSlotSelection:
-    definition: the one active control-record alternative selected for an
-      evidence-ledger slot
+    iri: https://axiolune.ai/ontology/meta/data-binding/EvidenceSlotSelection
+    cnNote: 证据槽选择，是本体工程中为证据账本一个槽位选中的活跃控制记录，旨在为每个证据位绑定其当前生效的记录。
+    definition: the one active control-record alternative selected for an evidence-ledger slot, intended to bind the currently effective record for each evidence slot
     requiredFields:
       slotId:
         type: recordId
@@ -2443,7 +2518,9 @@ DataBinding:
       recordIri:
         type: uri
   EvidenceLedgerEntry:
-    definition: content-addressed index entry for one finalized standalone control record
+    iri: https://axiolune.ai/ontology/meta/data-binding/EvidenceLedgerEntry
+    cnNote: 证据账本条目，是本体工程中一条已定稿控制记录的内容寻址索引项，旨在为每条记录提供带摘要与规范化方式的不可变索引。
+    definition: a content-addressed index entry for one finalized standalone control record, intended to provide an immutable index with digest and canonicalization for each record
     requiredFields:
       slotId:
         type: recordId
@@ -2469,8 +2546,9 @@ DataBinding:
       recordDigest:
         type: digest
   ExecutionError:
-    definition: deterministically sortable execution failure diagnostic embedded in
-      a failed control record
+    iri: https://axiolune.ai/ontology/meta/data-binding/ExecutionError
+    cnNote: 执行错误，是本体工程中嵌入失败控制记录的可排序诊断，旨在为执行失败提供错误码、阶段与消息。
+    definition: a deterministically sortable execution failure diagnostic embedded in a failed control record, intended to provide error code, stage, and message for execution failures
     requiredFields:
       code:
         type: asciiIdentifier
@@ -2487,7 +2565,9 @@ DataBinding:
       causeDigest:
         type: digest
   InputDatasetSnapshot:
-    definition: immutable embedded binding of one input dataset to exact snapshot bytes
+    iri: https://axiolune.ai/ontology/meta/data-binding/InputDatasetSnapshot
+    cnNote: 输入数据集快照，是本体工程中物化输入数据集的不可变嵌入绑定，旨在为可复现锁定输入的字节、schema 与快照时间。
+    definition: an immutable embedded binding of one input dataset to exact snapshot bytes, intended to lock the bytes, schema, and snapshot time of inputs for reproducibility
     requiredFields:
       dataset:
         type: uri
@@ -2503,8 +2583,9 @@ DataBinding:
       rowCount:
         type: nonNegativeSafeInteger
   IngestionPipelineDefinition:
-    definition: a meta-classifier for ETL/ELT workflows that materialize ontology
-      instances from data sources
+    iri: https://axiolune.ai/ontology/meta/data-binding/IngestionPipelineDefinition
+    cnNote: 摄取管线定义，是本体工程中已弃用的 ETL 工作流元类型，曾混合声明式映射与运行时编排，现由物化计划与外部编排工具取代。
+    definition: a deprecated meta-classifier for ETL/ELT workflows that materialize ontology instances, superseded by MaterializationPlanDefinition and external orchestration tools because it mixed declarative mapping with runtime orchestration
     purpose: Orchestrates data extraction, transformation, validation, and loading
     deprecated: true
     deprecationReason: Mixed declarative mapping with runtime orchestration,

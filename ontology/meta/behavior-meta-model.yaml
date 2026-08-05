@@ -3,6 +3,9 @@ module:
   baseIri: https://axiolune.ai/ontology/meta/behavior/
   preferredPrefix: ax-behavior
   version: 0.6.0
+  label: Behavior Meta-Model
+  definition: the behavior meta-model defining queries, functions, actions, and policies
+  cnNote: 行为元模型层，是本体工程中定义查询、函数、动作与策略的元模型层，旨在为平台可执行的操作提供带治理的类型化定义，使读、算、写、授权都成为一等本体元素。
   imports:
     - moduleIri: https://axiolune.ai/ontology/meta/core
       version: 0.6.0
@@ -32,7 +35,9 @@ PlatformBehavior:
     - Layer 2: HOW facts are structured (time, provenance, evidence)
     - Layer 4: HOW data maps to ontology (physical bindings)
   CallableParameterDefinition:
-    definition: a meta-classifier for parameters used by queries, functions, and actions
+    iri: https://axiolune.ai/ontology/meta/behavior/CallableParameterDefinition
+    cnNote: 可调用参数定义，是本体工程中查询、函数与动作共用的参数定义结构，旨在避免在三类可调用元类型中重复定义参数，并标注参数在操作中的语义角色。
+    definition: a meta-classifier for parameters used by queries, functions, and actions, intended to avoid redefining parameters across the three callable meta-types and to annotate the semantic role of each parameter in an operation
     purpose: Shared parameter definition structure to avoid duplication across
       callable types
     note: Replaces locally-scoped ParameterDefinition; used by QueryTypeDefinition,
@@ -78,8 +83,9 @@ PlatformBehavior:
           - Idempotency
         description: semantic role of this parameter in the operation
   QueryTypeDefinition:
-    definition: a meta-classifier for read-only data access operations with typed
-      parameters and return values
+    iri: https://axiolune.ai/ontology/meta/behavior/QueryTypeDefinition
+    cnNote: 查询类型，是本体工程中只读数据访问操作的元类型，旨在为可查询能力提供带类型化参数与返回值、无副作用的定义，点-in-time 查询必须显式传三轴时间。
+    definition: a meta-classifier for read-only data access operations with typed parameters and return values, intended to provide typed definitions for queryable capabilities without side effects; point-in-time queries must pass three time axes explicitly
     purpose: Defines queryable capabilities without side effects
     requiredFields:
       iri:
@@ -246,7 +252,9 @@ PlatformBehavior:
           language: sql
           artifactRef: queries/list-active-orders.sql
   FunctionTypeDefinition:
-    definition: a meta-classifier for side-effect-free computational operations
+    iri: https://axiolune.ai/ontology/meta/behavior/FunctionTypeDefinition
+    cnNote: 函数类型，是本体工程中无副作用的纯计算操作元类型，旨在为估值、收益率等确定性计算提供可复用、可测试的纯函数定义。
+    definition: a meta-classifier for side-effect-free computational operations, intended to provide reusable, testable pure-function definitions for deterministic calculations such as valuations and yield computations
     purpose: Defines pure functions for calculations, transformations, and derivations
     note: Functions are deterministic, referentially transparent, and idempotent
     requiredFields:
@@ -384,8 +392,9 @@ PlatformBehavior:
         purity: observationallyPure
         note: May cache price lookups but output depends only on inputs
   ActionTypeDefinition:
-    definition: a meta-classifier for stateful operations that modify system state
-      or interact with external systems
+    iri: https://axiolune.ai/ontology/meta/behavior/ActionTypeDefinition
+    cnNote: 动作类型，是本体工程中有状态、有副作用的操作元类型，旨在为交易动作、工作流等状态变更操作提供带幂等、补偿、审批与风险分级的完整治理定义。
+    definition: a meta-classifier for stateful operations that modify system state or interact with external systems, intended to provide fully governed definitions for trading actions and workflow operations with idempotency, compensation, approval, and risk classification
     purpose: Defines trading actions, workflow operations, and state-changing
       commands with full governance
     note: Actions require authorization, preconditions, audit trails, and
@@ -950,7 +959,9 @@ PlatformBehavior:
             successGuarantee: BestEffort
             triggerCondition: compliance_withdrawal
   ExecutionRecordDefinition:
-    definition: a meta-classifier for durable records of action execution attempts
+    iri: https://axiolune.ai/ontology/meta/behavior/ExecutionRecordDefinition
+    cnNote: 执行记录，是本体工程中动作执行的持久记录元类型，旨在为每次动作执行留下不可变的审计痕迹，用于审计、恢复与外部对账。
+    definition: a meta-classifier for durable records of action execution attempts, intended to leave an immutable audit trail for each action execution, used for audit, recovery, and external reconciliation
     purpose: Tracks action execution lifecycle for audit, recovery, and
       reconciliation per ADR-008
     note: Every action execution creates an ExecutionRecord for safety and
@@ -1062,7 +1073,9 @@ PlatformBehavior:
         externalRequestId: req-uuid-ghi789
         lastReconciledAt: 2026-07-28T11:00:30.000Z
   PolicyType:
-    definition: a meta-classifier for authorization, compliance, and governance rules
+    iri: https://axiolune.ai/ontology/meta/behavior/PolicyType
+    cnNote: 策略类型，是本体工程中授权、合规与治理规则的元类型，旨在为访问控制、风险限额、审批工作流提供可绑定到动作执行管道的策略定义。
+    definition: a meta-classifier for authorization, compliance, and governance rules, intended to provide definitions for access control, risk limits, compliance constraints, and approval workflows that bind to action execution pipelines
     purpose: Defines access control, risk limits, compliance constraints, and
       approval workflows
     requiredFields:

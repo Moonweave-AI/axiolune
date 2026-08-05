@@ -89,33 +89,34 @@ const DOMAIN_CONTAINERS = Object.freeze([
 ]);
 
 const COMMON_FIELDS = ['iri', 'namespace', 'localName', 'label', 'definition'];
+const OPTIONAL_CN = ['cnNote'];
 const FIELDS_BY_CONTAINER = Object.freeze({
   objectTypes: new Set([
-    ...COMMON_FIELDS, 'superTypes', 'attributeUses', 'patternBindings',
+    ...COMMON_FIELDS, ...OPTIONAL_CN, 'superTypes', 'attributeUses', 'patternBindings',
     'alignments', 'governance', 'abstract',
   ]),
   associationTypes: new Set([
-    ...COMMON_FIELDS, 'participantRoles', 'attributeUses', 'patternBindings',
+    ...COMMON_FIELDS, ...OPTIONAL_CN, 'participantRoles', 'attributeUses', 'patternBindings',
     'projectedRelations', 'alignments',
   ]),
   relationTypes: new Set([
-    ...COMMON_FIELDS, 'domain', 'range', 'inverseOf', 'characteristics',
+    ...COMMON_FIELDS, ...OPTIONAL_CN, 'domain', 'range', 'inverseOf', 'characteristics',
     'alignments',
   ]),
   attributeTypes: new Set([
-    ...COMMON_FIELDS, 'valueType', 'owlProjectionOverride',
+    ...COMMON_FIELDS, ...OPTIONAL_CN, 'valueType', 'owlProjectionOverride',
     'defaultCardinality', 'enumValues', 'pattern', 'unit', 'alignments',
   ]),
   identifierTypes: new Set([
-    ...COMMON_FIELDS, 'baseType', 'standard', 'validatorRef',
+    ...COMMON_FIELDS, ...OPTIONAL_CN, 'baseType', 'standard', 'validatorRef',
     'issuingAuthority', 'alignments',
   ]),
   codeLists: new Set([
-    ...COMMON_FIELDS, 'vocabulary', 'version', 'maintainer',
+    ...COMMON_FIELDS, ...OPTIONAL_CN, 'vocabulary', 'version', 'maintainer',
     'sourceEvidenceRef', 'values', 'alignments',
   ]),
   constraints: new Set([
-    ...COMMON_FIELDS, 'constraintType', 'scope', 'expression', 'severity',
+    ...COMMON_FIELDS, ...OPTIONAL_CN, 'constraintType', 'scope', 'expression', 'severity',
     'message', 'targetElement', 'note', 'parameters',
   ]),
 });
@@ -523,7 +524,7 @@ function validateDocument(document) {
     document.module,
     new Set([
       'moduleIri', 'baseIri', 'preferredPrefix', 'version', 'label',
-      'definition', 'imports', 'exports', 'status', 'governance',
+      'definition', 'cnNote', 'imports', 'exports', 'status', 'governance',
     ]),
     'module',
   );
