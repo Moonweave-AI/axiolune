@@ -15,6 +15,7 @@
   --text:#e8eef7; --muted:#8497b3; --faint:#5a6b86;
   --accent:#5b8cff; --accent-2:#34d399;
   --grid:rgba(255,255,255,.025);
+  --scroll-track:rgba(255,255,255,.025); --scroll-thumb:#3a4961; --scroll-thumb-hover:#5b6f8e;
   --node-text:#0a0e17;
   --edge-base:.32;
   --shadow:0 10px 30px rgba(0,0,0,.55);
@@ -25,6 +26,7 @@
   --text:#1a2333; --muted:#64748b; --faint:#94a3b8;
   --accent:#4f7cff; --accent-2:#10b981;
   --grid:rgba(15,23,42,.04);
+  --scroll-track:rgba(15,23,42,.035); --scroll-thumb:#aeb9c9; --scroll-thumb-hover:#8797ad;
   --node-text:#0a0e17;
   --edge-base:.45;
   --shadow:0 10px 30px rgba(15,23,42,.12);
@@ -48,12 +50,17 @@ button:hover{border-color:var(--border-2)}
 button.active{background:var(--accent);border-color:var(--accent);color:#fff}
 button.ghost{background:transparent}
 .tbtn{display:flex;align-items:center;gap:5px}
-#legend{position:absolute;left:12px;top:64px;width:246px;max-height:calc(100% - 132px);overflow:auto;background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:12px;padding:11px;z-index:20;font-size:11.5px;box-shadow:var(--shadow)}
+#legend{position:absolute;left:12px;top:64px;width:246px;max-height:calc(100% - 132px);overflow:auto;background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:12px;padding:11px;z-index:20;font-size:11.5px;box-shadow:var(--shadow);scrollbar-width:thin;scrollbar-color:var(--scroll-thumb) var(--scroll-track)}
 #legend h3{margin:2px 0 7px;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
-.leg-row{display:flex;align-items:center;gap:8px;padding:3px 3px;cursor:pointer;border-radius:6px}
+.leg-row{display:flex;align-items:center;gap:8px;min-height:23px;padding:3px 5px;cursor:pointer;border-radius:6px}
 .leg-row:hover{background:rgba(255,255,255,.04)}
 [data-theme="light"] .leg-row:hover{background:rgba(15,23,42,.04)}
-.leg-row .sw{width:13px;height:13px;border-radius:4px;flex:0 0 auto;border:1px solid rgba(255,255,255,.2)}
+.leg-marker{position:relative;display:inline-block;width:12px;height:12px;flex:0 0 auto;border-radius:50%;background:var(--leg-color);border:1px solid var(--leg-color);box-shadow:0 0 0 1px rgba(255,255,255,.1);transition:transform .12s,box-shadow .12s}
+.leg-row:hover .leg-marker{transform:scale(1.14);box-shadow:0 0 0 2px color-mix(in srgb,var(--leg-color) 40%,transparent)}
+.leg-marker.m3::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--panel-solid);opacity:.94}
+.leg-marker.module{background:transparent;border-width:1.5px}
+.leg-marker.module::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--leg-color);opacity:.92}
+.leg-marker.primitive{opacity:.76}
 .leg-row .ln{width:20px;height:0;flex:0 0 auto;border-top:2px solid}
 .leg-row .ln-svg{flex:0 0 auto;opacity:.9}
 .leg-row .nm{flex:1;font-size:11.5px}
@@ -61,8 +68,13 @@ button.ghost{background:transparent}
 .leg-row.off{opacity:.38}
 .leg-sep{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:7px 3px 3px;padding-top:5px;border-top:1px solid var(--border)}
 .leg-sep:first-of-type{border-top:none;margin-top:0;padding-top:0}
-#side{position:absolute;right:12px;top:64px;width:380px;max-height:calc(100% - 132px);overflow:auto;background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:12px;z-index:20;display:none;box-shadow:var(--shadow)}
+#side{position:absolute;right:12px;top:64px;width:min(440px,calc(100% - 24px));max-height:calc(100% - 132px);overflow:auto;background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:12px;z-index:20;display:none;box-shadow:var(--shadow);scrollbar-width:thin;scrollbar-color:var(--scroll-thumb) var(--scroll-track)}
 #side.open{display:block}
+#side.with-context{height:calc((100% - 120px)/2);max-height:calc((100% - 120px)/2)}
+#legend::-webkit-scrollbar,#side::-webkit-scrollbar{width:9px;height:9px}
+#legend::-webkit-scrollbar-track,#side::-webkit-scrollbar-track{margin:8px 2px;border-radius:999px;background:var(--scroll-track)}
+#legend::-webkit-scrollbar-thumb,#side::-webkit-scrollbar-thumb{min-height:34px;border:2px solid transparent;border-radius:999px;background:var(--scroll-thumb);background-clip:padding-box}
+#legend::-webkit-scrollbar-thumb:hover,#side::-webkit-scrollbar-thumb:hover{background:var(--scroll-thumb-hover);background-clip:padding-box}
 #side .hd{position:sticky;top:0;background:var(--panel-solid);padding:13px 15px;border-bottom:1px solid var(--border);border-radius:12px 12px 0 0;z-index:1}
 #side .hd h2{margin:0;font-size:16px;word-break:break-word}
 #side .badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
@@ -107,14 +119,31 @@ button.ghost{background:transparent}
 #tip .k{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#fff;border-radius:4px;padding:1px 6px}
 #tip .m{font-size:10px;color:var(--muted)}
 #tip .d{font-size:11px;color:var(--text);opacity:.85;margin-top:5px;line-height:1.4}
+#contextGraph{position:absolute;right:12px;bottom:38px;width:min(440px,calc(100% - 24px));height:calc((100% - 120px)/2);display:none;z-index:21;background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+#contextGraph.open{display:flex;flex-direction:column}
+#contextGraph .ctx-hd{height:37px;flex:0 0 37px;display:flex;align-items:center;gap:7px;padding:0 11px;background:var(--panel-solid);border-bottom:1px solid var(--border)}
+#contextGraph .ctx-title{font-size:11px;font-weight:700;color:var(--text);letter-spacing:.02em}
+#contextGraph .ctx-meta{font-size:10px;color:var(--muted);margin-left:auto;white-space:nowrap}
+#contextGraph .ctx-control,#contextGraph .ctx-close{height:20px;min-width:20px;padding:0 5px;border:0;border-radius:5px;background:transparent;color:var(--muted);font-size:12px;line-height:18px;cursor:pointer}
+#contextGraph .ctx-control:hover,#contextGraph .ctx-close:hover{background:var(--border);color:var(--text)}
+#contextGraph .ctx-fit{font-size:9px;font-weight:600;letter-spacing:.02em}
+#contextGraph .ctx-close{width:20px;height:20px;padding:0;border:0;border-radius:5px;background:transparent;color:var(--muted);font-size:16px;line-height:18px;cursor:pointer}
+#contextSvg{width:100%;height:calc(100% - 37px);cursor:default}
+#contextSvg .ctx-node{cursor:pointer}
+#contextSvg .ctx-node .ctx-label{font-size:9px;font-weight:600;fill:var(--text);paint-order:stroke;stroke:var(--panel-solid);stroke-width:3px;stroke-linejoin:round;pointer-events:none}
+#contextSvg .ctx-node.ctx-root .ctx-label{font-size:10px;font-weight:700}
+#contextSvg .ctx-edge{pointer-events:none}
+#contextSvg .ctx-dim{opacity:.1}
+#contextSvg .ctx-emphasis{opacity:1}
 svg{display:block}
 .node{cursor:pointer}
-.node rect{transition:filter .12s}
-.node:hover rect{filter:url(#glow)}
+.node .node-shape{transition:filter .12s,stroke-width .12s,opacity .12s}
+.node:hover .node-shape,.node.selected .node-shape{filter:url(#glow)}
+.node.selected .node-shape{stroke:var(--text)!important;stroke-width:2.3px!important}
 .edge{fill:none;transition:opacity .12s,stroke-width .12s}
-.edge.dim{opacity:.05}
-.node.dim{opacity:.12}
-.label{pointer-events:none;font-family:Inter,sans-serif;font-weight:600;fill:var(--text)}
+.edge.dim{opacity:.045}
+.node.dim{opacity:.1}
+.label{pointer-events:none;font-family:Inter,sans-serif;font-weight:600;fill:var(--text);paint-order:stroke;stroke-linejoin:round}
 .label-detail{font-weight:400}
 #loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:var(--bg);z-index:50;color:var(--muted)}
 .spin{width:38px;height:38px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .8s linear infinite}
@@ -143,7 +172,11 @@ svg{display:block}
 <div id="net"></div>
 <div id="tip"></div>
 <div id="side"></div>
-<div id="help">Hover a node to <b>highlight</b> its connections \u00b7 click for <b>definition, fields, attributes, relations &amp; participants</b> \u00b7 click <b>\u24d8</b> on a relation for its definition \u00b7 search highlights matching rows \u00b7 drag to rearrange \u00b7 scroll to zoom</div>
+<div id="contextGraph" aria-label="Two-hop node context">
+  <div class="ctx-hd"><span class="ctx-title">Two-hop context</span><span id="contextMeta" class="ctx-meta"></span><button id="contextZoomOut" class="ctx-control" type="button" title="Zoom out" aria-label="Zoom out context graph">−</button><button id="contextZoomFit" class="ctx-control ctx-fit" type="button" title="Reset zoom and pan" aria-label="Fit context graph">Fit</button><button id="contextZoomIn" class="ctx-control" type="button" title="Zoom in" aria-label="Zoom in context graph">+</button><button id="contextClose" class="ctx-close" type="button" title="Close context graph" aria-label="Close context graph">×</button></div>
+  <svg id="contextSvg" role="img" aria-label="Two-hop structural neighborhood"></svg>
+</div>
+<div id="help">Hover a node to <b>highlight</b> its connections · click for <b>definition, fields, attributes, relations &amp; participants</b> · click <b>ⓘ</b> on a relation for its definition · search highlights matching rows · drag to rearrange · scroll to zoom</div>
 <div id="status"></div>
 </div>
 <script>
@@ -238,6 +271,21 @@ DATA.edges.forEach(e=>{
   adj.get(e.from).add(e.to);
   adj.get(e.to).add(e.from);
 });
+const CONTEXT_EDGE_TYPES = new Set(Object.keys(EDGE_STYLE).filter(t=>EDGE_STYLE[t].struct));
+const contextIncident = new Map();
+DATA.edges.forEach(e=>{
+  if(!CONTEXT_EDGE_TYPES.has(e.type)) return;
+  if(!contextIncident.has(e.from)) contextIncident.set(e.from,[]);
+  if(!contextIncident.has(e.to)) contextIncident.set(e.to,[]);
+  contextIncident.get(e.from).push(e);
+  contextIncident.get(e.to).push(e);
+});
+const CONTEXT_MAX_FIRST_HOP = 42;
+const CONTEXT_MAX_NODES = 72;
+let contextSim = null;
+let contextRootId = null;
+let contextSvg = null;
+let contextZoom = null;
 
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function clamp(s,n){s=String(s==null?'':s);return s.length>n?s.slice(0,n-1)+'\u2026':s;}
@@ -306,13 +354,7 @@ function diamondPath(r){return 'M0,'+(-r)+' '+(r*0.75)+',0 0,'+r+' '+(-r*0.75)+'
 function parallelogramPath(r){const w=r*1.1,s=r*0.5;return 'M'+(-w+s)+','+(-r*0.7)+' '+(w+s)+','+(-r*0.7)+' '+(w-s)+','+(r*0.7)+' '+(-w-s)+','+(r*0.7)+' Z';}
 
 function edgePath(d){
-  const dx = d.target.x - d.source.x, dy = d.target.y - d.source.y;
-  const dr = Math.sqrt(dx*dx+dy*dy) || 1;
-  const off = Math.min(70, dr*0.28);
-  const mx = (d.source.x+d.target.x)/2, my=(d.source.y+d.target.y)/2;
-  const nx = -dy/dr, ny = dx/dr;
-  const sx = mx + nx*off, sy = my + ny*off;
-  return 'M'+d.source.x+','+d.source.y+' Q'+sx+','+sy+' '+d.target.x+','+d.target.y;
+  return 'M'+d.source.x+','+d.source.y+' L'+d.target.x+','+d.target.y;
 }
 
 function render(){
@@ -342,7 +384,7 @@ function render(){
     .attr('stroke', d=>EDGE_STYLE[d.type].c)
     .attr('stroke-width', d=>EDGE_STYLE[d.type].w)
     .attr('stroke-dasharray', d=>(EDGE_STYLE[d.type].dash||[]).join(' '))
-    .attr('opacity', d=>EDGE_STYLE[d.type].struct ? 0.5 : 0.16)
+    .attr('opacity', d=>EDGE_STYLE[d.type].struct ? 0.42 : 0.1)
     .attr('marker-end', d=>'url(#arr-'+d.type+')')
     .attr('d', edgePath);
   drawEdgeLabels(edgeData);
@@ -378,51 +420,49 @@ function drawEdgeLabels(edgeData){
 function drawNode(d){
   const g = d3.select(this);
   g.selectAll('*').remove();
-  const km = KIND_META[d.kind] || KIND_META.object;
   const r = d._r;
   const col = gcolor(d.group);
   const isMod = d.kind==='module';
-  const fillRef = 'url(#grad-'+d.group.replace(/[^a-zA-Z0-9]/g,'_')+')';
-
-  if(km.shape==='dot'){
-    g.append('circle').attr('r',r).attr('fill',fillRef).attr('stroke',col).attr('stroke-width',1.4).attr('filter','url(#soft)');
-    g.append('circle').attr('r',r*0.5).attr('fill', d3.color(col).brighter(0.6).formatHex()).attr('opacity',0.7);
-  } else if(km.shape==='star'){
-    g.append('path').attr('d', shapePath(d.kind,r)).attr('fill',fillRef).attr('stroke',d3.color(col).brighter(0.5).formatHex()).attr('stroke-width',1.4).attr('filter','url(#soft)');
-  } else if(km.shape==='hex' || km.shape==='tri' || km.shape==='diamond' || km.shape==='parallelogram'){
-    g.append('path').attr('d', shapePath(d.kind,r)).attr('fill',fillRef).attr('fill-opacity',0.92).attr('stroke',d3.color(col).brighter(0.5).formatHex()).attr('stroke-width',1.4).attr('filter','url(#soft)');
-  } else {
-    const w = labelWidth(d, r)*2, h = r*0.95;
-    const rect = g.append('rect').attr('x',-w/2).attr('y',-h/2).attr('width',w).attr('height',h).attr('rx',h*0.28).attr('ry',h*0.28)
-      .attr('fill',fillRef).attr('fill-opacity',0.92).attr('stroke',d3.color(col).brighter(0.5).formatHex()).attr('stroke-width',isMod?1.8:1.3).attr('filter','url(#soft)');
-    const chip = g.append('circle').attr('cx',-w/2+h*0.55).attr('cy',0).attr('r',h*0.26).attr('fill',d3.color(col).brighter(0.8).formatHex()).attr('opacity',0.9);
+  // Main graph deliberately shares the compact, circle-and-label visual language
+  // of the two-hop view. Semantic kind remains available in the legend/sidebar;
+  // module nodes keep a second ring for quick structural orientation.
+  if(isMod){
+    g.append('circle').attr('class','node-module-ring').attr('r',r+3.5).attr('fill','none')
+      .attr('stroke',col).attr('stroke-width',1.1).attr('stroke-opacity',.62);
+  }
+  g.append('circle').attr('class','node-shape').attr('r',r).attr('fill',col).attr('fill-opacity',isMod?.96:.88)
+    .attr('stroke',d3.color(col).brighter(.55).formatHex()).attr('stroke-width',isMod?1.8:1.15).attr('filter','url(#soft)');
+  if(isMtKind(d.kind)){
+    g.append('circle').attr('class','node-core').attr('r',Math.max(2.2,r*.26)).attr('fill',theme==='dark'?'#0a0e17':'#f8fafc').attr('opacity',.9);
   }
   const labelG = g.append('g').attr('class','nlabel').attr('opacity',1);
-  const fontSize = isMod?13:(isMtKind(d.kind)?11:(km.lab?10.5:10));
   labelG.append('text').attr('class','label').attr('text-anchor','middle')
-    .attr('font-size',fontSize).attr('font-weight', isMod?700:600)
-    .attr('fill',theme==='dark'?(d.kind==='primitive'||d.kind==='module'?'#e8eef7':'#0a0e17'):'#0a0e17')
-    .attr('y', km.shape==='dot'?-r-5:0).attr('dy', km.shape==='dot'?0:'0.32em')
-    .attr('paint-order','stroke').attr('stroke',theme==='dark'?'rgba(8,11,20,.6)':'rgba(245,247,250,.85)').attr('stroke-width',2.6)
+    .attr('font-weight', isMod?700:600)
+    .attr('fill',theme==='dark'?'#e8eef7':'#172033')
+    .attr('y',r+10).attr('dy',0)
+    .attr('stroke',theme==='dark'?'rgba(8,11,20,.88)':'rgba(248,250,252,.9)').attr('stroke-width',2.6)
     .text(d.label);
-  d._labelH = (km.shape==='dot'? (r*2+14) : (r*1.1));
-}
-function labelWidth(d, r){
-  const km = KIND_META[d.kind]||KIND_META.object;
-  if(km.shape==='dot' || km.shape==='star' || km.shape==='tri') return r;
-  // box, hex, diamond, parallelogram all carry a label — width follows label length
-  const chars = d.label.length;
-  return Math.min(r*4.2, r*1.4 + chars*3.4);
+  d._labelH = r*2+18;
 }
 
 function applyLabels(sel){
   const k = curK;
-  const showDetail = k > 1.4;
+  // Match the contextual graph's semantic zoom: a compact overview keeps only
+  // module anchors, then M3 landmarks, and finally every node label. Nothing is
+  // sampled or discarded; scroll zoom reveals the complete label set.
+  const showLandmarks = k >= .95;
+  const showDetail = k >= 1.65;
   sel.selectAll('.nlabel text').each(function(d){
-    const km = KIND_META[d.kind]||KIND_META.object;
-    const visible = km.lab || showDetail || d.id===selectedId;
-    d3.select(this).attr('opacity', visible?1:0);
+    const overview = d.kind==='module' || d.id===selectedId;
+    const visible = overview || (showLandmarks && isMtKind(d.kind)) || showDetail;
+    const r = d._r || nodeRadius(d);
+    const baseSize = d.kind==='module'?12:(isMtKind(d.kind)?10:9);
+    d3.select(this).attr('opacity', visible?1:0)
+      .attr('font-size',(baseSize/Math.max(k,.38))+'px')
+      .attr('stroke-width',(2.6/Math.max(k,.38))+'px')
+      .attr('y',r+10/Math.max(k,.38));
   });
+  sel.classed('selected',d=>d.id===selectedId);
 }
 
 function startSim(vnodes, edgeData){
@@ -463,7 +503,7 @@ function onLeave(){ clearHighlight(); hideTip(); }
 function clearHighlight(){
   gNodes.selectAll('g.node').classed('dim',false);
   gEdges.selectAll('path.edge').classed('dim',false)
-    .attr('opacity', e=> EDGE_STYLE[e.type].struct?0.5:0.16)
+    .attr('opacity', e=> EDGE_STYLE[e.type].struct?0.42:0.1)
     .attr('stroke-width', e=> EDGE_STYLE[e.type].w);
 }
 function onClick(ev,d){
@@ -471,8 +511,9 @@ function onClick(ev,d){
   selectedId = d.id;
   applyLabels(gNodes.selectAll('g.node'));
   showSide(d);
+  renderContextGraph(d.id);
 }
-document.addEventListener('click', ev=>{ if(ev.target.closest('#side')||ev.target.closest('.node')||ev.target.closest('#topbar')||ev.target.closest('#legend')) return; selectedId=null; document.getElementById('side').classList.remove('open'); applyLabels(gNodes.selectAll('g.node')); });
+document.addEventListener('click', ev=>{ if(ev.target.closest('#side')||ev.target.closest('.node')||ev.target.closest('#contextGraph')||ev.target.closest('#topbar')||ev.target.closest('#legend')) return; selectedId=null; document.getElementById('side').classList.remove('open'); stopContextGraph(); applyLabels(gNodes.selectAll('g.node')); });
 
 function showTip(d, ev){
   const tip = document.getElementById('tip');
@@ -490,6 +531,146 @@ function showTip(d, ev){
   tip.style.opacity = 1;
 }
 function hideTip(){ document.getElementById('tip').style.opacity = 0; }
+
+function contextEdgeScore(edge){
+  return ({relation:9,participant:8,subClassOf:7,targets:7,fieldType:6,appliesTo:6,injects:5,import:4,dependsOn:4,conflicts:4,inverseOf:4,domainOf:3,rangeOf:3})[edge.type]||1;
+}
+function otherContextEnd(edge,id){ return edge.from===id ? edge.to : edge.from; }
+function orderContextCandidates(candidates){
+  return [...candidates].sort((a,b)=> b.score-a.score || a.node.label.localeCompare(b.node.label));
+}
+function buildTwoHopContext(rootId){
+  const root=nodeById.get(rootId); if(!root) return null;
+  const first=new Map();
+  (contextIncident.get(rootId)||[]).forEach(edge=>{
+    const id=otherContextEnd(edge,rootId), node=nodeById.get(id); if(!node) return;
+    const entry=first.get(id)||{id,node,score:0}; entry.score+=contextEdgeScore(edge); first.set(id,entry);
+  });
+  const orderedFirst=orderContextCandidates(first.values());
+  const shownFirst=orderedFirst.slice(0,CONTEXT_MAX_FIRST_HOP);
+  const shownFirstIds=new Set(shownFirst.map(x=>x.id));
+  const second=new Map();
+  shownFirst.forEach(firstEntry=>{
+    (contextIncident.get(firstEntry.id)||[]).forEach(edge=>{
+      if(edge.type==='pattern') return;
+      const id=otherContextEnd(edge,firstEntry.id);
+      if(id===rootId||shownFirstIds.has(id)) return;
+      const node=nodeById.get(id); if(!node) return;
+      const entry=second.get(id)||{id,node,score:0}; entry.score+=contextEdgeScore(edge); second.set(id,entry);
+    });
+  });
+  const availableSecond=Math.max(0,CONTEXT_MAX_NODES-1-shownFirst.length);
+  const shownSecond=orderContextCandidates(second.values()).slice(0,availableSecond);
+  const nodeIds=new Set([rootId,...shownFirst.map(x=>x.id),...shownSecond.map(x=>x.id)]);
+  const nodes=[{...root,hop:0,ctxId:rootId},...shownFirst.map(x=>({...x.node,hop:1,ctxId:x.id})),...shownSecond.map(x=>({...x.node,hop:2,ctxId:x.id}))];
+  const edges=[];
+  const seen=new Set();
+  nodeIds.forEach(id=>{
+    (contextIncident.get(id)||[]).forEach(edge=>{
+      if(seen.has(edge.id)||!nodeIds.has(edge.from)||!nodeIds.has(edge.to)) return;
+      const isRootEdge=edge.from===rootId||edge.to===rootId;
+      const isFirstPath=shownFirstIds.has(edge.from)||shownFirstIds.has(edge.to);
+      if(!isRootEdge&&edge.type==='pattern') return;
+      if(!isRootEdge&&!isFirstPath) return;
+      seen.add(edge.id); edges.push({...edge,source:edge.from,target:edge.to});
+    });
+  });
+  return {root,nodes,edges,total:1+orderedFirst.length+second.size,shownFirst:shownFirst.length,shownSecond:shownSecond.length};
+}
+function contextRadius(node){ return node.hop===0?13:(node.hop===1?8:5.5); }
+function placeContextRing(nodes,cx,cy,rx,ry,angleOffset){
+  nodes.forEach((node,index)=>{
+    const angle=angleOffset+(Math.PI*2*index/Math.max(1,nodes.length));
+    node.targetX=cx+Math.cos(angle)*rx;
+    node.targetY=cy+Math.sin(angle)*ry;
+    node.x=node.targetX; node.y=node.targetY;
+  });
+}
+function seedContextPositions(nodes,width,height,cx,cy){
+  const first=nodes.filter(node=>node.hop===1);
+  const second=nodes.filter(node=>node.hop===2);
+  const firstInner=first.length>16?first.slice(0,Math.ceil(first.length/2)):first;
+  const firstOuter=first.length>16?first.slice(Math.ceil(first.length/2)):[];
+  const secondInner=second.length>36?second.slice(0,Math.ceil(second.length/2)):[];
+  const secondOuter=second.length>36?second.slice(Math.ceil(second.length/2)):second;
+  placeContextRing(firstInner,cx,cy,width*.27,height*.24,-Math.PI/2);
+  placeContextRing(firstOuter,cx,cy,width*.36,height*.31,-Math.PI/2+.18);
+  placeContextRing(secondInner,cx,cy,width*.36,height*.33,-Math.PI/2+.06);
+  placeContextRing(secondOuter,cx,cy,width*.42,height*.40,-Math.PI/2+.1);
+  const root=nodes.find(node=>node.hop===0);
+  if(root){ root.targetX=cx; root.targetY=cy; root.x=cx; root.y=cy; root.fx=cx; root.fy=cy; }
+}
+function zoomContextBy(factor){
+  if(!contextSvg||!contextZoom) return;
+  contextSvg.transition().duration(150).call(contextZoom.scaleBy,factor);
+}
+function resetContextZoom(){
+  if(!contextSvg||!contextZoom) return;
+  contextSvg.transition().duration(180).call(contextZoom.transform,d3.zoomIdentity);
+}
+function stopContextGraph(){
+  if(contextSim){ contextSim.stop(); contextSim=null; }
+  contextRootId=null;
+  contextSvg=null;
+  contextZoom=null;
+  document.getElementById('contextGraph').classList.remove('open');
+  document.getElementById('side').classList.remove('with-context');
+  hideTip();
+}
+function renderContextGraph(rootId){
+  const graph=buildTwoHopContext(rootId); if(!graph) return stopContextGraph();
+  if(contextSim) contextSim.stop();
+  contextRootId=rootId;
+  const panel=document.getElementById('contextGraph');
+  const side=document.getElementById('side');
+  panel.classList.add('open'); side.classList.add('with-context');
+  document.getElementById('contextMeta').textContent=graph.nodes.length+(graph.total>graph.nodes.length?' / '+graph.total:'')+' nodes · 2 hops';
+  const svg=d3.select('#contextSvg');
+  contextSvg=svg;
+  const rect=svg.node().getBoundingClientRect();
+  const width=Math.max(220,rect.width||380), height=Math.max(140,rect.height||210), cx=width/2, cy=height/2;
+  svg.selectAll('*').remove();
+  const defs=svg.append('defs');
+  defs.append('marker').attr('id','ctx-arrow').attr('viewBox','0 -5 10 10').attr('refX',8).attr('refY',0).attr('markerWidth',4).attr('markerHeight',4).attr('orient','auto').append('path').attr('d','M0,-4L9,0L0,4Z').attr('fill','#64748b');
+  seedContextPositions(graph.nodes,width,height,cx,cy);
+  const viewport=svg.append('g').attr('class','ctx-viewport');
+  const edges=viewport.append('g').attr('class','ctx-edges').selectAll('line').data(graph.edges,d=>d.id).enter().append('line').attr('class','ctx-edge')
+    .attr('stroke',d=>(EDGE_STYLE[d.type]||EDGE_STYLE.relation).c).attr('stroke-width',d=>Math.max(.7,(EDGE_STYLE[d.type]||EDGE_STYLE.relation).w*.72)).attr('stroke-dasharray',d=>((EDGE_STYLE[d.type]||{}).dash||[]).join(' ')).attr('opacity',.58).attr('marker-end','url(#ctx-arrow)');
+  const nodes=viewport.append('g').attr('class','ctx-nodes').selectAll('g').data(graph.nodes,d=>d.ctxId).enter().append('g').attr('class',d=>'ctx-node ctx-'+(d.hop===0?'root':d.hop===1?'first':'second'));
+  nodes.append('circle').attr('r',contextRadius).attr('fill',d=>gcolor(d.group)).attr('stroke',d=>d.hop===0?(theme==='dark'?'#f8fafc':'#172033'):gcolor(d.group)).attr('stroke-width',d=>d.hop===0?2.4:1.2);
+  const denseContext=graph.nodes.length>18;
+  const labels=nodes.append('text').attr('class','ctx-label').attr('text-anchor','middle').text(d=>d.label);
+  function applyContextLabelVisibility(scale){
+    const showFirst=!denseContext||scale>=1.75;
+    const showSecond=!denseContext||scale>=2.4;
+    labels.attr('display',d=>d.hop===0||(d.hop===1&&showFirst)||(d.hop===2&&showSecond)?null:'none')
+      .style('font-size',d=>((d.hop===0?10:9)/scale)+'px')
+      .style('stroke-width',(2.6/scale)+'px')
+      .attr('y',d=>contextRadius(d)+10/scale);
+  }
+  function tick(){
+    graph.nodes.forEach(node=>{
+      if(node.hop===0) return;
+      const pad=contextRadius(node)+3;
+      node.x=Math.max(pad,Math.min(width-pad,node.x));
+      node.y=Math.max(pad,Math.min(height-pad,node.y));
+    });
+    edges.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+    nodes.attr('transform',d=>'translate('+d.x+','+d.y+')');
+  }
+  function clearContextHighlight(){nodes.classed('ctx-dim',false).classed('ctx-emphasis',false);edges.classed('ctx-dim',false).classed('ctx-emphasis',false);}
+  nodes.on('mouseenter',(ev,d)=>{
+    const related=new Set([d.ctxId]); graph.edges.forEach(edge=>{if(edge.from===d.ctxId)related.add(edge.to);if(edge.to===d.ctxId)related.add(edge.from);});
+    nodes.classed('ctx-dim',n=>!related.has(n.ctxId)).classed('ctx-emphasis',n=>related.has(n.ctxId));
+    edges.classed('ctx-dim',edge=>edge.from!==d.ctxId&&edge.to!==d.ctxId).classed('ctx-emphasis',edge=>edge.from===d.ctxId||edge.to===d.ctxId);
+    showTip(d,ev);
+  }).on('mouseleave',()=>{clearContextHighlight();hideTip();}).on('click',(ev,d)=>{ev.stopPropagation();selectedId=d.ctxId;applyLabels(gNodes.selectAll('g.node'));showSide(d);renderContextGraph(d.ctxId);});
+  contextZoom=d3.zoom().scaleExtent([.6,3.5]).on('zoom',ev=>{viewport.attr('transform',ev.transform);applyContextLabelVisibility(ev.transform.k);});
+  svg.call(contextZoom).on('dblclick.zoom',null);
+  contextSim=d3.forceSimulation(graph.nodes).force('link',d3.forceLink(graph.edges).id(d=>d.ctxId).distance(edge=>edge.source.ctxId===rootId||edge.target.ctxId===rootId?70:38).strength(.18)).force('charge',d3.forceManyBody().strength(d=>d.hop===0?-220:(d.hop===1?-105:-48))).force('x',d3.forceX(d=>d.targetX).strength(d=>d.hop===0?1:.62)).force('y',d3.forceY(d=>d.targetY).strength(d=>d.hop===0?1:.62)).force('collide',d3.forceCollide().radius(d=>contextRadius(d)+(d.hop===1?7:5)).iterations(6).strength(1)).alphaDecay(.07).velocityDecay(.58).on('tick',tick);
+  tick();
+  applyContextLabelVisibility(1);
+}
 
 const PATTERN_ATTR_SOURCES = new Set(['pattern','injects']);
 const SIDE_META_KEYS = new Set(['kind','attributeUses','patternBindings','alignments','fieldCount','superTypes','abstract','namespace','localName','label','iri','cnNote','expression','constraintType','scope','severity','message']);
@@ -744,17 +925,10 @@ function buildLegend(){
       lastPrefix = 'other';
     }
     const c=gcolor(g);
-    // pick a representative kind for this group to show its shape
-    const repNode = DATA.nodes.find(n=>n.group===g && KIND_META[n.kind]);
-    const repKind = repNode ? repNode.kind : 'object';
-    const repShape = KIND_META[repKind] ? KIND_META[repKind].shape : 'box';
-    let swatch;
-    if(repShape==='dot'){ swatch='<span class="sw" style="background:'+c+';border-color:'+c+';border-radius:50%"></span>'; }
-    else if(repShape==='star'){ swatch='<svg class="ln-svg" width="13" height="13"><polygon points="6.5,1 8,5 12,5 8.7,7.5 10,11.5 6.5,9 3,11.5 4.3,7.5 1,5 5,5" fill="'+c+'"/></svg>'; }
-    else if(repShape==='hex'){ swatch='<svg class="ln-svg" width="13" height="13"><polygon points="6.5,1 11.5,4 11.5,9 6.5,12 1.5,9 1.5,4" fill="'+c+'"/></svg>'; }
-    else if(repShape==='diamond'){ swatch='<svg class="ln-svg" width="13" height="13"><polygon points="6.5,1 12,6.5 6.5,12 1,6.5" fill="'+c+'"/></svg>'; }
-    else if(repShape==='parallelogram'){ swatch='<svg class="ln-svg" width="13" height="13"><polygon points="3,1 12,1 10,12 1,12" fill="'+c+'"/></svg>'; }
-    else { swatch='<span class="sw" style="background:'+c+';border-color:'+c+'"></span>'; }
+    // Legend markers now match the main graph: coloured circles, with a centre
+    // point for M3 types and a double-ring treatment for modules.
+    const markerClass = g==='module' ? 'module' : (g==='primitive' ? 'primitive' : (g.indexOf('m3-')===0 ? 'm3' : ''));
+    const swatch='<span class="leg-marker '+markerClass+'" style="--leg-color:'+c+'" aria-hidden="true"></span>';
     html += '<div class="leg-row" data-group="'+g+'">'+swatch+'<span class="nm">'+esc(prettyGroup(g))+'</span><span class="cnt">'+groups[g]+'</span></div>';
   });
   html += '<h3 style="margin-top:9px">Relationships</h3>';
@@ -798,6 +972,10 @@ function init(){
   });
   svg.call(zoom).on('dblclick.zoom', null);
   svg.on('click', ()=>{ selectedId=null; document.getElementById('side').classList.remove('open'); applyLabels(gNodes.selectAll('g.node')); clearHighlight(); });
+  document.getElementById('contextClose').onclick = ev=>{ ev.stopPropagation(); stopContextGraph(); };
+  document.getElementById('contextZoomOut').onclick = ev=>{ ev.stopPropagation(); zoomContextBy(1/1.25); };
+  document.getElementById('contextZoomFit').onclick = ev=>{ ev.stopPropagation(); resetContextZoom(); };
+  document.getElementById('contextZoomIn').onclick = ev=>{ ev.stopPropagation(); zoomContextBy(1.25); };
   buildLegend();
   wireControls();
   themeBtn();
@@ -815,7 +993,7 @@ function wireControls(){
   document.getElementById('labelsBtn').onclick = ()=>{ labelOn=!labelOn; document.getElementById('labelsBtn').classList.toggle('active',labelOn); drawEdgeLabels(currentEdges()); };
   document.getElementById('freezeBtn').onclick = ()=>{ frozen=!frozen; document.getElementById('freezeBtn').classList.toggle('active',frozen); document.getElementById('freezeBtn').textContent = frozen?'Unfreeze':'Freeze'; if(!frozen){ if(sim){ sim.alpha(0.6).restart(); } else { render(); } } else if(sim){ sim.stop(); } };
   document.getElementById('fitBtn').onclick = ()=> fit();
-  document.getElementById('themeBtn').onclick = ()=>{ theme = theme==='dark'?'light':'dark'; document.documentElement.setAttribute('data-theme',theme); themeBtn(); buildDefs(d3.select('#net svg')); d3.selectAll('g.node').each(drawNode); applyLabels(d3.selectAll('g.node')); };
+  document.getElementById('themeBtn').onclick = ()=>{ theme = theme==='dark'?'light':'dark'; document.documentElement.setAttribute('data-theme',theme); themeBtn(); buildDefs(d3.select('#net svg')); d3.selectAll('g.node').each(drawNode); applyLabels(d3.selectAll('g.node')); if(contextRootId) renderContextGraph(contextRootId); };
   document.getElementById('helpBtn').onclick = ()=> alert('Axiolune Ontology Graph\n\n\u2022 Glassmorphism + gradient nodes (SVG), D3 force layout.\n\u2022 Hover a node: highlights it + its edges, dims the rest.\n\u2022 Click a node: definition, attributes, relations, participants, fields (M3) in the right panel.\n\u2022 Click \u24d8 on a relation row to expand its domain/range/inverse/definition.\n\u2022 Search matches labels, IRIs, attribute/relation/field names; matching sidebar rows highlight.\n\u2022 Curved arrowed edges; structural edges bold, leaf edges faint.\n\u2022 Zoom in to reveal detail labels; toggle edge labels.\n\u2022 Dark / Light theme toggle.\n\u2022 Freeze to lock layout; drag nodes to rearrange.\n\nData sourced live from ontology/meta + ontology/domain YAML via generate.cjs.\nGenerated: '+GENERATED);
 }
 let _curEdges = [];
@@ -829,7 +1007,7 @@ function refreshOnly(){
   gEdges.selectAll('path.edge').data(vedges, d=>d.id).enter().append('path').attr('class','edge').merge(gEdges.selectAll('path.edge'))
     .attr('fill','none').attr('stroke', d=>EDGE_STYLE[d.type].c).attr('stroke-width', d=>EDGE_STYLE[d.type].w)
     .attr('stroke-dasharray', d=>(EDGE_STYLE[d.type].dash||[]).join(' '))
-    .attr('opacity', d=>EDGE_STYLE[d.type].struct?0.5:0.16).attr('marker-end', d=>'url(#arr-'+d.type+')').attr('d', edgePath);
+    .attr('opacity', d=>EDGE_STYLE[d.type].struct?0.42:0.1).attr('marker-end', d=>'url(#arr-'+d.type+')').attr('d', edgePath);
   gNodes.selectAll('g.node').style('display', d=> vset.has(d.id)?null:'none');
   updateStatus();
 }
