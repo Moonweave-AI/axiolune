@@ -1,287 +1,2959 @@
-# Axiolune M2 Risk Module — Terminology Cards
-# Status: accepted — v1.1.0 sidecar evidence (v1.0.0 cards retained; v1.1.0 cards added per ADR-032)
+# fin-risk — Terminology Cards
+# Synced from module.yaml v1.1.0 — 2026-08-07
+# Each card: term (module.yaml entity key), canonicalIri, ISO 704 definition
 
 terms:
-  - term: "Risk Measure Definition"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskMeasureDefinition"
-    definition: "specification of a risk metric including inputs, horizon, confidence level, and computation contract without embedding a single result instance"
-    genus: "measure definition"
+  - term: acknowledgedAt
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/acknowledgedAt
+    definition: the instant at which a breach case was acknowledged.
+    genus: Acknowledged At
     differentia:
-      - "defines how risk is measured"
-      - "separates definition from a single observation"
-    excludes:
-      - "a one-off risk measurement result"
-      - "a limit breach event"
+      - 确认时刻，是突破案例被确认的带显式时区时刻。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "M2-PLAN §5.2 fin-risk"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Risk Measurement"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskMeasurement"
-    definition: "time-stamped completed result of portfolio or position exposure under a stated risk measure and three-axis temporal semantics"
-    genus: "measurement"
+    owner: axiolune-m2-team
+  - term: acknowledgementId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/acknowledgementId
+    definition: stable lexical identifier of a BreachAcknowledgement.
+    genus: Acknowledgement ID
     differentia:
-      - "binds an exact risk measure definition version"
-      - "records exposure at valid/knowledge/availability times"
-    excludes:
-      - "the risk measure definition itself"
-      - "a limit breach event without evaluation"
+      - 确认标识，是突破确认的稳定词法标识符。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "M2-PLAN §5.2 fin-risk; CQ-R1"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Scenario Definition"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/ScenarioDefinition"
-    definition: "versioned stress or what-if scenario whose shock parameters are fixed independently of any stress-test run"
-    genus: "scenario specification"
+    owner: axiolune-m2-team
+  - term: aggregationMethod
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/aggregationMethod
+    definition: >-
+      how risk is aggregated from position to portfolio/desk/entity/group (sum, variance-covariance, historical
+      simulation, Monte Carlo, other).
+    genus: Aggregation Method
     differentia:
-      - "shock parameters immutable per version"
-      - "referenced by StressTestRun"
-    excludes:
-      - "a completed stress test run"
-      - "a risk measurement result"
+      - 聚合方法，是风险从头寸聚合到组合/台/实体/集团的方式（求和、方差-协方差、历史模拟、蒙特卡洛、其他）。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "CQ-R5"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Stress Test Run"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/StressTestRun"
-    definition: "completed stress test applying one exact ScenarioDefinition to a portfolio and recording output RiskMeasurement"
-    genus: "stress execution"
+    owner: axiolune-m2-team
+  - term: applicationEvidenceId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/applicationEvidenceId
+    definition: stable lexical identifier of a ScenarioApplicationEvidence.
+    genus: Application Evidence ID
     differentia:
-      - "references exact scenario and portfolio"
-      - "produces output measurement version"
-    excludes:
-      - "the scenario definition alone"
+      - 应用证据标识，是情景应用证据的稳定词法标识符。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "CQ-R5"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Limit Breach"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/LimitBreach"
-    definition: "fact that a risk measurement violates a risk limit under stated applicability and evidence"
-    genus: "compliance fact"
+    owner: axiolune-m2-team
+  - term: applicationProofDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/applicationProofDigest
+    definition: optional SHA-256 digest of the proof that the scenario was applied to the input context.
+    genus: Application Proof Digest
     differentia:
-      - "references a limit and a measurement"
-      - "is provenance-bound"
-    excludes:
-      - "the limit definition alone"
+      - 应用证明摘要，是证明情景已施加于输入上下文的可选 SHA-256 摘要。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "M2-PLAN §5.2 fin-risk"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Risk Category"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskCategory"
-    definition: "classification of the kind of risk (market, credit, liquidity, operational, concentration, model, other)"
-    genus: "classification"
+    owner: axiolune-m2-team
+  - term: approvalDecisionDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/approvalDecisionDigest
+    definition: >-
+      the SHA-256 digest of the exact limit-approval decision record, used to fix the true content of an approval
+      decision by content fingerprint to support audit traceability
+    genus: Approval Decision Digest
     differentia:
-      - "categorizes measures, limits, exposures, factors, and scenarios"
-      - "full regulatory frameworks per category are out of scope"
-    excludes:
-      - "a regulatory rule set"
+      - 批准决策摘要，是精确限额批准决策记录的 SHA-256 摘要，用于以内容指纹固化审批决策的真实内容以支撑审计可追溯。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "ADR-032 D1"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Risk Factor"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskFactor"
-    definition: "identifiable risk driver a risk measure is sensitive to, distinct from a strategy-research FactorDefinition"
-    genus: "risk driver"
+    owner: axiolune-m2-team
+  - term: approvalDecisionRef
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/approvalDecisionRef
+    definition: >-
+      absolute immutable reference to the human or governed limit-approval decision, used to bind a risk limit to the
+      formal approval record it came from
+    genus: Approval Decision Reference
     differentia:
-      - "drives a risk result"
-      - "optionally cross-links a research factor via riskFactorResearchRef"
-    excludes:
-      - "a research signal generator (strategy-research FactorDefinition)"
+      - 批准决策引用，是人工或治理限额批准决策的绝对不可变引用，用于把风险限额绑定到其正式审批记录来源。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "ADR-032 D1"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Risk Exposure"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskExposure"
-    definition: "risk an institution bears at a scope to a factor or category with a magnitude kind"
-    genus: "exposure"
+    owner: axiolune-m2-team
+  - term: approvedAt
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/approvedAt
+    definition: >-
+      explicit-timezone instant at which the limit version was approved, used to record the approval point in time at
+      which a risk limit takes effect with a deterministic timestamp
+    genus: Approved At
     differentia:
-      - "first-class concept of what risk is borne"
-      - "not a by-product of a measurement"
-    excludes:
-      - "the measurement itself"
+      - 批准时刻，是该限额版本被批准的带显式时区时刻，用于以确定性时间戳记录限额生效的批准时点。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "ADR-032 D1"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Risk Scope Definition"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskScopeDefinition"
-    definition: "policy or business scope (desk, strategy, entity, fund, counterparty, netting set, asset class) a limit is anchored to"
-    genus: "scope"
+    owner: axiolune-m2-team
+  - term: approvedBy
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/approvedBy
+    definition: >-
+      absolute principal IRI that approved the limit version, used to identify the governance entity accountable for
+      approving the risk threshold
+    genus: Approved By
     differentia:
-      - "stable governance object"
-      - "distinct from a RiskScopeSnapshot"
-    excludes:
-      - "a frozen member set at an as-of"
+      - 批准主体，是批准该限额版本的主体的绝对 IRI，用于标明对限额阈值承担审批责任的治理实体。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "ADR-032 D4"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Risk Appetite"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskAppetite"
-    definition: "governance statement of the total amount and type of risk an institution is willing to bear"
-    genus: "governance statement"
+    owner: axiolune-m2-team
+  - term: baselineStateRef
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/baselineStateRef
+    definition: optional reference to the baseline state a scenario shocks.
+    genus: Baseline State Reference
     differentia:
-      - "carries quantitative and qualitative statements"
-      - "anchors risk tolerance and limits"
-    excludes:
-      - "a single limit threshold"
+      - 基准状态引用，是情景所冲击基准状态的可选引用。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "ADR-032 D1; FSB Risk Appetite Framework (terminology)"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Risk Measure Specification"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskMeasureSpecification"
-    definition: "business semantics of a risk measure (kind, model purpose, loss convention, aggregation, factor universe, valuation)"
-    genus: "measure specification"
+    owner: axiolune-m2-team
+  - term: benchmarkRef
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/benchmarkRef
+    definition: >-
+      optional absolute reference to the benchmark version used by the measure, used to bind a risk measure to the
+      benchmark it is measured against
+    genus: Benchmark Reference
     differentia:
-      - "anchors limits to stable business concept"
-      - "survives implementation upgrades"
-    excludes:
-      - "the executable implementation"
-      - "the calculation method profile"
+      - 基准引用，是度量所使用基准版本的可选绝对引用，用于把风险度量绑定到其参照的基准标的来源。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "ADR-032 D2"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Calculation Profile"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/CalculationProfile"
-    definition: "abstract parent of calculation-method profiles fixing method, parameters, and assumptions"
-    genus: "method profile"
+    owner: axiolune-m2-team
+  - term: BreachAcknowledgement
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/BreachAcknowledgement
+    definition: >-
+      the acknowledgement of a RiskLimitBreachCase by a Party, used to record that a breach was seen and accepted into
+      governance rather than remaining an unattended computed fact.
+    genus: Breach Acknowledgement
     differentia:
-      - "binds a specification to an implementation"
-      - "generic core so a method is one profile"
-    excludes:
-      - "the business semantics (specification)"
+      - 突破确认，是某主体对风险限额突破案例的确认，用于记录突破已被看到并纳入治理而非停留在无人处理的计算事实。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "ADR-032 D2"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Implementation Version"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/ImplementationVersion"
-    definition: "versioned executable implementation of a calculation method with its content digest"
-    genus: "implementation"
+    owner: axiolune-m2-team
+  - term: breachCaseId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/breachCaseId
+    definition: stable lexical identifier of a RiskLimitBreachCase.
+    genus: Breach Case ID
     differentia:
-      - "separates executable from methodology"
-      - "supports PIT reproducibility"
-    excludes:
-      - "the methodology (methodDigest)"
+      - 突破案例标识，是风险限额突破案例的稳定词法标识符。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "ADR-032 D2"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Risk Input Set"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskInputSet"
-    definition: "collection of inputs a risk calculation used (positions, market data, curves, parameters, FX/valuation policy, data quality)"
-    genus: "input collection"
+    owner: axiolune-m2-team
+  - term: breachCaseStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/breachCaseStatus
+    definition: >-
+      the workflow status of a RiskLimitBreachCase (open, acknowledged, remediated, waived, escalated, closed,
+      reopened).
+    genus: Breach Case Status
     differentia:
-      - "decompresses opaque input context"
-      - "records valuation as-of and data quality"
-    excludes:
-      - "the calculation run"
+      - 突破案例状态，是风险限额突破案例的工作流状态（打开、已确认、已整改、已豁免、已升级、已关闭、重开）。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "ADR-032 D3"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Risk Limit Rule"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskLimitRule"
-    definition: "governed rule a limit enforces (operator, thresholds, severity, lifecycle) generalizing the single upper bound"
-    genus: "limit rule"
+    owner: axiolune-m2-team
+  - term: BreachCaseStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/BreachCaseStatus
+    definition: closed classification of the workflow status of a RiskLimitBreachCase.
+    genus: Breach Case Status
     differentia:
-      - "supports bounds, bands, absolute-value, two-sided"
-      - "carries warning/soft/hard severity and lifecycle"
-    excludes:
-      - "the single upper threshold (retained as first profile)"
+      - 突破案例状态，是风险限额突破案例工作流状态的封闭分类。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "ADR-032 D6"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Risk Limit Comparison Policy"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskLimitComparisonPolicy"
-    definition: "policy governing how a bucketed or scalar measurement is compared to a bucketed or scalar limit"
-    genus: "comparison policy"
+    owner: axiolune-m2-team
+  - term: breachDuration
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/breachDuration
+    definition: the duration for which the breach persisted.
+    genus: Breach Duration
     differentia:
-      - "defines bucket mode, missing-bucket handling, tolerance, conversion"
-      - "replaces scalar value<=threshold for bucket sets"
-    excludes:
-      - "the limit threshold"
+      - 突破持续时间，是突破持续的时间。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "ADR-032 D5"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Risk Limit Breach Case"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskLimitBreachCase"
-    definition: "governance case opened for a LimitBreach carrying magnitude, duration, responsible, and workflow status"
-    genus: "governance case"
+    owner: axiolune-m2-team
+  - term: breachMagnitude
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/breachMagnitude
+    definition: the magnitude by which the limit was breached.
+    genus: Breach Magnitude
     differentia:
-      - "layers governance over the immutable breach fact"
-      - "has acknowledgements, waivers, remediation, escalations"
-    excludes:
-      - "the immutable computational LimitBreach"
+      - 突破幅度，是限额被突破的幅度。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "ADR-032 D7"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Scenario Shock"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/ScenarioShock"
-    definition: "typed shock applied to a target within a scenario (type, magnitude, unit, propagation)"
-    genus: "shock"
+    owner: axiolune-m2-team
+  - term: bucketComparisonMode
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/bucketComparisonMode
+    definition: >-
+      how a bucket measurement is compared to a bucket limit (perBucket, aggregate, perBucketAndAggregate, anyBucket,
+      allBuckets).
+    genus: Bucket Comparison Mode
     differentia:
-      - "decompresses opaque shock digest"
-      - "targets a RiskFactor"
-    excludes:
-      - "the stress test run"
+      - 分桶比较模式，是分桶度量与分桶限额的比较方式（逐桶、聚合、逐桶且聚合、任一桶、所有桶）。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "ADR-032 D8"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Scenario Application Evidence"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/ScenarioApplicationEvidence"
-    definition: "evidence that a stress-test output's input context was actually shocked by the run's exact scenario"
-    genus: "application evidence"
+    owner: axiolune-m2-team
+  - term: BucketComparisonMode
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/BucketComparisonMode
+    definition: closed classification of how a bucket measurement is compared to a bucket limit.
+    genus: Bucket Comparison Mode
     differentia:
-      - "binds scenario, input set, and output"
-      - "proves the scenario acted, not merely referenced"
-    excludes:
-      - "the output measurement"
+      - 分桶比较模式，是分桶度量与分桶限额比较方式的封闭分类。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "ADR-032 D8"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Risk Report"
-    canonicalIri: "https://axiolune.ai/ontology/finance/risk/RiskReport"
-    definition: "lightweight report view over risk results (as-of, audience, sections)"
-    genus: "report view"
+    owner: axiolune-m2-team
+  - term: BucketDefinition
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/BucketDefinition
+    definition: >-
+      interpretable definition of one bucket within a RiskBucketSchema, used to make a bucket key a typed object rather
+      than an opaque string, so that key alignment, missing-bucket handling, and cross-granularity comparison between a
+      measurement and a limit are unambiguous.
+    genus: Bucket Definition
     differentia:
-      - "expresses the BCBS 239 reporting dimension"
-      - "full aggregation infrastructure out of scope"
-    excludes:
-      - "the underlying computed results"
+      - 桶定义，是分桶模式内一个桶的可解释定义，用于使分桶键成为类型化对象而非不透明字符串，使度量与限额间的键对齐、缺失桶处理与跨粒度比较无歧义。
+    excludes: []
     sources:
-      - reference: "internal-axiolune"
-        locator: "ADR-032 D10 P1-8; BCBS 239 (terminology)"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
+    owner: axiolune-m2-team
+  - term: bucketDefinitionId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/bucketDefinitionId
+    definition: stable lexical identifier of a BucketDefinition.
+    genus: Bucket Definition ID
+    differentia:
+      - 桶定义标识，是桶定义的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bucketDefinitionKey
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/bucketDefinitionKey
+    definition: the canonical non-blank key identifying a bucket within a schema.
+    genus: Bucket Definition Key
+    differentia:
+      - 桶定义键，是在模式内标识桶的规范化非空白键。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bucketDefinitionLabel
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/bucketDefinitionLabel
+    definition: optional human-readable label of a BucketDefinition.
+    genus: Bucket Definition Label
+    differentia:
+      - 桶定义标签，是桶定义的可选可读标签。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bucketDimensionRef
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/bucketDimensionRef
+    definition: >-
+      absolute reference that identifies the dimension partitioned by the bucket schema, used to state which risk
+      dimension a bucketed result is sliced along
+    genus: Bucket Dimension Reference
+    differentia:
+      - 分桶维度引用，是标识分桶模式所划分维度的绝对引用，用于指明分桶结果沿哪一个风险维度进行切分。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bucketKey
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/bucketKey
+    definition: >-
+      canonical non-blank key that identifies one member within a bucket schema, used to distinguish the measurement
+      value of different buckets within a bucket set
+    genus: Bucket Key
+    differentia:
+      - 分桶键，是在分桶模式内唯一标识一个成员的规范化非空白键，用于在分桶集合中区分不同桶的度量值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bucketKeyContractDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/bucketKeyContractDigest
+    definition: >-
+      the SHA-256 digest of the canonical bucket-key set and ordering contract, used to fix the admissible set and order
+      of bucket keys by content fingerprint
+    genus: Bucket Key Contract Digest
+    differentia:
+      - 分桶键契约摘要，是规范化分桶键集合与排序契约的 SHA-256 摘要，用于以内容指纹固化分桶键的可接纳集合与顺序。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bucketQuantity
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/bucketQuantity
+    definition: >-
+      required structured Quantity scalar for one risk bucket, used to carry that bucket's measured value along the
+      bucket dimension
+    genus: Bucket Quantity
+    differentia:
+      - 分桶数量，是一个风险桶所需的规范化结构化数量标量，用于承载该桶在分桶维度上的度量结果值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bucketSchemaBucketDefinition
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/bucketSchemaBucketDefinition
+    definition: >-
+      typed BucketDefinition admitted by a RiskBucketSchema, used to upgrade free-text bucket keys into typed,
+      interpretable bucket objects.
+    genus: Bucket Schema Bucket Definition
+    differentia:
+      - 分桶模式桶定义，是分桶模式所接纳的类型化桶定义，用于把自由文本分桶键升级为类型化可解释桶对象。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bucketSchemaDimension
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/bucketSchemaDimension
+    definition: >-
+      the typed RiskDimension that a RiskBucketSchema slices along, used to upgrade the bare bucketDimensionRef into a
+      typed, queryable dimension.
+    genus: Bucket Schema Dimension
+    differentia:
+      - 分桶模式维度，是分桶模式所沿切分的类型化风险维度，用于把裸分桶维度引用升级为类型化可查询维度。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bucketSchemaId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/bucketSchemaId
+    definition: >-
+      stable lexical identifier of a risk bucket schema, used to index one bucket-structure specification uniquely while
+      its schema version stays immutable
+    genus: Bucket Schema ID
+    differentia:
+      - 分桶模式标识，是风险分桶模式的稳定词法标识符，用于在该模式版本不可变的前提下唯一索引一条分桶结构规格。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bucketSetId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/bucketSetId
+    definition: >-
+      generating-context-scoped stable lexical identifier of a bucket set, used to index one complete bucketed result
+      uniquely once the set is closed
+    genus: Bucket Set ID
+    differentia:
+      - 分桶集合标识，是分桶集合的生成上下文作用域稳定词法标识符，用于在该集合完成时唯一索引一条完整分桶结果。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bucketSetPurpose
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/bucketSetPurpose
+    definition: >-
+      The Bucket Set Purpose, distinguishes a measurement-side bucket result set from a limit-side bucket schedule, used
+      so the same structure is not silently reused as both a value and a threshold.
+    genus: Bucket Set Purpose
+    differentia:
+      - 分桶集合用途，区分度量侧分桶结果集与限额侧分桶计划，使同一结构不被静默同时用作值与阈值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: BucketSetPurpose
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/BucketSetPurpose
+    definition: The Bucket Set Purpose, distinguishes a measurement-side bucket result set from a limit-side bucket schedule.
+    genus: Bucket Set Purpose
+    differentia:
+      - 分桶集合用途，区分度量侧分桶结果集与限额侧分桶计划。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bucketSetSchema
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/bucketSetSchema
+    definition: >-
+      the exact RiskBucketSchema version that governs one complete RiskBucketSet version, used to ensure that every
+      bucket value in the set shares the same dimension, key contract, and unit
+    genus: Bucket Set Schema
+    differentia:
+      - 分桶集合模式，是支配某一完整分桶集合版本的精确分桶模式版本，用于确保集合内所有桶值共享同一维度、键契约与单位。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bucketUnit
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/bucketUnit
+    definition: >-
+      Quantity unit IRI that is shared by every scalar value governed by the bucket schema, used to ensure all buckets
+      in one bucket set are measured in a consistent unit
+    genus: Bucket Unit
+    differentia:
+      - 分桶单位，是分桶模式所辖所有标量值共享的数量单位 IRI，用于确保同一分桶集合内所有桶值以一致单位计量。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bucketValueCount
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/bucketValueCount
+    definition: >-
+      the exact count of current RiskBucketValue versions in the completed closure, used to prove a bucket set contains
+      every current bucket value without omission
+    genus: Bucket Value Count
+    differentia:
+      - 分桶值计数，是完成闭包中当前分桶值版本的精确数量，用于证明分桶集合已包含全部当前桶值且无遗漏。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bucketValueDimensionRef
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/bucketValueDimensionRef
+    definition: >-
+      dimension reference copied from the exact governing RiskBucketSchema version, used to keep a bucket value
+      dimensionally consistent with its schema at the value level
+    genus: Bucket Value Dimension Reference
+    differentia:
+      - 分桶值维度引用，是从支配分桶模式精确版本复制而来的维度引用，用于在桶值级别与所属模式保持维度一致。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bucketValueSetDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/bucketValueSetDigest
+    definition: >-
+      the SHA-256 digest of the canonical ordered set of current bucket-value version IRIs, used to fix the reproducible
+      snapshot of set membership by content fingerprint
+    genus: Bucket Value Set Digest
+    differentia:
+      - 分桶值集合摘要，是规范化有序当前分桶值版本 IRI 集合的 SHA-256 摘要，用于以内容指纹固化集合成员身份的可复现快照。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: calcContextId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/calcContextId
+    definition: stable lexical identifier of a RiskCalculationContext.
+    genus: Calculation Context ID
+    differentia:
+      - 计算上下文标识，是风险计算上下文的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: calcRunId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/calcRunId
+    definition: stable lexical identifier of a RiskCalculationRun.
+    genus: Calculation Run ID
+    differentia:
+      - 计算运行标识，是风险计算运行的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: CalculationProfile
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/CalculationProfile
+    definition: abstract parent of calculation-method profiles fixing method, parameters, and assumptions
+    genus: method profile
+    differentia:
+      - binds a specification to an implementation
+      - generic core so a method is one profile
+    excludes:
+      - the business semantics (specification)
+    sources:
+      - reference: internal-axiolune
+        locator: ADR-032 D2
+    status: accepted
+  - term: calculationProfileId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/calculationProfileId
+    definition: stable lexical identifier of a CalculationProfile.
+    genus: Calculation Profile ID
+    differentia:
+      - 计算画像标识，是计算画像的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: calculationProfileImplementation
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/calculationProfileImplementation
+    definition: >-
+      the ImplementationVersion bound to a CalculationProfile, used to bind a method profile to the exact executable
+      implementation that realizes it.
+    genus: Calculation Profile Implementation
+    differentia:
+      - 计算画像实现，是绑定到计算画像的实现版本，用于把方法画像绑定到实现它的精确可执行实现。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: calculationProfileName
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/calculationProfileName
+    definition: optional human-readable name of a CalculationProfile.
+    genus: Calculation Profile Name
+    differentia:
+      - 计算画像名称，是计算画像的可选可读名称。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: closureCompleted
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/closureCompleted
+    definition: >-
+      boolean that is true only when the exact bucket-membership closure probe completed successfully, used to declare
+      explicitly that a bucket set's membership has been verified as closed
+    genus: Closure Completed
+    differentia:
+      - 闭包完成标志，是仅在精确分桶成员身份闭包探针成功完成时为真的布尔值，用于显式声明分桶集合的成员身份已验证封闭。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: closureProbeDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/closureProbeDigest
+    definition: >-
+      the SHA-256 digest of the executable closure probe and its frozen parameters, used to fix the true identity of the
+      completeness probe by content fingerprint
+    genus: Closure Probe Digest
+    differentia:
+      - 闭包探针摘要，是可执行闭包探针及其冻结参数的 SHA-256 摘要，用于以内容指纹固化完整性探针的真实身份。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: closureProbeRef
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/closureProbeRef
+    definition: >-
+      absolute reference to the executable completeness probe invocation, used to point at the execution record that
+      proves a bucket set's membership is complete
+    genus: Closure Probe Reference
+    differentia:
+      - 闭包探针引用，是可执行完整性探针调用的绝对引用，用于指向证明分桶集合成员身份完整性的执行记录。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: comparisonBasis
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/comparisonBasis
+    definition: >-
+      the basis on which a RiskLimitRule compares (net exposure, gross exposure, utilization, concentration ratio,
+      absolute value).
+    genus: Comparison Basis
+    differentia:
+      - 比较基准，是风险限额规则所依比较基准（净敞口、总敞口、利用率、集中度比例、绝对值）。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: comparisonOperator
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/comparisonOperator
+    definition: the operator a RiskLimitRule applies (le, ge, lt, gt, withinBand, outsideBand, absoluteValueLe, absoluteValueGe).
+    genus: Comparison Operator
+    differentia:
+      - 比较算子，是风险限额规则所施算子（le、ge、lt、gt、区间内、区间外、绝对值 le、绝对值 ge）。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ComparisonOperator
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/ComparisonOperator
+    definition: >-
+      closed classification of the operator a RiskLimitRule applies, used so that a limit is not hardcoded to a single
+      upper bound.
+    genus: Comparison Operator
+    differentia:
+      - 比较算子，是风险限额规则所施算子的封闭分类，使限额不被硬编码为单一上限。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: comparisonPolicyId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/comparisonPolicyId
+    definition: stable lexical identifier of a RiskLimitComparisonPolicy.
+    genus: Comparison Policy ID
+    differentia:
+      - 比较策略标识，是风险限额比较策略的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: comparisonTolerance
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/comparisonTolerance
+    definition: the tolerance applied in a limit comparison.
+    genus: Comparison Tolerance
+    differentia:
+      - 比较容差，是限额比较中应用的容差。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: confidenceLevel
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/confidenceLevel
+    definition: >-
+      optional dimensionless Quantity confidence level that is required by a statistical risk measure, used to express
+      the probability that a result falls within a stated interval
+    genus: Confidence Level
+    differentia:
+      - 置信水平，是统计性风险度量所需的可选无量纲数量置信度，用于表示度量结果落在某区间内的概率保证。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: definitionAuthority
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/definitionAuthority
+    definition: >-
+      the authority that scopes a RiskMeasureDefinition's identity, used to prevent identifier collisions across
+      institutions.
+    genus: Definition Authority
+    differentia:
+      - 定义权威，是界定风险度量定义身份的权威，用于防止跨机构标识符碰撞。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: definitionBucketSchema
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/definitionBucketSchema
+    definition: >-
+      optional bucket-branch RiskBucketSchema version that is fixed by a RiskMeasureDefinition, used to bind a bucketed
+      risk result to the bucket structure it must conform to
+    genus: Definition Bucket Schema
+    differentia:
+      - 定义分桶模式，是风险度量定义所固定的可选分桶分支模式版本，用于在分桶结果分支下绑定度量结果所遵循的桶结构。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: definitionCurrency
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/definitionCurrency
+    definition: >-
+      optional Money-branch Currency logical identity that is fixed by a RiskMeasureDefinition version, used to specify
+      the currency in which a money-valued risk result is denominated
+    genus: Definition Currency
+    differentia:
+      - 定义币种，是风险度量定义版本所固定的可选金额分支货币逻辑标识，用于在金额结果分支下指定度量结果计价的货币。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: definitionUnit
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/definitionUnit
+    definition: >-
+      optional Quantity-branch unit IRI that is fixed by a RiskMeasureDefinition version, used to specify the unit of
+      measure for a quantity-valued risk result
+    genus: Definition Unit
+    differentia:
+      - 定义单位，是风险度量定义版本所固定的可选数量分支单位 IRI，用于在数量结果分支下指定度量结果的计量单位。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: effectiveAt
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/effectiveAt
+    definition: the instant at which a RiskLimit actually takes effect, distinct from approvedAt.
+    genus: Effective At
+    differentia:
+      - 生效时刻，是风险限额实际生效的带显式时区时刻，区别于批准时刻。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: escalatedAt
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/escalatedAt
+    definition: the instant at which an EscalationEvent occurred.
+    genus: Escalated At
+    differentia:
+      - 升级时刻，是升级事件发生的带显式时区时刻。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: EscalationEvent
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/EscalationEvent
+    definition: >-
+      the escalation of a RiskLimitBreachCase to a higher governance level, used to record that a breach was escalated
+      with a level, target, and time, so that breach governance has an escalation chain.
+    genus: Escalation Event
+    differentia:
+      - 升级事件，是风险限额突破案例向更高治理层级的升级，用于记录突破已升级并附层级、目标与时间，使突破治理有升级链。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: escalationId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/escalationId
+    definition: stable lexical identifier of an EscalationEvent.
+    genus: Escalation ID
+    differentia:
+      - 升级标识，是升级事件的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: escalationLevel
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/escalationLevel
+    definition: the governance level an EscalationEvent escalates to.
+    genus: Escalation Level
+    differentia:
+      - 升级层级，是升级事件所升至的治理层级。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: escalationTarget
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/escalationTarget
+    definition: the optional target entity of an EscalationEvent.
+    genus: Escalation Target
+    differentia:
+      - 升级目标，是升级事件的可选目标实体。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: evaluationReason
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/evaluationReason
+    definition: >-
+      optional deterministic reason that explains an indeterminate evaluation, used to state why the evidence was
+      insufficient to reach a withinLimit or breach conclusion
+    genus: Evaluation Reason
+    differentia:
+      - 评估理由，是解释不确定评估的可选确定性理由，用于在无法得出限额内或突破结论时说明证据受限的原因。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: evaluationResult
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/evaluationResult
+    definition: >-
+      required closed result code of a risk-limit evaluation, used to express a withinLimit, breach, or indeterminate
+      conclusion as a definite code value rather than as an absence
+    genus: Evaluation Result
+    differentia:
+      - 评估结果，是风险限额评估的必填封闭结果码值，用于以确定码值而非缺失表示限额内、突破或不确定的结论。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: evaluatorDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/evaluatorDigest
+    definition: >-
+      the SHA-256 digest of the executable comparison implementation, used to fix the true identity of the
+      measurement-to-limit comparison algorithm by content fingerprint
+    genus: Evaluator Digest
+    differentia:
+      - 评估器摘要，是可执行比较实现的 SHA-256 摘要，用于以内容指纹固化度量与限额比较算法的真实身份。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: exposureMagnitudeKind
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/exposureMagnitudeKind
+    definition: the kind of magnitude a RiskExposure carries (notional, market value, delta, present value, other).
+    genus: Exposure Magnitude Kind
+    differentia:
+      - 暴露幅度种类，是风险暴露所承载幅度的种类（名义、市值、delta、现值、其他）。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: fxPolicyRef
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/fxPolicyRef
+    definition: optional reference to the FX conversion policy applied to inputs.
+    genus: FX Policy Reference
+    differentia:
+      - FX 策略引用，是对输入所施 FX 换算策略的可选引用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: implementationAuthority
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/implementationAuthority
+    definition: the authority that scopes an ImplementationVersion's identity.
+    genus: Implementation Authority
+    differentia:
+      - 实现权威，是界定实现版本身份的权威。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: implementationDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/implementationDigest
+    definition: >-
+      the SHA-256 digest of the executable implementation selected by the definition, used to fix the true identity of
+      the algorithm implementation by content fingerprint to support point-in-time reproducibility
+    genus: Implementation Digest
+    differentia:
+      - 实现摘要，是度量定义所选可执行实现的 SHA-256 摘要，用于以内容指纹固化算法实现的真实身份以支撑 PIT 复现。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ImplementationVersion
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/ImplementationVersion
+    definition: versioned executable implementation of a calculation method with its content digest
+    genus: implementation
+    differentia:
+      - separates executable from methodology
+      - supports PIT reproducibility
+    excludes:
+      - the methodology (methodDigest)
+    sources:
+      - reference: internal-axiolune
+        locator: ADR-032 D2
+    status: accepted
+  - term: implementationVersionId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/implementationVersionId
+    definition: stable lexical identifier of an ImplementationVersion.
+    genus: Implementation Version ID
+    differentia:
+      - 实现版本标识，是实现版本的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: implementationVersionLabel
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/implementationVersionLabel
+    definition: the immutable version label of an ImplementationVersion.
+    genus: Implementation Version Label
+    differentia:
+      - 实现版本标签，是实现版本的不可变版本标签。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: inputContextCompleted
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/inputContextCompleted
+    definition: >-
+      boolean that is true only when the strictly prior input-context record is complete and immutable, used to declare
+      explicitly that a measurement's inputs are frozen and reproducible
+    genus: Input Context Completed
+    differentia:
+      - 输入上下文完成标志，是仅在严格先行输入上下文记录完整且不可变时为真的布尔值，用于显式声明度量所依赖的输入已冻结可复现。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: inputContractDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/inputContractDigest
+    definition: >-
+      the SHA-256 digest of the canonical risk-model input contract, used to fix the input data structure a measure
+      definition declares by content fingerprint
+    genus: Input Contract Digest
+    differentia:
+      - 输入契约摘要，是规范化风险模型输入契约的 SHA-256 摘要，用于以内容指纹固化度量定义所声明的输入数据结构。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: inputDataQualityStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/inputDataQualityStatus
+    definition: the data-quality status of a RiskInputSet (complete, partial, stale, missing, uncertain).
+    genus: Input Data Quality Status
+    differentia:
+      - 输入数据质量状态，是风险输入集的数据质量状态（完整、部分、过期、缺失、不确定）。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: inputParameterSetRef
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/inputParameterSetRef
+    definition: optional reference to the parameter set used.
+    genus: Input Parameter Set Reference
+    differentia:
+      - 输入参数集引用，是所用参数集的可选引用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: inputValuationAsOf
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/inputValuationAsOf
+    definition: the valuation as-of time of the inputs in a RiskInputSet.
+    genus: Input Valuation As Of
+    differentia:
+      - 输入估值时点，是风险输入集中输入的估值时点。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: LimitBreach
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/LimitBreach
+    definition: >-
+      immutable breach fact that exists only for a breach evaluation and repeats that evaluation's exact measurement,
+      exact limit, and generating context without introducing a second threshold or result truth, used to give a limit
+      breach a single authoritative and traceable record
+    genus: Limit Breach
+    differentia:
+      - 限额突破，是仅在突破评估时存在的不可变违约事实，用于复述该评估的精确度量、精确限额及生成上下文而不引入第二个阈值或结果真值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: limitId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/limitId
+    definition: >-
+      owner-scoped stable lexical identifier of a risk limit, used to index one limit-threshold fact uniquely after the
+      limit version is approved
+    genus: Limit ID
+    differentia:
+      - 限额标识，是风险限额的属主作用域稳定词法标识符，用于在该限额版本经批准后唯一索引一条限额阈值事实。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: limitMoney
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/limitMoney
+    definition: >-
+      optional canonical Money threshold that is selected by the limit value xone, used to carry the monetary upper
+      bound of a risk limit on the money threshold branch
+    genus: Limit Money
+    differentia:
+      - 限额金额，是限额值互斥分支所选的可选规范化金额阈值，用于在金额阈值分支下承载风险限额的货币上限。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: limitQuantity
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/limitQuantity
+    definition: >-
+      optional canonical Quantity threshold that is selected by the limit value xone, used to carry the non-monetary
+      upper bound of a risk limit on the quantity threshold branch
+    genus: Limit Quantity
+    differentia:
+      - 限额数量，是限额值互斥分支所选的可选规范化数量阈值，用于在数量阈值分支下承载风险限额的非货币上限。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: limitSeverity
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/limitSeverity
+    definition: the severity of a RiskLimitRule (warning, soft, hard).
+    genus: Limit Severity
+    differentia:
+      - 限额严重度，是风险限额规则的严重度（警告、软、硬）。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: LimitSeverity
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/LimitSeverity
+    definition: closed classification of the severity of a RiskLimitRule.
+    genus: Limit Severity
+    differentia:
+      - 限额严重度，是风险限额规则严重度的封闭分类。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: LimitWaiver
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/LimitWaiver
+    definition: >-
+      temporary or permanent exception granted for a RiskLimitBreachCase, used to record that a breach was formally
+      waived with a kind, rationale, approver, and expiry rather than silently tolerated.
+    genus: Limit Waiver
+    differentia:
+      - 限额豁免，是对风险限额突破案例授予的临时或永久例外，用于记录突破已被正式豁免并附种类、理由、审批者与到期，而非静默容忍。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: lossConvention
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/lossConvention
+    definition: >-
+      how the result expresses loss (loss-as-positive, gain-as-positive, absolute value, net exposure, probability,
+      ratio).
+    genus: Loss Convention
+    differentia:
+      - 损失约定，是结果表达损失的方式（损失为正、收益为正、绝对值、净敞口、概率、比率）。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: lowerThresholdMoney
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/lowerThresholdMoney
+    definition: optional Money lower bound of a RiskLimitRule.
+    genus: Lower Threshold Money
+    differentia:
+      - 下限金额，是风险限额规则的可选金额下限。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: lowerThresholdQuantity
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/lowerThresholdQuantity
+    definition: optional Quantity lower bound of a RiskLimitRule.
+    genus: Lower Threshold Quantity
+    differentia:
+      - 下限数量，是风险限额规则的可选数量下限。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: measuredMoney
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/measuredMoney
+    definition: >-
+      optional canonical Money result that is selected by the measurement value xone, used to carry the monetary value
+      of a risk measurement on the money result branch
+    genus: Measured Money
+    differentia:
+      - 度量金额，是度量值互斥分支所选的可选规范化金额结果，用于在金额结果分支下承载风险度量的货币数值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: measuredQuantity
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/measuredQuantity
+    definition: >-
+      optional canonical Quantity result that is selected by the measurement value xone, used to carry the non-monetary
+      value of a risk measurement on the quantity result branch
+    genus: Measured Quantity
+    differentia:
+      - 度量数量，是度量值互斥分支所选的可选规范化数量结果，用于在数量结果分支下承载风险度量的非货币数值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: measurementStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/measurementStatus
+    definition: >-
+      the status of a risk measurement (preliminary, incomplete, revised, failed, estimated, validated), used so
+      non-audit-grade results are expressible.
+    genus: Measurement Status
+    differentia:
+      - 度量状态，是风险度量的状态（初步、不完整、修订、失败、估计、已验证），使非审计级结果可被表达。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: measureSpecificationAuthority
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/measureSpecificationAuthority
+    definition: >-
+      the authority that scopes a RiskMeasureSpecification's identity, used to prevent identifier collisions across
+      institutions.
+    genus: Measure Specification Authority
+    differentia:
+      - 度量规格权威，是界定风险度量规格身份的权威，用于防止跨机构标识符碰撞。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: measureSpecificationProfile
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/measureSpecificationProfile
+    definition: >-
+      the CalculationProfile bound to a RiskMeasureSpecification, used to bind business semantics to a concrete
+      calculation method profile.
+    genus: Measure Specification Profile
+    differentia:
+      - 度量规格画像，是绑定到风险度量规格的计算画像，用于把业务语义绑定到具体计算方法画像。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: methodDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/methodDigest
+    definition: >-
+      the SHA-256 digest of the method specification selected by the definition, used to fix the true identity of the
+      algorithm implementation by content fingerprint beyond a version label
+    genus: Method Digest
+    differentia:
+      - 方法摘要，是度量定义所选方法规格的 SHA-256 摘要，用于在版本标签之外以内容指纹固化算法实现的真实身份。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: methodRef
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/methodRef
+    definition: >-
+      absolute reference that identifies the declared calculation method, used to point a risk-measure definition at the
+      algorithmic source it depends on
+    genus: Method Reference
+    differentia:
+      - 方法引用，是标识所声明计算方法的绝对引用，用于把风险度量定义指向其依赖的算法实现来源。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: methodVersion
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/methodVersion
+    definition: >-
+      immutable version label of the declared calculation method, used to pin the exact algorithm version a measure
+      definition references when the method is iterated
+    genus: Method Version
+    differentia:
+      - 方法版本，是所声明计算方法的不可变版本标签，用于在方法迭代时精确锁定度量定义所引用的算法版本。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: missingBucketHandling
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/missingBucketHandling
+    definition: how a missing bucket is treated in comparison (failClosed, treatAsZero, ignore, indeterminate).
+    genus: Missing Bucket Handling
+    differentia:
+      - 缺失桶处理，是比较中对缺失桶的处理方式（失败封闭、视为零、忽略、不确定）。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: MissingBucketHandling
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/MissingBucketHandling
+    definition: closed classification of how a missing bucket is treated in comparison.
+    genus: Missing Bucket Handling
+    differentia:
+      - 缺失桶处理，是比较中缺失桶处理方式的封闭分类。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: modelPurpose
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/modelPurpose
+    definition: >-
+      the intended use of the risk model (regulatory capital, internal limit monitoring, economic capital, stress,
+      disclosure).
+    genus: Model Purpose
+    differentia:
+      - 模型目的，是风险模型的预期用途（监管资本、内部限额监控、经济资本、压力、披露）。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: observationWindow
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/observationWindow
+    definition: >-
+      optional Quantity-valued historical observation window that is used by the method, used to bound the historical
+      data span on which a risk measure is based
+    genus: Observation Window
+    differentia:
+      - 观测窗口，是方法所使用的可选数量型历史观测窗口，用于界定风险度量所依据的历史数据时间跨度。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: outputContractDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/outputContractDigest
+    definition: >-
+      the SHA-256 digest of the canonical risk-model output contract, used to fix the output result structure a measure
+      definition declares by content fingerprint
+    genus: Output Contract Digest
+    differentia:
+      - 输出契约摘要，是规范化风险模型输出契约的 SHA-256 摘要，用于以内容指纹固化度量定义所声明的输出结果结构。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RemediationAction
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RemediationAction
+    definition: >-
+      action taken to remediate a RiskLimitBreachCase — reducing exposure, adjusting the limit, or correcting data —
+      used to record what was done, by whom, and with what evidence, so that a breach has a remediation chain rather
+      than only a conclusion.
+    genus: Remediation Action
+    differentia:
+      - 整改行动，是为整改风险限额突破案例所采取的行动——降低暴露、调整限额或纠正数据——用于记录做了什么、由谁做、附什么证据，使突破有整改链而非仅结论。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: remediationEvidence
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/remediationEvidence
+    definition: optional reference to the evidence of a RemediationAction.
+    genus: Remediation Evidence
+    differentia:
+      - 整改证据，是整改行动证据的可选引用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: remediationId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/remediationId
+    definition: stable lexical identifier of a RemediationAction.
+    genus: Remediation ID
+    differentia:
+      - 整改标识，是整改行动的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: remediationKind
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/remediationKind
+    definition: the kind of remediation (exposureReduction, limitAdjustment, dataCorrection, positionCloseout).
+    genus: Remediation Kind
+    differentia:
+      - 整改种类，是整改的种类（降低暴露、调整限额、纠正数据、平仓）。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RemediationKind
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RemediationKind
+    definition: closed classification of the kind of a RemediationAction.
+    genus: Remediation Kind
+    differentia:
+      - 整改种类，是整改行动种类的封闭分类。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reportAsOf
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/reportAsOf
+    definition: the as-of time of a RiskReport.
+    genus: Report As Of
+    differentia:
+      - 报告时点，是风险报告的时点。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reportAudience
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/reportAudience
+    definition: the intended audience of a RiskReport (board, regulator, risk committee, management).
+    genus: Report Audience
+    differentia:
+      - 报告受众，是风险报告的预期受众（董事会、监管、风险委员会、管理层）。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskAppetite
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskAppetite
+    definition: governance statement of the total amount and type of risk an institution is willing to bear
+    genus: governance statement
+    differentia:
+      - carries quantitative and qualitative statements
+      - anchors risk tolerance and limits
+    excludes:
+      - a single limit threshold
+    sources:
+      - reference: internal-axiolune
+        locator: ADR-032 D1; FSB Risk Appetite Framework (terminology)
+    status: accepted
+  - term: riskAppetiteId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskAppetiteId
+    definition: stable lexical identifier of a RiskAppetite.
+    genus: Risk Appetite ID
+    differentia:
+      - 风险偏好标识，是风险偏好的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskAppetiteQuantitativeRef
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskAppetiteQuantitativeRef
+    definition: optional reference to the quantitative limits operationalizing a RiskAppetite.
+    genus: Risk Appetite Quantitative Reference
+    differentia:
+      - 风险偏好量化引用，是对使风险偏好可操作化的量化限额的可选引用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskAppetiteStatement
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskAppetiteStatement
+    definition: qualitative statement of the risk an institution is willing to bear.
+    genus: Risk Appetite Statement
+    differentia:
+      - 风险偏好陈述，是机构愿意承担风险的定性陈述。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskBucketSchema
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskBucketSchema
+    definition: >-
+      versioned schema for a bucketed risk result that fixes the bucket dimension, the admissible bucket-key contract,
+      and the Quantity unit shared by all buckets, used to give a complete bucketed risk result a stable and
+      reproducible structure
+    genus: Risk Bucket Schema
+    differentia:
+      - 风险分桶模式，是分桶风险结果的版本化结构定义，用于固定分桶维度、可接纳的分桶键契约以及所有桶值共享的数量单位。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskBucketSet
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskBucketSet
+    definition: >-
+      versioned closure over the RiskBucketValue versions selected by this set version at a specified as-of and
+      generating context that belong to one exact RiskBucketSchema version, used to prove a bucketed result is closed by
+      means of an ordered-set digest and a successful completeness probe. A bucketSetPurpose attribute distinguishes a
+      measurement-side result set from a limit-side schedule, so the same structure is not silently reused as both a
+      value and a threshold. The closure-evidence requirements (bucketValueCount, bucketValueSetDigest,
+      closureProbeRef/Digest, closureCompleted) are mandatory only when the ValidatedReproducibleRiskMeasurement profile
+      is active; a preliminary bucket set may carry its members without a completed closure proof. Membership is frozen
+      at the set version's as-of/context, not a context-free notion of "current".
+    genus: Risk Bucket Set
+    differentia:
+      - >-
+        风险分桶集合，是某指定时点与生成上下文下由该集合版本所选、归属于某一精确分桶模式版本的风险分桶值版本构成的版本化闭包，用于以有序集合摘要和成功完整性探针证明分桶结果已封闭。bucketSetPurpose
+        属性区分度量侧结果集与限额侧计划，使同一结构不被静默同时用作值与阈值。闭包证据要求（分桶值计数、分桶值集合摘要、闭包探针引用/摘要、闭包完成）仅在已验证可重放度量画像激活时强制；初步分桶集合可携带成员而无完成闭包证明。成员身份在集合版本的时点/上下文冻结，而非无上下文的“当前”。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskBucketValue
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskBucketValue
+    definition: >-
+      temporal and provenanced scalar member of a complete risk bucket set that is identified within that set by an
+      explicit dimension and bucket key, used to carry the measurement value for one bucket in the result
+    genus: Risk Bucket Value
+    differentia:
+      - 风险分桶值，是完整分桶集合中一个带时间戳与来源的标量成员，用于在该集合内通过显式维度和分桶键唯一标识一个桶的度量值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskCalculationContext
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskCalculationContext
+    definition: >-
+      the binding of a RiskInputSet to a RiskCalculationRun, used to record that a particular run consumed a particular
+      frozen input set, so that input-to-run linkage is explicit and queryable.
+    genus: Risk Calculation Context
+    differentia:
+      - 风险计算上下文，是风险输入集到风险计算运行的绑定，用于记录某次运行消耗了某个冻结输入集，使输入到运行的链接显式可查询。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskCalculationRun
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskCalculationRun
+    definition: >-
+      the execution of a CalculationProfile/ImplementationVersion over a RiskInputSet that produces a RiskMeasurement,
+      used to record "this run, these inputs, this output" so that a measurement is traceable to the run that produced
+      it rather than only to a definition.
+    genus: Risk Calculation Run
+    differentia:
+      - 风险计算运行，是对计算画像/实现版本在风险输入集上的执行并产出风险度量，用于记录“此运行、此输入、此输出”，使度量可追溯到产生它的运行而非仅定义。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskCategory
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskCategory
+    definition: classification of the kind of risk (market, credit, liquidity, operational, concentration, model, other)
+    genus: classification
+    differentia:
+      - categorizes measures, limits, exposures, factors, and scenarios
+      - full regulatory frameworks per category are out of scope
+    excludes:
+      - a regulatory rule set
+    sources:
+      - reference: internal-axiolune
+        locator: ADR-032 D1
+    status: accepted
+  - term: riskCategoryName
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskCategoryName
+    definition: optional human-readable name of a RiskCategory.
+    genus: Risk Category Name
+    differentia:
+      - 风险类别名称，是风险类别的可选可读名称。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskCategoryValue
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskCategoryValue
+    definition: closed classification value of the kind of risk, used to categorize measures, limits, exposures, and scenarios.
+    genus: Risk Category Value
+    differentia:
+      - 风险类别值，是风险种类的封闭分类取值，用于归类度量、限额、暴露与情景。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskCategoryValue
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskCategoryValue
+    definition: >-
+      closed classification of the kind of risk, used to categorize measures, limits, exposures, factors, and scenarios.
+      The set is extensible via additional code-list values; full regulatory frameworks per category remain out of
+      scope.
+    genus: Risk Category Value
+    differentia:
+      - 风险类别值，是风险种类的封闭分类，用于归类度量、限额、暴露、因子与情景。集合可经附加码表取值扩展；各类别下完整监管框架不在范围内。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskDimension
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskDimension
+    definition: >-
+      interpretable dimension along which a bucketed risk result is sliced, used to upgrade a free-text bucketKey and a
+      bare bucketDimensionRef into a typed, queryable object so that bucket alignment and comparison across measurements
+      and limits are well-defined.
+    genus: Risk Dimension
+    differentia:
+      - 风险维度，是分桶风险结果所沿切分的可解释维度，用于把自由文本分桶键与裸分桶维度引用升级为类型化可查询对象，使度量与限额间的桶对齐与比较有明确定义。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskDimensionFactorRef
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskDimensionFactorRef
+    definition: optional reference to the RiskFactor a dimension partitions, used to tie a bucket dimension to its driving factor.
+    genus: Risk Dimension Factor Reference
+    differentia:
+      - 风险维度因子引用，是对维度所划分风险因子的可选引用，用于把分桶维度绑定到其驱动因子。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskDimensionId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskDimensionId
+    definition: stable lexical identifier of a RiskDimension.
+    genus: Risk Dimension ID
+    differentia:
+      - 风险维度标识，是风险维度的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskDimensionName
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskDimensionName
+    definition: optional human-readable name of a RiskDimension.
+    genus: Risk Dimension Name
+    differentia:
+      - 风险维度名称，是风险维度的可选可读名称。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskExposure
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskExposure
+    definition: >-
+      the risk an institution bears at a scope to a risk factor or category with a magnitude kind, used to state "what
+      risk is borne, driven by what, at which scope" independently of a single computed number, so that exposure is a
+      first-class concept rather than an implicit by-product of a measurement.
+    genus: Risk Exposure
+    differentia:
+      - 风险暴露，是机构在某范围下因某风险因子或类别而承担的、带幅度种类的风险，用于独立于单一计算数值标明“承担了什么风险、由什么驱动、在哪个范围”，使暴露成为一等概念而非度量的隐含副产品。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskExposureId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskExposureId
+    definition: stable lexical identifier of a RiskExposure.
+    genus: Risk Exposure ID
+    differentia:
+      - 风险暴露标识，是风险暴露的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskFactor
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskFactor
+    definition: identifiable risk driver a risk measure is sensitive to, distinct from a strategy-research FactorDefinition
+    genus: risk driver
+    differentia:
+      - drives a risk result
+      - optionally cross-links a research factor via riskFactorResearchRef
+    excludes:
+      - a research signal generator (strategy-research FactorDefinition)
+    sources:
+      - reference: internal-axiolune
+        locator: ADR-032 D1
+    status: accepted
+  - term: riskFactorCategory
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskFactorCategory
+    definition: the RiskCategory a RiskFactor belongs to, used to classify a factor by the kind of risk it drives.
+    genus: Risk Factor Category
+    differentia:
+      - 风险因子类别，是风险因子所属的风险类别，用于按其驱动风险种类对因子分类。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskFactorId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskFactorId
+    definition: stable lexical identifier of a RiskFactor.
+    genus: Risk Factor ID
+    differentia:
+      - 风险因子标识，是风险因子的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskFactorName
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskFactorName
+    definition: optional human-readable name of a RiskFactor.
+    genus: Risk Factor Name
+    differentia:
+      - 风险因子名称，是风险因子的可选可读名称。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskFactorResearchRef
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskFactorResearchRef
+    definition: >-
+      optional reference to a strategy-research FactorDefinition when a risk factor corresponds to a research signal
+      generator, used to keep risk-management and research factor concepts distinct while allowing cross-linking.
+    genus: Risk Factor Research Reference
+    differentia:
+      - 风险因子研究引用，是当风险因子对应某研究信号生成器时对 strategy-research FactorDefinition 的可选引用，用于在保持风险管理因子与研究因子概念区分的同时允许交叉链接。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskHorizon
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskHorizon
+    definition: >-
+      optional duration Quantity over which the risk result is interpreted, used to state the future time length a
+      measurement covers
+    genus: Risk Horizon
+    differentia:
+      - 风险期限，是风险结果赖以解释的可选持续时间数量，用于标明度量所覆盖的未来时间长度。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskInputSet
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskInputSet
+    definition: >-
+      the collection of inputs a risk calculation used — multiple position snapshots, market-data snapshots, curves,
+      volatility surfaces, FX rates, parameter sets, FX/valuation policy, and data-quality status — used to decompress
+      the opaque inputContextRef/digest so that the actual inputs are queryable, with their valuation as-of,
+      availability, and quality.
+    genus: Risk Input Set
+    differentia:
+      - 风险输入集，是风险计算所使用输入的集合——多个头寸快照、市场数据快照、曲线、波动率面、汇率、参数集、FX/估值策略与数据质量状态——用于解压不透明输入上下文引用/摘要，使实际输入及其估值时点、可得性与质量可查询。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskInputSetId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskInputSetId
+    definition: stable lexical identifier of a RiskInputSet.
+    genus: Risk Input Set ID
+    differentia:
+      - 风险输入集标识，是风险输入集的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskLimit
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskLimit
+    definition: >-
+      approved temporal and provenanced threshold fact that binds one exact RiskMeasureDefinition version, at least one
+      explicit scope (a RiskScopeDefinition and/or legacy Portfolio/Account/Position), an owner, exactly one Money,
+      Quantity, or bucket-set representation, and an optional RiskLimitRule and RiskLimitComparisonPolicy, used to set a
+      governed risk threshold that subsequent measurements are evaluated against. The single-value upper threshold
+      remains the first concrete profile; a RiskLimitRule generalizes to lower/upper bounds, bands, absolute-value,
+      two-sided, utilization, and concentration limits. A lifecycle (effective/suspended/superseded) separates approval
+      from effectiveness, and approvedBy is modeled as a typed Party role consistent with limitOwner rather than a bare
+      uri.
+    genus: Risk Limit
+    differentia:
+      - >-
+        风险限额，是经批准的带时间戳与来源的阈值事实，用于绑定一个精确度量定义版本、至少一个显式范围（风险范围定义和/或遗留组合/账户/头寸）、一个责任主体、唯一的金额、数量或分桶集合表示，及可选的风险限额规则与风险限额比较策略，以设定后续度量所对照的治理阈值。单值上限仍是首个具体画像；风险限额规则泛化为下/上限、区间、绝对值、双侧、利用率与集中度限额。生命周期（生效/暂停/替代）把批准与生效分开，approvedBy
+        建模为类型化 Party 角色与 limitOwner 一致，而非裸 uri。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskLimitBreachCase
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskLimitBreachCase
+    definition: >-
+      the governance case opened for a LimitBreach — carrying breach magnitude, duration, responsible party, and a
+      workflow status — used to separate the immutable computational breach fact from its governance disposition, so
+      that a breach has a case, acknowledgements, waivers, remediation, and escalations rather than a single fact.
+    genus: Risk Limit Breach Case
+    differentia:
+      - 风险限额突破案例，是为限额突破开启的治理案例——携带突破幅度、持续时间、责任方与工作流状态——用于把不可变计算突破事实与其治理处置分开，使突破有案例、确认、豁免、整改与升级而非单一事实。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskLimitComparisonPolicy
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskLimitComparisonPolicy
+    definition: policy governing how a bucketed or scalar measurement is compared to a bucketed or scalar limit
+    genus: comparison policy
+    differentia:
+      - defines bucket mode, missing-bucket handling, tolerance, conversion
+      - replaces scalar value<=threshold for bucket sets
+    excludes:
+      - the limit threshold
+    sources:
+      - reference: internal-axiolune
+        locator: ADR-032 D5
+    status: accepted
+  - term: RiskLimitEvaluation
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskLimitEvaluation
+    definition: >-
+      explicit deterministic conclusion for one exact RiskMeasurement version and one compatible exact RiskLimit version
+      that represents withinLimit, breach, or indeterminate as a required code value rather than as an absence, used to
+      make the outcome of comparing a measurement with its limit unambiguous and non-empty. Scope compatibility is
+      defined by an explicit scopeMatchRule (exactMatch / approvedRollup / contains) rather than a vague "same scope",
+      and a comparison policy role governs bucket-vs-bucket comparison. For the bucket branch the result is determined
+      per the RiskLimitComparisonPolicy (per-bucket and/or aggregate, with key alignment, missing-bucket handling,
+      tolerance, rounding, and unit/currency conversion) rather than a scalar value<=threshold. evaluatorDigest is
+      mandatory only when the ValidatedReproducibleRiskMeasurement profile is active.
+    genus: Risk Limit Evaluation
+    differentia:
+      - >-
+        风险限额评估，是针对一个精确度量版本与一个兼容精确限额版本的确定性结论，用于把限额内、突破或不确定表示为必填码值而非缺失。范围兼容性由显式
+        scopeMatchRule（精确匹配/已批准聚合/包含）定义，而非模糊的“同范围”；比较策略角色治理分桶对分桶比较。分桶分支下结果由风险限额比较策略（逐桶和/或聚合，含键对齐、缺失桶处理、容差、舍入与单位/货币换算）决定，而非标量值<=阈值。评估器摘要仅在已验证可重放度量画像激活时强制。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskLimitEvaluationResult
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskLimitEvaluationResult
+    definition: >-
+      closed classification that makes a successful comparison, a detected breach, or an evidence-limited indeterminate
+      conclusion explicit, used to give limit evaluations a normalized and unambiguous set of conclusion values
+    genus: Risk Limit Evaluation Result
+    differentia:
+      - 风险限额评估结果，是把成功比较、检测到突破或证据受限的不确定结论显式化的封闭分类，用于为限额评估提供规范化且无歧义的结论取值集。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskLimitLifecycleStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskLimitLifecycleStatus
+    definition: the lifecycle status of a RiskLimitRule (effective, suspended, superseded).
+    genus: Risk Limit Lifecycle Status
+    differentia:
+      - 风险限额生命周期状态，是风险限额规则的生命周期状态（生效、暂停、替代）。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskLimitLifecycleStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskLimitLifecycleStatus
+    definition: closed classification of the lifecycle status of a RiskLimitRule.
+    genus: Risk Limit Lifecycle Status
+    differentia:
+      - 风险限额生命周期状态，是风险限额规则生命周期状态的封闭分类。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskLimitRule
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskLimitRule
+    definition: governed rule a limit enforces (operator, thresholds, severity, lifecycle) generalizing the single upper bound
+    genus: limit rule
+    differentia:
+      - supports bounds, bands, absolute-value, two-sided
+      - carries warning/soft/hard severity and lifecycle
+    excludes:
+      - the single upper threshold (retained as first profile)
+    sources:
+      - reference: internal-axiolune
+        locator: ADR-032 D6
+    status: accepted
+  - term: riskLimitRuleId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskLimitRuleId
+    definition: stable lexical identifier of a RiskLimitRule.
+    genus: Risk Limit Rule ID
+    differentia:
+      - 风险限额规则标识，是风险限额规则的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskMeasureCategoryRef
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskMeasureCategoryRef
+    definition: optional reference to the RiskCategory a measure belongs to.
+    genus: Risk Measure Category Reference
+    differentia:
+      - 风险度量类别引用，是度量所属风险类别的可选引用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskMeasureDefinition
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskMeasureDefinition
+    definition: >-
+      specification of a risk metric including inputs, horizon, confidence level, and computation contract without
+      embedding a single result instance
+    genus: measure definition
+    differentia:
+      - defines how risk is measured
+      - separates definition from a single observation
+    excludes:
+      - a one-off risk measurement result
+      - a limit breach event
+    sources:
+      - reference: internal-axiolune
+        locator: M2-PLAN §5.2 fin-risk
+    status: accepted
+  - term: riskMeasureId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskMeasureId
+    definition: >-
+      authority-scoped stable lexical identifier of a risk-measure definition, used to index one risk-measure
+      specification uniquely while its definition version stays immutable
+    genus: Risk Measure ID
+    differentia:
+      - 风险度量标识，是风险度量定义的权威作用域稳定词法标识符，用于在该定义版本不可变的前提下唯一索引一条风险度量规格。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskMeasureKind
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskMeasureKind
+    definition: >-
+      the kind of risk measure (VaR, ES, sensitivity, PFE, liquidity gap, concentration, probability, ratio, capital
+      requirement, other), used to make a measure's business kind queryable rather than hidden in a method reference.
+    genus: Risk Measure Kind
+    differentia:
+      - 风险度量种类，是风险度量的种类（VaR、ES、敏感度、PFE、流动性缺口、集中度、概率、比率、资本需求、其他），用于使度量的业务种类可查询而非藏在方法引用中。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskMeasureKind
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskMeasureKind
+    definition: >-
+      closed classification of the business kind of a risk measure, used to make a measure queryable by kind rather than
+      hidden in a method reference.
+    genus: Risk Measure Kind
+    differentia:
+      - 风险度量种类，是风险度量业务种类的封闭分类，用于使度量可按种类查询而非藏在方法引用中。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskMeasurement
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskMeasurement
+    definition: >-
+      point-in-time result for one exact risk-measure definition and at least one explicit portfolio, account, position,
+      or RiskScopeSnapshot scope that carries exactly one Money, Quantity, or RiskBucketSet representation, used to
+      record a computed risk number. A measurementStatus distinguishes preliminary, incomplete, revised, failed,
+      estimated, and validated results, so non-audit-grade numbers are expressible; the strictly-prior input-context
+      evidence (inputContextRef, inputContextRecordDigest, inputContextCompleted) is mandatory only when the
+      ValidatedReproducibleRiskMeasurement profile is active. Optional roles link the result to its
+      RiskMeasureSpecification, RiskInputSet, RiskCalculationContext, RiskScopeSnapshot, driving RiskFactor(s), and
+      RiskExposure(s), so that "what drove the result" is queryable rather than hidden in a digest.
+    genus: Risk Measurement
+    differentia:
+      - >-
+        风险度量，是某一精确度量定义与至少一个显式组合、账户、头寸或风险范围快照范围下的时点结果，携带唯一的金额、数量或分桶集合表示，用于记录计算出的风险数值。measurementStatus
+        区分初步、不完整、修订、失败、估计与已验证结果，使非审计级数值可被表达；严格先行输入上下文证据仅在已验证可重放度量画像激活时强制。可选角色把结果链接到其风险度量规格、风险输入集、风险计算上下文、风险范围快照、驱动的风险因子与风险暴露，使“什么驱动了结果”可查询而非藏在摘要中。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskMeasurementStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskMeasurementStatus
+    definition: >-
+      closed classification of the status of a risk measurement, used so that preliminary, incomplete, revised, failed,
+      estimated, and validated results are all expressible rather than requiring every result to be audit-grade.
+    genus: Risk Measurement Status
+    differentia:
+      - 风险度量状态，是风险度量状态的封闭分类，使初步、不完整、修订、失败、估计与已验证结果均可被表达，而非要求每个结果都达审计级。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskMeasureSpecification
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskMeasureSpecification
+    definition: >-
+      business semantics of a risk measure (kind, model purpose, loss convention, aggregation, factor universe,
+      valuation)
+    genus: measure specification
+    differentia:
+      - anchors limits to stable business concept
+      - survives implementation upgrades
+    excludes:
+      - the executable implementation
+      - the calculation method profile
+    sources:
+      - reference: internal-axiolune
+        locator: ADR-032 D2
+    status: accepted
+  - term: riskMeasureSpecificationId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskMeasureSpecificationId
+    definition: stable lexical identifier of a RiskMeasureSpecification.
+    genus: Risk Measure Specification ID
+    differentia:
+      - 风险度量规格标识，是风险度量规格的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskReport
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskReport
+    definition: lightweight report view over risk results (as-of, audience, sections)
+    genus: report view
+    differentia:
+      - expresses the BCBS 239 reporting dimension
+      - full aggregation infrastructure out of scope
+    excludes:
+      - the underlying computed results
+    sources:
+      - reference: internal-axiolune
+        locator: ADR-032 D10 P1-8; BCBS 239 (terminology)
+    status: accepted
+  - term: riskReportId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskReportId
+    definition: stable lexical identifier of a RiskReport.
+    genus: Risk Report ID
+    differentia:
+      - 风险报告标识，是风险报告的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskScopeDefinition
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskScopeDefinition
+    definition: >-
+      policy or business scope (desk, strategy, entity, fund, counterparty, netting set, asset class) a limit is
+      anchored to
+    genus: scope
+    differentia:
+      - stable governance object
+      - distinct from a RiskScopeSnapshot
+    excludes:
+      - a frozen member set at an as-of
+    sources:
+      - reference: internal-axiolune
+        locator: ADR-032 D4
+    status: accepted
+  - term: riskScopeDescription
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskScopeDescription
+    definition: optional human-readable description of a RiskScopeDefinition.
+    genus: Risk Scope Description
+    differentia:
+      - 风险范围描述，是风险范围定义的可选可读描述。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskScopeId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskScopeId
+    definition: stable lexical identifier of a RiskScopeDefinition.
+    genus: Risk Scope ID
+    differentia:
+      - 风险范围标识，是风险范围定义的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskScopeKind
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskScopeKind
+    definition: >-
+      the kind of business scope (desk, strategy, legal entity, fund, counterparty, netting set, asset class, or
+      combination).
+    genus: Risk Scope Kind
+    differentia:
+      - 风险范围种类，是业务范围的种类（台、策略、法律实体、基金、对手方、净额集、资产类别或组合）。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskScopeSnapshot
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskScopeSnapshot
+    definition: >-
+      the frozen concrete members of a RiskScopeDefinition at an as-of together with the selection rules that produced
+      them, used to bind a measurement to the exact scope version evaluated rather than a free-floating policy scope.
+    genus: Risk Scope Snapshot
+    differentia:
+      - 风险范围快照，是某时点下风险范围定义的冻结具体成员及其选择规则，用于把度量绑定到所评估的精确范围版本而非自由浮动的政策范围。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskScopeSnapshotId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskScopeSnapshotId
+    definition: stable lexical identifier of a RiskScopeSnapshot.
+    genus: Risk Scope Snapshot ID
+    differentia:
+      - 风险范围快照标识，是风险范围快照的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskSource
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskSource
+    definition: >-
+      identifiable origin or driver of risk that belongs to one Risk Category, used to state what gives rise to a risk
+      independently of how it is measured, so that risk can be attributed to its cause rather than only to its numeric
+      result.
+    genus: Risk Source
+    differentia:
+      - 风险来源，是属于某一风险类别的可识别风险起因或驱动，用于独立于度量方式标明风险的成因，使风险可归因于原因而非仅归于数值结果。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskSourceCategory
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskSourceCategory
+    definition: the RiskCategory a RiskSource belongs to, used to classify a source by the kind of risk it gives rise to.
+    genus: Risk Source Category
+    differentia:
+      - 风险来源类别，是风险来源所属的风险类别，用于按其所致风险种类对来源分类。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskSourceId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskSourceId
+    definition: stable lexical identifier of a RiskSource.
+    genus: Risk Source ID
+    differentia:
+      - 风险来源标识，是风险来源的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskSourceName
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskSourceName
+    definition: optional human-readable name of a RiskSource.
+    genus: Risk Source Name
+    differentia:
+      - 风险来源名称，是风险来源的可选可读名称。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RiskTolerance
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/RiskTolerance
+    definition: >-
+      the tolerable variation around a Risk Appetite, used to separate the willingness to bear risk from the tolerable
+      deviation before escalation, so that appetite and tolerance are not conflated into a single threshold.
+    genus: Risk Tolerance
+    differentia:
+      - 风险承受力，是风险偏好周围可容忍的偏离，用于把承担风险的意愿与升级前的可容忍偏离分开，使偏好与承受力不被混为单一阈值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskToleranceBasis
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskToleranceBasis
+    definition: the basis on which a RiskTolerance is expressed.
+    genus: Risk Tolerance Basis
+    differentia:
+      - 风险承受力基准，是风险承受力所依据的基准。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskToleranceId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskToleranceId
+    definition: stable lexical identifier of a RiskTolerance.
+    genus: Risk Tolerance ID
+    differentia:
+      - 风险承受力标识，是风险承受力的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: riskToleranceMagnitude
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/riskToleranceMagnitude
+    definition: the magnitude of tolerable variation around a RiskAppetite.
+    genus: Risk Tolerance Magnitude
+    differentia:
+      - 风险承受力幅度，是风险偏好周围可容忍偏离的幅度。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: roundingPolicy
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/roundingPolicy
+    definition: the rounding applied before a limit comparison.
+    genus: Rounding Policy
+    differentia:
+      - 舍入策略，是限额比较前应用的舍入。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: runAuthority
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/runAuthority
+    definition: the authority that scopes a StressTestRun's identity.
+    genus: Run Authority
+    differentia:
+      - 运行权威，是界定压力测试运行身份的权威。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: samplingMethodRef
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/samplingMethodRef
+    definition: >-
+      optional absolute reference to the sampling or resampling contract, used to point a measure definition at the
+      data-sampling rules it depends on
+    genus: Sampling Method Reference
+    differentia:
+      - 抽样方法引用，是抽样或重抽样契约的可选绝对引用，用于把度量定义指向其依赖的数据抽样规则来源。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ScenarioApplicationEvidence
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/ScenarioApplicationEvidence
+    definition: >-
+      the evidence that a stress-test output's input context was actually shocked by the run's exact ScenarioDefinition
+      — binding the scenario, the input set, and the output — used to prove the scenario was applied rather than merely
+      referenced, so that a stress run demonstrates the scenario acted on the output.
+    genus: Scenario Application Evidence
+    differentia:
+      - 情景应用证据，是证明压力测试输出输入上下文确被运行精确情景定义冲击的证据——绑定情景、输入集与输出——用于证明情景被实际施加而非仅被引用，使压力运行证明情景作用于输出。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: scenarioAuthority
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/scenarioAuthority
+    definition: the authority that scopes a ScenarioDefinition's identity.
+    genus: Scenario Authority
+    differentia:
+      - 情景权威，是界定情景定义身份的权威。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: scenarioCategory
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/scenarioCategory
+    definition: the category of a scenario (hypothetical, historical, regulatory, reverse stress, whatIf).
+    genus: Scenario Category
+    differentia:
+      - 情景类别，是情景的类别（假设、历史、监管、反向压力、假设分析）。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ScenarioDefinition
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/ScenarioDefinition
+    definition: versioned stress or what-if scenario whose shock parameters are fixed independently of any stress-test run
+    genus: scenario specification
+    differentia:
+      - shock parameters immutable per version
+      - referenced by StressTestRun
+    excludes:
+      - a completed stress test run
+      - a risk measurement result
+    sources:
+      - reference: internal-axiolune
+        locator: CQ-R5
+    status: accepted
+  - term: scenarioDefinitionId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/scenarioDefinitionId
+    definition: >-
+      authority-scoped stable lexical identifier of a stress scenario definition, used to index one scenario
+      specification uniquely while its definition version stays immutable
+    genus: Scenario Definition ID
+    differentia:
+      - 情景定义标识，是压力情景定义的权威作用域稳定词法标识符，用于在该定义版本不可变的前提下唯一索引一条情景规格。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: scenarioNarrative
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/scenarioNarrative
+    definition: the narrative explaining how the scenario captures the risk.
+    genus: Scenario Narrative
+    differentia:
+      - 情景叙事，是说明情景如何捕捉风险的叙事。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: scenarioRef
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/scenarioRef
+    definition: >-
+      optional absolute reference to the scenario version used by the measure, used to bind a risk measure to the stress
+      or what-if scenario it is based on
+    genus: Scenario Reference
+    differentia:
+      - 情景引用，是度量所使用情景版本的可选绝对引用，用于把风险度量绑定到其依据的压力或假设情景来源。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ScenarioShock
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/ScenarioShock
+    definition: typed shock applied to a target within a scenario (type, magnitude, unit, propagation)
+    genus: shock
+    differentia:
+      - decompresses opaque shock digest
+      - targets a RiskFactor
+    excludes:
+      - the stress test run
+    sources:
+      - reference: internal-axiolune
+        locator: ADR-032 D8
+    status: accepted
+  - term: scenarioShockId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/scenarioShockId
+    definition: stable lexical identifier of a ScenarioShock.
+    genus: Scenario Shock ID
+    differentia:
+      - 情景冲击标识，是情景冲击的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: scenarioShockMember
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/scenarioShockMember
+    definition: >-
+      ScenarioShock that belongs to a ScenarioDefinition, used to give a scenario typed, queryable shock members rather
+      than an opaque digest.
+    genus: Scenario Shock Member
+    differentia:
+      - 情景冲击成员，是属于情景定义的情景冲击，用于给情景类型化可查询冲击成员而非不透明摘要。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: scopeMatchRule
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/scopeMatchRule
+    definition: >-
+      the rule by which a measurement scope and a limit scope are deemed compatible in a RiskLimitEvaluation
+      (exactMatch, approvedRollup, contains).
+    genus: Scope Match Rule
+    differentia:
+      - 范围匹配规则，是风险限额评估中度量范围与限额范围被视为兼容的规则（精确匹配、已批准聚合、包含）。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ScopeMatchRule
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/ScopeMatchRule
+    definition: closed classification of how a measurement scope and a limit scope are deemed compatible in a RiskLimitEvaluation.
+    genus: Scope Match Rule
+    differentia:
+      - 范围匹配规则，是风险限额评估中度量范围与限额范围被视为兼容的封闭分类。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: shockCanonicalizationRef
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/shockCanonicalizationRef
+    definition: >-
+      explicit reference to the canonicalization that maps the source document to the shock parameter payload, used to
+      make the shockParameterDigest ↔ sourceArtifactDigest relationship explicit rather than a vague "matches".
+    genus: Shock Canonicalization Reference
+    differentia:
+      - 冲击规范化引用，是把源文档映射到冲击参数载荷的规范化的显式引用，用于使冲击参数摘要与源制品摘要关系显式而非模糊的“匹配”。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: shockMagnitude
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/shockMagnitude
+    definition: the magnitude of a ScenarioShock.
+    genus: Shock Magnitude
+    differentia:
+      - 冲击幅度，是情景冲击的幅度。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: shockParameterDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/shockParameterDigest
+    definition: >-
+      the SHA-256 digest of the canonical shock-parameter payload for the scenario, used to fix the true content of a
+      scenario's shock parameters by content fingerprint
+    genus: Shock Parameter Digest
+    differentia:
+      - 冲击参数摘要，是情景规范化冲击参数载荷的 SHA-256 摘要，用于以内容指纹固化情景冲击参数集的真实内容。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: shockPropagationRule
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/shockPropagationRule
+    definition: the rule by which a shock propagates to the portfolio.
+    genus: Shock Propagation Rule
+    differentia:
+      - 冲击传播规则，是冲击传播到组合的规则。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: shockTargetFactor
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/shockTargetFactor
+    definition: the RiskFactor targeted by a ScenarioShock, used to state which factor a shock acts on.
+    genus: Shock Target Factor
+    differentia:
+      - 冲击目标因子，是情景冲击所作用的风险因子，用于标明冲击作用于哪个因子。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: shockType
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/shockType
+    definition: >-
+      the type of shock (absolute shift, relative shift, multiplier, curve twist, basis shock, volatility shock, default
+      event).
+    genus: Shock Type
+    differentia:
+      - 冲击类型，是冲击的类型（绝对平移、相对平移、乘数、曲线扭转、基差冲击、波动率冲击、违约事件）。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: shockUnit
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/shockUnit
+    definition: the unit of a ScenarioShock magnitude (basis points, percent, absolute, multiplier).
+    genus: Shock Unit
+    differentia:
+      - 冲击单位，是情景冲击幅度的单位（基点、百分比、绝对值、乘数）。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: snapshotAsOf
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/snapshotAsOf
+    definition: the as-of time at which a RiskScopeSnapshot freezes the scope members.
+    genus: Snapshot As Of
+    differentia:
+      - 快照时点，是风险范围快照冻结范围成员的时点。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: snapshotMemberDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/snapshotMemberDigest
+    definition: the SHA-256 digest of the canonical member set of a RiskScopeSnapshot.
+    genus: Snapshot Member Digest
+    differentia:
+      - 快照成员摘要，是风险范围快照规范化成员集合的 SHA-256 摘要。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: snapshotSelectionRule
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/snapshotSelectionRule
+    definition: the rule that selected the members of a RiskScopeSnapshot.
+    genus: Snapshot Selection Rule
+    differentia:
+      - 快照选择规则，是选取风险范围快照成员的规则。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: stressRunId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/stressRunId
+    definition: >-
+      authority-scoped stable lexical identifier of one stress test run, used to index one stress-test execution record
+      uniquely once the run completes
+    genus: Stress Run ID
+    differentia:
+      - 压力测试运行标识，是一次压力测试运行的权威作用域稳定词法标识符，用于在该运行完成时唯一索引一条压力测试执行记录。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: StressTestRun
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/StressTestRun
+    definition: >-
+      completed stress test that applies one exact ScenarioDefinition version to a portfolio scope and records the
+      output RiskMeasurement version produced by the run, used to bind the scenario, the shocked holdings, and the
+      output result in a replayable way. It carries a run authority in its logical key, an exact RiskScopeSnapshot or
+      RiskInputSet whose members were shocked, an optional baseline measurement, one or more stressed measurements, and
+      a ScenarioApplicationEvidence role proving the output's input context was actually shocked by the scenario. The
+      run's contract requires the output's generating context to equal the run's, the output's scope to match the stress
+      scope, and the measure definition's scenarioRef to equal the run's exact ScenarioDefinition.
+    genus: Stress Test Run
+    differentia:
+      - >-
+        压力测试运行，是将一个精确情景定义版本施加于投资组合范围并记录运行产出度量版本的完成压力测试，用于以可回放方式绑定情景、持仓冲击与输出结果。其逻辑键携带运行权威、被冲击成员的精确风险范围快照或风险输入集、可选基线度量、一个或多个受压度量，及证明输出输入上下文确被情景冲击的情景应用证据角色。运行合同要求输出生成上下文等于运行、输出范围匹配压力范围、度量定义的情景引用等于运行的精确情景定义。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: supersededBy
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/supersededBy
+    definition: optional reference to the RiskLimit version that supersedes this one.
+    genus: Superseded By
+    differentia:
+      - 替代为，是替代本限额版本的风险限额版本的可选引用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: suspendedAt
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/suspendedAt
+    definition: the instant at which a RiskLimit was suspended.
+    genus: Suspended At
+    differentia:
+      - 暂停时刻，是风险限额被暂停的带显式时区时刻。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: unitConversionPolicyRef
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/unitConversionPolicyRef
+    definition: optional reference to the unit/currency conversion policy applied before comparison.
+    genus: Unit Conversion Policy Reference
+    differentia:
+      - 单位换算策略引用，是比较前所施单位/货币换算策略的可选引用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: upperThresholdMoney
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/upperThresholdMoney
+    definition: optional Money upper bound of a RiskLimitRule.
+    genus: Upper Threshold Money
+    differentia:
+      - 上限金额，是风险限额规则的可选金额上限。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: upperThresholdQuantity
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/upperThresholdQuantity
+    definition: optional Quantity upper bound of a RiskLimitRule.
+    genus: Upper Threshold Quantity
+    differentia:
+      - 上限数量，是风险限额规则的可选数量上限。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: valuationMethodRef
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/valuationMethodRef
+    definition: optional reference to the valuation method used by the measure.
+    genus: Valuation Method Reference
+    differentia:
+      - 估值方法引用，是度量所使用估值方法的可选引用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: valuationPolicyRef
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/valuationPolicyRef
+    definition: optional reference to the valuation policy applied to inputs.
+    genus: Valuation Policy Reference
+    differentia:
+      - 估值策略引用，是对输入所施估值策略的可选引用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: waiverExpiry
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/waiverExpiry
+    definition: the expiry of a temporary LimitWaiver.
+    genus: Waiver Expiry
+    differentia:
+      - 豁免到期，是临时限额豁免的到期。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: waiverId
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/waiverId
+    definition: stable lexical identifier of a LimitWaiver.
+    genus: Waiver ID
+    differentia:
+      - 豁免标识，是限额豁免的稳定词法标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: waiverKind
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/waiverKind
+    definition: the kind of waiver (temporary, permanent, conditional).
+    genus: Waiver Kind
+    differentia:
+      - 豁免种类，是豁免的种类（临时、永久、有条件）。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: WaiverKind
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/WaiverKind
+    definition: closed classification of the kind of a LimitWaiver.
+    genus: Waiver Kind
+    differentia:
+      - 豁免种类，是限额豁免种类的封闭分类。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: waiverRationale
+    canonicalIri: https://axiolune.ai/ontology/finance/risk/waiverRationale
+    definition: the rationale for a LimitWaiver.
+    genus: Waiver Rationale
+    differentia:
+      - 豁免理由，是限额豁免的理由。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team

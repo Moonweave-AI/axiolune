@@ -1,449 +1,3342 @@
-# Axiolune M2 Finance — Portfolio & Positions Terminology
-# Module: fin-portfolio-positions
-# Version: 1.1.0
-# Standard: ISO 704:2022 (Terminology work — Principles and methods)
-# Evidence sources: FIBO SEC/Portfolios, nautilus_trader, Lean, FIX, ISO 15022, IFRS 13, GIPS, IRS Pub 550
-# Note: v0.1.0 cards for Account/PositionSide/AccountType referenced types that do not exist in the
-#   v1.0.0+ module (the module uses foundation:FinancialAccount, signed positionQuantity, and
-#   ValuationMethod). This v1.1.0 file drops those deprecated cards and adds cards for all v1.0.0
-#   concrete types plus the new v1.1.0 generic-core + profile types.
+# fin-portfolio-positions — Terminology Cards
+# Synced from module.yaml v1.1.0 — 2026-08-07
+# Each card: term (module.yaml entity key), canonicalIri, ISO 704 definition
 
 terms:
-  - term: "Portfolio"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio"
-    definition: "stable managed collection whose logical identity is an authority-scoped identifier (identifying authority + portfolioId), used for expressing account membership and management authority through temporal associations rather than storing membership edges directly"
-    genus: "stable managed collection"
+  - term: adjustmentKind
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/adjustmentKind
+    definition: >-
+      attribute marking the kind of a LotAdjustment (split, merge, restatement, corporate-action adjustment), used for
+      tracing lot transformations.
+    genus: lot adjustment kind
     differentia:
-      - "logical identity is authority-scoped (identifying authority + portfolioId)"
-      - "membership expressed through temporal associations"
-    excludes:
-      - "a single account (the ownership/custody container)"
-      - "a strategy definition (the rule set)"
+      - 批调整种类，是标记批调整种类的属性（拆分、合并、重述、公司行动调整），用于追溯批变换。
+    excludes: []
     sources:
-      - reference: "FIBO-2026Q1"
-        locator: "SEC/Portfolios/PortfolioManagement/Portfolio"
-        note: "FIBO portfolio collection semantics"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Portfolio Identifying Authority"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/portfolioIdentifyingAuthority"
-    definition: "relationship to the logical Party whose namespace governs the stable portfolio identifier, used so that the same portfolioId under two authorities remains unambiguous"
-    genus: "functional relationship to a Party"
+    owner: axiolune-m2-team
+  - term: allocatedFeeAmount
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/allocatedFeeAmount
+    definition: >-
+      strictly positive Money magnitude allocated from one exact Fee, used for recording the scale of a fee entering a
+      lot.
+    genus: allocated fee amount
     differentia:
-      - "governs the stable portfolio identifier namespace"
-      - "forms the authority-scoped logical identity with portfolioId"
-    excludes:
-      - "membership authority (which asserts a membership, not the portfolio identity)"
-      - "mandate authority (which grants management, not identity)"
+      - 已分配费用金额，是从一笔精确费用分配的严格正货币金额，用于记录费用计入批的规模。
+    excludes: []
     sources:
-      - reference: "ADR-029"
-        locator: "D1"
-        note: "identity-authority scoping"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Portfolio Account Membership"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembership"
-    definition: "effective-dated and source-approved account ownership association, used as the sole graph path for resolving member accounts of a Portfolio at a PIT pivot; retained as the account-kind specialization of PortfolioConstituent"
-    genus: "temporal association"
+    owner: axiolune-m2-team
+  - term: allocatedQuantity
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/allocatedQuantity
+    definition: >-
+      strictly positive quantity allocated by an opening or consumption fact, used for recording the allocation scale of
+      a lot.
+    genus: allocated quantity
     differentia:
-      - "effective-dated and source-approved"
-      - "sole graph path for member-account resolution"
-    excludes:
-      - "a stored edge on the Portfolio"
-      - "a management mandate"
+      - 已分配数量，是开仓或消耗事实分配的严格正数量，用于记录批的分配规模。
+    excludes: []
     sources:
-      - reference: "FIBO-2026Q1"
-        locator: "FBC/ProductsAndServices/ClientsAndAccounts/Account"
-        note: "account ownership semantics"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Portfolio Management Mandate"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioManagementMandate"
-    definition: "effective-dated and source-approved authority association from a managing Party over a Portfolio, used for the sole management path; scoped as management authority, not a full investment mandate (benchmark, base currency, performance policy belong to a future performance-and-attribution module)"
-    genus: "temporal authority association"
+    owner: axiolune-m2-team
+  - term: allocationClosureProbeDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/allocationClosureProbeDigest
+    definition: hash digest of the completed allocation closure probe, used for detecting changes to the probe record.
+    genus: allocation closure probe digest
     differentia:
-      - "from a managing Party over a Portfolio"
-      - "management authority, not a full investment mandate"
-    excludes:
-      - "an investment mandate with benchmark and performance policy"
+      - 分配闭包探针摘要，是已完成分配闭包探针的哈希摘要，用于检测探针记录的变更。
+    excludes: []
     sources:
-      - reference: "BIAN"
-        locator: "InvestmentPortfolio::PortfolioManagement"
-        note: "BIAN investment portfolio service domain"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Portfolio Account Membership Closure"
-    canonicalIri: "https://axiolune.ai/ontology/portfolio-positions/PortfolioAccountMembershipClosure"
-    definition: "complete exact-version set of all effective memberships of one Portfolio at a PIT pivot, used for turning account absence into closed-world evidence through a completed closure probe"
-    genus: "closed-world closure"
+    owner: axiolune-m2-team
+  - term: allocationClosureProbeRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/allocationClosureProbeRef
+    definition: >-
+      immutable reference to the completed allocation completeness probe, used for proving the allocation set has no
+      omissions.
+    genus: allocation closure probe reference
     differentia:
-      - "complete exact-version set at a PIT pivot"
-      - "closed-world evidence of absence"
-    excludes:
-      - "an open membership list"
+      - 分配闭包探针引用，是指向已完成分配完整性探针的不可变引用，用于证明分配无遗漏。
+    excludes: []
     sources:
-      - reference: "ADR-012"
-        locator: "three-axis temporal"
-        note: "PIT-eligible membership closure"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Holding Snapshot"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot"
-    definition: "source-observed non-negative quantity observation of one account and instrument from a single observation stream, used for recording externally reported ownership facts; optional positionScope, balanceDimension, grossLongQuantity, grossShortQuantity, businessAsOf, and statementPeriodRef carry the view and sub-balance truths"
-    genus: "non-negative quantity observation"
+    owner: axiolune-m2-team
+  - term: allocationCount
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/allocationCount
+    definition: the cardinality of the exact allocation version set, used for verifying the count of the allocation set.
+    genus: allocation count
     differentia:
-      - "source-observed, not execution-derived"
-      - "non-negative owned-interest quantity"
-      - "optional scope, dimension, and gross truths"
-    excludes:
-      - "a position lot (more granular)"
-      - "a valuation (computed market value)"
+      - 分配数量，是精确分配版本集的基数，用于核验分配集合的计数。
+    excludes: []
     sources:
-      - reference: "FIBO-2026Q1"
-        locator: "SEC/Portfolios/PortfolioManagement/PortfolioHolding"
-        note: "FIBO PortfolioHolding plus three-axis temporal"
-      - reference: "FIX"
-        locator: "Position Report (Tag 702)"
-        note: "account, clearing business day, quantity type"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Position Snapshot"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshot"
-    definition: "signed exposure observation of one account and instrument from a single observation stream, used for storing the signed net quantity as the default directional truth (positive long, negative short, zero flat) with optional grossLongQuantity/grossShortQuantity, positionScope, and balanceDimension carrying the gross and per-bucket truths so the signed net is not the only authoritative quantity"
-    genus: "signed exposure observation"
+    owner: axiolune-m2-team
+  - term: allocationVersionSetDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/allocationVersionSetDigest
+    definition: >-
+      digest of all exact lot allocation versions for one Execution, used for verifying the completeness of the
+      allocation set.
+    genus: allocation version set digest
     differentia:
-      - "signed net quantity as default directional truth"
-      - "optional gross long/short and per-bucket truths"
-    excludes:
-      - "a stored side label (side is derived)"
-      - "a stored basis or PnL (duplicate truths forbidden)"
+      - 分配版本集摘要，是一次执行全部精确批分配版本的摘要，用于验证分配集合完整性。
+    excludes: []
     sources:
-      - reference: "nautilus_trader"
-        locator: "model/position.pyx:Position"
-        note: "signed quantity, side derived"
-      - reference: "ISO 15022"
-        locator: "MT538"
-        note: "custody statement sub-balances"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Position Scope"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionScope"
-    definition: "closed classification of the view under which a snapshot is observed (custody, accounting, economic, regulatory)"
-    genus: "closed classification"
+    owner: axiolune-m2-team
+  - term: approvalDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/approvalDigest
+    definition: hash digest of the canonical approval record, used for detecting changes to the approval record.
+    genus: approval digest
     differentia:
-      - "custody / accounting / economic / regulatory"
-    excludes:
-      - "a balance bucket (use BalanceDimension)"
-    status: accepted
-
-  - term: "Balance Dimension"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/BalanceDimension"
-    definition: "closed classification of sub-balance buckets for a snapshot (settled, pending, available, pledged, loaned, receivable, payable)"
-    genus: "closed classification"
-    differentia:
-      - "settled / pending / available / pledged / loaned / receivable / payable"
-    excludes:
-      - "a view scope (use PositionScope)"
+      - 审批摘要，是规范审批记录的哈希摘要，用于检测审批记录的变更。
+    excludes: []
     sources:
-      - reference: "FIX"
-        locator: "Position Report Tag 702"
-        note: "quantity type and balance bucket"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Position Lot"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot"
-    definition: "execution-derived or non-execution-sourced opening exposure, used for tracking immutable cost and context; lotSourceKind distinguishes execution-derived from transfer/opening-balance/corporate-action-result/etc., and optional derivedFromChange references the source PositionChange"
-    genus: "opening exposure lot"
+    owner: axiolune-m2-team
+  - term: approvalRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/approvalRef
+    definition: >-
+      immutable reference to the authority approval record, used for proving that a membership or mandate has been
+      approved.
+    genus: approval reference
     differentia:
-      - "execution-derived or non-execution-sourced"
-      - "lotDiscriminator identifies the residual lot"
-      - "immutable cost and context"
-    excludes:
-      - "a holding snapshot (net aggregate)"
+      - 审批引用，是指向权威审批记录的不可变引用，用于证明成员关系或授权已获批准。
+    excludes: []
     sources:
-      - reference: "IRS-Publication-550"
-        locator: "Basis of Investment Property"
-        note: "tax-lot tracking"
-      - reference: "FIX"
-        locator: "PosType"
-        note: "position type for corporate-action adjustments"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Position Change"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionChange"
-    definition: "non-execution lifecycle event that changes a position's quantity or basis (opening balance, transfer, corporate-action result, exercise or assignment, manual adjustment, clearing or custody statement, calculated aggregation), used for tracing the non-execution lifecycle; full corporate-action workflow remains in an independent module"
-    genus: "non-execution lifecycle event"
+    owner: axiolune-m2-team
+  - term: authorityScope
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/authorityScope
+    definition: >-
+      canonical scope expression that limits a membership or management mandate, used for constraining the applicable
+      boundary of the authority.
+    genus: authority scope
     differentia:
-      - "openingBalance / transfer / corporateActionResult / exerciseAssignment / manualAdjustment / clearingCustodyStatement / calculatedAggregation"
-      - "carries source business event reference"
-    excludes:
-      - "an execution (use orders:Execution)"
+      - 权威范围，是限定成员关系或管理授权的规范范围表达式，用于约束授权的适用边界。
+    excludes: []
     sources:
-      - reference: "FIX"
-        locator: "PosType"
-        note: "corporate-action adjustment"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Lot Adjustment"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/LotAdjustment"
-    definition: "lot transformation (split, merge, restatement, corporate-action adjustment) that adjusts a lot's quantity and/or cost basis"
-    genus: "lot transformation"
+    owner: axiolune-m2-team
+  - term: authorityScopeRole
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/authorityScopeRole
+    definition: optional structured role label of an authority scope, used so that authorityScope is not free text alone.
+    genus: authority scope role
     differentia:
-      - "split / merge / restatement / corporateActionAdjustment"
-      - "quantityAdjustmentFactor and/or basisAdjustment"
-    status: accepted
-
-  - term: "Lot Realization"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/LotRealization"
-    definition: "fact that closes out a strictly positive quantity of a PositionLot, recording realized cost basis, realized proceeds, and realized PnL"
-    genus: "lot closure fact"
-    differentia:
-      - "strictly positive realized quantity"
-      - "realizedPnl = realizedProceeds − realizedCostBasis"
-    status: accepted
-
-  - term: "Valuation Method Family"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/ValuationMethodFamily"
-    definition: "abstract parent of valuation method profiles, used as the generic semantic core so that the direct-unit-price method is one concrete profile rather than the only universal valuation path"
-    genus: "abstract valuation method parent"
-    differentia:
-      - "abstract; not instantiated directly"
-      - "parent of DirectUnitValuationProfile and future profiles"
-    excludes:
-      - "a concrete valuation method (use a profile subtype)"
+      - 权威范围角色，是权威范围的可选结构化角色标签，用于使权威范围不只有自由文本。
+    excludes: []
     sources:
-      - reference: "ADR-021"
-        locator: "QuotationConvention precedent"
-        note: "abstract quotation parent"
-      - reference: "IFRS-13"
-        locator: "Fair Value Measurement"
-        note: "measurement date, market participant, exit price"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Direct Unit Valuation Profile"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/DirectUnitValuationProfile"
-    definition: "concrete valuation method profile that values a position by signed snapshot quantity multiplied by an exact direct-unit Money price, with contractMultiplier = 1 and forbidding par, accrued, inverse, notional, and multiplier fallback paths; this is where the previously global hard lock of directUnitPriceTimesQuantity lives"
-    genus: "valuation method profile"
+    owner: axiolune-m2-team
+  - term: authorityScopeSubject
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/authorityScopeSubject
+    definition: >-
+      optional structured reference to the subject of an authority scope, used so that authorityScope is not free text
+      alone.
+    genus: authority scope subject
     differentia:
-      - "directUnitPriceTimesQuantity method"
-      - "contractMultiplier = 1"
-      - "forbids par/accrued/inverse/notional/multiplier fallback"
-    excludes:
-      - "mark-to-model, cost-basis, lower-of-cost-or-market, accrued-income, notional-based (other profiles)"
+      - 权威范围主语，是指向权威范围主语的可选结构化引用，用于使权威范围不只有自由文本。
+    excludes: []
     sources:
-      - reference: "GIPS"
-        locator: "Asset Owners"
-        note: "valuation, cash, and accrual policies"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Valuation Calculation Definition"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/ValuationCalculationDefinition"
-    definition: "authority-scoped versioned valuation specification binding a ValuationMethodFamily profile, used for locking the quotation input closure, formula, input/output contracts, precision, rounding, runtime, and tool lock"
-    genus: "versioned valuation specification"
+    owner: axiolune-m2-team
+  - term: balanceDimension
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/balanceDimension
+    definition: >-
+      optional branch attribute marking the sub-balance bucket (settled, pending, available, pledged, loaned,
+      receivable, payable) of a snapshot, used so that gross long, gross short, and net can be reported per bucket.
+    genus: balance dimension
     differentia:
-      - "binds exactly one ValuationMethodFamily profile"
-      - "locks the input closure and executable evidence"
-    status: accepted
-
-  - term: "Cost Basis Calculation Definition"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition"
-    definition: "sole authority-scoped versioned execution-derived cost-basis specification, used for locking the method, quotation input, fee treatment, lot opening and consumption, currency and FX policy, and implementation evidence"
-    genus: "versioned cost-basis specification"
-    differentia:
-      - "execution-derived cost basis"
-      - "locks fee treatment, lot policies, currency and FX"
-    status: accepted
-
-  - term: "Portfolio Valuation"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuation"
-    definition: "valuation run header that fixes the portfolio, complete member-account closure, valuation definition, reporting currency, and PIT input context"
-    genus: "valuation run header"
-    differentia:
-      - "fixes portfolio, member closure, definition, reporting currency, PIT context"
-    status: accepted
-
-  - term: "Position Valuation"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation"
-    definition: "valuation line whose logical identity is the exact valuation header and input snapshot version, used for producing market value from a holding or position snapshot and an exact PIT price; optional valuationSubjectKind, valuationFinality, coverageInclusionReason, and exclusionReason carry coverage metadata"
-    genus: "valuation line"
-    differentia:
-      - "selects one holding or position snapshot (xone)"
-      - "uses an exact PIT price"
-      - "optional coverage metadata"
-    excludes:
-      - "carrying method truth (method lives on the definition)"
-    status: accepted
-
-  - term: "Portfolio Valuation Summary"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuationSummary"
-    definition: "coverage-closure aggregate of all PositionValuation lines in one PortfolioValuation run, used for verifying the valuation-line coverage and total market value"
-    genus: "valuation coverage closure"
-    differentia:
-      - "sums all lines in a run"
-      - "coverageStatus (complete/partial/excludesMembers)"
-    status: accepted
-
-  - term: "FX Conversion"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/FXConversion"
-    definition: "auditable fact that applies an exact PIT FX rate and direction to convert one Money into another (a rate application, also referenced as FXRateApplication); optional rateSource, quoteTime, rateDate, rateFinality, and crossRatePath carry rate provenance and multi-leg cross-currency path; if it represents a real FX trade rather than a rate application, it belongs to trading or settlement semantics"
-    genus: "rate application fact"
-    differentia:
-      - "applies an exact PIT FX rate and direction"
-      - "uniquely consumed by a valuation line, opening lot, or fee allocation"
-      - "optional cross-rate path and finality"
-    excludes:
-      - "a real FX trade (belongs to settlement/trading)"
-    status: accepted
-
-  - term: "Position Lot Allocation"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocation"
-    definition: "opening or consumption allocation between one Execution and one PositionLot under the same cost-basis definition and calculation context, used for establishing a traceable chain through a strictly positive quantity and the allocation kind"
-    genus: "lot allocation"
-    differentia:
-      - "opening or consumption kind"
-      - "strictly positive allocated quantity"
-    status: accepted
-
-  - term: "Position Lot Fee Allocation"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotFeeAllocation"
-    definition: "fact that allocates a strictly positive Money fee to one PositionLotAllocation, used for carrying an exact FX conversion when currencies differ and bringing the fee effect into basis"
-    genus: "fee allocation"
-    differentia:
-      - "strictly positive fee magnitude"
-      - "optional exact FX conversion"
-    status: accepted
-
-  - term: "Execution Lot Allocation Closure"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure"
-    definition: "closed-world header for one exact Execution and CostBasisCalculationDefinition version, used for encapsulating the complete eligible lot set, selection evidence, and allocation-fee closure while completing conservation probes; the strict closure probes belong to the execution-and-reproducibility profile"
-    genus: "closed-world closure header"
-    differentia:
-      - "encapsulates eligible lots, selection, allocation-fee closure"
-      - "completes conservation probes (profile-scoped)"
-    status: accepted
-
-  - term: "Position Lot State Closure"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotStateClosure"
-    definition: "closed-world bridge from all non-zero PositionLot versions, their allocations, and execution closures to one execution-derived PositionSnapshot, used for conserving signed quantity and remaining cost basis; external source snapshots forbid this branch"
-    genus: "closed-world state bridge"
-    differentia:
-      - "from non-zero lots to execution-derived snapshot"
-      - "conserves signed quantity and remaining basis"
-    excludes:
-      - "external source snapshots (forbidden)"
-    status: accepted
-
-  - term: "Unrealized PnL Observation"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/UnrealizedPnLObservation"
-    definition: "reproducible fact joining one PositionValuation and one PositionLotStateClosure, used for satisfying the equation that PnL equals market value minus remaining basis in the header reporting currency"
-    genus: "PnL fact"
-    differentia:
-      - "joins valuation and lot-state closure"
-      - "unrealizedPnl = marketValue − remainingCostBasis"
-    status: accepted
-
-  - term: "External Cost Basis Observation"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/ExternalCostBasisObservation"
-    definition: "source-provided cost-basis observation of one account and instrument from a single observation stream, used for retaining the external basis independently; externalBasisDefinition is optional (the external party may report its own externalBasisMethod, externalStatementDate, and externalBasisMappingStatus), and the internal definition is an optional mapping rather than a disguised external method"
-    genus: "external cost-basis observation"
-    differentia:
-      - "source-provided, independent of execution-derived basis"
-      - "optional internal mapping (not a disguised external method)"
-    excludes:
-      - "overwriting the execution-derived basis"
+      - 余额维度，是标记快照子余额桶（已结算、待结算、可用、质押、借出、应收、应付）的可选分支属性，用于按桶分别报告毛多、毛空与净额。
+    excludes: []
     sources:
-      - reference: "ADR-029"
-        locator: "D5"
-        note: "external basis method independence"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Reconciliation Comparison"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationComparison"
-    definition: "comparison act between external and execution-derived evidence, used for producing a typed comparison result (matched, break, ambiguous, not comparable) so that matched is a comparison result rather than a standalone finding"
-    genus: "comparison act"
+    owner: axiolune-m2-team
+  - term: BalanceDimension
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/BalanceDimension
+    definition: >-
+      closed classification of sub-balance buckets for a holding or position, used for expressing settled, pending,
+      available, pledged, loaned, receivable, and payable quantities so that gross long, gross short, and net can be
+      reported per bucket rather than collapsed into one signed number.
+    genus: Balance Dimension
     differentia:
-      - "comparisonFamily (quantity or basis)"
-      - "comparisonResult (matched/break/ambiguous/notComparable)"
-    excludes:
-      - "a finding (use ReconciliationFinding)"
-      - "a resolution (use ReconciliationResolution)"
-    status: accepted
-
-  - term: "Portfolio Position Reconciliation Finding"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioPositionReconciliationFinding"
-    definition: "break or notable result requiring disposition, sourced from a ReconciliationComparison, used for preventing silent merge or overwrite of the two evidence sets; findingKind and findingSeverity type and prioritize the result"
-    genus: "reconciliation finding"
-    differentia:
-      - "requires disposition"
-      - "sourced from a ReconciliationComparison"
-      - "findingKind includes methodologyDifference, timingDifference, ambiguous, notComparable"
-    excludes:
-      - "a comparison result (use ReconciliationComparison)"
-    status: accepted
-
-  - term: "Reconciliation Resolution"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationResolution"
-    definition: "disposition of a ReconciliationFinding, used for recording accepted, investigated, corrected, waived, or escalated outcomes so that breaks carry an explicit resolution"
-    genus: "disposition fact"
-    differentia:
-      - "resolutionKind (accepted/investigated/corrected/waived/escalated)"
-      - "resolves a finding"
-    status: accepted
-
-  - term: "Portfolio Constituent"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioConstituent"
-    definition: "effective-dated association from a Portfolio to a constituent subject that may be a FinancialAccount, a sub-Portfolio, a Sleeve, or an explicit allocation, used so that a portfolio is not restricted to an account aggregation"
-    genus: "temporal constituent association"
-    differentia:
-      - "constituentKind (account/subPortfolio/sleeve/explicitAllocation)"
-      - "polymorphic constituent subject"
-    excludes:
-      - "membership restricted to accounts only"
+      - 余额维度，是持仓或头寸子余额桶的封闭分类，用于表达已结算、待结算、可用、质押、借出、应收与应付数量，使毛多、毛空与净额可按桶分别报告而非塌缩为单一符号数。
+    excludes: []
     sources:
-      - reference: "GIPS"
-        locator: "Asset Owners"
-        note: "portfolio and composite semantics"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Sleeve"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/Sleeve"
-    definition: "management subdivision of a portfolio, used as a portfolio constituent subject so that a portfolio may aggregate accounts, sub-portfolios, sleeves, and explicit allocations"
-    genus: "management subdivision"
+    owner: axiolune-m2-team
+  - term: basisAdjustment
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/basisAdjustment
+    definition: >-
+      optional Money delta applied to a lot's cost basis by a LotAdjustment, used for recording basis restatements or
+      corporate-action basis adjustments.
+    genus: basis adjustment
     differentia:
-      - "subdivision of a portfolio"
-      - "usable as a constituent subject"
-    status: accepted
-
-  - term: "Valuation Method"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/ValuationMethod"
-    definition: "closed classification of the calculation method used to derive a PortfolioValuation from its locked inputs; directUnitPriceTimesQuantity is the DirectUnitValuationProfile method; markToModel, costBasis, lowerOfCostOrMarket, accruedIncome, and notionalBased belong to other profiles"
-    genus: "closed classification"
-    differentia:
-      - "directUnitPriceTimesQuantity (DirectUnitValuationProfile)"
-      - "markToModel / costBasis / lowerOfCostOrMarket / accruedIncome / notionalBased"
-    excludes:
-      - "the mark-to-market/mark-to-model/cost/lower-of-cost-or-market list from v0.1.0 (superseded)"
+      - 基准调整，是批调整应用于批成本基准的可选货币差额，用于记录基准重述或公司行动基准调整。
+    excludes: []
     sources:
-      - reference: "FASB-ASC-820"
-        locator: "Fair Value Measurement"
-        note: "fair value framework"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Position Source Kind"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PositionSourceKind"
-    definition: "closed source branch for holding and position snapshots, distinguishing externally reported, execution-derived, and non-execution lifecycle sources (openingBalance, transfer, corporateActionResult, exerciseAssignment, manualAdjustment, clearingCustodyStatement, calculatedAggregation)"
-    genus: "closed classification"
+    owner: axiolune-m2-team
+  - term: businessAsOf
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/businessAsOf
+    definition: >-
+      Business As-Of, is an optional business effective instant marking the statement/observation business point of a
+      snapshot, used for distinguishing the business as-of from the three-axis temporal version axes.
+    genus: business as-of
     differentia:
-      - "externalReported / executionDerived / openingBalance / transfer / corporateActionResult / exerciseAssignment / manualAdjustment / clearingCustodyStatement / calculatedAggregation"
+      - 业务时点，是标记快照声明/观测业务时刻的可选业务生效时间点，用于区分业务时点与三轴时态版本轴。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: calculationContextRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/calculationContextRef
+    definition: >-
+      immutable reference to a completed calculation input context, used for fixing the input prerequisites of a
+      calculation.
+    genus: calculation context reference
+    differentia:
+      - 计算上下文引用，是指向已完成计算输入上下文的不可变引用，用于固定计算的输入前提。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: changeEffectiveAt
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/changeEffectiveAt
+    definition: the business effective instant of a PositionChange, used for ordering lifecycle events.
+    genus: change effective at
+    differentia:
+      - 变更生效时刻，是头寸变更的业务生效时间点，用于排序生命周期事件。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: changeEvidence
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/changeEvidence
+    definition: >-
+      immutable reference to the source evidence of a PositionChange, used for proving the non-execution lifecycle
+      event.
+    genus: change evidence reference
+    differentia:
+      - 变更证据引用，是指向头寸变更来源证据的不可变引用，用于证明非执行生命周期事件。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: changeKind
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/changeKind
+    definition: >-
+      attribute marking the lifecycle kind of a PositionChange (opening balance, transfer, corporate-action result,
+      exercise or assignment, manual adjustment, clearing or custody statement, calculated aggregation), used for
+      tracing the non-execution lifecycle of a position.
+    genus: position change kind
+    differentia:
+      - 头寸变更种类，是标记头寸变更生命周期种类的属性（期初余额、转仓、公司行动结果、行权/分配、手工调整、清算/托管声明、计算聚合），用于追溯头寸的非执行生命周期。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: changeQuantity
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/changeQuantity
+    definition: >-
+      signed quantity applied by a PositionChange, used for recording the magnitude and direction of a non-execution
+      lifecycle event.
+    genus: change quantity
+    differentia:
+      - 变更数量，是头寸变更应用的带符号数量，用于记录非执行生命周期事件的规模与方向。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: closureAllocation
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/closureAllocation
+    definition: >-
+      relationship from an allocation closure to every included exact lot allocation, used for encapsulating the opening
+      and consumption allocation set.
+    genus: closure allocation
+    differentia:
+      - 闭包分配，是从分配闭包指向其包含的全部精确批分配的关系，用于封装开仓与消耗分配集合。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: closureCostBasisDefinition
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/closureCostBasisDefinition
+    definition: >-
+      relationship from an allocation closure to its exact calculation definition, used for binding the
+      calculation-specification prerequisite of the closure.
+    genus: closure cost basis definition
+    differentia:
+      - 闭包成本基准定义，是从分配闭包指向其精确计算定义的关系，用于绑定闭包的计算规范前提。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: closureEligibleLot
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/closureEligibleLot
+    definition: >-
+      relationship from an allocation closure to every exact PositionLot version eligible for consumption before its
+      Execution under the exact account, instrument, listing, unit, and calculation-definition context, used for
+      enumerating the eligible selection domain.
+    genus: closure eligible lot
+    differentia:
+      - 闭包合格批，是从分配闭包指向其执行在精确上下文下可消耗的全部精确持仓批版本的关系，用于枚举合格选择域。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: closureExecution
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/closureExecution
+    definition: >-
+      relationship from an allocation closure to its exact Execution version, used for binding the execution
+      prerequisite of the closure.
+    genus: closure execution
+    differentia:
+      - 闭包执行，是从分配闭包指向其精确执行版本的关系，用于绑定闭包的执行前提。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: closureFee
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/closureFee
+    definition: >-
+      relationship from an allocation closure to every included exact Fee version, used for encapsulating the execution
+      fee set.
+    genus: closure fee
+    differentia:
+      - 闭包费用，是从分配闭包指向其包含的全部精确费用版本的关系，用于封装执行费用集合。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: closureFeeAllocation
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/closureFeeAllocation
+    definition: >-
+      relationship from an allocation closure to every included exact fee allocation, used for encapsulating the set of
+      fee-to-lot allocations.
+    genus: closure fee allocation
+    differentia:
+      - 闭包费用分配，是从分配闭包指向其包含的全部精确费用分配的关系，用于封装费用计入批的集合。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: closureSelectedLot
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/closureSelectedLot
+    definition: >-
+      relationship to the exact PositionLot version explicitly selected by specific-identification evidence in an
+      allocation closure, used for specific-identification scenarios other than FIFO and LIFO.
+    genus: closure selected lot
+    differentia:
+      - 闭包已选批，是分配闭包中由具体识别证据显式选择的精确持仓批版本关系，用于 FIFO 与 LIFO 之外的具体识别场景。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: comparisonFamily
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/comparisonFamily
+    definition: >-
+      attribute marking whether a ReconciliationComparison compares quantity or basis, used for selecting the comparison
+      branch.
+    genus: comparison family
+    differentia:
+      - 比较族，是标记对账比较是比较数量还是基准的属性，用于选择比较分支。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ComparisonFamily
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/ComparisonFamily
+    definition: >-
+      closed classification of whether a reconciliation comparison compares quantity or basis, used for selecting the
+      comparison branch.
+    genus: Comparison Family
+    differentia:
+      - 比较族，是对账比较是否比较数量或基准的封闭分类，用于选择比较分支。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: comparisonProfileRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/comparisonProfileRef
+    definition: >-
+      immutable reference to the comparison profile governing a ReconciliationComparison, used for fixing the comparison
+      rules.
+    genus: comparison profile reference
+    differentia:
+      - 比较画像引用，是指向治理对账比较的对账画像的不可变引用，用于固定比较规则。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: comparisonResult
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/comparisonResult
+    definition: >-
+      attribute marking the outcome of a ReconciliationComparison (matched, break, ambiguous, not comparable), used so
+      that matched is a comparison result rather than a standalone finding.
+    genus: comparison result
+    differentia:
+      - 比较结果，是标记对账比较结果的属性（匹配、差异、歧义、不可比），用于使匹配成为比较结果而非独立发现。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: constituentKind
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/constituentKind
+    definition: >-
+      attribute marking the kind of a portfolio constituent (account, sub-portfolio, sleeve, explicit allocation), used
+      so that a portfolio is not restricted to an account aggregation.
+    genus: portfolio constituent kind
+    differentia:
+      - 组合成员种类，是标记组合成员种类的属性（账户、子组合、Sleeve、显式分配），用于使组合不限于账户聚合。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: consumptionSelectionProbeDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/consumptionSelectionProbeDigest
+    definition: hash digest of the completed eligible-lot and selection probe, used for detecting changes to the probe record.
+    genus: consumption selection probe digest
+    differentia:
+      - 消耗选择探针摘要，是已完成合格批与选择探针的哈希摘要，用于检测探针记录的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: consumptionSelectionProbeRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/consumptionSelectionProbeRef
+    definition: >-
+      immutable reference to the completed eligible-lot and deterministic consumption-selection probe, used for proving
+      the selection has no omissions.
+    genus: consumption selection probe reference
+    differentia:
+      - 消耗选择探针引用，是指向已完成合格批与确定性消耗选择探针的不可变引用，用于证明选择无遗漏。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: conversionContextDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/conversionContextDigest
+    definition: hash digest of the complete FX conversion context, used for detecting changes to the conversion context.
+    genus: conversion context digest
+    differentia:
+      - 换算上下文摘要，是完整 FX 换算上下文的哈希摘要，用于检测换算上下文的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: conversionContextRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/conversionContextRef
+    definition: immutable reference to the complete valuation FX conversion context, used for fixing the conversion prerequisites.
+    genus: conversion context reference
+    differentia:
+      - 换算上下文引用，是指向完整估值 FX 换算上下文的不可变引用，用于固定换算前提。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: CostBasisCalculationDefinition
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisCalculationDefinition
+    definition: >-
+      sole authority-scoped versioned execution-derived cost-basis specification, used for locking the method, quotation
+      input, fee treatment, lot opening and consumption, currency and FX policy, and implementation evidence
+    genus: versioned cost-basis specification
+    differentia:
+      - execution-derived cost basis
+      - locks fee treatment, lot policies, currency and FX
+    status: accepted
+  - term: costBasisDefinitionAuthority
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/costBasisDefinitionAuthority
+    definition: >-
+      relationship to the logical Party whose namespace governs the stable cost-basis definition identifier, used for
+      fixing the namespace attribution of the definition.
+    genus: cost basis definition authority
+    differentia:
+      - 成本基准定义权威，是指向治理成本基准定义稳定标识的逻辑参与方的关系，用于固定定义的命名空间归属。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: costBasisDefinitionBasisCurrency
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/costBasisDefinitionBasisCurrency
+    definition: >-
+      relationship to the single logical Currency in which a cost-basis definition groups opening gross, fee effects,
+      and basis terms, used for unifying the currency after explicit FX conversion.
+    genus: cost basis definition basis currency
+    differentia:
+      - 成本基准定义基准货币，是指向成本基准定义中用于汇总毛额费用与基准的唯一逻辑货币的关系，用于在 FX 换算后统一币种。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: costBasisDefinitionId
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/costBasisDefinitionId
+    definition: >-
+      stable identifier of a cost-basis definition within the authority namespace, used for uniquely marking a single
+      cost-basis specification.
+    genus: cost basis definition identifier
+    differentia:
+      - 成本基准定义标识，是成本基准定义在权威域命名空间内的稳定标识，用于唯一标记一套基准规范。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: costBasisDefinitionQuotationContract
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/costBasisDefinitionQuotationContract
+    definition: >-
+      relationship from a cost-basis definition to its exact direct-unit quotation input, used for fixing the quotation
+      basis of cost-basis calculation.
+    genus: cost basis definition quotation contract
+    differentia:
+      - 成本基准定义计价契约，是从成本基准定义到其精确直接计价输入的关系，用于固定基准计算的计价基础。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: costBasisMethod
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/costBasisMethod
+    definition: reviewed cost-basis calculation method, used for fixing the calculation convention of the basis.
+    genus: cost basis method
+    differentia:
+      - 成本基准方法，是受审的成本基准计算方法，用于固定基准的计算口径。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: CostBasisMethod
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/CostBasisMethod
+    definition: >-
+      closed classification of methods that derive position cost basis from exact Executions, allocations, fees,
+      foreign-exchange conversions, and rounding rules, used for marking the basis calculation convention.
+    genus: Cost Basis Method
+    differentia:
+      - 成本基准方法，是从精确执行分配费用 FX 换算与舍入规则推导持仓成本基准的封闭方法分类，用于标定基准计算口径。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: coverageDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/coverageDigest
+    definition: hash digest of the complete valuation-line coverage set in a summary, used for verifying the coverage closure.
+    genus: coverage digest
+    differentia:
+      - 覆盖摘要，是汇总中完整估值行覆盖集的哈希摘要，用于验证覆盖闭包。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: coverageInclusionReason
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/coverageInclusionReason
+    definition: >-
+      optional note recording why a valuation line is included in a summary coverage, used for auditability of the
+      coverage closure.
+    genus: coverage inclusion reason
+    differentia:
+      - 覆盖纳入原因，是记录估值行纳入汇总覆盖原因的可选说明，用于覆盖闭包的可审计性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: coverageStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/coverageStatus
+    definition: >-
+      attribute marking whether a valuation summary coverage is complete, partial, or excludes members, used for stating
+      the coverage closure result.
+    genus: coverage status
+    differentia:
+      - 覆盖状态，是标记估值汇总覆盖是否完整、部分或排除成员的属性，用于声明覆盖闭包结果。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: CoverageStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/CoverageStatus
+    definition: >-
+      closed classification of whether a portfolio valuation summary coverage is complete, partial, or excludes members,
+      used for stating the coverage closure result.
+    genus: Coverage Status
+    differentia:
+      - 覆盖状态，是组合估值汇总覆盖是否完整、部分或排除成员的封闭分类，用于声明覆盖闭包结果。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: crossRatePath
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/crossRatePath
+    definition: >-
+      Cross-Rate Path Reference, is an optional reference to an ordered FXRateObservation chain used to derive a cross
+      rate, used for multi-leg cross-currency conversions.
+    genus: cross-rate path reference
+    differentia:
+      - 交叉汇率路径引用，是指向用于推导交叉汇率的有序 FXRateObservation 链的可选引用，用于多腿跨币种换算。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: currencyPolicy
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/currencyPolicy
+    definition: >-
+      canonical policy for grouping and aggregating by the basis currency, used for unifying the currency convention of
+      cost basis.
+    genus: currency policy
+    differentia:
+      - 货币策略，是基准货币分组与汇总的规范策略，用于统一成本基准的币种口径。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: DirectUnitValuationProfile
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/DirectUnitValuationProfile
+    definition: >-
+      concrete valuation method profile that values a position by signed snapshot quantity multiplied by an exact
+      direct-unit Money price, with contractMultiplier = 1 and forbidding par, accrued, inverse, notional, and
+      multiplier fallback paths; this is where the previously global hard lock of directUnitPriceTimesQuantity lives
+    genus: valuation method profile
+    differentia:
+      - directUnitPriceTimesQuantity method
+      - contractMultiplier = 1
+      - forbids par/accrued/inverse/notional/multiplier fallback
     excludes:
-      - "collapsing all non-external sources into executionDerived"
+      - mark-to-model, cost-basis, lower-of-cost-or-market, accrued-income, notional-based (other profiles)
+    sources:
+      - reference: GIPS
+        locator: Asset Owners
+        note: valuation, cash, and accrual policies
     status: accepted
-
-  - term: "Portfolio Observation Stream"
-    canonicalIri: "https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioObservationStream"
-    definition: "provider-owned versioned data stream whose stable logical identity is (provider, stream identifier); the source, completeness, and pagination contracts are version-locked ingestion semantics (version content) that do not change stream identity; the contracts and source-artifact digests belong to the execution-and-reproducibility profile"
-    genus: "provider-owned data stream"
+  - term: eligibleLotCount
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/eligibleLotCount
+    definition: >-
+      the cardinality of the complete exact eligible-lot version set, used for verifying the count of the eligible
+      domain.
+    genus: eligible lot count
     differentia:
-      - "stable identity = (provider, streamId)"
-      - "contracts are version-locked ingestion semantics, not identity"
+      - 合格批数量，是完整精确合格批版本集的基数，用于核验合格域的计数。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
+    owner: axiolune-m2-team
+  - term: eligibleLotVersionSetDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/eligibleLotVersionSetDigest
+    definition: >-
+      digest of the complete exact PositionLot version set eligible for consumption by one Execution, used for verifying
+      the completeness of the eligible domain.
+    genus: eligible lot version set digest
+    differentia:
+      - 合格批版本集摘要，是一次执行可消耗的完整精确持仓批版本集的摘要，用于验证合格域完整性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: exclusionReason
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/exclusionReason
+    definition: >-
+      optional note recording why a valuation line is excluded from a summary coverage, used for auditability of the
+      coverage closure.
+    genus: exclusion reason
+    differentia:
+      - 排除原因，是记录估值行从汇总覆盖中排除原因的可选说明，用于覆盖闭包的可审计性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ExecutionLotAllocationClosure
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/ExecutionLotAllocationClosure
+    definition: >-
+      closed-world header for one exact Execution and CostBasisCalculationDefinition version, used for encapsulating the
+      complete eligible lot set, selection evidence, and allocation-fee closure while completing conservation probes;
+      the strict closure probes belong to the execution-and-reproducibility profile
+    genus: closed-world closure header
+    differentia:
+      - encapsulates eligible lots, selection, allocation-fee closure
+      - completes conservation probes (profile-scoped)
+    status: accepted
+  - term: externalBasisId
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/externalBasisId
+    definition: >-
+      stable identifier of an external cost-basis observation within the source scope, used for uniquely marking a
+      single external basis.
+    genus: external basis identifier
+    differentia:
+      - 外部基准标识，是外部成本基准观测在来源域内的稳定标识，用于唯一标记一条外部基准。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: externalBasisMappingStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/externalBasisMappingStatus
+    definition: >-
+      optional attribute marking whether the external basis method is mapped, unknown, or unmapped to an internal
+      calculation definition, used so that the internal definition is an optional mapping rather than a disguised
+      external method.
+    genus: external basis mapping status
+    differentia:
+      - 外部基准映射状态，是标记外部基准方法是否已映射、未知或未映射到内部计算定义的可选属性，用于使内部定义成为可选映射而非伪装的外部方法。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ExternalBasisMappingStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/ExternalBasisMappingStatus
+    definition: >-
+      closed classification of whether an external basis method is mapped, unknown, or unmapped to an internal
+      calculation definition, used so that the internal definition is an optional mapping rather than a disguised
+      external method.
+    genus: External Basis Mapping Status
+    differentia:
+      - 外部基准映射状态，是外部基准方法是否已映射、未知或未映射到内部计算定义的封闭分类，用于使内部定义成为可选映射而非伪装的外部方法。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: externalBasisMethod
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/externalBasisMethod
+    definition: >-
+      optional attribute recording the basis method reported by the external source, used so that the external party may
+      report its own method rather than be forced to the internal calculation definition.
+    genus: external basis method
+    differentia:
+      - 外部基准方法，是记录外部来源报告基准方法的可选属性，用于使外部方可报告自身方法而非被迫使用内部计算定义。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: externalCostBasis
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/externalCostBasis
+    definition: >-
+      source-provided Money basis retained independently from the execution-derived basis, used for recording externally
+      reported cost.
+    genus: external cost basis
+    differentia:
+      - 外部成本基准，是来源提供并独立留存于执行派生基准之外的货币基准，用于记录外部报告的成本。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ExternalCostBasisObservation
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/ExternalCostBasisObservation
+    definition: >-
+      source-provided cost-basis observation of one account and instrument from a single observation stream, used for
+      retaining the external basis independently and comparing it with the execution-derived basis only through typed
+      reconciliation.
+    genus: External Cost Basis Observation
+    differentia:
+      - 外部成本基准观测，是源自单一观测流的账户工具成本基准外部报告，用于独立留存外部基准并仅通过类型化对账与执行派生基准比较。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: externalStatementDate
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/externalStatementDate
+    definition: >-
+      optional date of the external statement an external cost-basis observation belongs to, used for grouping external
+      observations by statement.
+    genus: external statement date
+    differentia:
+      - 外部声明日期，是外部成本基准观测所属外部声明的可选日期，用于按声明分组外部观测。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: feeAllocationCount
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/feeAllocationCount
+    definition: the cardinality of the exact fee allocation version set, used for verifying the count of the fee allocation set.
+    genus: fee allocation count
+    differentia:
+      - 费用分配数量，是精确费用分配版本集的基数，用于核验费用分配集合的计数。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: feeAllocationVersionSetDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/feeAllocationVersionSetDigest
+    definition: >-
+      digest of all exact PositionLotFeeAllocation versions in the closure, used for verifying the completeness of the
+      fee allocation set.
+    genus: fee allocation version set digest
+    differentia:
+      - 费用分配版本集摘要，是闭包内全部精确费用分配版本的摘要，用于验证费用分配集合完整性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: feeClosureProbeDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/feeClosureProbeDigest
+    definition: hash digest of the completed Fee closure probe, used for detecting changes to the probe record.
+    genus: fee closure probe digest
+    differentia:
+      - 费用闭包探针摘要，是已完成费用闭包探针的哈希摘要，用于检测探针记录的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: feeClosureProbeRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/feeClosureProbeRef
+    definition: immutable reference to the completed Fee completeness probe, used for proving the fee set has no omissions.
+    genus: fee closure probe reference
+    differentia:
+      - 费用闭包探针引用，是指向已完成费用完整性探针的不可变引用，用于证明费用无遗漏。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: feeCount
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/feeCount
+    definition: the cardinality of the exact Fee version set, used for verifying the count of the fee set.
+    genus: fee count
+    differentia:
+      - 费用数量，是精确费用版本集的基数，用于核验费用集合的计数。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: feeTreatment
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/feeTreatment
+    definition: branch attribute deciding whether a fee enters the basis, used for controlling how fees enter the opening basis.
+    genus: fee treatment
+    differentia:
+      - 费用处理，是决定费用是否计入基准的分支属性，用于控制费用进入开仓基准的方式。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: FeeTreatment
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/FeeTreatment
+    definition: closed branch controlling whether exact Fee facts enter basis, used for deciding how fees enter the opening basis.
+    genus: Fee Treatment
+    differentia:
+      - 费用处理，是控制精确费用是否进入基准的封闭分支，用于决定费用计入开仓基准的方式。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: feeVersionSetDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/feeVersionSetDigest
+    definition: digest of all exact Fee versions for one Execution, used for verifying the completeness of the fee set.
+    genus: fee version set digest
+    differentia:
+      - 费用版本集摘要，是一次执行全部精确费用版本的摘要，用于验证费用集合完整性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: findingKind
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/findingKind
+    definition: >-
+      attribute marking the conclusion of a ReconciliationFinding (matched, quantity mismatch, basis mismatch,
+      methodology difference, timing difference, ambiguous, not comparable, missing external, missing derived), used for
+      typing the disposition-requiring result.
+    genus: reconciliation finding kind
+    differentia:
+      - 对账发现种类，是标记对账发现结论的属性（匹配、数量差异、基准差异、方法差异、时点差异、歧义、不可比、缺外部、缺派生），用于类型化需处置的结果。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: findingSeverity
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/findingSeverity
+    definition: attribute marking the severity of a ReconciliationFinding, used for prioritizing disposition.
+    genus: finding severity
+    differentia:
+      - 发现严重度，是标记对账发现严重度的属性，用于优先处置。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: FindingSeverity
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/FindingSeverity
+    definition: >-
+      closed classification of the severity of a reconciliation finding (low, medium, high, critical), used for
+      prioritizing disposition.
+    genus: Finding Severity
+    differentia:
+      - 发现严重度，是对账发现严重度的封闭分类（低、中、高、严重），用于优先处置。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: formulaDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/formulaDigest
+    definition: >-
+      hash digest of the canonical valuation formula or implementation, used for locking the exact text of the
+      calculation logic.
+    genus: formula digest
+    differentia:
+      - 公式摘要，是规范估值公式或实现的哈希摘要，用于锁定计算逻辑的精确文本。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: FXConversion
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/FXConversion
+    definition: >-
+      auditable fact that applies an exact PIT FX rate and direction to convert one Money into another (a rate
+      application, also referenced as FXRateApplication), used for being uniquely consumed by a valuation line, opening
+      lot, or fee allocation that points back to this exact conversion version. Optional rateSource, quoteTime,
+      rateDate, rateFinality, and crossRatePath carry the rate provenance and multi-leg cross-currency path. If this
+      fact represents a real FX trade rather than a rate application, it belongs to trading or settlement semantics and
+      should reference a settlement/trading module fact.
+    genus: FX Conversion
+    differentia:
+      - >-
+        外汇换算，是应用精确 PIT 汇率与方向把一笔货币换算为另一笔货币的可审计事实（汇率应用，亦称 FXRateApplication），用于被估值行、开仓批或费用分配唯一消费并回指此版本。可选
+        rateSource、quoteTime、rateDate、rateFinality 与 crossRatePath
+        承载汇率谱系与多腿跨币种路径。若该事实代表真实外汇交易而非汇率应用，则属交易或结算语义，应引用结算/交易模块事实。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: fxConversionDirection
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/fxConversionDirection
+    definition: >-
+      attribute indicating base-to-quote or quote-to-base orientation, used for determining the application direction of
+      the rate equation.
+    genus: FX conversion direction
+    differentia:
+      - FX 换算方向，是表示基准转报价或报价转基准的属性，用于确定汇率方程的应用方向。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: FXConversionDirection
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/FXConversionDirection
+    definition: >-
+      closed orientation classification for applying the canonical FX rate equation, used for determining the conversion
+      direction between base and quote.
+    genus: FX Conversion Direction
+    differentia:
+      - FX 换算方向，是应用规范汇率方程的封闭方向分类，用于确定基准与报价之间的换算方向。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: fxPolicy
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/fxPolicy
+    definition: >-
+      policy requiring an explicit PIT-eligible FX conversion when currencies differ, used for enforcing the
+      auditability of cross-currency conversion.
+    genus: FX policy
+    differentia:
+      - FX 策略，是要求币种不同时显式使用 PIT 合格 FX 换算的策略，用于强制跨币种换算的可审计性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: grossLongQuantity
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/grossLongQuantity
+    definition: >-
+      optional absolute non-negative long exposure quantity for a snapshot, used for reporting gross long separately
+      from net so that a negative net does not erase the gross long truth.
+    genus: gross long quantity
+    differentia:
+      - 毛多数量，是快照可选的绝对非负多头敞口数量，用于把毛多与净额分别报告，避免负净额抹去毛多真相。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: grossShortQuantity
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/grossShortQuantity
+    definition: >-
+      optional absolute non-negative short exposure quantity for a snapshot, used for reporting gross short separately
+      from net so that a positive net does not erase the gross short truth.
+    genus: gross short quantity
+    differentia:
+      - 毛空数量，是快照可选的绝对非负空头敞口数量，用于把毛空与净额分别报告，避免正净额抹去毛空真相。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: holdingQuantity
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/holdingQuantity
+    definition: non-negative quantity of an owned financial interest, used for recording the scale of a holding.
+    genus: holding quantity
+    differentia:
+      - 持仓数量，是所拥有金融权益的非负数量，用于记录持有的份额规模。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: HoldingSnapshot
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/HoldingSnapshot
+    definition: >-
+      source-observed non-negative quantity observation of one account and instrument from a single observation stream,
+      used for recording externally reported ownership facts rather than portfolio membership edges or execution-derived
+      exposure.
+    genus: Holding Snapshot
+    differentia:
+      - 持仓快照，是源自单一观测流的账户工具非负持有量观测，用于记录外部报告的所有权事实而非组合成员边或执行派生敞口。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: implementationDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/implementationDigest
+    definition: hash digest of the canonical calculation implementation bytes, used for locking the executable implementation.
+    genus: implementation digest
+    differentia:
+      - 实现摘要，是规范计算实现字节的哈希摘要，用于锁定可执行实现。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: inputContractDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/inputContractDigest
+    definition: hash digest of a calculation input contract, used for fixing the input specification.
+    genus: input contract digest
+    differentia:
+      - 输入契约摘要，是计算输入契约的哈希摘要，用于固定输入规约。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: inputMoney
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/inputMoney
+    definition: Money value before an exact FX conversion, used as the input amount of the conversion.
+    genus: input money
+    differentia:
+      - 输入货币，是 FX 换算前的货币值，用于作为换算的输入金额。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: lineCount
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/lineCount
+    definition: >-
+      the cardinality of valuation lines in a portfolio valuation summary, used for verifying the coverage closure
+      count.
+    genus: line count
+    differentia:
+      - 行数，是组合估值汇总中估值行的基数，用于核验覆盖闭包计数。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: LotAdjustment
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/LotAdjustment
+    definition: >-
+      lot transformation (split, merge, restatement, or corporate-action adjustment) that adjusts a lot's quantity
+      and/or cost basis, used for tracing lot lifecycle transformations such as 2-for-1 splits and basis restatements
+      without a corporate action.
+    genus: Lot Adjustment
+    differentia:
+      - 批调整，是调整批数量与/或成本基准的批变换（拆分、合并、重述或公司行动调整），用于追溯如 2 拆 1 与无公司行动的基准重述等批生命周期变换。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: LotAdjustmentKind
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/LotAdjustmentKind
+    definition: >-
+      closed classification of lot transformations (split, merge, restatement, corporate-action adjustment), used for
+      tracing lot lifecycle transformations.
+    genus: Lot Adjustment Kind
+    differentia:
+      - 批调整种类，是批变换的封闭分类（拆分、合并、重述、公司行动调整），用于追溯批生命周期变换。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: lotAllocationKind
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/lotAllocationKind
+    definition: attribute distinguishing the opening or consumption branch, used for marking the nature of a lot allocation.
+    genus: lot allocation kind
+    differentia:
+      - 批分配种类，是区分开仓或消耗分支的属性，用于标定一条批分配的性质。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: lotClosureProbeDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/lotClosureProbeDigest
+    definition: hash digest of the completed open-lot closure probe, used for detecting changes to the probe record.
+    genus: lot closure probe digest
+    differentia:
+      - 批闭包探针摘要，是已完成开仓批闭包探针的哈希摘要，用于检测探针记录的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: lotClosureProbeRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/lotClosureProbeRef
+    definition: >-
+      immutable reference to the completed open-lot completeness probe, used for proving the open-lot set has no
+      omissions.
+    genus: lot closure probe reference
+    differentia:
+      - 批闭包探针引用，是指向已完成开仓批完整性探针的不可变引用，用于证明开仓集合无遗漏。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: lotConsumptionPolicy
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/lotConsumptionPolicy
+    definition: >-
+      reviewed deterministic policy for selecting lots for consumption, used for specifying the consumption order such
+      as FIFO or LIFO.
+    genus: lot consumption policy
+    differentia:
+      - 批消耗策略，是确定性选择消耗批的受审策略，用于规定先进先出或后进先出等消耗顺序。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: LotConsumptionPolicy
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/LotConsumptionPolicy
+    definition: >-
+      closed reviewed classification of deterministic lot selection policies, used for specifying the consumption order
+      or explicit designation of consumed lots.
+    genus: Lot Consumption Policy
+    differentia:
+      - 批消耗策略，是受审的确定性批选择策略分类，用于规定消耗批的先后顺序或显式指定方式。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: lotDiscriminator
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/lotDiscriminator
+    definition: >-
+      fixed discriminator that identifies one residual PositionLot within its identity context, used for uniquely
+      distinguishing the lot. The openingRemainder value identifies an execution-derived opening-remainder lot;
+      adjustedRemainder identifies a lot adjusted by a transformation; transferredLot identifies a lot sourced from a
+      transfer.
+    genus: lot discriminator
+    differentia:
+      - >-
+        批判别式，是在其身份上下文内标识一个残余持仓批的固定判别值，用于唯一区分该批。openingRemainder 标识执行派生开仓余数批；adjustedRemainder 标识经变换调整的批；transferredLot
+        标识源自转仓的批。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: lotOpeningPolicy
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/lotOpeningPolicy
+    definition: >-
+      reviewed policy governing how an Execution opens residual position lots, used for constraining the opening
+      approach.
+    genus: lot opening policy
+    differentia:
+      - 批开立策略，是规定执行如何开立残余持仓批的受审策略，用于约束开仓方式。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: LotOpeningPolicy
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/LotOpeningPolicy
+    definition: >-
+      closed classification of policies governing how residual signed exposure from an Execution opens a PositionLot,
+      used for constraining the opening approach.
+    genus: Lot Opening Policy
+    differentia:
+      - 批开立策略，是规定执行残余带符号敞口如何开立持仓批的封闭策略分类，用于约束开仓方式。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: LotRealization
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/LotRealization
+    definition: >-
+      fact that closes out a strictly positive quantity of a PositionLot, used for recording realized cost basis,
+      realized proceeds, and realized PnL so that lot lifecycle includes realized outcomes.
+    genus: Lot Realization
+    differentia:
+      - 批实现，是平仓持仓批严格正数量的事实，用于记录已实现成本基准、已实现收入与已实现盈亏，使批生命周期包含已实现结果。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: lotSourceKind
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/lotSourceKind
+    definition: >-
+      optional attribute marking the source lineage of a PositionLot, used so that a lot is not forced to be
+      execution-derived and may originate from transfer, opening balance, corporate action, or manual adjustment.
+    genus: lot source kind
+    differentia:
+      - 批来源种类，是标记持仓批来源谱系的可选属性，用于使批不再被强制为执行派生，而可源自转仓、期初余额、公司行动或手工调整。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: mandateId
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/mandateId
+    definition: >-
+      stable identifier of a portfolio management mandate within the authority scope, used for uniquely marking a single
+      management mandate.
+    genus: mandate identifier
+    differentia:
+      - 授权标识，是组合管理授权在权威域内的稳定标识，用于唯一标记一条管理授权。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: marketValue
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/marketValue
+    definition: >-
+      the Money output of the exact direct-unit valuation calculation, used for recording the market value of a
+      valuation line.
+    genus: market value
+    differentia:
+      - 市值，是精确直接计价估值计算输出的货币值，用于记录估值行的市场价值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: membershipClosureProbeDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/membershipClosureProbeDigest
+    definition: hash digest of the completed membership closure probe record, used for detecting changes to the probe record.
+    genus: membership closure probe digest
+    differentia:
+      - 成员闭包探针摘要，是已完成成员闭包探针记录的哈希摘要，用于检测探针记录的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: membershipClosureProbeRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/membershipClosureProbeRef
+    definition: >-
+      immutable reference to the completed member-account closure probe, used for proving the membership set has no
+      omissions.
+    genus: membership closure probe reference
+    differentia:
+      - 成员闭包探针引用，是指向已完成成员账户闭包探针的不可变引用，用于证明成员无遗漏。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: membershipCount
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/membershipCount
+    definition: the cardinality of the closed exact membership version set, used for verifying the count of the membership set.
+    genus: membership count
+    differentia:
+      - 成员数量，是闭包内精确成员版本集的基数，用于核验成员集合的计数。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: membershipId
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/membershipId
+    definition: >-
+      stable identifier of a portfolio-account membership within the authority scope, used for uniquely marking a single
+      membership.
+    genus: membership identifier
+    differentia:
+      - 成员关系标识，是组合账户成员关系在权威域内的稳定标识，用于唯一标记一条成员关系。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: membershipVersionSetDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/membershipVersionSetDigest
+    definition: >-
+      digest of the sorted unique exact membership version set, used for verifying the completeness of the membership
+      set.
+    genus: membership version set digest
+    differentia:
+      - 成员版本集摘要，是排序后唯一精确成员版本集的摘要，用于验证成员集合的完整性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: openingCostBasis
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/openingCostBasis
+    definition: >-
+      signed Money basis after applying the exact fee, FX, precision, and rounding policy, used for recording the
+      initial cost of a lot.
+    genus: signed opening cost basis
+    differentia:
+      - 开仓符号成本基准，是经精确费用 FX 精度与舍入策略后的带符号货币基准，用于记录批的初始成本。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: openingGross
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/openingGross
+    definition: >-
+      positive Money gross computed from the allocated quantity and the exact execution price, used for recording the
+      opening trade amount of a lot.
+    genus: opening gross
+    differentia:
+      - 开仓毛额，是由分配数量与精确执行价格计算的正货币毛额，用于记录批的开仓交易额。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: openLotVersionSetDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/openLotVersionSetDigest
+    definition: >-
+      digest of the complete non-zero PositionLot exact-version set, used for verifying the completeness of the open-lot
+      set.
+    genus: open lot version set digest
+    differentia:
+      - 开仓批版本集摘要，是全部非零持仓批精确版本集的摘要，用于验证开仓集合完整性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: originalQuantity
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/originalQuantity
+    definition: >-
+      non-zero signed quantity opened by the opening Execution, used for recording the initial scale and direction of a
+      lot.
+    genus: original signed quantity
+    differentia:
+      - 原始符号数量，是开仓执行开立的非零带符号数量，用于记录批的初始规模与方向。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: outputContractDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/outputContractDigest
+    definition: hash digest of a calculation output contract, used for fixing the output specification.
+    genus: output contract digest
+    differentia:
+      - 输出契约摘要，是计算输出契约的哈希摘要，用于固定输出规约。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: outputMoney
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/outputMoney
+    definition: >-
+      Money value after applying the declared FX direction and rounding policy, used for recording the conversion
+      result.
+    genus: output money
+    differentia:
+      - 输出货币，是按声明方向与舍入策略换算后的货币值，用于记录换算结果。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: Portfolio
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/Portfolio
+    definition: >-
+      stable managed collection whose logical identity is an authority-scoped identifier (identifying authority +
+      portfolioId), used for expressing account membership and management authority through temporal associations rather
+      than storing membership edges directly
+    genus: stable managed collection
+    differentia:
+      - logical identity is authority-scoped (identifying authority + portfolioId)
+      - membership expressed through temporal associations
+    excludes:
+      - a single account (the ownership/custody container)
+      - a strategy definition (the rule set)
+    sources:
+      - reference: FIBO-2026Q1
+        locator: SEC/Portfolios/PortfolioManagement/Portfolio
+        note: FIBO portfolio collection semantics
+    status: accepted
+  - term: PortfolioAccountMembership
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembership
+    definition: >-
+      effective-dated and source-approved account ownership association, used as the sole graph path for resolving
+      member accounts of a Portfolio at a PIT pivot.
+    genus: Portfolio Account Membership
+    differentia:
+      - 组合账户成员关系，是带生效期与来源审批的账户归属关联，用于作为 PIT 时刻解析组合成员账户的唯一图路径。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PortfolioAccountMembershipClosure
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioAccountMembershipClosure
+    definition: >-
+      the complete exact-version set of all effective memberships of one Portfolio at a PIT pivot, used for turning
+      account absence into closed-world evidence through a completed closure probe.
+    genus: Portfolio Account Membership Closure
+    differentia:
+      - 组合账户成员闭包，是某组合在 PIT 时刻全部有效成员的完整精确版本集，用于以闭包探针把账户缺席作为闭世界证据。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PortfolioConstituent
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioConstituent
+    definition: >-
+      effective-dated association from a Portfolio to a constituent subject that may be a FinancialAccount, a
+      sub-Portfolio, a Sleeve, or an explicit allocation, used so that a portfolio is not restricted to an account
+      aggregation. PortfolioAccountMembership is retained as the account-kind specialization.
+    genus: Portfolio Constituent
+    differentia:
+      - 组合成员，是从组合到成员主语（可为 FinancialAccount、子组合、Sleeve 或显式分配）的生效期关联，用于使组合不限于账户聚合。PortfolioAccountMembership 作为账户种类特化保留。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PortfolioConstituentKind
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioConstituentKind
+    definition: >-
+      closed classification of the kind of a portfolio constituent (account, sub-portfolio, sleeve, explicit
+      allocation), used so that a portfolio is not restricted to an account aggregation.
+    genus: Portfolio Constituent Kind
+    differentia:
+      - 组合成员种类，是组合成员种类的封闭分类（账户、子组合、Sleeve、显式分配），用于使组合不限于账户聚合。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: portfolioId
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioId
+    definition: stable identifier of a Portfolio within the authority scope, used for uniquely marking an investment portfolio.
+    genus: portfolio identifier
+    differentia:
+      - 组合标识，是组合在权威域内的稳定标识，用于唯一标记一个投资组合。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: portfolioIdentifyingAuthority
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioIdentifyingAuthority
+    definition: >-
+      relationship to the logical Party whose namespace governs the stable portfolio identifier, used for forming the
+      authority-scoped logical identity of a Portfolio so that the same portfolioId under two authorities remains
+      unambiguous.
+    genus: portfolio identifying authority
+    differentia:
+      - 组合标识权威，是指向治理组合稳定标识的逻辑参与方的关系，用于构成组合的权威域逻辑身份，使同一 portfolioId 在两个权威下仍可无歧义识别。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PortfolioManagementMandate
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioManagementMandate
+    definition: >-
+      effective-dated and source-approved authority association from a managing Party over a Portfolio, used for
+      providing the sole management path for portfolio governance queries.
+    genus: Portfolio Management Mandate
+    differentia:
+      - 组合管理授权，是带生效期与来源审批的管理方对组合的授权关联，用于为组合治理查询提供唯一管理路径。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: portfolioName
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioName
+    definition: optional human-readable display name of a Portfolio, used for display and retrieval.
+    genus: portfolio name
+    differentia:
+      - 组合名称，是组合可选的人类可读显示名称，用于展示与检索。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: portfolioObservationCompletenessContractDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationCompletenessContractDigest
+    definition: hash digest of the completeness contract, used for detecting changes to the completeness specification.
+    genus: portfolio observation completeness contract digest
+    differentia:
+      - 组合观测完整性契约摘要，是完整性契约的哈希摘要，用于检测完整性规约的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: portfolioObservationCompletenessContractRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationCompletenessContractRef
+    definition: >-
+      immutable reference that defines full, incremental, and partial snapshot completeness semantics, used for fixing
+      the completeness specification.
+    genus: portfolio observation completeness contract reference
+    differentia:
+      - 组合观测完整性契约引用，是指向定义全量增量与部分快照完整性语义的不可变引用，用于固定完整性规约。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: portfolioObservationPaginationContractDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationPaginationContractDigest
+    definition: hash digest of the pagination contract, used for detecting changes to the pagination specification.
+    genus: portfolio observation pagination contract digest
+    differentia:
+      - 组合观测分页契约摘要，是分页契约的哈希摘要，用于检测分页规约的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: portfolioObservationPaginationContractRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationPaginationContractRef
+    definition: >-
+      immutable reference that defines page ordering, cursor, termination, and replay semantics, used for fixing the
+      pagination specification.
+    genus: portfolio observation pagination contract reference
+    differentia:
+      - 组合观测分页契约引用，是指向定义分页排序游标终止与回放语义的不可变引用，用于固定分页规约。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: portfolioObservationSourceContractDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationSourceContractDigest
+    definition: hash digest of the source contract, used for detecting changes to the source specification.
+    genus: portfolio observation source contract digest
+    differentia:
+      - 组合观测来源契约摘要，是来源契约的哈希摘要，用于检测来源规约的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: portfolioObservationSourceContractRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationSourceContractRef
+    definition: >-
+      immutable reference to the provider schema and source semantics contract, used for fixing the source
+      specification.
+    genus: portfolio observation source contract reference
+    differentia:
+      - 组合观测来源契约引用，是指向提供方模式与来源语义契约的不可变引用，用于固定来源规约。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PortfolioObservationStream
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioObservationStream
+    definition: >-
+      provider-owned versioned data stream whose stable logical identity is (provider, stream identifier); the source,
+      completeness, and pagination contracts are version-locked ingestion semantics (version content) that do not change
+      stream identity; the contracts and source-artifact digests belong to the execution-and-reproducibility profile
+    genus: provider-owned data stream
+    differentia:
+      - stable identity = (provider, streamId)
+      - contracts are version-locked ingestion semantics, not identity
+    status: accepted
+  - term: portfolioObservationStreamId
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationStreamId
+    definition: >-
+      immutable stable identifier of an observation stream within the provider scope, used for uniquely marking a single
+      data stream.
+    genus: portfolio observation stream identifier
+    differentia:
+      - 组合观测流标识，是观测流在提供方域内不变的稳定标识，用于唯一标记一条数据流。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: portfolioObservationStreamProvider
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioObservationStreamProvider
+    definition: >-
+      relationship to the logical Party that owns the namespace of a portfolio observation stream, used for defining the
+      provider attribution of the data stream.
+    genus: portfolio observation stream provider
+    differentia: []
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PortfolioPositionReconciliationFinding
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioPositionReconciliationFinding
+    definition: >-
+      break or notable result requiring disposition, sourced from a ReconciliationComparison between external and
+      execution-derived holding, position, or basis evidence, used for preventing silent merge or overwrite of the two
+      evidence sets. The compared roles on this type are retained for backward compatibility; the canonical comparison
+      lives on ReconciliationComparison.
+    genus: Portfolio Position Reconciliation Finding
+    differentia:
+      - 组合头寸对账发现，是需处置的差异或显著结果，源自外部与执行派生持仓头寸或基准之间的对账比较，用于防止静默合并或覆盖两套证据。本类型上的比较角色为兼容保留；规范比较位于 ReconciliationComparison。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: portfolioReconciliationKind
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/portfolioReconciliationKind
+    definition: >-
+      typed result attribute of external-versus-derived comparison, used for marking the conclusion category of a
+      reconciliation finding.
+    genus: portfolio reconciliation kind
+    differentia:
+      - 组合对账种类，是外部与派生比较的类型化结果属性，用于标定对账发现的结论类别。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PortfolioReconciliationKind
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioReconciliationKind
+    definition: >-
+      closed classification of external-versus-derived position and basis comparison results, used for marking the
+      conclusion of a reconciliation finding.
+    genus: Portfolio Reconciliation Kind
+    differentia:
+      - 组合对账种类，是外部与派生头寸及基准比较的封闭结果分类，用于标定对账发现的结论。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PortfolioValuation
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuation
+    definition: >-
+      valuation run header that fixes the portfolio, complete member-account closure, valuation definition, reporting
+      currency, and PIT input context, used for encapsulating all prerequisites of one valuation calculation.
+    genus: Portfolio Valuation
+    differentia:
+      - 组合估值，是固定组合、完整成员闭包、估值定义、报告货币与 PIT 输入上下文的估值运行头部，用于封装一次估值计算的全部前提。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PortfolioValuationSummary
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PortfolioValuationSummary
+    definition: >-
+      the coverage-closure aggregate of all PositionValuation lines in one PortfolioValuation run, used for verifying
+      the valuation-line coverage and total market value.
+    genus: Portfolio Valuation Summary
+    differentia:
+      - 组合估值汇总，是一次组合估值运行中全部头寸估值行的覆盖闭包聚合，用于验证估值行覆盖与市值合计。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PositionChange
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionChange
+    definition: >-
+      non-execution lifecycle event that changes a position's quantity or basis, used for tracing opening balance,
+      transfer, corporate-action result, exercise or assignment, manual adjustment, clearing or custody statement, and
+      calculated aggregation so that a position lot is not forced to be execution-derived. Full corporate-action
+      workflow remains in an independent module; this association carries only the lot/position result and its
+      source-event reference.
+    genus: Position Change
+    differentia:
+      - >-
+        头寸变更，是改变头寸数量或基准的非执行生命周期事件，用于追溯期初余额、转仓、公司行动结果、行权/分配、手工调整、清算/托管声明与计算聚合，使持仓批不再被强制为执行派生。完整公司行动流程仍在独立模块；此关联仅承载批/头寸结果及其源事件引用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PositionChangeKind
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionChangeKind
+    definition: >-
+      closed classification of non-execution lifecycle kinds of a position change (opening balance, transfer,
+      corporate-action result, exercise or assignment, manual adjustment, clearing or custody statement, calculated
+      aggregation), used for tracing the non-execution lifecycle of a position.
+    genus: Position Change Kind
+    differentia:
+      - 头寸变更种类，是头寸变更非执行生命周期种类的封闭分类（期初余额、转仓、公司行动结果、行权/分配、手工调整、清算/托管声明、计算聚合），用于追溯头寸的非执行生命周期。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PositionLot
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLot
+    definition: >-
+      execution-derived opening exposure, used for tracking immutable cost and context by taking account, instrument,
+      opening execution, cost-basis definition, and the opening-remainder discriminator as its logical identity.
+    genus: Position Lot
+    differentia:
+      - 持仓批，是执行派生的开仓敞口，用于以账户工具开仓执行与成本基准定义及开仓余数判别式为逻辑身份追踪不可变成本与上下文。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PositionLotAllocation
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocation
+    definition: >-
+      opening or consumption allocation between one Execution and one PositionLot under the same cost-basis definition
+      and calculation context, used for establishing a traceable chain through a strictly positive quantity and the
+      allocation kind.
+    genus: Position Lot Allocation
+    differentia:
+      - 持仓批分配，是一次执行与持仓批在相同成本基准定义与计算上下文下的开仓或消耗分配，用于以严格正数量与分配种类建立可追溯链。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PositionLotAllocationKind
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotAllocationKind
+    definition: >-
+      closed classification distinguishing an allocation that opens a new PositionLot from one that consumes an existing
+      PositionLot, used for marking the nature of an allocation.
+    genus: Position Lot Allocation Kind
+    differentia:
+      - 持仓批分配种类，是区分开立新批与消耗已有批的封闭分类，用于标定一条分配的性质。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PositionLotFeeAllocation
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotFeeAllocation
+    definition: >-
+      fact that allocates a strictly positive Money fee to one PositionLotAllocation, used for carrying an exact FX
+      conversion when currencies differ and bringing the fee effect into basis.
+    genus: Position Lot Fee Allocation
+    differentia:
+      - 持仓批费用分配，是把严格正货币费用分配到一条持仓批分配的事实，用于在币种不同时附带精确 FX 换算并把费用效果计入基准。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PositionLotStateClosure
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionLotStateClosure
+    definition: >-
+      closed-world bridge from all non-zero PositionLot versions, their allocations, and execution closures to one
+      execution-derived PositionSnapshot, used for conserving signed quantity and remaining cost basis.
+    genus: Position Lot State Closure
+    differentia:
+      - 持仓批状态闭包，是从全部非零持仓批及其分配与执行闭包到执行派生头寸快照的闭世界桥接，用于守恒符号数量与剩余成本基准。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: positionQuantity
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/positionQuantity
+    definition: >-
+      signed quantity that serves as the sole directional truth for long, short, or flat, used for expressing exposure
+      direction directly through positive, negative, or zero.
+    genus: signed position quantity
+    differentia:
+      - 头寸符号数量，是作为多空平方向唯一真相的带符号数量，用于以正负零直接表达敞口方向。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: positionScope
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/positionScope
+    definition: >-
+      optional branch attribute marking the view (custody, accounting, economic, regulatory) under which a snapshot is
+      observed, used so that one signed quantity is not overloaded across views.
+    genus: position scope
+    differentia:
+      - 头寸口径，是标记快照观测视角（托管、核算、经济、监管）的可选分支属性，用于避免单一符号数量跨视角过载。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PositionScope
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionScope
+    definition: >-
+      closed classification of the view under which a holding or position snapshot is observed, used for distinguishing
+      custody, accounting, economic, and regulatory exposures so that a single signed quantity is not overloaded across
+      views.
+    genus: Position Scope
+    differentia:
+      - 头寸口径，是持仓或头寸快照观测视角的封闭分类，用于区分托管、核算、经济与监管敞口，避免单一符号数量跨视角过载。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PositionSnapshot
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSnapshot
+    definition: >-
+      signed exposure observation of one account and instrument from a single observation stream, used for storing the
+      signed net quantity as the default directional truth where positive is long, negative is short, zero is flat, and
+      any side label is derived. Optional grossLongQuantity, grossShortQuantity, positionScope, and balanceDimension
+      carry the gross and per-bucket truths so that the signed net is no longer the only authoritative quantity.
+    genus: Position Snapshot
+    differentia:
+      - >-
+        头寸快照，是源自单一观测流的带符号敞口观测，用于以符号净额为默认方向真相（正多负空零平，任何方向标签均为派生），可选 grossLongQuantity、grossShortQuantity、positionScope 与
+        balanceDimension 承载毛额与分桶真相，使符号净额不再为唯一权威量。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: positionSourceKind
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/positionSourceKind
+    definition: >-
+      branch attribute distinguishing a snapshot as external-reported or execution-derived, used for marking the source
+      lineage of a snapshot.
+    genus: position source kind
+    differentia:
+      - 头寸来源种类，是区分快照为外部报告或执行派生的分支属性，用于标定快照的来源谱系。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PositionSourceKind
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionSourceKind
+    definition: >-
+      closed source branch for holding and position snapshots, used for distinguishing externally reported,
+      execution-derived, and non-execution lifecycle sources so that not every non-external snapshot is collapsed into
+      execution-derived.
+    genus: Position Source Kind
+    differentia:
+      - 头寸来源种类，是持仓与头寸快照的封闭来源分支，用于区分外部报告、执行派生与非执行生命周期来源，避免一切非外部快照被归为执行派生。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PositionValuation
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/PositionValuation
+    definition: >-
+      valuation line whose logical identity is the exact valuation header and input snapshot version, used for producing
+      market value from a holding or position snapshot and an exact PIT price without carrying method truth.
+    genus: Position Valuation
+    differentia:
+      - 头寸估值行，是以估值头部与输入快照版本为逻辑身份的估值明细，用于在持仓或头寸快照与精确 PIT 价格下产出市值而不承载方法真相。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: precisionPolicyDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/precisionPolicyDigest
+    definition: >-
+      hash digest of the exact rational and decimal precision policy, used for detecting changes to the precision
+      specification.
+    genus: precision policy digest
+    differentia:
+      - 精度策略摘要，是精度策略的哈希摘要，用于检测精度规约的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: precisionPolicyRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/precisionPolicyRef
+    definition: >-
+      immutable reference to the exact rational and decimal precision policy, used for fixing the numeric precision
+      specification.
+    genus: precision policy reference
+    differentia:
+      - 精度策略引用，是指向精确有理与十进制精度策略的不可变引用，用于固定数值精度规约。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: quantityAdjustmentFactor
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/quantityAdjustmentFactor
+    definition: >-
+      optional ratio applied to a lot's quantity by a LotAdjustment (e.g. 2-for-1 split), used for recording the
+      magnitude of a transformation.
+    genus: quantity adjustment factor
+    differentia:
+      - 数量调整因子，是批调整应用于批数量的可选比率（如 2 拆 1），用于记录变换规模。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: quoteTime
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/quoteTime
+    definition: optional instant at which the FX rate was quoted, used for rate-staleness checks.
+    genus: quote time
+    differentia:
+      - 报价时刻，是 FX 汇率报价的可选时间点，用于汇率陈旧性检查。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: rateDate
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/rateDate
+    definition: optional business date of the FX rate, used for value-date alignment.
+    genus: rate date
+    differentia:
+      - 汇率日期，是 FX 汇率的可选业务日期，用于起息日对齐。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: rateFinality
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/rateFinality
+    definition: >-
+      optional attribute marking whether an FX rate is indicative, firm, or settled, used for distinguishing
+      rate-application finality.
+    genus: rate finality
+    differentia:
+      - 汇率最终性，是标记 FX 汇率为指示性、确定或已结算的可选属性，用于区分汇率应用最终性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RateFinality
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/RateFinality
+    definition: >-
+      closed classification of whether an FX rate is indicative, firm, or settled, used for distinguishing
+      rate-application finality.
+    genus: Rate Finality
+    differentia:
+      - 汇率最终性，是 FX 汇率为指示性、确定或已结算的封闭分类，用于区分汇率应用最终性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: rateSource
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/rateSource
+    definition: >-
+      optional reference to the source of the FX rate used by an FXConversion, used for auditability of the rate
+      provenance.
+    genus: rate source reference
+    differentia:
+      - 汇率来源引用，是指向 FXConversion 所用 FX 汇率来源的可选引用，用于汇率谱系的可审计性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: realizedCostBasis
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/realizedCostBasis
+    definition: the Money cost basis of the realized quantity, used for recording the cost side of a realized PnL.
+    genus: realized cost basis
+    differentia:
+      - 已实现成本基准，是已实现数量的货币成本基准，用于记录已实现盈亏的成本侧。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: realizedPnl
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/realizedPnl
+    definition: >-
+      the Money difference between realized proceeds and realized cost basis, used for recording the realized profit and
+      loss of a lot closure.
+    genus: realized PnL
+    differentia:
+      - 已实现盈亏，是已实现收入与已实现成本基准的货币差额，用于记录批平仓的已实现盈亏。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: realizedProceeds
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/realizedProceeds
+    definition: the Money proceeds of the realized quantity, used for recording the proceeds side of a realized PnL.
+    genus: realized proceeds
+    differentia:
+      - 已实现收入，是已实现数量的货币收入，用于记录已实现盈亏的收入侧。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: realizedQuantity
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/realizedQuantity
+    definition: strictly positive quantity closed out by a LotRealization, used for recording the scale of a lot closure.
+    genus: realized quantity
+    differentia:
+      - 已实现数量，是批实现中平仓的严格正数量，用于记录批平仓规模。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationCandidateGraphDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationCandidateGraphDigest
+    definition: >-
+      hash digest of the canonical candidate-graph artifact and its record-level digests, used for detecting changes to
+      the candidate graph.
+    genus: reconciliation candidate graph digest
+    differentia:
+      - 对账候选图摘要，是规范候选图工件及其记录级摘要的哈希摘要，用于检测候选图的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationCandidateGraphRecordCount
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationCandidateGraphRecordCount
+    definition: >-
+      the total count of canonical candidate records bound into the reconciliation candidate graph before PIT selection,
+      used for verifying the size of the candidate graph.
+    genus: reconciliation candidate graph record count
+    differentia:
+      - 对账候选图记录计数，是 PIT 选择前绑定到对账候选图的规范候选记录总数，用于核验候选图规模。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationCandidateGraphRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationCandidateGraphRef
+    definition: >-
+      immutable reference to the canonical graph containing the complete external and derived candidate-record universe,
+      used for fixing the complete candidate universe.
+    genus: reconciliation candidate graph reference
+    differentia:
+      - 对账候选图引用，是指向包含完整外部与派生候选记录全集的规范图的不可变引用，用于固定候选全集。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationClosureProbeDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationClosureProbeDigest
+    definition: >-
+      hash digest of the completed reconciliation candidate-universe closure probe, used for detecting changes to the
+      probe record.
+    genus: reconciliation closure probe digest
+    differentia:
+      - 对账闭包探针摘要，是已完成对账候选全集闭包探针的哈希摘要，用于检测探针记录的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationClosureProbeRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationClosureProbeRef
+    definition: >-
+      immutable reference to the completed probe that proves the exact candidate universe and role selection, used for
+      proving the candidate domain has no omissions.
+    genus: reconciliation closure probe reference
+    differentia:
+      - 对账闭包探针引用，是指向证明精确候选全集与角色选择已完成探针的不可变引用，用于证明候选域无遗漏。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ReconciliationComparison
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationComparison
+    definition: >-
+      the comparison act between external and execution-derived evidence, used for producing a typed comparison result
+      (matched, break, ambiguous, not comparable) so that matched is a comparison result rather than a standalone
+      finding.
+    genus: Reconciliation Comparison
+    differentia:
+      - 对账比较，是外部与执行派生证据之间的比较行为，用于产出类型化比较结果（匹配、差异、歧义、不可比），使匹配成为比较结果而非独立发现。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ReconciliationComparisonResult
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationComparisonResult
+    definition: >-
+      closed classification of the outcome of a reconciliation comparison (matched, break, ambiguous, not comparable),
+      used so that matched is a comparison result rather than a standalone finding.
+    genus: Reconciliation Comparison Result
+    differentia:
+      - 对账比较结果，是对账比较结果的封闭分类（匹配、差异、歧义、不可比），用于使匹配成为比较结果而非独立发现。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationContextDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationContextDigest
+    definition: >-
+      hash digest of the exact comparison-context bytes for a reconciliation finding, used for detecting changes to the
+      comparison context.
+    genus: reconciliation context digest
+    differentia:
+      - 对账上下文摘要，是对账发现精确比较上下文字节的哈希摘要，用于检测比较上下文的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationContextRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationContextRef
+    definition: >-
+      immutable reference to the exact comparison context for a reconciliation finding, used for fixing the comparison
+      prerequisites.
+    genus: reconciliation context reference
+    differentia:
+      - 对账上下文引用，是指向对账发现精确比较上下文的不可变引用，用于固定比较前提。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationDerivedCandidateCount
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationDerivedCandidateCount
+    definition: >-
+      the count of the complete PIT-eligible execution-derived candidate-version set for the selected family, subject,
+      and derived source scope, used for verifying the count of the candidate domain.
+    genus: reconciliation derived candidate count
+    differentia:
+      - 对账派生候选计数，是所选族主语与派生来源域内 PIT 合格执行派生候选版本集的计数，用于核验候选域计数。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationDerivedCandidateVersionSetDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationDerivedCandidateVersionSetDigest
+    definition: >-
+      digest of the sorted complete PIT-eligible execution-derived candidate-version set for the selected family,
+      subject, and source scope, used for verifying the completeness of the candidate domain.
+    genus: reconciliation derived candidate version set digest
+    differentia:
+      - 对账派生候选版本集摘要，是所选族主语与派生来源域内排序完整执行派生候选版本集的摘要，用于验证候选域完整性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationDerivedOutputManifestDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationDerivedOutputManifestDigest
+    definition: hash digest of the completed derivation-run output manifest, used for detecting changes to the output manifest.
+    genus: reconciliation derived output manifest digest
+    differentia:
+      - 对账派生输出清单摘要，是已完成派生运行输出清单的哈希摘要，用于检测输出清单的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationDerivedOutputManifestRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationDerivedOutputManifestRef
+    definition: immutable reference to the completed derivation-run output manifest, used for fixing the derived output evidence.
+    genus: reconciliation derived output manifest reference
+    differentia:
+      - 对账派生输出清单引用，是指向已完成派生运行输出清单的不可变引用，用于固定派生输出证据。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationDerivedSourceScopeRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationDerivedSourceScopeRef
+    definition: >-
+      immutable reference to the derivation run or namespace whose candidates are closed, used for fixing the derived
+      source scope.
+    genus: reconciliation derived source scope reference
+    differentia:
+      - 对账派生来源域引用，是指向候选被关闭的派生运行或命名空间的不可变引用，用于固定派生来源范围。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationExternalCandidateCount
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationExternalCandidateCount
+    definition: >-
+      the count of the complete PIT-eligible external candidate-version set for the selected family, subject, and
+      external source scope, used for verifying the count of the candidate domain.
+    genus: reconciliation external candidate count
+    differentia:
+      - 对账外部候选计数，是所选族主语与外部来源域内 PIT 合格外部候选版本集的计数，用于核验候选域计数。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationExternalCandidateVersionSetDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationExternalCandidateVersionSetDigest
+    definition: >-
+      digest of the sorted complete PIT-eligible external candidate-version set for the selected family, subject, and
+      source scope, used for verifying the completeness of the candidate domain.
+    genus: reconciliation external candidate version set digest
+    differentia:
+      - 对账外部候选版本集摘要，是所选族主语与外部来源域内排序完整外部候选版本集的摘要，用于验证候选域完整性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationExternalSnapshotManifestDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationExternalSnapshotManifestDigest
+    definition: >-
+      hash digest of the terminal external full-snapshot response manifest, used for detecting changes to the response
+      manifest.
+    genus: reconciliation external snapshot manifest digest
+    differentia:
+      - 对账外部快照清单摘要，是终止外部完整快照响应清单的哈希摘要，用于检测响应清单的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationExternalSnapshotManifestRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationExternalSnapshotManifestRef
+    definition: >-
+      immutable reference to the terminal complete-response manifest supplied under the external source contract, used
+      for fixing the external response evidence.
+    genus: reconciliation external snapshot manifest reference
+    differentia:
+      - 对账外部快照清单引用，是指向外部来源契约下终止完整响应清单的不可变引用，用于固定外部响应证据。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationExternalSourceScopeRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationExternalSourceScopeRef
+    definition: >-
+      immutable reference to the external observation stream or source namespace whose candidates are closed, used for
+      fixing the external source scope.
+    genus: reconciliation external source scope reference
+    differentia:
+      - 对账外部来源域引用，是指向候选被关闭的外部观测流或来源命名空间的不可变引用，用于固定外部来源范围。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ReconciliationFindingKind
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationFindingKind
+    definition: >-
+      closed classification of the conclusion of a reconciliation finding (matched, quantity mismatch, basis mismatch,
+      methodology difference, timing difference, ambiguous, not comparable, missing external, missing derived), used for
+      typing the disposition-requiring result.
+    genus: Reconciliation Finding Kind
+    differentia:
+      - 对账发现种类，是对账发现结论的封闭分类（匹配、数量差异、基准差异、方法差异、时点差异、歧义、不可比、缺外部、缺派生），用于类型化需处置的结果。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationQueryDefinitionDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationQueryDefinitionDigest
+    definition: hash digest of the exact candidate-selection query definition, used for detecting changes to the query definition.
+    genus: reconciliation query definition digest
+    differentia:
+      - 对账查询定义摘要，是精确候选选择查询定义的哈希摘要，用于检测查询定义的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationQueryDefinitionRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationQueryDefinitionRef
+    definition: >-
+      immutable reference to the exact family, scope, source, and three-axis PIT candidate-selection definition, used
+      for fixing the selection query.
+    genus: reconciliation query definition reference
+    differentia:
+      - 对账查询定义引用，是指向精确族范围来源与三轴 PIT 候选选择定义的不可变引用，用于固定选择查询。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationQueryToolLockDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationQueryToolLockDigest
+    definition: >-
+      hash digest of the candidate-selection implementation and dependency lock, used for detecting changes to the tool
+      lock.
+    genus: reconciliation query tool lock digest
+    differentia:
+      - 对账查询工具锁摘要，是候选选择实现与依赖锁的哈希摘要，用于检测工具锁的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationQueryToolLockRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationQueryToolLockRef
+    definition: >-
+      immutable reference to the implementation and dependency lock used to execute the candidate-selection query, used
+      for fixing the query tool.
+    genus: reconciliation query tool lock reference
+    differentia:
+      - 对账查询工具锁引用，是指向执行候选选择查询的实现与依赖锁的不可变引用，用于固定查询工具。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ReconciliationResolution
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/ReconciliationResolution
+    definition: >-
+      the disposition of a ReconciliationFinding, used for recording accepted, investigated, corrected, waived, or
+      escalated outcomes so that breaks carry an explicit resolution rather than being silently merged.
+    genus: Reconciliation Resolution
+    differentia:
+      - 对账处置，是对账发现的处置，用于记录接受、调查、更正、放弃或升级结果，使差异带显式处置而非被静默合并。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reconciliationSubjectDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/reconciliationSubjectDigest
+    definition: >-
+      digest of the exact kind-discriminated versions compared, used for uniquely identifying the reconciliation
+      subject.
+    genus: reconciliation subject digest
+    differentia:
+      - 对账主摘要，是比较中按种类区分的精确版本摘要，用于唯一标识对账主语。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: remainingCostBasis
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/remainingCostBasis
+    definition: Money basis remaining after all exact consumption allocations, used for recording the current cost of a lot.
+    genus: remaining cost basis
+    differentia:
+      - 剩余成本基准，是全部精确消耗分配后剩余的货币基准，用于记录批的当前成本。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: resolutionEvidence
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/resolutionEvidence
+    definition: immutable reference to the evidence supporting a ReconciliationResolution, used for proving the disposition.
+    genus: resolution evidence reference
+    differentia:
+      - 处置证据引用，是指向支持对账处置证据的不可变引用，用于证明处置。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: resolutionKind
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/resolutionKind
+    definition: >-
+      attribute marking the disposition of a ReconciliationResolution (accepted, investigated, corrected, waived,
+      escalated), used for recording the outcome of a break disposition.
+    genus: resolution kind
+    differentia:
+      - 处置种类，是标记对账处置结果的属性（接受、调查、更正、放弃、升级），用于记录差异处置结果。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ResolutionKind
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/ResolutionKind
+    definition: >-
+      closed classification of the disposition of a reconciliation resolution (accepted, investigated, corrected,
+      waived, escalated), used for recording the outcome of a break disposition.
+    genus: Resolution Kind
+    differentia:
+      - 处置种类，是对账处置结果的封闭分类（接受、调查、更正、放弃、升级），用于记录差异处置结果。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: resolutionNote
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/resolutionNote
+    definition: optional free-text note recording the rationale of a ReconciliationResolution, used for auditability.
+    genus: resolution note
+    differentia:
+      - 处置说明，是记录对账处置理由的可选自由文本说明，用于可审计性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: roundingPolicyDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/roundingPolicyDigest
+    definition: >-
+      hash digest of the exact rounding mode, scale, and stage policy, used for detecting changes to the rounding
+      specification.
+    genus: rounding policy digest
+    differentia:
+      - 舍入策略摘要，是舍入策略的哈希摘要，用于检测舍入规约的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: roundingPolicyRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/roundingPolicyRef
+    definition: >-
+      immutable reference to the exact rounding mode, scale, and stage policy, used for fixing the rounding
+      specification.
+    genus: rounding policy reference
+    differentia:
+      - 舍入策略引用，是指向精确舍入模式尺度与阶段策略的不可变引用，用于固定舍入规约。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: runtimeDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/runtimeDigest
+    definition: hash digest of the calculation runtime environment, used for locking the execution environment.
+    genus: runtime digest
+    differentia:
+      - 运行时摘要，是计算运行时环境的哈希摘要，用于锁定执行环境。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: Sleeve
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/Sleeve
+    definition: >-
+      management subdivision of a portfolio, used as a portfolio constituent subject so that a portfolio may aggregate
+      accounts, sub-portfolios, sleeves, and explicit allocations
+    genus: management subdivision
+    differentia:
+      - subdivision of a portfolio
+      - usable as a constituent subject
+    status: accepted
+  - term: sleeveId
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/sleeveId
+    definition: stable identifier of a Sleeve within the portfolio scope, used for uniquely marking a management subdivision.
+    genus: sleeve identifier
+    differentia:
+      - Sleeve 标识，是 Sleeve 在组合作用域内的稳定标识，用于唯一标记一个管理细分。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sleeveName
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/sleeveName
+    definition: optional human-readable display name of a Sleeve, used for display and retrieval.
+    genus: sleeve name
+    differentia:
+      - Sleeve 名称，是 Sleeve 可选的人类可读显示名称，用于展示与检索。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: snapshotId
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/snapshotId
+    definition: >-
+      stable identifier of a holding or position snapshot within the source scope, used for uniquely marking a single
+      snapshot.
+    genus: snapshot identifier
+    differentia:
+      - 快照标识，是持仓或头寸快照在来源域内的稳定标识，用于唯一标记一条快照。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: snapshotPivotRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/snapshotPivotRef
+    definition: immutable reference to the exact three-axis snapshot pivot, used for fixing the PIT basis of a state closure.
+    genus: snapshot pivot reference
+    differentia:
+      - 快照枢轴引用，是指向精确三轴快照枢轴的不可变引用，用于固定状态闭包的 PIT 基准。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: specificSelectionCount
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/specificSelectionCount
+    definition: >-
+      the cardinality of the exact specific-identification selected-lot set, used for verifying the count of the
+      selected set.
+    genus: specific selection count
+    differentia:
+      - 具体识别选择数量，是精确具体识别所选批集合的基数，用于核验所选集合的计数。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: specificSelectionDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/specificSelectionDigest
+    definition: hash digest of reviewed specific-identification instructions, used for detecting changes to the instructions.
+    genus: specific selection digest
+    differentia:
+      - 具体识别选择摘要，是受审具体识别指令的哈希摘要，用于检测指令的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: specificSelectionRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/specificSelectionRef
+    definition: >-
+      immutable reference to reviewed specific-identification instructions, used for supporting the explicit designation
+      of consumed lots.
+    genus: specific selection reference
+    differentia:
+      - 具体识别选择引用，是指向受审具体识别指令的不可变引用，用于支持显式指定消耗批。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: specificSelectionVersionSetDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/specificSelectionVersionSetDigest
+    definition: >-
+      digest of the exact PositionLot versions selected by specific-identification evidence, used for verifying the
+      completeness of the selected set.
+    genus: specific selection version set digest
+    differentia:
+      - 具体识别选择版本集摘要，是具体识别证据所选精确持仓批版本的摘要，用于验证所选集合完整性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: stateAllocationClosureProbeDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/stateAllocationClosureProbeDigest
+    definition: hash digest of the completed lot-allocation closure probe, used for detecting changes to the probe record.
+    genus: state allocation closure probe digest
+    differentia:
+      - 状态分配闭包探针摘要，是已完成批分配闭包探针的哈希摘要，用于检测探针记录的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: stateAllocationClosureProbeRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/stateAllocationClosureProbeRef
+    definition: >-
+      immutable reference to the completed lot-allocation completeness probe, used for proving the allocation set has no
+      omissions.
+    genus: state allocation closure probe reference
+    differentia:
+      - 状态分配闭包探针引用，是指向已完成批分配完整性探针的不可变引用，用于证明分配集合无遗漏。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: stateAllocationVersionSetDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/stateAllocationVersionSetDigest
+    definition: >-
+      digest of all allocation exact versions used by a lot-state closure, used for verifying the completeness of the
+      allocation set.
+    genus: state allocation version set digest
+    differentia:
+      - 状态分配版本集摘要，是批状态闭包所用的全部分配精确版本的摘要，用于验证分配集合完整性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: stateExecutionClosureVersionSetDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/stateExecutionClosureVersionSetDigest
+    definition: >-
+      digest of all execution allocation closure exact versions used by lot state, used for verifying the completeness
+      of the closure set.
+    genus: state execution closure version set digest
+    differentia:
+      - 状态执行闭包版本集摘要，是批状态所用的全部执行分配闭包精确版本的摘要，用于验证闭包集合完整性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: statementPeriodRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/statementPeriodRef
+    definition: >-
+      optional reference to the statement or reporting period a snapshot belongs to, used for grouping snapshots by
+      period in custody and accounting views.
+    genus: statement period reference
+    differentia:
+      - 声明周期引用，是指向快照所属声明或报告周期的可选引用，用于在托管与核算视图下按周期分组快照。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: toolLockDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/toolLockDigest
+    definition: hash digest of the exact calculation tool lock bytes, used for detecting changes to the tool lock.
+    genus: tool lock digest
+    differentia:
+      - 工具锁摘要，是计算工具锁字节的哈希摘要，用于检测工具锁的变更。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: toolLockRef
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/toolLockRef
+    definition: immutable reference to the exact calculation tool lock, used for fixing the execution tool version.
+    genus: tool lock reference
+    differentia:
+      - 工具锁引用，是指向精确计算工具锁的不可变引用，用于固定执行工具版本。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: totalMarketValue
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/totalMarketValue
+    definition: the Money aggregate of all valuation lines in a portfolio valuation summary, used for the coverage closure total.
+    genus: total market value
+    differentia:
+      - 市值合计，是组合估值汇总中全部估值行的货币聚合，用于覆盖闭包合计。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: unrealizedPnl
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/unrealizedPnl
+    definition: >-
+      Money difference between the exact market value and the remaining cost basis, used for recording the floating
+      profit and loss of an open position.
+    genus: unrealized PnL
+    differentia:
+      - 未实现盈亏，是精确市值与剩余成本基准的货币差额，用于记录未平仓的浮动盈亏。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: UnrealizedPnLObservation
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/UnrealizedPnLObservation
+    definition: >-
+      reproducible fact joining one PositionValuation and one PositionLotStateClosure, used for satisfying the equation
+      that PnL equals market value minus remaining basis in the header reporting currency.
+    genus: Unrealized PnL Observation
+    differentia:
+      - 未实现盈亏观测，是连接一次头寸估值与持仓批状态闭包的可复现事实，用于以报告币种满足盈亏等于市值减剩余基准的等式。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ValuationCalculationDefinition
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/ValuationCalculationDefinition
+    definition: >-
+      authority-scoped versioned valuation specification binding a ValuationMethodFamily profile, used for locking the
+      quotation input closure, formula, input/output contracts, precision, rounding, runtime, and tool lock
+    genus: versioned valuation specification
+    differentia:
+      - binds exactly one ValuationMethodFamily profile
+      - locks the input closure and executable evidence
+    status: accepted
+  - term: valuationDefinitionAuthority
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/valuationDefinitionAuthority
+    definition: >-
+      relationship to the logical Party whose namespace governs the stable valuation definition identifier, used for
+      fixing the namespace attribution of the definition.
+    genus: valuation definition authority
+    differentia:
+      - 估值定义权威，是指向治理估值定义稳定标识的逻辑参与方的关系，用于固定定义的命名空间归属。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: valuationDefinitionId
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/valuationDefinitionId
+    definition: >-
+      stable identifier of a valuation definition within the authority namespace, used for uniquely marking a single
+      valuation specification.
+    genus: valuation definition identifier
+    differentia:
+      - 估值定义标识，是估值定义在权威域命名空间内的稳定标识，用于唯一标记一套估值规范。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: valuationDefinitionMethodFamily
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/valuationDefinitionMethodFamily
+    definition: >-
+      relationship from a valuation definition to its concrete ValuationMethodFamily profile, used for binding the
+      previously global hard-locked direct-unit method to a profile so other profiles may coexist.
+    genus: valuation definition method family
+    differentia:
+      - 估值定义方法族，是从估值定义到其具体 ValuationMethodFamily 画像的关系，用于把原全局硬锁的直接单价方法绑定到画像，使其他画像可共存。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: valuationDefinitionQuotationContract
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/valuationDefinitionQuotationContract
+    definition: >-
+      relationship from a valuation definition to every member of its closed exact-version direct-unit quotation input
+      set, used for locking the valuation input collection.
+    genus: valuation definition quotation contract
+    differentia:
+      - 估值定义计价契约，是从估值定义到其闭包内全部精确版本直接计价输入的关系，用于锁定估值的输入集合。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: valuationFinality
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/valuationFinality
+    definition: optional attribute marking whether a valuation line is preliminary or final, used for staged valuation runs.
+    genus: valuation finality
+    differentia:
+      - 估值最终性，是标记估值行是否为初步或最终的可选属性，用于分阶段估值运行。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ValuationFinality
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/ValuationFinality
+    definition: closed classification of whether a valuation line is preliminary or final, used for staged valuation runs.
+    genus: Valuation Finality
+    differentia:
+      - 估值最终性，是估值行是否为初步或最终的封闭分类，用于分阶段估值运行。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: valuationMethod
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/valuationMethod
+    definition: >-
+      the sole reviewed method stored on a valuation definition, used for fixing the calculation convention of the
+      valuation.
+    genus: valuation method
+    differentia:
+      - 估值方法，是估值定义上存储的唯一受审方法，用于固定估值的计算口径。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ValuationMethod
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/ValuationMethod
+    definition: >-
+      closed classification of the calculation method used to derive a PortfolioValuation from its locked inputs, used
+      for marking the calculation convention of a valuation. The first value, directUnitPriceTimesQuantity, is the
+      method of the DirectUnitValuationProfile; additional values belong to other ValuationMethodFamily profiles.
+    genus: Valuation Method
+    differentia:
+      - >-
+        估值方法，是从锁定输入推导组合估值的封闭计算方法分类，用于标定估值的计算口径。首值 directUnitPriceTimesQuantity 是 DirectUnitValuationProfile 的方法；其余值属其他
+        ValuationMethodFamily 画像。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ValuationMethodFamily
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/ValuationMethodFamily
+    definition: >-
+      abstract parent of valuation method profiles, used as the generic semantic core so that the direct-unit-price
+      method is one concrete profile rather than the only universal valuation path
+    genus: abstract valuation method parent
+    differentia:
+      - abstract; not instantiated directly
+      - parent of DirectUnitValuationProfile and future profiles
+    excludes:
+      - a concrete valuation method (use a profile subtype)
+    sources:
+      - reference: ADR-021
+        locator: QuotationConvention precedent
+        note: abstract quotation parent
+      - reference: IFRS-13
+        locator: Fair Value Measurement
+        note: measurement date, market participant, exit price
+    status: accepted
+  - term: valuationMethodFamilyId
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/valuationMethodFamilyId
+    definition: >-
+      stable logical-identity identifier of a ValuationMethodFamily profile, used so that an abstract family may be
+      referenced by a logical reference.
+    genus: valuation method family identifier
+    differentia:
+      - 估值方法族标识，是 ValuationMethodFamily 画像的稳定逻辑身份标识，用于使抽象族可被逻辑引用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: valuationQuotationContractCount
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/valuationQuotationContractCount
+    definition: >-
+      the exact number of quotation-contract versions in the valuation definition input closure, used for verifying the
+      count of the input set.
+    genus: valuation quotation contract count
+    differentia:
+      - 估值计价契约数量，是估值定义输入闭包内精确计价契约版本的数量，用于核验输入集合的计数。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: valuationQuotationContractVersionSetDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/valuationQuotationContractVersionSetDigest
+    definition: >-
+      digest over all exact quotation-contract versions in the valuation definition input closure, used for verifying
+      the completeness of the input set.
+    genus: valuation quotation contract version-set digest
+    differentia:
+      - 估值计价契约版本集摘要，是估值定义输入闭包内全部精确计价契约版本的摘要，用于验证输入集合完整性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: valuationRunId
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/valuationRunId
+    definition: stable identifier of a PortfolioValuation run header, used for uniquely marking a single valuation run.
+    genus: valuation run identifier
+    differentia:
+      - 估值运行标识，是组合估值运行头部的稳定标识，用于唯一标记一次估值运行。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: valuationSubjectKind
+    canonicalIri: https://axiolune.ai/ontology/finance/portfolio-positions/valuationSubjectKind
+    definition: >-
+      optional attribute marking what a valuation line values (holding, position, lot, cash, accrued), used for
+      distinguishing valuation subjects in the coverage closure.
+    genus: valuation subject kind
+    differentia:
+      - 估值主语种类，是标记估值行所估值对象（持仓、头寸、批、现金、应计）的可选属性，用于在覆盖闭包中区分估值主语。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team

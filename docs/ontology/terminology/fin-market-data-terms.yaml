@@ -1,243 +1,1435 @@
 # fin-market-data — Terminology Cards
-# M2-PLAN §3.3: Each term has ISO 704 definition, genus/differentia, excludes, and sources.
+# Synced from module.yaml v2.0.0 — 2026-08-07
+# Each card: term (module.yaml entity key), canonicalIri, ISO 704 definition
 
 terms:
-  - term: "Market Data Stream"
-    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/MarketDataStream"
-    definition: "immutable version of a market-data channel owned by a data provider and bound to a locked source contract, used for defining the supply source and normalization rules for all downstream observation facts"
-    genus: "object type"
+  - term: affectedSubjectDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/affectedSubjectDigest
+    definition: >-
+      affectedSubjectDigest is a digest over the unique exact-version IRI set of the affected observation versions, used
+      for locking the subject set of a quality finding.
+    genus: Affected Subject Digest
     differentia:
-      - "owned by exactly one provider Party via the functional streamProvider relation"
-      - "carries a locked source contract reference and digest that fix field mapping and normalization rules"
-      - "declares a closed streamPurpose limiting the kinds of records it admits"
-      - "declares a sourceRecordRevisionMode (immutable or revisioned) governing revision-chain semantics"
-      - "binds TemporalFact and ProvenancedFact patterns so stream identity is version-keyed"
-    excludes:
-      - "an individual observation fact (which is an AssociationType scoped to a stream)"
-      - "a bar specification (which references a stream rather than being one)"
-      - "a physical data feed or socket (which is a runtime delivery artifact, not a semantic identity)"
+      - 受影响主体摘要，是对受影响观测版本唯一精确版本 IRI 集合的摘要，用于锁定质量发现的主体集合。
+    excludes: []
     sources:
-      - reference: "ADR-012"
-        locator: "three-axis temporal and provenance patterns for stream identity"
-      - reference: "nautilus-trader"
-        locator: "model/data/ DataEngine base path for streaming context"
-    status: "accepted"
-
-  - term: "Price Observation"
-    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/PriceObservation"
-    definition: "namable association that records a quoted price of a financial instrument at a venue and a point in time, used for modeling who quoted what price, where, and when as a fact carrying timestamps and provenance"
-    genus: "association fact"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: askClosePrice
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/askClosePrice
+    definition: >-
+      askClosePrice is the ask-side monetary price last observed within a quote-bar aggregation window, used for
+      recording the ask-side close price.
+    genus: Ask Close Price
     differentia:
-      - "has a specific price kind (Last, Mid, Open, High, Low, Close, Settlement, VWAP, TWAP)"
-      - "scoped to an instrument, optionally a listing or OTC context, and a quotationContract"
-      - "has three-axis temporal semantics (valid/knowledge/availability time per ADR-012)"
-      - "has provenance (source stream, provider observation id, revision, evidence)"
-      - "carries a single price value (priceValue) denominated in the contract currency"
-    excludes:
-      - "the instrument itself"
-      - "a quote observation (which has bid/ask structure)"
-      - "a trade observation (which is an execution event)"
-      - "a 'current price' attribute (which would be a derived view)"
+      - 卖方收盘价，是报价棒聚合窗口内末观测的卖方货币价格，用于记录卖侧收盘价。
+    excludes: []
     sources:
-      - reference: "nautilus-trader"
-        locator: "model/data/tick.pyx QuoteTick/TradeTick (observation with instrument_id, price, timestamp, venue)"
-      - reference: "lean"
-        locator: "Data/Market/Tick.cs (BaseData with Symbol, Time, Value)"
-    status: "accepted"
-
-  - term: "Quote Observation"
-    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/QuoteObservation"
-    definition: "namable association that records the complete paired bid and ask at a point in time, used for modeling the four-field structure of bid price, bid size, ask price, and ask size as a market-data fact with provenance and a quality finding"
-    genus: "association fact"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: askHighPrice
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/askHighPrice
+    definition: >-
+      askHighPrice is the highest ask-side monetary price within a quote-bar aggregation window, used for recording the
+      ask-side high price.
+    genus: Ask High Price
     differentia:
-      - "contains exactly one bid price, one bid size, one ask price, and one ask size (all four required)"
-      - "represents a complete paired top-of-book L1 snapshot, not a single-sided price"
-      - "represents a market maker's or exchange's quote, not an executed trade"
-      - "scoped to an instrument, optionally a listing or OTC context, and a quotationContract"
-    excludes:
-      - "executed trade (which is TradeObservation)"
-      - "aggregated bar data (which is TradeBar or QuoteBar)"
-      - "single-sided price without bid/ask structure (which is PriceObservation)"
-      - "a partial quote missing any of bid/ask price or size"
+      - 卖方最高价，是报价棒聚合窗口内最高的卖方货币价格，用于记录卖侧最高价。
+    excludes: []
     sources:
-      - reference: "nautilus-trader"
-        locator: "model/data/tick.pyx QuoteTick (bid, ask, bid_size, ask_size)"
-      - reference: "lean"
-        locator: "Data/Market/QuoteBar.cs"
-    status: "accepted"
-
-  - term: "Trade Observation"
-    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/TradeObservation"
-    definition: "namable association that records a trade event, used for modeling the provider-declared trade price, trade size, and event identifier as a fact carrying timestamps and a normalized ordering"
-    genus: "association fact"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: askLowPrice
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/askLowPrice
+    definition: >-
+      askLowPrice is the lowest ask-side monetary price within a quote-bar aggregation window, used for recording the
+      ask-side low price.
+    genus: Ask Low Price
     differentia:
-      - "represents an actual executed trade (transaction) as reported by the provider"
-      - "has a single execution price (tradePrice) and quantity (tradeSize)"
-      - "has a trade timestamp (observedAt) and a source trade identifier for final-order tiebreaking"
-      - "scoped to an instrument, optionally a listing or OTC context, and a quotationContract"
-    excludes:
-      - "quote (which is a market maker's bid/ask, not an execution)"
-      - "bar (which aggregates multiple trades)"
-      - "order execution from the platform's own orders (which is Execution in orders-execution module)"
+      - 卖方最低价，是报价棒聚合窗口内最低的卖方货币价格，用于记录卖侧最低价。
+    excludes: []
     sources:
-      - reference: "nautilus-trader"
-        locator: "model/data/tick.pyx TradeTick (price, size, aggressor_side)"
-      - reference: "lean"
-        locator: "Data/Market/Tick.cs (trade tick with TickType.Trade)"
-    status: "accepted"
-
-  - term: "Bar Specification"
-    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/BarSpecification"
-    definition: "structured value describing how a bar is aggregated, used for specifying the aggregation kind, price basis, timestamp convention, and source calendar of a bar, and for selecting either a time-interval or a non-time threshold branch"
-    genus: "object type"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: askOpenPrice
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/askOpenPrice
+    definition: >-
+      askOpenPrice is the ask-side monetary price first observed within a quote-bar aggregation window, used for
+      recording the ask-side open price.
+    genus: Ask Open Price
     differentia:
-      - "carries exactly one barAggregation (time, tick, volume, notional, range, or renko)"
-      - "carries exactly one barPriceBasis (trade or bidAsk) distinguishing trade OHLCV from paired bid/ask OHLC"
-      - "carries exactly one barTimestampConvention (intervalStart or intervalEnd) fixing observedAt semantics"
-      - "requires exactly one of barInterval (for time bars) or barThreshold (for non-time bars)"
-      - "references a source MarketDataStream and a TradingCalendar for aggregation boundaries"
-    excludes:
-      - "a bar observation itself (which is TradeBar or QuoteBar)"
-      - "a raw tick (which is unaggregated)"
+      - 卖方开盘价，是报价棒聚合窗口内首观测的卖方货币价格，用于记录卖侧开盘价。
+    excludes: []
     sources:
-      - reference: "nautilus-trader"
-        locator: "model/data/bar.pyx BarSpecification (step, price_type, aggregation_source)"
-      - reference: "lean"
-        locator: "Data/Market/TradeBar.cs, Data/Market/QuoteBar.cs (consolidator settings)"
-    status: "accepted"
-
-  - term: "Trade Bar"
-    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/TradeBar"
-    definition: "OHLCV bar that aggregates trade prices under one bar specification, used for recording the open, high, low, and close prices together with the traded volume within either a time window or a non-time window"
-    genus: "association fact"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: askPrice
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/askPrice
+    definition: >-
+      askPrice is the monetary amount of the ask side of a complete quote observation, used for recording the sell-side
+      quote at the observation time and belonging to the quote structure rather than a price kind.
+    genus: Ask Price
     differentia:
-      - "carries tradeOpenPrice, tradeHighPrice, tradeLowPrice, tradeClosePrice, and tradeVolume"
-      - "references exactly one BarSpecification controlling aggregation, basis, calendar, and timestamp semantics"
-      - "represents an interval [intervalStart, intervalEnd) for time bars, not a point-in-time"
-      - "scoped to an instrument, optionally a listing or OTC context, and a quotationContract"
-    excludes:
-      - "single trade tick (which is TradeObservation)"
-      - "quote bar (which aggregates bid/ask OHLC, not trade prices)"
-      - "unaggregated raw data"
+      - 卖价，是完整报价观测卖方的货币金额，用于记录观测时点的卖出报价，属盘口结构字段而非价格种类。
+    excludes: []
     sources:
-      - reference: "nautilus-trader"
-        locator: "model/data/bar.pyx Bar (open, high, low, close, volume, ts_event, ts_init)"
-      - reference: "lean"
-        locator: "Data/Market/TradeBar.cs (OHLCV consolidator output)"
-    status: "accepted"
-
-  - term: "Quote Bar"
-    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/QuoteBar"
-    definition: "bar that aggregates the bid and ask sides of a quote into separate OHLC series under one bar specification, used for preserving the open, high, low, and close series and a representative size for each side, and kept strictly distinct from a trade bar"
-    genus: "association fact"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: askSize
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/askSize
+    definition: >-
+      askSize is the tradeable quantity corresponding to the observed ask price, used for recording the size of
+      sell-side interest at the observation time.
+    genus: Ask Size
     differentia:
-      - "carries bid OHLC (bidOpenPrice, bidHighPrice, bidLowPrice, bidClosePrice) and ask OHLC (askOpenPrice, askHighPrice, askLowPrice, askClosePrice)"
-      - "carries lastBidSize and lastAskSize as representative side sizes at window end"
-      - "references exactly one BarSpecification with barPriceBasis = bidAsk"
-      - "kept strictly distinct from TradeBar to prevent mixing trade and quote OHLC"
-    excludes:
-      - "single quote tick (which is QuoteObservation)"
-      - "trade bar (which aggregates trade prices, not bid/ask)"
+      - 卖量，是观测卖价对应的可成交数量，用于记录卖方在观测时点的挂单规模。
+    excludes: []
     sources:
-      - reference: "nautilus-trader"
-        locator: "model/data/bar.pyx Bar (bid/ask OHLC variant)"
-      - reference: "lean"
-        locator: "Data/Market/QuoteBar.cs (bid/ask OHLC consolidator output)"
-    status: "accepted"
-
-  - term: "FX Rate Observation"
-    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/FXRateObservation"
-    definition: "namable association that records how many units of a quote currency exchange for one unit of a base currency, used for modeling the exchange rate as a strictly positive dimensionless quantity that follows the same time and source contracts as other market observations"
-    genus: "association fact"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: barAggregation
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/barAggregation
+    definition: >-
+      barAggregation is a closed member that selects the aggregation kind of a bar, used for distinguishing time, tick,
+      volume, notional, range, or renko aggregation.
+    genus: Bar Aggregation
     differentia:
-      - "carries a single fxRate value as a strictly positive dimensionless ratio of quote-currency units to one base-currency unit"
-      - "has exactly one baseCurrency and one quoteCurrency as participant roles"
-      - "has three-axis temporal semantics and provenance identical to other observations"
-      - "may reference an observedListing or observedOtcContext for listed or OTC FX contexts"
-    excludes:
-      - "a price observation (which carries a monetary price value, not a dimensionless ratio)"
-      - "a currency pair identifier (which is a stable identity, not an observation fact)"
-      - "a derived FX rate from local bid/ask (which would require a separate calculation definition)"
+      - K 线聚合方式，是选择 K 线聚合种类的封闭成员，用于区分时间、笔数、成交量、名义、区间或砖型等聚合方式。
+    excludes: []
     sources:
-      - reference: "ADR-012"
-        locator: "three-axis temporal and provenance contracts shared with other observations"
-      - reference: "fibo-2026Q1"
-        locator: "FND/CurrencyAmount/ExchangeRate (FX rate concept informing base/quote currency semantics)"
-    status: "accepted"
-
-  - term: "Market Data Quality Finding"
-    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFinding"
-    definition: "immutable judgment generated over a set of observation versions on one data stream, used for surfacing quality issues such as crossed quotes, duplicate conflicts, and ordering collisions through a closed set of predicates"
-    genus: "association fact"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: BarAggregation
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/BarAggregation
+    definition: >-
+      BarAggregation is a closed aggregation-branch vocabulary selected by a bar specification, used for distinguishing
+      time, tick, volume, notional, range, or renko aggregation.
+    genus: Bar Aggregation
     differentia:
-      - "carries exactly one qualityFindingKind (crossedQuote, duplicateConflict, or orderingCollision)"
-      - "references one findingStream (MarketDataStream) whose policy and observations determine the finding"
-      - "references affected observation versions (price, quote, trade, trade bar, quote bar, or FX rate) as the subject set"
-      - "carries an affectedSubjectDigest locking the exact-version IRI set of the subject set"
-    excludes:
-      - "a validation report (which is a runtime artifact, not a semantic fact)"
-      - "a correction action (which is a downstream operation, not a judgment)"
-      - "an observation itself (which is the subject of the finding, not the finding)"
+      - K 线聚合方式词表，是供 K 线规格选择的封闭聚合分支词汇，用于区分时间、笔数、成交量、名义、区间与砖型等聚合方式。
+    excludes: []
     sources:
-      - reference: "ADR-012"
-        locator: "provenance and immutability patterns for quality findings"
-      - reference: "nautilus-trader"
-        locator: "model/quality QualityHandler (quality-checking pipeline informing predicate set)"
-    status: "accepted"
-
-  - term: "Price Kind"
-    canonicalIri: "https://axiolune.ai/ontology/finance/market-data/PriceKind"
-    definition: "closed vocabulary of price semantics grouped into tick, reference, and derived categories, used for annotating the type of a price observation, with bid and ask deliberately excluded because they belong to the quote structure"
-    genus: "code list"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: barInterval
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/barInterval
+    definition: >-
+      barInterval is a strictly positive duration required for time-bar aggregation, used for specifying the aggregation
+      period of a time bar.
+    genus: Bar Interval
     differentia:
-      - "distinguishes Last, Mid, Open, High, Low, Close, Settlement, VWAP, TWAP"
-      - "bid and ask are excluded because they are quote structure fields, not price kinds"
-      - "defines the interpretation of a price value"
-    excludes:
-      - "price value itself (which is a decimal with currency)"
-      - "bid and ask (which are quote observation structure fields)"
-      - "quote side (which is a structural role, not a price semantic)"
+      - K 线区间长度，是时间棒聚合所需的严格为正的时长，用于规定时间棒的聚合周期。
+    excludes: []
     sources:
-      - reference: "nautilus-trader"
-        locator: "model/enums.pyx PriceType enum"
-      - reference: "fibo-2026Q1"
-        locator: "No direct FIBO equivalent; gap in FIBO MD ontology"
-    status: "accepted"
-
-  - term: "Three-Axis Temporal Semantics"
-    canonicalIri: "https://axiolune.ai/ontology/meta/patterns/TemporalFact"
-    definition: "temporal binding pattern with valid-time (when fact is true in business domain), knowledge-time (when platform learned/revised fact), and availability-time (when fact became queryable per permissions/receipt)"
-    genus: "cross-cutting pattern"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: barPriceBasis
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/barPriceBasis
+    definition: >-
+      barPriceBasis is a closed discriminator that distinguishes the price semantics of a bar, used for separating trade
+      OHLCV bars from paired bid-and-ask OHLC bars.
+    genus: Bar Price Basis
     differentia:
-      - "valid-time: market event timestamp (trade time, quote time, bar period end)"
-      - "knowledge-time: when platform asserted/revised the observation"
-      - "availability-time: when data supplier received/released data, or when permissions allow query"
-      - "prevents look-ahead bias: queries with asOfAvailable cannot see data not yet available at that time"
-    excludes:
-      - "single timestamp (insufficient for PIT queries and revision tracking)"
-      - "file modification time (not a controlled availability signal)"
+      - K 线价格基准，是区分棒价格语义的封闭判别成员，用于区分成交 OHLCV 与成对买卖盘 OHLC 两种棒的语义。
+    excludes: []
     sources:
-      - reference: "ADR-012"
-        locator: "Reproducible Three-Axis Temporal Semantics"
-      - reference: "qlib"
-        locator: "PIT (Point-in-Time) database with period/observation time distinction"
-    status: "accepted"
-
-  - term: "PIT Validation"
-    canonicalIri: "https://axiolune.ai/ontology/meta/data-binding/PITValidationRequest"
-    definition: "validation that a point-in-time query with three-axis as-of parameters returns only data that was valid, known, and available at those timestamps, preventing look-ahead bias"
-    genus: "validation constraint"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: BarPriceBasis
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/BarPriceBasis
+    definition: >-
+      BarPriceBasis is a closed discriminator vocabulary that distinguishes trade OHLCV from paired bid-and-ask OHLC
+      semantics, used for declaring the price semantics of a bar.
+    genus: Bar Price Basis
     differentia:
-      - "enforces validFrom <= asOfValid < validTo"
-      - "enforces knowledgeFrom <= asOfKnowledge < knowledgeTo"
-      - "enforces availableFrom <= asOfAvailable < availableTo"
-      - "fail-closed: missing availableFrom rejects the observation"
-    excludes:
-      - "simple timestamp filtering (which doesn't prevent future data leakage)"
-      - "availability time defaulting to file mtime (uncontrolled)"
+      - K 线价格基准词表，是区分成交 OHLCV 与成对买卖盘 OHLC 的封闭判别词汇，用于声明一根棒的价格语义。
+    excludes: []
     sources:
-      - reference: "ADR-012"
-        locator: "§2.5 PIT validation contract"
-      - reference: "qlib"
-        locator: "PITProvider implementation (prevents future knowledge leakage in backtest)"
-    status: "accepted"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: barSequence
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/barSequence
+    definition: >-
+      barSequence is a non-negative sequence number of a non-time bar within a data stream, used for providing an order
+      position for a non-time bar.
+    genus: Bar Sequence
+    differentia:
+      - 棒序号，是非时间棒在数据流中的非负序号，用于为非时间棒提供顺序定位。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: barSourceTimeZone
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/barSourceTimeZone
+    definition: >-
+      barSourceTimeZone is a canonical IANA time-zone identifier used for deriving aggregation boundaries, used for
+      fixing the time-zone semantics of the source calendar.
+    genus: Bar Source Time Zone
+    differentia:
+      - K 线来源时区，是用于推导聚合边界的规范时区标识，用于规定来源日历的时区语义。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: BarSpecification
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/BarSpecification
+    definition: >-
+      structured value describing how a bar is aggregated, used for specifying the aggregation kind, price basis,
+      timestamp convention, and source calendar of a bar, and for selecting either a time-interval or a non-time
+      threshold branch
+    genus: object type
+    differentia:
+      - carries exactly one barAggregation (time, tick, volume, notional, range, or renko)
+      - carries exactly one barPriceBasis (trade or bidAsk) distinguishing trade OHLCV from paired bid/ask OHLC
+      - carries exactly one barTimestampConvention (intervalStart or intervalEnd) fixing observedAt semantics
+      - requires exactly one of barInterval (for time bars) or barThreshold (for non-time bars)
+      - references a source MarketDataStream and a TradingCalendar for aggregation boundaries
+    excludes:
+      - a bar observation itself (which is TradeBar or QuoteBar)
+      - a raw tick (which is unaggregated)
+    sources:
+      - reference: nautilus-trader
+        locator: model/data/bar.pyx BarSpecification (step, price_type, aggregation_source)
+      - reference: lean
+        locator: Data/Market/TradeBar.cs, Data/Market/QuoteBar.cs (consolidator settings)
+    status: accepted
+  - term: barSpecificationCalendar
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/barSpecificationCalendar
+    definition: >-
+      barSpecificationCalendar is a functional relation that links a BarSpecification to its source trading calendar,
+      used for declaring the exact calendar version that governs its aggregation boundaries.
+    genus: Bar Specification Calendar
+    differentia:
+      - K 线规格日历关系，是连接 K 线规格与其源交易日历的功能关系，用于规定聚合边界所依据的日历版本。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: barSpecificationId
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/barSpecificationId
+    definition: >-
+      barSpecificationId is a non-empty logical identifier scoped to a source data stream, used for uniquely identifying
+      one bar specification within a data stream.
+    genus: Bar Specification Identifier
+    differentia:
+      - K 线规格标识，是来源数据流范围内非空的逻辑标识，用于在某数据流下唯一识别一条 K 线规格。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: barSpecificationStream
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/barSpecificationStream
+    definition: >-
+      barSpecificationStream is a functional relation that links a BarSpecification to its source data stream, used for
+      declaring the exact source-contract version that the specification depends on.
+    genus: Bar Specification Stream
+    differentia:
+      - K 线规格数据流关系，是连接 K 线规格与其来源数据流的功能关系，用于声明该规格所依赖的供应契约版本。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: barThreshold
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/barThreshold
+    definition: >-
+      barThreshold is a strictly positive quantity required for non-time-bar aggregation, used for specifying the
+      trigger threshold of a non-time bar.
+    genus: Bar Threshold
+    differentia:
+      - K 线阈值，是非时间棒聚合所需的严格为正的数量，用于规定非时间棒的触发阈值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: barThresholdEventCount
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/barThresholdEventCount
+    definition: >-
+      BarThresholdEventCount is an optional positive integer threshold for event-count-aggregation bars, used when
+      barThresholdKind is eventCount
+    genus: Bar Threshold Event Count
+    differentia:
+      - K 线事件计数阈值，是事件计数聚合棒的可选正整数阈值，在 barThresholdKind 为 eventCount 时使用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: barThresholdKind
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/barThresholdKind
+    definition: >-
+      BarThresholdKind is an optional closed member that classifies the threshold type of a non-time bar, used for
+      strongly typing the bar threshold by its dimension
+    genus: Bar Threshold Kind
+    differentia:
+      - K 线阈值种类，是分类非时间棒阈值类型的可选封闭成员，用于按量纲强类型化棒的触发阈值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: BarThresholdKind
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/BarThresholdKind
+    definition: >-
+      BarThresholdKind is a closed vocabulary that classifies the threshold type of a non-time bar, used for strongly
+      typing the bar threshold by its dimension
+    genus: Bar Threshold Kind
+    differentia:
+      - K 线阈值种类词表，是分类非时间棒阈值类型的封闭词汇，用于按量纲强类型化棒的触发阈值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: barThresholdNotional
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/barThresholdNotional
+    definition: >-
+      BarThresholdNotional is an optional MonetaryAmount threshold for notional-aggregation bars, used when
+      barThresholdKind is notional
+    genus: Bar Threshold Notional
+    differentia:
+      - K 线名义阈值，是名义聚合棒的可选货币金额阈值，在 barThresholdKind 为 notional 时使用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: barThresholdPriceRange
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/barThresholdPriceRange
+    definition: >-
+      BarThresholdPriceRange is an optional MonetaryAmount threshold for price-range-aggregation bars, used when
+      barThresholdKind is priceRange or renkoBrick
+    genus: Bar Threshold Price Range
+    differentia:
+      - K 线价格区间阈值，是价格区间聚合棒的可选货币金额阈值，在 barThresholdKind 为 priceRange 或 renkoBrick 时使用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: barTimestampConvention
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/barTimestampConvention
+    definition: >-
+      barTimestampConvention is a closed member stating whether the observedAt of a time bar denotes the interval start
+      or the interval end, used for unifying the timestamp semantics of time bars.
+    genus: Bar Timestamp Convention
+    differentia:
+      - K 线时间戳约定，是声明时间棒观测时间戳指向区间起点还是终点的封闭成员，用于统一时间棒的戳记语义。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: BarTimestampConvention
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/BarTimestampConvention
+    definition: >-
+      BarTimestampConvention is a closed rule vocabulary stating whether the observedAt of a time bar denotes the
+      interval start or the interval end, used for unifying the timestamp semantics of time bars.
+    genus: Bar Timestamp Convention
+    differentia:
+      - K 线时间戳约定词表，是声明时间棒观测时间戳指向区间起点还是终点的封闭规则词汇，用于统一时间棒的戳记语义。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bidClosePrice
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/bidClosePrice
+    definition: >-
+      bidClosePrice is the bid-side monetary price last observed within a quote-bar aggregation window, used for
+      recording the bid-side close price.
+    genus: Bid Close Price
+    differentia:
+      - 买方收盘价，是报价棒聚合窗口内末观测的买方货币价格，用于记录买侧收盘价。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bidHighPrice
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/bidHighPrice
+    definition: >-
+      bidHighPrice is the highest bid-side monetary price within a quote-bar aggregation window, used for recording the
+      bid-side high price.
+    genus: Bid High Price
+    differentia:
+      - 买方最高价，是报价棒聚合窗口内最高的买方货币价格，用于记录买侧最高价。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bidLowPrice
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/bidLowPrice
+    definition: >-
+      bidLowPrice is the lowest bid-side monetary price within a quote-bar aggregation window, used for recording the
+      bid-side low price.
+    genus: Bid Low Price
+    differentia:
+      - 买方最低价，是报价棒聚合窗口内最低的买方货币价格，用于记录买侧最低价。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bidOpenPrice
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/bidOpenPrice
+    definition: >-
+      bidOpenPrice is the bid-side monetary price first observed within a quote-bar aggregation window, used for
+      recording the bid-side open price.
+    genus: Bid Open Price
+    differentia:
+      - 买方开盘价，是报价棒聚合窗口内首观测的买方货币价格，用于记录买侧开盘价。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bidPrice
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/bidPrice
+    definition: >-
+      bidPrice is the monetary amount of the bid side of a complete quote observation, used for recording the buy-side
+      quote at the observation time and belonging to the quote structure rather than a price kind.
+    genus: Bid Price
+    differentia:
+      - 买价，是完整报价观测买方的货币金额，用于记录观测时点的买入报价，属盘口结构字段而非价格种类。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: bidSize
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/bidSize
+    definition: >-
+      bidSize is the tradeable quantity corresponding to the observed bid price, used for recording the size of buy-side
+      interest at the observation time.
+    genus: Bid Size
+    differentia:
+      - 买量，是观测买价对应的可成交数量，用于记录买方在观测时点的挂单规模。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: calculationDefinitionDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/calculationDefinitionDigest
+    definition: >-
+      calculationDefinitionDigest is a digest of the calculation-definition bytes, used for verifying the consistency
+      between the definition content and its reference.
+    genus: Calculation Definition Digest
+    differentia:
+      - 计算定义摘要，是计算定义字节的摘要，用于校验定义内容与引用之间的一致性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: calculationDefinitionRef
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/calculationDefinitionRef
+    definition: >-
+      calculationDefinitionRef is an identifier for the immutable calculation definition used to derive a volume- or
+      time-weighted price, used only for derived prices.
+    genus: Calculation Definition Reference
+    differentia:
+      - 计算定义引用，是用于推导成交量或时间加权价格的不可变计算定义的标识，仅用于衍生价格。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: calculationInputSetDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/calculationInputSetDigest
+    definition: >-
+      calculationInputSetDigest is a digest of the canonically selected input fact-version snapshots, used for
+      invalidating the digest when the selected identity or payload drifts.
+    genus: Calculation Input Fact Set Digest
+    differentia:
+      - 计算输入事实集摘要，是规范选定输入事实版本快照的摘要，用于在输入身份或负载漂移时使摘要失效。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: calculationRunDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/calculationRunDigest
+    definition: >-
+      calculationRunDigest is a digest of the calculation-run evidence bytes, used for verifying the consistency between
+      the run evidence and its reference.
+    genus: Calculation Run Digest
+    differentia:
+      - 计算运行摘要，是计算运行证据字节的摘要，用于校验运行证据与引用之间的一致性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: calculationRunRef
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/calculationRunRef
+    definition: >-
+      calculationRunRef is an identifier for the evidence of one calculation run, used for locking the replayable
+      evidence of inputs, window, definition, output, and recalculation policy.
+    genus: Calculation Run Reference
+    differentia:
+      - 计算运行引用，是识别一次计算运行证据的标识，用于锁定输入、窗口、定义、输出与重算策略的可重放证据。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: firstContributingEventAt
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/firstContributingEventAt
+    definition: >-
+      firstContributingEventAt is the UTC instant at which the first source event occurs within a non-time bar, used for
+      recording the earliest event boundary of the bar.
+    genus: First Contributing Event At
+    differentia:
+      - 首贡献事件时间，是非时间棒内首个来源事件发生的 UTC 时刻，用于记录棒的最早事件边界。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: fxRate
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/fxRate
+    definition: >-
+      fxRate is a strictly positive dimensionless quantity expressing the ratio of quote-currency units to one
+      base-currency unit, used for recording the ratio value of an FX rate observation.
+    genus: FX Rate
+    differentia:
+      - 汇率，是表示一单位基准货币对应若干计价货币单位兑换比率的严格为正的无量纲量，用于记录汇率观测的比率值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: fxRateConvention
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/fxRateConvention
+    definition: >-
+      FXRateConvention is an optional closed member that classifies the settlement convention of an FX rate observation,
+      used for distinguishing spot, forward, NDF, and swap
+    genus: FX Rate Convention
+    differentia:
+      - 汇率约定，是分类汇率观测结算约定的可选封闭成员，用于区分即期、远期、无本金交割远期与掉期。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: FXRateConvention
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/FXRateConvention
+    definition: >-
+      FXRateConvention is a closed vocabulary that classifies the settlement convention of an FX rate, used for
+      distinguishing spot, forward, NDF, and other FX rate types
+    genus: FX Rate Convention
+    differentia:
+      - 汇率约定词表，是分类汇率结算约定的封闭词汇，用于区分即期、远期、无本金交割远期等汇率类型。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: fxRateKind
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/fxRateKind
+    definition: >-
+      FXRateKind is an optional closed member that classifies the nature of an FX rate observation, used for
+      distinguishing tradeable, reference, fixing, and benchmark rates
+    genus: FX Rate Kind
+    differentia:
+      - 汇率种类，是分类汇率观测性质的可选封闭成员，用于区分可交易、参考、定盘与基准汇率。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: FXRateKind
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/FXRateKind
+    definition: >-
+      FXRateKind is a closed vocabulary that classifies the nature of an FX rate observation, used for distinguishing
+      tradeable, reference, fixing, and benchmark rates
+    genus: FX Rate Kind
+    differentia:
+      - 汇率种类词表，是分类汇率观测性质的封闭词汇，用于区分可交易、参考、定盘与基准汇率。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: FXRateObservation
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/FXRateObservation
+    definition: >-
+      FXRateObservation is a namable association that records how many units of a quote currency exchange for one unit
+      of a base currency, used for modeling the exchange rate as a strictly positive dimensionless quantity that follows
+      the same time and source contracts as other market observations.
+    genus: FX Rate Observation
+    differentia:
+      - 汇率观测，是记录一单位基准货币兑换若干计价货币单位的可具名关联，用于把汇率建模为正的无量纲量，并遵循与其他行情一致的时间与来源契约。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: fxValueDate
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/fxValueDate
+    definition: >-
+      FXValueDate is an optional date for the settlement or value date of an FX rate, used for distinguishing spot,
+      forward, and NDF value dates
+    genus: FX Value Date
+    differentia:
+      - 汇率交割日，是汇率结算或交割日期的可选日期，用于区分即期、远期与无本金交割远期的交割日。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: intervalEnd
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/intervalEnd
+    definition: >-
+      intervalEnd is the UTC instant at which a time-bar aggregation window ends, used for marking the right boundary of
+      the bar as a half-open interval.
+    genus: Interval End
+    differentia:
+      - 区间终点，是时间棒聚合窗口结束的 UTC 时间点，用于以半开区间界定棒的右边界。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: intervalStart
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/intervalStart
+    definition: >-
+      intervalStart is the UTC instant at which a time-bar aggregation window starts, used for marking the left boundary
+      of the bar as a half-open interval.
+    genus: Interval Start
+    differentia:
+      - 区间起点，是时间棒聚合窗口起始的 UTC 时间点，用于以半开区间界定棒的左边界。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: lastAskSize
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/lastAskSize
+    definition: >-
+      lastAskSize is the representative ask-side quantity preserved by a quote bar, used for recording the ask-side size
+      at the end of the window.
+    genus: Last Ask Size
+    differentia:
+      - 末次卖量，是报价棒保留的代表性卖方数量，用于记录窗口末尾卖侧规模。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: lastBidSize
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/lastBidSize
+    definition: >-
+      lastBidSize is the representative bid-side quantity preserved by a quote bar, used for recording the bid-side size
+      at the end of the window.
+    genus: Last Bid Size
+    differentia:
+      - 末次买量，是报价棒保留的代表性买方数量，用于记录窗口末尾买侧规模。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: lastContributingEventAt
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/lastContributingEventAt
+    definition: >-
+      lastContributingEventAt is the UTC instant at which the last source event occurs within a non-time bar, used for
+      recording the latest event boundary of the bar.
+    genus: Last Contributing Event At
+    differentia:
+      - 末贡献事件时间，是非时间棒内末个来源事件发生的 UTC 时刻，用于记录棒的最晚事件边界。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: MarketDataQualityFinding
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFinding
+    definition: >-
+      MarketDataQualityFinding is an immutable judgment generated over a set of observation versions on one data stream,
+      used for surfacing quality issues such as crossed quotes, duplicate conflicts, and ordering collisions through a
+      closed set of predicates.
+    genus: Market Data Quality Finding
+    differentia:
+      - 市场数据质量发现，是针对一条数据流上一组观测版本生成的不可变判定，用于以封闭谓词揭示交叉报价、重复冲突与排序碰撞等质量问题。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: MarketDataQualityFindingKind
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/MarketDataQualityFindingKind
+    definition: >-
+      MarketDataQualityFindingKind is a closed vocabulary of executable generated outcomes, used for precisely
+      describing the three quality-judgment types of crossed quote, duplicate conflict, and ordering collision.
+    genus: Market Data Quality Finding Kind
+    differentia:
+      - 市场数据质量发现种类词表，是封闭的可执行生成结果词汇，用于精确描述交叉报价、重复冲突与排序碰撞三类质量判定。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: MarketDataStream
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/MarketDataStream
+    definition: >-
+      immutable version of a market-data channel owned by a data provider and bound to a locked source contract, used
+      for defining the supply source and normalization rules for all downstream observation facts
+    genus: object type
+    differentia:
+      - owned by exactly one provider Party via the functional streamProvider relation
+      - carries a locked source contract reference and digest that fix field mapping and normalization rules
+      - declares a closed streamPurpose limiting the kinds of records it admits
+      - declares a sourceRecordRevisionMode (immutable or revisioned) governing revision-chain semantics
+      - binds TemporalFact and ProvenancedFact patterns so stream identity is version-keyed
+    excludes:
+      - an individual observation fact (which is an AssociationType scoped to a stream)
+      - a bar specification (which references a stream rather than being one)
+      - a physical data feed or socket (which is a runtime delivery artifact, not a semantic identity)
+    sources:
+      - reference: ADR-012
+        locator: three-axis temporal and provenance patterns for stream identity
+      - reference: nautilus-trader
+        locator: model/data/ DataEngine base path for streaming context
+    status: accepted
+  - term: MarketDataStreamPurpose
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/MarketDataStreamPurpose
+    definition: >-
+      MarketDataStreamPurpose is a closed controlled vocabulary that limits the kinds of records a data stream accepts,
+      used for declaring the purpose contract at the data-stream level.
+    genus: Market Data Stream Purpose
+    differentia:
+      - 市场数据流用途词表，是限定数据流所接受记录种类的封闭受控词汇，用于在数据流层声明其用途契约。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: marketEventAt
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/marketEventAt
+    definition: >-
+      MarketEventAt is an optional UTC instant recording the source-declared market event timestamp (e.g., execution
+      time, quote time), distinct from the TemporalFact validFrom which is platform-assigned per business validity
+    genus: Market Event At
+    differentia:
+      - 市场事件时间，是记录来源声明的市场事件时间戳（如执行时间、报价时间）的可选 UTC 时刻，区别于平台按业务有效期赋予的 TemporalFact validFrom。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: observationIdFieldLocator
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/observationIdFieldLocator
+    definition: >-
+      observationIdFieldLocator is a locator structure that selects the observation-identifier field in a raw record,
+      used for mapping a source field precisely to an observation identifier.
+    genus: Observation Identifier Field Locator
+    differentia:
+      - 观测标识字段定位器，是选择原始记录中观测标识字段的定位结构，用于精确映射来源字段到观测标识。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: orderingTransformDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/orderingTransformDigest
+    definition: >-
+      orderingTransformDigest is a digest of the ordering-transformation bytes, used for verifying the consistency
+      between the ordering rule and its reference.
+    genus: Ordering Transformation Digest
+    differentia:
+      - 排序变换摘要，是排序变换字节的摘要，用于校验排序规则与引用之间的一致性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: orderingTransformRef
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/orderingTransformRef
+    definition: >-
+      orderingTransformRef is an identifier that locks the normalization ordering rule of a data stream, used for
+      pointing to a lossless, uniqueness-preserving ordering-tuple transformation.
+    genus: Ordering Transformation Reference
+    differentia:
+      - 排序变换引用，是锁定数据流规范化排序规则的标识，用于指向无损保序的排序元组变换。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: priceKind
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/priceKind
+    definition: >-
+      priceKind is a closed member that annotates the semantic type of a price observation, used for classifying the
+      price, with bid and ask excluded because they belong to the quote structure.
+    genus: Price Kind
+    differentia:
+      - 价格种类，是标注价格观测语义类型的封闭成员，买盘与卖盘因属报价结构字段而被排除。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PriceKind
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/PriceKind
+    definition: >-
+      PriceKind is a closed vocabulary of price semantics grouped into tick, reference, and derived categories, used for
+      annotating the type of a price observation, with bid and ask deliberately excluded because they belong to the
+      quote structure.
+    genus: Price Kind
+    differentia:
+      - 价格种类词表，是按即时、参考与衍生三类划分的封闭价格语义词汇，用于标注价格观测类型，买盘卖盘因属结构字段而刻意排除。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PriceObservation
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/PriceObservation
+    definition: >-
+      PriceObservation is a namable association that records a quoted price of a financial instrument at a venue and a
+      point in time, used for modeling who quoted what price, where, and when as a fact carrying timestamps and
+      provenance.
+    genus: Price Observation
+    differentia:
+      - 价格观测，是记录某金融工具在某场所某时点报价的可具名关联，用于把"谁在何时何地报了什么价"建模为带时间戳与来源的事实。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: priceValue
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/priceValue
+    definition: >-
+      priceValue is the monetary amount of a price observation, used for carrying the sole quote-currency truth of the
+      price.
+    genus: Price Value
+    differentia:
+      - 价格值，是价格观测的货币金额，用于承载报价的唯一计价货币真值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: providerObservationId
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/providerObservationId
+    definition: >-
+      providerObservationId is the raw observation identifier selected by the source contract of a data stream, used for
+      uniquely identifying one observation within the scope of the stream.
+    genus: Provider Observation Identifier
+    differentia:
+      - 提供方观测标识，是数据流来源契约选定的原始观测标识，用于在数据流范围内唯一识别一条观测。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: providerStreamId
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/providerStreamId
+    definition: >-
+      providerStreamId is a non-empty identifier that forms part of the logical key of a data stream, used for uniquely
+      distinguishing one stream within the scope of a given provider and source contract.
+    genus: Provider Stream Identifier
+    differentia:
+      - 提供方数据流标识，是数据流逻辑键的组成部分，用于在同一提供方与源契约范围内唯一区分一条数据流。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: qualityFindingKind
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/qualityFindingKind
+    definition: >-
+      qualityFindingKind is a closed member that annotates the predicate type of a quality finding, used for declaring
+      the exact judgment type that one quality finding executes.
+    genus: Quality Finding Kind
+    differentia:
+      - 质量发现种类，是标注质量发现谓词类型的封闭成员，用于声明一条质量发现所执行的精确判定类型。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: QuoteBar
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/QuoteBar
+    definition: >-
+      QuoteBar is a bar that aggregates the bid and ask sides of a quote into separate OHLC series under one bar
+      specification, used for preserving the open, high, low, and close series and a representative size for each side,
+      and kept strictly distinct from a trade bar.
+    genus: Quote Bar
+    differentia:
+      - 报价棒，是按 K 线规格聚合买卖盘各侧 OHLC 的行情棒，用于分别保留买方与卖方的开高低收序列及代表性量，与成交棒严格区分。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: QuoteObservation
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/QuoteObservation
+    definition: >-
+      QuoteObservation is a namable association that records the complete paired bid and ask at a point in time, used
+      for modeling the four-field structure of bid price, bid size, ask price, and ask size as a market-data fact with
+      provenance and a quality finding.
+    genus: Quote Observation
+    differentia:
+      - 报价观测，是记录某时点买卖盘完整对价的可具名关联，用于把买价、买量、卖价、卖量四元结构建模为带来源与质量判定的行情事实。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceApiIdentifier
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/sourceApiIdentifier
+    definition: >-
+      sourceApiIdentifier is a stable identifier for a data delivery interface, used for locating the delivery channel
+      that a data stream corresponds to.
+    genus: Source API Identifier
+    differentia:
+      - 来源 API 标识，是数据交付接口的稳定标识，用于定位数据流所对应的交付通道。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceChannelId
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/sourceChannelId
+    definition: >-
+      SourceChannelId is an optional identifier for the data channel or feed partition under which a source record was
+      produced, used for enriching observation identity with channel context
+    genus: Source Channel Identifier
+    differentia:
+      - 来源通道标识，是来源记录所属数据通道或馈源分区的可选标识，用于以通道上下文丰富观测身份。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceContractDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/sourceContractDigest
+    definition: >-
+      sourceContractDigest is a digest of the source-contract bytes, used for verifying the consistency between the
+      contract content and its reference.
+    genus: Source Contract Digest
+    differentia:
+      - 来源契约摘要，是源契约字节的摘要，用于校验契约内容与引用之间的一致性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceContractRef
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/sourceContractRef
+    definition: >-
+      sourceContractRef is an identifier that locks the field mapping and normalization rules of a data stream, used for
+      pointing to the immutable provider source contract.
+    genus: Source Contract Reference
+    differentia:
+      - 来源契约引用，是锁定数据流字段映射与规范化规则的标识，用于指向不可变的提供方源契约。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceOrderKey
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/sourceOrderKey
+    definition: >-
+      sourceOrderKey is a non-negative integer from the provider sequence or the output of the ordering transformation,
+      used for establishing a normalized order for each observation.
+    genus: Source Order Key
+    differentia:
+      - 来源排序键，是提供方序列或排序变换输出的非负整数，用于为每条观测确定规范化排序。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceRecordRevisionMode
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/sourceRecordRevisionMode
+    definition: >-
+      sourceRecordRevisionMode is a closed member that declares the revision policy of a data stream, used for selecting
+      between immutable-record and revisioned-record supply.
+    genus: Source Record Revision Mode
+    differentia:
+      - 来源记录修订模式，是声明数据流修订策略的封闭成员，用于选择不可变记录或可修订记录的供应方式。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: SourceRecordRevisionMode
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/SourceRecordRevisionMode
+    definition: >-
+      SourceRecordRevisionMode is a closed policy vocabulary that determines whether a provider record can form a
+      revision chain, used for declaring the revision semantics of a data stream.
+    genus: Source Record Revision Mode
+    differentia:
+      - 来源记录修订模式词表，是判定提供方记录能否形成修订链的封闭策略词汇，用于声明数据流的修订语义。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceRevisionFieldLocator
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/sourceRevisionFieldLocator
+    definition: >-
+      sourceRevisionFieldLocator is a locator structure that selects the revision field in a raw record, used only by
+      revisioned-record streams.
+    genus: Source Revision Field Locator
+    differentia:
+      - 来源修订字段定位器，是选择原始记录中修订字段的定位结构，仅在可修订记录流中使用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceRevisionOrder
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/sourceRevisionOrder
+    definition: >-
+      sourceRevisionOrder is a non-negative provider-declared revision order used only under the revisioned-record
+      policy, used for constraining the linear order of the revision chain.
+    genus: Source Revision Order
+    differentia:
+      - 来源修订序号，是提供方声明的非负修订序号，仅在可修订记录策略下使用，用于约束修订链的线性顺序。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceRevisionToken
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/sourceRevisionToken
+    definition: >-
+      sourceRevisionToken is a normalized provider revision value used only under the revisioned-record policy, used for
+      distinguishing different revisions of the same record.
+    genus: Source Revision Token
+    differentia:
+      - 来源修订令牌，是提供方规范化的修订值，仅在可修订记录策略下使用，用于标识同一条记录的不同修订。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceSchemaIdentifier
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/sourceSchemaIdentifier
+    definition: >-
+      sourceSchemaIdentifier is a stable identifier for a source record schema, used for distinguishing different
+      field-structure definitions.
+    genus: Source Schema Identifier
+    differentia:
+      - 来源记录模式标识，是源记录结构的稳定标识，用于区分不同的字段结构定义。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceSchemaVersion
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/sourceSchemaVersion
+    definition: >-
+      sourceSchemaVersion is the exact provider schema version interpreted by the locked source contract, used for
+      pinning the specific version of the field structure.
+    genus: Source Schema Version
+    differentia:
+      - 来源记录模式版本，是源契约所解释的提供方模式精确版本，用于锁定字段结构的具体版本。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceSessionId
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/sourceSessionId
+    definition: >-
+      SourceSessionId is an optional identifier for the trading session or trading day partition under which a source
+      record was produced, used for enriching observation identity with session context
+    genus: Source Session Identifier
+    differentia:
+      - 来源会话标识，是来源记录所属交易会话或交易日分区的可选标识，用于以会话上下文丰富观测身份。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceTradeId
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/sourceTradeId
+    definition: >-
+      sourceTradeId is a provider-declared trade identifier, used as the final tiebreaker for canonical ordering and as
+      a component of the logical key.
+    genus: Source Trade Identifier
+    differentia:
+      - 来源成交标识，是提供方声明的成交标识，用于作为规范化排序的最终决胜项与逻辑键组成。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: streamProvider
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/streamProvider
+    definition: >-
+      streamProvider is a functional relation that links a MarketDataStream version to the Party that owns it, used for
+      declaring the supply party and the boundary of responsibility for a data stream.
+    genus: Stream Provider
+    differentia:
+      - 数据流提供方关系，是连接市场数据流与其归属方的功能关系，用于声明一条数据流的供应主体与责任边界。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: streamPurpose
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/streamPurpose
+    definition: >-
+      streamPurpose is a closed member that limits the kinds of records a data stream accepts, used for declaring the
+      purpose contract at the data-stream level.
+    genus: Stream Purpose
+    differentia:
+      - 数据流用途，是限定数据流所接受记录种类的封闭成员，用于在数据流层声明其用途契约。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: TradeBar
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/TradeBar
+    definition: >-
+      TradeBar is an OHLCV bar that aggregates trade prices under one bar specification, used for recording the open,
+      high, low, and close prices together with the traded volume within either a time window or a non-time window.
+    genus: Trade Bar
+    differentia:
+      - 成交棒，是按 K 线规格聚合成交价的 OHLCV 行情棒，用于记录时间或非时间窗口内的开高低收价与成交量。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: tradeClosePrice
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/tradeClosePrice
+    definition: >-
+      tradeClosePrice is the monetary price of the last trade within a trade-bar aggregation window, used for recording
+      the close price of the window.
+    genus: Trade Close Price
+    differentia:
+      - 成交收盘价，是成交棒聚合窗口内末笔交易的货币价格，用于记录窗口收盘价。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: tradeHighPrice
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/tradeHighPrice
+    definition: >-
+      tradeHighPrice is the highest trade monetary price within a trade-bar aggregation window, used for recording the
+      high price of the window.
+    genus: Trade High Price
+    differentia:
+      - 成交最高价，是成交棒聚合窗口内最高的交易货币价格，用于记录窗口最高价。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: tradeLowPrice
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/tradeLowPrice
+    definition: >-
+      tradeLowPrice is the lowest trade monetary price within a trade-bar aggregation window, used for recording the low
+      price of the window.
+    genus: Trade Low Price
+    differentia:
+      - 成交最低价，是成交棒聚合窗口内最低的交易货币价格，用于记录窗口最低价。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: TradeObservation
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/TradeObservation
+    definition: >-
+      TradeObservation is a namable association that records a trade event, used for modeling the provider-declared
+      trade price, trade size, and event identifier as a fact carrying timestamps and a normalized ordering.
+    genus: Trade Observation
+    differentia:
+      - 成交观测，是记录某笔成交事件的可具名关联，用于把提供方声明的成交价、成交量和事件标识建模为带时间戳与规范化排序的事实。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: tradeOpenPrice
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/tradeOpenPrice
+    definition: >-
+      tradeOpenPrice is the monetary price of the first trade within a trade-bar aggregation window, used for recording
+      the open price of the window.
+    genus: Trade Open Price
+    differentia:
+      - 成交开盘价，是成交棒聚合窗口内首笔交易的货币价格，用于记录窗口开盘价。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: tradePrice
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/tradePrice
+    definition: >-
+      tradePrice is the monetary execution price reported by one trade observation, used for recording the actual traded
+      price.
+    genus: Trade Price
+    differentia:
+      - 成交价，是一笔成交观测报告的执行货币价格，用于记录实际成交价格。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: tradeSize
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/tradeSize
+    definition: >-
+      tradeSize is the strictly positive traded quantity reported by one trade observation, used for recording the
+      actual traded size.
+    genus: Trade Size
+    differentia:
+      - 成交量，是一笔成交观测报告的严格为正的成交数量，用于记录实际成交规模。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: tradeVolume
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/tradeVolume
+    definition: >-
+      tradeVolume is the aggregate traded quantity of all trades within a trade-bar aggregation window, used for
+      recording the cumulative size of the window.
+    genus: Trade Volume
+    differentia:
+      - 成交总量，是成交棒聚合窗口内所有成交的聚合成交量，用于记录窗口累计规模。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: updateAction
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/updateAction
+    definition: >-
+      UpdateAction is an optional closed member that classifies the lifecycle action of a source market-data record,
+      used for distinguishing new, change, delete, and correct actions
+    genus: Update Action
+    differentia:
+      - 更新动作，是分类来源行情记录生命周期动作的可选封闭成员，用于区分新增、变更、删除与更正动作。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: UpdateAction
+    canonicalIri: https://axiolune.ai/ontology/finance/market-data/UpdateAction
+    definition: >-
+      UpdateAction is a closed vocabulary that classifies the lifecycle action of a source market-data record, used for
+      distinguishing new, change, delete, and correct actions
+    genus: Update Action
+    differentia:
+      - 更新动作词表，是分类来源行情记录生命周期动作的封闭词汇，用于区分新增、变更、删除与更正动作。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team

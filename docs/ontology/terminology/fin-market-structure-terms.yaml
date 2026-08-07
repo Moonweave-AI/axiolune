@@ -1,24 +1,365 @@
 # fin-market-structure — Terminology Cards
+# Synced from module.yaml v1.1.0 — 2026-08-07
+# Each card: term (module.yaml entity key), canonicalIri, ISO 704 definition
 
 cards:
-  - term: TradingVenue
-    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/TradingVenue
+  - term: authorityCalendarId
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/authorityCalendarId
     definition: >-
-      market system or venue that constitutes, maintains, or provides a facility for bringing together purchasers and
-      sellers of financial instruments, distinct from the legal entity that operates it
-    genus: market system
+      non-empty NFC string identifier assigned to a trading calendar by its maintaining authority, used to uniquely
+      denote that calendar within the scope of (authority, facility). The calendar logical key is the three-component
+      (calendarFacility, calendarAuthority, authorityCalendarId) per TradingCalendarIdentityContract, so the identifier
+      is unique within each authority-and-facility pair, not within the authority alone.
+    genus: Authority Calendar Identifier
     differentia:
-      - brings together purchasers and sellers
-      - identified by an Operating MIC (ISO 10383)
-      - may be a regulated market, MTF, OTF, ATS, or other venue category
-      - operator and regulatory category modeled separately as temporal facts via VenueOperation
-    excludes:
-      - the operating legal entity (modeled via VenueOperation/operatedBy)
-      - data reporting services (use TradeReportingFacility)
-      - internal matching engines without external clients
+      - >-
+        权威日历标识符，是由维护权威分配给某一交易日历的非空 NFC
+        字符串标识，用于在（权威，设施）范围内唯一指代该日历。日历逻辑键为三分量（calendarFacility、calendarAuthority、authorityCalendarId），见
+        TradingCalendarIdentityContract，因此该标识在每个权威与设施配对范围内唯一，而非仅在权威范围内唯一。
+    excludes: []
     sources:
-      - reference: fibo-local-evidence
-        locator: FIBO FBC/FunctionalEntities/Markets/Exchange
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: authoritySessionId
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/authoritySessionId
+    definition: >-
+      non-empty NFC string identifier assigned to a session template by its maintaining authority, used to uniquely
+      denote that session within the authority-and-calendar scope.
+    genus: Authority Session Identifier
+    differentia:
+      - 权威时段标识符，是由维护权威分配给某一时段模板的非空 NFC 字符串标识，用于在权威与日历范围内唯一指代该时段。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: calendarAuthority
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/calendarAuthority
+    definition: >-
+      functional relation that associates a trading calendar with the Party logical identity of its maintaining
+      authority, used to characterize the institutional responsibility for the calendar.
+    genus: Calendar Authority
+    differentia:
+      - 日历权威关系，是将某一交易日历关联到其维护权威的参与方逻辑身份的功能性关系，用于刻画日历的机构责任归属。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: calendarExceptionKind
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/calendarExceptionKind
+    definition: >-
+      closed classification attribute of a calendar exception, used to distinguish holidays, closures, early closings,
+      late openings, and similar exceptional circumstances.
+    genus: Calendar Exception Kind
+    differentia:
+      - 日历例外类型，是对某一日历例外的封闭分类属性，用于区分节假日、临时停市、提前收盘或延后开盘等例外情形。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: CalendarExceptionKind
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/CalendarExceptionKind
+    definition: >-
+      closed classification controlled vocabulary of deterministic changes to scheduled session occurrences, used to
+      provide a standard enumeration of holidays, closures, early and late opens and closes, extra sessions, and
+      segmented interruptions and resumptions for calendar exceptions and schedule override notices.
+    genus: Calendar Exception Kind
+    differentia:
+      - 日历例外类型表，是对已计划时段实例进行确定性变更的封闭分类受控词汇，用于为日历例外与日程变更公告提供节假日、停市、提前/延后开收盘、额外时段、分段中断与恢复等标准枚举。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: calendarFacility
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/calendarFacility
+    definition: >-
+      functional relation that associates a trading calendar with the stable logical identity of its trading facility,
+      used to characterize the venue that the calendar serves.
+    genus: Calendar Facility
+    differentia:
+      - 日历设施关系，是将某一交易日历关联到其交易设施的稳定逻辑身份的功能性关系，用于刻画日历所服务的场所逻辑归属。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: calendarJurisdiction
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/calendarJurisdiction
+    definition: >-
+      functional relation that associates a trading calendar with its unique governing jurisdiction logical identity,
+      used to characterize the regulatory and territorial attribution of the calendar.
+    genus: Calendar Jurisdiction
+    differentia:
+      - 日历司法辖区关系，是将某一交易日历关联到其所辖唯一司法辖区逻辑身份的功能性关系，用于刻画日历的法规地域归属。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: componentOf
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/componentOf
+    definition: >-
+      functional relation that associates a MarketInfrastructureComponent with the unique operating market
+      infrastructure entity it is a section or component of, used to carry the ISO 10383 "section" part-of semantics
+      independently of any facility supertype shared for reference range.
+    genus: Component Of
+    differentia:
+      - 组成归属关系，是将某一市场基础设施组成部分关联到其所构成板块或组成部分所属的唯一运营中市场基础设施实体的功能性关系，用于独立于任何为参照范围共享的设施超类来承载 ISO 10383 "section" 归属语义。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: dstOverlapPolicy
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/dstOverlapPolicy
+    definition: >-
+      closed classification attribute carried by a trading calendar, used to declare how local-clock instants that fall
+      inside a DST gap or fold are interpreted during local-to-UTC materialization.
+    genus: DST Overlap Policy
+    differentia:
+      - 夏令时重叠策略，是某一交易日历携带的封闭分类属性，用于声明本地到 UTC 物化时落在夏令时 gap 或 fold 内的本地时钟瞬时的解释方式。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: DstOverlapPolicy
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/DstOverlapPolicy
+    definition: >-
+      closed controlled vocabulary of the interpretation policy for local-clock instants that fall inside a DST gap or
+      fold, used to make local-to-UTC materialization deterministic.
+    genus: DST Overlap Policy
+    differentia:
+      - 夏令时重叠策略表，是落在夏令时 gap 或 fold 内的本地时钟瞬时解释策略的封闭受控词汇，用于使本地到 UTC 物化具有确定性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: effectiveSessionEndUtc
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/effectiveSessionEndUtc
+    definition: >-
+      optional exclusive UTC instant at which a session occurrence stops being effectively tradable after applying any
+      TradingScheduleOverrideNotice facts, used to separate the scheduled window from the effective tradable interval.
+    genus: Effective Session End UTC
+    differentia:
+      - 有效时段 UTC 结束，是某一时段实例在应用任意 TradingScheduleOverrideNotice 事实后停止实际可交易的不含端 UTC 瞬时，用于将计划窗口与有效可交易区间分离。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: effectiveSessionStartUtc
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/effectiveSessionStartUtc
+    definition: >-
+      optional inclusive UTC instant at which a session occurrence becomes effectively tradable after applying any
+      TradingScheduleOverrideNotice facts, used to separate the scheduled window from the effective tradable interval.
+      When absent and no cancellation applies, the effective interval equals the scheduled interval.
+    genus: Effective Session Start UTC
+    differentia:
+      - >-
+        有效时段 UTC 开始，是某一时段实例在应用任意 TradingScheduleOverrideNotice 事实后实际可交易的含端 UTC
+        瞬时，用于将计划窗口与有效可交易区间分离。当其缺席且未发生取消时，有效区间等于计划区间。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: endDayOffset
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/endDayOffset
+    definition: >-
+      signed integer day offset between the local start date and the local end date of a session, used to model
+      cross-midnight sessions where the end falls on a later calendar day than the start.
+    genus: End Day Offset
+    differentia:
+      - 结束日期偏移，是某一时段本地开始日期与本地结束日期之间的有符号整数日偏移，用于建模结束日期晚于开始日期的跨午夜时段。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: exceptionBusinessDate
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/exceptionBusinessDate
+    definition: >-
+      the local business date on which a trading-calendar exception applies, used to attach an exception fact to a
+      specific date.
+    genus: Exception Business Date
+    differentia:
+      - 例外营业日期，是某一交易日历例外所作用的本地营业日期，用于把例外事实挂接到具体日期。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: exceptionOccurrence
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/exceptionOccurrence
+    definition: >-
+      functional relation that associates a calendar exception with the exact session occurrence it deterministically
+      alters, used to attach an exception fact to the affected session occurrence.
+    genus: Exception Occurrence
+    differentia:
+      - 例外实例关系，是将某一交易日历例外关联到其确定性地修改的确切交易时段实例的功能性关系，用于把例外事实挂接到被影响的时段实例。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ianaTimeZone
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/ianaTimeZone
+    definition: >-
+      canonical IANA time-zone identifier, used to interpret the local-clock sessions of a trading calendar and anchor
+      local sessions to a specific geographical time zone.
+    genus: IANA Time Zone
+    differentia:
+      - IANA 时区，是用于解释交易日历本地时钟时段的规范 IANA 时区标识符，用于把本地时段锚定到具体地理时区。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: JurisdictionCalendarBinding
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/JurisdictionCalendarBinding
+    definition: >-
+      explicit temporal binding between one logical Jurisdiction identity and one exact TradingCalendar version, used to
+      materialize the relationship between a calendar and its governing jurisdiction to support audit and mapping
+      slices.
+    genus: Jurisdiction Calendar Binding
+    differentia:
+      - 司法辖区日历绑定，是某一逻辑司法辖区身份与某一确切交易日历版本之间的显式时态绑定，用于将日历与所辖司法辖区关系实例化以支持审计与映射切片。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: localSessionEnd
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/localSessionEnd
+    definition: >-
+      the ISO local-clock time at which a recurring half-open session interval ends, used to define the closing of a
+      trading session in local time.
+    genus: Local Session End
+    differentia:
+      - 本地时段结束，是某一重复半开时段区间结束的 ISO 本地时钟时刻，用于以本地时间定义交易时段的收尾。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: localSessionStart
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/localSessionStart
+    definition: >-
+      the ISO local-clock time at which a recurring session interval begins, used to define the opening of a trading
+      session in local time.
+    genus: Local Session Start
+    differentia:
+      - 本地时段开始，是某一重复时段区间开始的 ISO 本地时钟时刻，用于以本地时间定义交易时段的开端。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: marketCategory
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/marketCategory
+    definition: >-
+      closed classification attribute carried by a MIC registry entry, used to record the ISO 10383 market category of
+      the identified infrastructure.
+    genus: MIC Market Category
+    differentia:
+      - MIC 市场类别，是某一 MIC 注册条目携带的封闭分类属性，用于记录所标识基础设施的 ISO 10383 市场类别。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: marketConvention
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/marketConvention
+    definition: >-
+      reviewed convention member, used to fix the orientation and application semantics of one OTC context and
+      characterize the pricing and unit orientation of over-the-counter quotes.
+    genus: Market Convention
+    differentia:
+      - 市场约定，是用于确定某一场外上下文报价方向与应用语义的经审核约定成员，用于刻画场外报价的计价与单位取向。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: MarketConvention
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/MarketConvention
+    definition: >-
+      closed convention classification controlled vocabulary, used to orient direct quote-per-unit OTC contexts and
+      provide a standard enumeration of over-the-counter quoting methods.
+    genus: Market Convention
+    differentia:
+      - 市场约定表，是用于为按单位直接报价的场外上下文定向的封闭约定分类受控词汇，用于为场外报价方式提供标准枚举。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: MarketInfrastructureComponent
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/MarketInfrastructureComponent
+    definition: >-
+      the abstract base class for a section or component of an operating market infrastructure entity, used to model the
+      ISO 10383 "section" semantics (a part of a market, exchange, or reporting facility) as a component rather than as
+      an independent facility, while allowing concrete components to share a facility supertype for reference range
+      where useful.
+    genus: Market Infrastructure Component
+    differentia:
+      - >-
+        市场基础设施组成部分，是某一运营中市场基础设施实体的板块或组成部分的抽象基类，用于将 ISO 10383 "section"
+        语义（市场、交易所或报告设施的一部分）建模为组成部分而非独立设施，同时允许具体组成部分在需要时共享设施超类以获得参照范围。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
     candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
@@ -42,6 +383,81 @@ cards:
     candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
+  - term: marketSegmentVenue
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/marketSegmentVenue
+    definition: >-
+      functional relation that associates a market segment with the unique operating trading venue it belongs to, used
+      to characterize the ownership structure between segments and venues.
+    genus: Market Segment Venue
+    differentia:
+      - 市场板块场所关系，是将某一市场板块关联到其所隶属的唯一运营交易场所的功能性关系，用于刻画板块与场所的归属结构。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: micEffectiveFrom
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/micEffectiveFrom
+    definition: >-
+      the optional inclusive instant from which a MIC registry entry is effective per ISO 10383, used to record the
+      entry lifecycle.
+    genus: MIC Effective From
+    differentia:
+      - MIC 生效起始，是某一 MIC 注册条目按 ISO 10383 生效的可选含端瞬时，用于记录条目生命周期。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: micEffectiveTo
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/micEffectiveTo
+    definition: >-
+      the optional exclusive instant at which a MIC registry entry expires per ISO 10383, used to record the entry
+      lifecycle.
+    genus: MIC Effective To
+    differentia:
+      - MIC 生效结束，是某一 MIC 注册条目按 ISO 10383 到期的可选不含端瞬时，用于记录条目生命周期。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: micEntryType
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/micEntryType
+    definition: >-
+      closed classification attribute carried by one MIC registry entry, used to distinguish whether the entry is an
+      operating-level or segment-level registry record.
+    genus: MIC Entry Type
+    differentia:
+      - MIC 条目类型，是某一 MIC 注册条目携带的封闭分类属性，用于区分该条目是运营级还是板块级注册记录。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: MICEntryType
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/MICEntryType
+    definition: >-
+      closed controlled vocabulary based on ISO 10383 that distinguishes operating-level MICs from segment-level MICs,
+      used to provide a standard enumeration of entry kinds for MIC registry entries.
+    genus: MIC Entry Type
+    differentia:
+      - MIC 条目类型表，是依据 ISO 10383 区分运营级 MIC 与板块级 MIC 的封闭受控词汇，用于为 MIC 注册条目提供条目种类的标准枚举。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
   - term: MICIdentifiedMarketInfrastructure
     canonicalIri: https://axiolune.ai/ontology/finance/market-structure/MICIdentifiedMarketInfrastructure
     definition: >-
@@ -58,38 +474,117 @@ cards:
     candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
-  - term: TradeReportingFacility
-    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/TradeReportingFacility
+  - term: MICMarketCategory
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/MICMarketCategory
     definition: >-
-      market infrastructure entity to which trade reports are made but which does not itself operate a trading market
-    genus: market infrastructure
+      closed controlled vocabulary of the ISO 10383 market category of the infrastructure identified by a MIC registry
+      entry, used to record whether the identified infrastructure operates a trading market, reports trades, or performs
+      another market function.
+    genus: MIC Market Category
     differentia:
-      - receives trade reports
-      - does not operate a trading market
-      - may be identified by an ISO 10383 Operating MIC
-    excludes:
-      - trading venues (use TradingVenue)
+      - MIC 市场类别表，是某一 MIC 注册条目所标识基础设施 ISO 10383 市场类别的封闭受控词汇，用于记录所标识基础设施是运营交易市场、报告交易还是执行其他市场功能。
+    excludes: []
     sources:
-      - reference: iso-10383-mic
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
     candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
-  - term: VenueOperation
-    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/VenueOperation
+  - term: micOperationalStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/micOperationalStatus
     definition: >-
-      temporal provenance-bearing association recording one Party operating one TradingVenue over a validity interval
-      with an optional regulatory venue category
-    genus: operation fact
+      closed classification attribute carried by a MIC registry entry, used to record the ISO 10383 lifecycle status
+      (active, updated, expired) of the entry.
+    genus: MIC Operational Status
     differentia:
-      - binds one logical Party to one logical TradingVenue
-      - carries a validity interval
-      - carries an optional VenueCategory
-    excludes:
-      - venue identity (belongs to TradingVenue)
+      - MIC 运营状态，是某一 MIC 注册条目携带的封闭分类属性，用于记录该条目的 ISO 10383 生命周期状态（active、updated、expired）。
+    excludes: []
     sources:
-      - reference: w3c-org
-        locator: W3C ORG organization-role-temporal pattern
-    candidateM3Type: AssociationTypeDefinition
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: MICOperationalStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/MICOperationalStatus
+    definition: >-
+      closed controlled vocabulary of the ISO 10383 lifecycle status of a MIC registry entry, used to record whether an
+      entry is active, updated, or expired.
+    genus: MIC Operational Status
+    differentia:
+      - MIC 运营状态表，是某一 MIC 注册条目 ISO 10383 生命周期状态的封闭受控词汇，用于记录条目是 active、updated 还是 expired。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: MICRegistryEntry
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/MICRegistryEntry
+    definition: >-
+      timestamped minimal MIC identity slice that binds a four-character MIC value and its entry kind to the exact
+      market infrastructure version identified by that registry record, used to anchor the registration record to the
+      underlying facility version. The entry carries optional ISO 10383 lifecycle fields (operational status,
+      effective/expiry dates, replacement, market category) when available; it is an identity anchor, not a full ISO
+      10383 registry mirror.
+    genus: MIC Registry Entry
+    differentia:
+      - >-
+        MIC 注册条目，是带时间戳的最小 MIC 身份切片，用于把一个四位 MIC 值及其条目种类绑定到该注册记录所标识的确切市场基础设施版本。条目在可用时携带可选的 ISO 10383
+        生命周期字段（运营状态、生效/到期日期、替换、市场类别）；它是身份锚点，而非完整的 ISO 10383 注册表镜像。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: micReplacedBy
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/micReplacedBy
+    definition: >-
+      functional relation that associates a MIC registry entry with the MIC registry entry that replaces it when the
+      entry has been superseded, used to model the ISO 10383 replacement chain as a logical reference.
+    genus: MIC Replaced By
+    differentia:
+      - MIC 替换关系，是将某一 MIC 注册条目关联到在其被取代后替换它的 MIC 注册条目的功能性关系，用于将 ISO 10383 替换链建模为逻辑引用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: nonVenueContextConvention
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/nonVenueContextConvention
+    definition: >-
+      Non-Venue Context Convention, is a functional relation that associates a NonVenueMarketContext with its
+      market-convention orientation, used to characterize the quoting orientation of a stable non-venue market context
+      without carrying concrete currencies or execution semantics.
+    genus: Non-Venue Context Convention
+    differentia:
+      - 非场所上下文约定关系，是将某一非场所市场上下文关联到其市场约定取向的功能性关系，用于刻画稳定非场所市场上下文的报价取向而不承载具体币种或成交语义。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: nonVenueContextProvider
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/nonVenueContextProvider
+    definition: >-
+      Non-Venue Context Provider, is a functional relation that associates a NonVenueMarketContext with the logical
+      Party identity of its provider, used to characterize the data-source attribution of a stable non-venue context as
+      a logical reference rather than an exact-version source contract.
+    genus: Non-Venue Context Provider
+    differentia:
+      - 非场所上下文提供方关系，是将某一非场所市场上下文关联到其提供方的逻辑参与方身份的功能性关系，用于将稳定非场所上下文的数据来源归属刻画为逻辑引用而非确切版本源契约。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
   - term: NonVenueMarketContext
@@ -112,55 +607,540 @@ cards:
     candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
-  - term: TradingScheduleOverrideNotice
-    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/TradingScheduleOverrideNotice
+  - term: occurrenceCalendar
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/occurrenceCalendar
     definition: >-
-      n-ary association recording one pre-announced schedule override applying to one or more session occurrences,
-      carrying an announcement order and a supersession order with an optional replacement interval
-    genus: schedule override fact
+      functional relation that associates a session occurrence with the exact calendar version applied to it, used to
+      characterize the calendar version on which an occurrence is based.
+    genus: Occurrence Calendar
     differentia:
-      - applies to one or more TradingSessionOccurrence versions
-      - carries announcement and supersession order
-      - synthesizes a single final effective interval or cancellation
-    excludes:
-      - real-time status/halt (belongs to market-data)
+      - 实例日历关系，是将某一交易时段实例关联到应用于它的确切日历版本的功能性关系，用于刻画实例所依据的日历版本。
+    excludes: []
     sources:
-      - reference: axiolune-adr
-        locator: ADR-024 D7/D9
-    candidateM3Type: AssociationTypeDefinition
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: occurrenceFacility
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/occurrenceFacility
+    definition: >-
+      functional relation that associates a session occurrence with the exact TradingFacility version whose interval it
+      controls, used to bind a tradable time window to a concrete venue version.
+    genus: Occurrence Facility
+    differentia:
+      - 实例设施关系，是将某一交易时段实例关联到其时段所控制的确切交易设施版本的功能性关系，用于把可交易时间窗绑定到具体场所版本。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: occurrenceTemplate
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/occurrenceTemplate
+    definition: >-
+      functional relation that associates a session occurrence with the exact template version that generated it, used
+      to trace the template source of an occurrence.
+    genus: Occurrence Template
+    differentia:
+      - 实例模板关系，是将某一交易时段实例关联到生成它的确切时段模板版本的功能性关系，用于追溯实例的模板来源。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: operatedBy
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/operatedBy
+    definition: >-
+      functional relation that associates a TradingVenue with the logical Party identity that operates it, used to
+      separate the market system/venue from its operator. The temporal validity and regulatory category of the operation
+      are carried by VenueOperation; this relation is the logical-reference projection of the currently active operator.
+    genus: Operated By
+    differentia:
+      - 运营方关系，是将某一交易场所关联到运营它的逻辑参与方身份的功能性关系，用于将市场系统/场所与运营方分离。运营的时间有效性与监管类别由 VenueOperation 承载；该关系是当前生效运营方的逻辑引用投影。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: operatingMICEntry
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/operatingMICEntry
+    definition: >-
+      functional relation that associates a segment MIC entry with the exact operating MIC entry of its trading venue,
+      used to characterize the correspondence between a segment and its venue's operating-level MIC.
+    genus: Operating MIC Entry
+    differentia:
+      - 运营 MIC 条目关系，是将某一板块 MIC 条目关联到其交易场所对应的确切运营 MIC 条目的功能性关系，用于刻画板块与其场所运营级 MIC 的对应关系。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: otcCounterpartyA
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/otcCounterpartyA
+    definition: >-
+      functional relation that associates an OTC trading context with the lexically first exact Party version in its
+      optional counterparty pair, used to record one party of an over-the-counter execution in canonical form.
+      Deprecated as of v1.1.0 with OTCTradingContext; counterparty semantics belong to orders-execution or
+      post-trade-operations.
+    genus: OTC Counterparty A
+    differentia:
+      - >-
+        场外对手方甲关系，是将某一场外交易上下文关联到其可选对手方对中按词典序居首的确切参与方版本的功能性关系，用于规范化记录场外成交的一方。自 v1.1.0 起随 OTCTradingContext 弃用；对手方语义归
+        orders-execution 或 post-trade-operations。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: otcCounterpartyB
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/otcCounterpartyB
+    definition: >-
+      functional relation that associates an OTC trading context with the lexically second exact Party version in its
+      optional counterparty pair, used to record the other party of an over-the-counter execution in canonical form.
+      This relation is deprecated as of v1.1.0 together with OTCTradingContext; counterparty semantics belong to
+      orders-execution or post-trade-operations.
+    genus: OTC Counterparty B
+    differentia:
+      - >-
+        场外对手方乙关系，是将某一场外交易上下文关联到其可选对手方对中按词典序居次的确切参与方版本的功能性关系，用于规范化记录场外成交的另一方。该关系自 v1.1.0 起随 OTCTradingContext 一并弃用；对手方语义归
+        orders-execution 或 post-trade-operations。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: otcQuoteCurrency
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/otcQuoteCurrency
+    definition: >-
+      functional relation that associates an OTC trading context with its unique quote Currency logical identity, used
+      to characterize the pricing currency of over-the-counter quotes. Deprecated as of v1.1.0 with OTCTradingContext;
+      quote currency and quotation convention belong to instruments.
+    genus: OTC Quote Currency
+    differentia:
+      - 场外报价货币关系，是将某一场外交易上下文关联到其唯一报价货币逻辑身份的功能性关系，用于刻画场外报价的计价货币。自 v1.1.0 起随 OTCTradingContext 弃用；报价币种与报价约定归 instruments。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: otcReportingFacility
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/otcReportingFacility
+    definition: >-
+      functional relation that associates an OTC trading context with its optional exact reporting-facility version,
+      used to characterize the reporting venue on which an over-the-counter context relies. Deprecated as of v1.1.0 with
+      OTCTradingContext; reporting obligation belongs to orders-execution or post-trade-operations.
+    genus: OTC Reporting Facility
+    differentia:
+      - >-
+        场外报告设施关系，是将某一场外交易上下文关联到其可选确切报告设施版本的功能性关系，用于刻画场外语境所挂靠的报告场所。自 v1.1.0 起随 OTCTradingContext 弃用；报告义务归
+        orders-execution 或 post-trade-operations。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: otcSettlementCurrency
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/otcSettlementCurrency
+    definition: >-
+      functional relation that associates an OTC trading context with its optional settlement Currency logical identity,
+      used to characterize the settlement currency of over-the-counter executions. Deprecated as of v1.1.0 with
+      OTCTradingContext; settlement currency belongs to instruments or post-trade-operations.
+    genus: OTC Settlement Currency
+    differentia:
+      - >-
+        场外结算货币关系，是将某一场外交易上下文关联到其可选结算货币逻辑身份的功能性关系，用于刻画场外成交的结算货币。自 v1.1.0 起随 OTCTradingContext 弃用；结算币种归 instruments 或
+        post-trade-operations。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: otcSourceProvider
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/otcSourceProvider
+    definition: >-
+      functional relation that associates an OTC trading context with its exact source-provider Party version, used to
+      characterize the data-source attribution of an over-the-counter context. Deprecated as of v1.1.0 with
+      OTCTradingContext; provider attribution for the stable context is the logical nonVenueContextProvider, and the
+      source contract moves to Layer 4.
+    genus: OTC Source Provider
+    differentia:
+      - >-
+        场外数据源提供方关系，是将某一场外交易上下文关联到其确切数据源提供方参与方版本的功能性关系，用于刻画场外语境的数据来源归属。自 v1.1.0 起随 OTCTradingContext 弃用；稳定上下文的提供方归属为逻辑
+        nonVenueContextProvider，源契约归 Layer 4。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: OTCTradingContext
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/OTCTradingContext
+    definition: >-
+      non-listing trading context whose logical identity is determined by the source-provider logical IRI, the immutable
+      source-contract IRI, and a provider-scoped context identifier, used to characterize the market-convention
+      environment for over-the-counter quotes and executions. This type is deprecated as of v1.1.0 because it mixes
+      provider source contract, quote/settlement currency, reporting facility, concrete counterparty pair, and execution
+      semantics that are not stable market structure; it is replaced by NonVenueMarketContext for the stable non-venue
+      structure, while the provider contract moves to Layer 4, currencies/convention to instruments, and
+      counterparty/execution/reporting to orders-execution or post-trade-operations. The type is retained for IRI
+      stability because market-data, instruments, and orders-execution reference it as an association range; its
+      cross-module migration is deferred to a follow-up ADR.
+    genus: OTC Trading Context
+    differentia:
+      - >-
+        场外交易上下文，是非上市交易语境，其逻辑身份由数据源提供方逻辑 IRI、不可变源契约 IRI 与提供方作用域内上下文标识共同确定，用于刻画场外报价与成交的市场约定环境。该类型自 v1.1.0
+        起弃用，因其混合了数据源契约、报价/结算币种、报告设施、具体对手方对与成交语义，并非稳定市场结构；其稳定非场所结构由 NonVenueMarketContext 取代，数据源契约归 Layer 4，币种/约定归
+        instruments，对手方/成交/报告归 orders-execution 或 post-trade-operations。因 market-data、instruments 与 orders-execution
+        以其为关联 range，该类型为 IRI 稳定性而保留；其跨模块迁移延后至后续 ADR。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: overrideAnnouncementOrder
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/overrideAnnouncementOrder
+    definition: >-
+      non-negative integer recording the publication order of a TradingScheduleOverrideNotice within its calendar and
+      facility scope, used to sequence notices by their announcement time.
+    genus: Override Announcement Order
+    differentia:
+      - 变更公告顺序，是记录某一 TradingScheduleOverrideNotice 在其日历与设施范围内发布顺序的非负整数，用于按公告时间排列公告。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: overrideReplacementEndUtc
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/overrideReplacementEndUtc
+    definition: >-
+      optional exclusive replacement end instant supplied by a TradingScheduleOverrideNotice, used to override the
+      closing instant of the affected scheduled occurrence when synthesizing the effective interval.
+    genus: Override Replacement End UTC
+    differentia:
+      - 变更替换 UTC 结束，是由某一 TradingScheduleOverrideNotice 提供的可选不含端替换结束瞬时，用于在合成有效区间时覆盖受影响计划实例的收盘时刻。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: overrideReplacementStartUtc
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/overrideReplacementStartUtc
+    definition: >-
+      optional inclusive replacement start instant supplied by a TradingScheduleOverrideNotice, used to override the
+      opening instant of the affected scheduled occurrence when synthesizing the effective interval.
+    genus: Override Replacement Start UTC
+    differentia:
+      - 变更替换 UTC 开始，是由某一 TradingScheduleOverrideNotice 提供的可选含端替换开始瞬时，用于在合成有效区间时覆盖受影响计划实例的开盘时刻。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: overrideSupersessionOrder
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/overrideSupersessionOrder
+    definition: >-
+      non-negative integer recording the precedence of a TradingScheduleOverrideNotice when multiple notices affect the
+      same occurrence, used together with the announcement order to synthesize a single final effective interval or
+      cancellation.
+    genus: Override Supersession Order
+    differentia:
+      - 变更覆盖顺序，是当多个公告影响同一时段实例时记录某一 TradingScheduleOverrideNotice 优先级的非负整数，与公告顺序共同用于合成单一最终有效区间或取消结果。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: providerContextId
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/providerContextId
+    definition: >-
+      non-empty NFC business identifier scoped by one source provider and its immutable source contract, used to
+      uniquely denote a context within an over-the-counter setting.
+    genus: Provider Context Identifier
+    differentia:
+      - 提供方上下文标识，是由某一数据源提供方与不可变源契约共同作用域的非空 NFC 业务标识，用于在场外语境中唯一指代一个上下文。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: recurrenceRule
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/recurrenceRule
+    definition: >-
+      bounded RFC 5545 RRULE-style recurrence expression that selects the business dates to which a session template
+      applies, used to deterministically materialize occurrences under the calendar's IANA time zone. This attribute is
+      the formal, materializable companion to the retained sessionRecurrence string.
+    genus: Recurrence Rule
+    differentia:
+      - 复发规则，是选取某一时段模板所适用营业日的有界 RFC 5545 RRULE 风格复发表达式，用于在日历 IANA 时区下确定性物化实例。该属性是保留的 sessionRecurrence 字符串的形式化、可物化伴随项。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: registryAuthority
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/registryAuthority
+    definition: >-
+      functional relation that associates a MIC registry entry with the logical identifier authority that maintains it,
+      used to characterize the maintenance responsibility for MIC registry.
+    genus: Registry Authority
+    differentia:
+      - 注册权威关系，是将某一 MIC 注册条目关联到维护该条目的逻辑标识符权威的功能性关系，用于刻画 MIC 注册的维护责任归属。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: registryFacility
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/registryFacility
+    definition: >-
+      functional relation that associates a MIC registry entry with the exact TradingFacility version it identifies,
+      used to bind MIC registry facts to a concrete venue version.
+    genus: Registry Facility
+    differentia:
+      - 注册设施关系，是将某一 MIC 注册条目关联到该条目所标识的确切交易设施版本的功能性关系，用于把 MIC 注册事实与具体场所版本绑定。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: registryMICValue
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/registryMICValue
+    definition: >-
+      functional relation that associates a MIC registry entry with the unique four-character MIC logical identity it
+      represents, used to link registry entries to their ISO 10383 MIC identifiers.
+    genus: Registry MIC Value
+    differentia:
+      - 注册 MIC 值关系，是将某一 MIC 注册条目关联到其所代表的唯一四位 MIC 逻辑身份的功能性关系，用于把注册条目与 ISO 10383 MIC 标识挂钩。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: replacementSessionEndUtc
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/replacementSessionEndUtc
+    definition: >-
+      optional exclusive replacement end instant supplied by an early closing exception, used to override the closing
+      instant of the original session occurrence.
+    genus: Replacement Session End UTC
+    differentia:
+      - 替换时段 UTC 结束，是由提前收盘例外提供的可选不含端替换结束瞬时，用于覆盖原时段实例的收盘时刻。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: replacementSessionStartUtc
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/replacementSessionStartUtc
+    definition: >-
+      optional inclusive replacement start instant supplied by an early or late session exception, used to override the
+      opening instant of the original session occurrence.
+    genus: Replacement Session Start UTC
+    differentia:
+      - 替换时段 UTC 开始，是由提前或延后开盘例外提供的可选含端替换开始瞬时，用于覆盖原时段实例的开盘时刻。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: scheduledTradingPhase
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/scheduledTradingPhase
+    definition: >-
+      closed classification attribute carried by a session template, used to distinguish preOpen, openingAuction,
+      continuousTrading, closingAuction, postClose, maintenance, and reportingOnly phases of a trading session.
+    genus: Scheduled Trading Phase
+    differentia:
+      - >-
+        计划交易阶段，是某一时段模板携带的封闭分类属性，用于区分交易时段的 preOpen、openingAuction、continuousTrading、closingAuction、postClose、maintenance
+        与 reportingOnly 阶段。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
   - term: ScheduledTradingPhase
     canonicalIri: https://axiolune.ai/ontology/finance/market-structure/ScheduledTradingPhase
     definition: >-
-      closed controlled vocabulary of scheduled trading-session phases (preOpen, openingAuction, continuousTrading,
-      closingAuction, postClose, maintenance, reportingOnly)
-    genus: phase classification
+      closed controlled vocabulary of the scheduled phases of a trading session, used to distinguish pre-open, opening
+      auction, continuous trading, closing auction, post-close, maintenance, and reporting-only phases.
+    genus: Scheduled Trading Phase
     differentia:
-      - carried by a session template
-      - distinguishes order-acceptance vs matching vs reporting phases
+      - >-
+        计划交易阶段表，是交易时段计划阶段的封闭受控词汇，用于区分 preOpen、openingAuction、continuousTrading、closingAuction、postClose、maintenance 与
+        reportingOnly 阶段。
     excludes: []
     sources:
-      - reference: nyse-trading-hours
-    candidateM3Type: CodeList
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
-  - term: TradingSession
-    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/TradingSession
+  - term: sessionBusinessDate
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/sessionBusinessDate
     definition: >-
-      scheduled time period during which a trading venue accepts orders and executes trades, characterized by a session
-      type (e.g. pre-market, regular, post-market, auction)
-    genus: scheduled period
+      the local calendar date to which a concrete trading-session occurrence belongs, used to assign an occurrence to a
+      business day.
+    genus: Session Business Date
     differentia:
-      - defined by a trading venue
-      - characterized by session type
-      - has start and end times
-    excludes:
-      - ad-hoc trading outside scheduled sessions
-      - settlement periods
+      - 时段营业日期，是某一具体交易时段实例所属的本地日历日期，用于把时段实例归属到一个营业日。
+    excludes: []
     sources:
-      - reference: nautilus-trader
-        locator: model/enums.py — MarketStatus enum; no FIBO equivalent (gap)
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sessionEndUtc
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/sessionEndUtc
+    definition: >-
+      the exclusive UTC instant at which a concrete trading-session occurrence ends, used to bound the end of a trading
+      session in absolute time.
+    genus: Session End UTC
+    differentia:
+      - 时段 UTC 结束，是某一具体交易时段实例结束时刻的不含端 UTC 瞬时，用于以绝对时间界定交易时段终点。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sessionRecurrence
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/sessionRecurrence
+    definition: >-
+      deterministic recurrence expression, used to select the business dates to which a session template applies and
+      bind a session specification to a concrete set of dates. Deprecated as of v1.1.0 in favor of the formal
+      recurrenceRule attribute which is bounded and materializable; retained for compatibility.
+    genus: Session Recurrence
+    differentia:
+      - 时段复发规则，是确定性地选取某一时段模板所适用营业日期的复发表达式，用于把时段规范与具体日期集合挂钩。自 v1.1.0 起弃用，改用有界且可物化的形式化 recurrenceRule 属性；为兼容性保留。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sessionStartUtc
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/sessionStartUtc
+    definition: >-
+      the inclusive UTC instant at which a concrete trading-session occurrence starts, used to bound the start of a
+      trading session in absolute time.
+    genus: Session Start UTC
+    differentia:
+      - 时段 UTC 开始，是某一具体交易时段实例开始时刻的含端 UTC 瞬时，用于以绝对时间界定交易时段起点。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceContractDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/sourceContractDigest
+    definition: >-
+      lowercase SHA-256 digest, used to authenticate the exact bytes of the referenced source contract and verify that
+      the contract content has not been tampered with. Deprecated as of v1.1.0 with OTCTradingContext; source-contract
+      authentication belongs to Layer 4.
+    genus: Source Contract Digest
+    differentia:
+      - 源契约摘要，是认证所引用源契约确切字节的小写 SHA-256 摘要，用于校验源契约内容未被篡改。自 v1.1.0 起随 OTCTradingContext 弃用；源契约鉴权归 Layer 4。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceContractRef
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/sourceContractRef
+    definition: >-
+      the absolute IRI of the immutable provider schema or contract that defines the extraction of the provider context
+      identifier, used to anchor the data-contract source of an over-the-counter context. Deprecated as of v1.1.0 with
+      OTCTradingContext; the source contract belongs to Layer 4 SemanticMappingDefinition.
+    genus: Source Contract Reference
+    differentia:
+      - >-
+        源契约引用，是定义提供方上下文标识抽取规则的不可变提供方模式或契约的绝对 IRI，用于锚定场外语境的数据契约来源。自 v1.1.0 起随 OTCTradingContext 弃用；源契约归 Layer 4
+        SemanticMappingDefinition。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: templateCalendar
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/templateCalendar
+    definition: >-
+      functional relation that associates a session template with the exact trading-calendar version it specializes,
+      used to attach a session specification to a concrete calendar version.
+    genus: Template Calendar
+    differentia:
+      - 模板日历关系，是将某一交易时段模板关联到其所特化的确切交易日历版本的功能性关系，用于把时段规范挂接到具体日历版本。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: TradeReportingFacility
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/TradeReportingFacility
+    definition: market infrastructure entity to which trade reports are made but which does not itself operate a trading market
+    genus: market infrastructure
+    differentia:
+      - receives trade reports
+      - does not operate a trading market
+      - may be identified by an ISO 10383 Operating MIC
+    excludes:
+      - trading venues (use TradingVenue)
+    sources:
+      - reference: iso-10383-mic
     candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
@@ -180,6 +1160,223 @@ cards:
     sources:
       - reference: fibo-local-evidence
         locator: FIBO FND/DatesAndTimes/FinancialDates/BusinessCalendar (partial; no session schedule)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: TradingCalendarException
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/TradingCalendarException
+    definition: >-
+      timestamped exception fact, used to deterministically close or adjust one exact session occurrence without
+      mutating its session template, characterizing holidays, temporary closures, or early and late session openings and
+      closings.
+    genus: Trading Calendar Exception
+    differentia:
+      - 交易日历例外，是带时间戳的例外事实，用于在不改动原时段模板的前提下确定性地关闭或调整某一确切时段实例，刻画节假日、临时停市或提前延后开收盘。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: TradingFacility
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/TradingFacility
+    definition: >-
+      identifiable market facility concept that provides a common reference range for an operating trading venue or one
+      of its market segments, used as the base class for venue identity in the market-structure ontology.
+    genus: Trading Facility
+    differentia:
+      - 交易设施，是可标识的市场设施类概念，用于为某一运营交易场所或其市场板块提供公共参照范围，构成市场结构本体中场所标识的基类。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: TradingScheduleOverrideNotice
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/TradingScheduleOverrideNotice
+    definition: >-
+      temporal provenance-bearing n-ary association that records one pre-announced schedule override applying to one or
+      more exact TradingSessionOccurrence versions under one exact calendar and one exact facility, carrying an
+      announcement order and a supersession order together with an optional replacement interval, used to separate the
+      planned schedule from real-time status and to deterministically synthesize a single final effective interval or
+      cancellation across multiple affected sessions.
+    genus: Trading Schedule Override Notice
+    differentia:
+      - >-
+        交易日程变更公告，是带时间与来源的 n
+        元关联，记录某一预公布的日程变更作用于某一确切日历与设施下的一个或多个确切交易时段实例版本，携带公告顺序与覆盖顺序及可选替换区间，用于将计划日程与实时状态分离，并跨多个受影响时段确定性合成单一最终有效区间或取消结果。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: TradingSessionOccurrence
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/TradingSessionOccurrence
+    definition: >-
+      dated scheduled session window materialized from one exact session template and calendar version for one exact
+      facility version and represented as a UTC half-open interval, used to denote a concrete scheduled time window.
+      Whether the window is effectively tradable is a derived result expressed by the optional effectiveSessionStartUtc
+      and effectiveSessionEndUtc attributes after applying any TradingScheduleOverrideNotice facts; a window removed by
+      a holiday or closure has no effective tradable interval rather than losing its scheduled identity.
+    genus: Trading Session Occurrence
+    differentia:
+      - >-
+        交易时段实例，是由某一确切时段模板与日历版本为某一确切设施版本物化出的以 UTC 半开区间表示的带日期计划时段窗口，用于表示一个具体的计划时间窗。该窗口是否实际可交易是派生结果，由应用
+        TradingScheduleOverrideNotice 事实后的可选 effectiveSessionStartUtc 与 effectiveSessionEndUtc
+        属性表达；被节假日或停市移除的窗口没有有效可交易区间，而非失去其计划身份。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: TradingSessionTemplate
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/TradingSessionTemplate
+    definition: >-
+      local-clock recurring session specification attached to one exact TradingCalendar version, used to define
+      repeatedly applicable session start, end, phase, and recurrence rules that deterministically materialize into UTC
+      half-open occurrence intervals under the calendar's IANA time zone.
+    genus: Trading Session Template
+    differentia:
+      - 交易时段模板，是附加于某一确切交易日历版本的按本地时钟重复的时段规范，用于定义可反复套用且可在日历 IANA 时区下确定性物化为 UTC 半开实例区间的交易时段起止、阶段与复发规则。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: TradingVenue
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/TradingVenue
+    definition: >-
+      market system or venue that constitutes, maintains, or provides a facility for bringing together purchasers and
+      sellers of financial instruments, distinct from the legal entity that operates it
+    genus: market system
+    differentia:
+      - brings together purchasers and sellers
+      - identified by an Operating MIC (ISO 10383)
+      - may be a regulated market, MTF, OTF, ATS, or other venue category
+      - operator and regulatory category modeled separately as temporal facts via VenueOperation
+    excludes:
+      - the operating legal entity (modeled via VenueOperation/operatedBy)
+      - data reporting services (use TradeReportingFacility)
+      - internal matching engines without external clients
+    sources:
+      - reference: fibo-local-evidence
+        locator: FIBO FBC/FunctionalEntities/Markets/Exchange
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: tzdbRelease
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/tzdbRelease
+    definition: >-
+      optional versioned IANA time-zone database release identifier, used to pin the tzdb revision under which a trading
+      calendar's local-clock sessions are materialized to UTC for deterministic replay.
+    genus: IANA tzdb Release
+    differentia:
+      - IANA tzdb 发行版本，是可选的版本化 IANA 时区数据库发行标识，用于锁定交易日历本地时钟时段物化为 UTC 所依据的 tzdb 修订以支持确定性回放。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: venueCategory
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/venueCategory
+    definition: >-
+      closed classification attribute carried by a VenueOperation, used to record the regulatory category of a trading
+      venue (regulated market, multilateral trading facility, organized trading facility, or comparable category) as a
+      temporal evidenced fact.
+    genus: Venue Category
+    differentia:
+      - 场所类别，是某一 VenueOperation 携带的封闭分类属性，用于将交易场所的监管类别（受监管市场、多边交易设施、有组织交易设施或可比类别）记录为带时间与证据的事实。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: VenueCategory
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/VenueCategory
+    definition: >-
+      closed controlled vocabulary of regulatory trading-venue categories, used to classify a TradingVenue as a temporal
+      evidenced fact rather than a global supertree.
+    genus: Venue Category
+    differentia:
+      - 场所类别表，是监管交易场所类别的封闭受控词汇，用于将交易场所分类为带时间与证据的事实而非全局超类树。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: VenueOperation
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/VenueOperation
+    definition: >-
+      temporal provenance-bearing association that records one logical Party operating one logical TradingVenue over a
+      validity interval together with an optional regulatory venue category, used to separate the market system/venue
+      from the legal entity that operates it and to model operator history without conflating venue identity with its
+      operator.
+    genus: Venue Operation
+    differentia:
+      - 场所运营，是带时间与来源的关联，记录某一逻辑参与方在某一有效区间内运营某一逻辑交易场所及可选监管场所类别，用于将市场系统/场所与运营它的法人实体分离，并建模运营方历史而不把场所身份与运营方混淆。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: venueOperationValidFrom
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/venueOperationValidFrom
+    definition: the inclusive instant from which a VenueOperation is valid, used to bound the operator history of a trading venue.
+    genus: Venue Operation Valid From
+    differentia:
+      - 场所运营生效起始，是某一 VenueOperation 生效的含端瞬时，用于界定交易场所运营方历史的起点。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: venueOperationValidTo
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/venueOperationValidTo
+    definition: the exclusive instant at which a VenueOperation ends, used to bound the operator history of a trading venue.
+    genus: Venue Operation Valid To
+    differentia:
+      - 场所运营生效结束，是某一 VenueOperation 结束的不含端瞬时，用于界定交易场所运营方历史的终点。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: venueRegulatoryClassification
+    canonicalIri: https://axiolune.ai/ontology/finance/market-structure/venueRegulatoryClassification
+    definition: >-
+      functional relation that associates a TradingVenue with its regulatory venue category (regulated market,
+      multilateral trading facility, organized trading facility, or comparable category), used to model regulatory
+      categorization as a temporal evidenced fact rather than a hardcoded global supertree. The temporal validity is
+      carried by VenueOperation.
+    genus: Venue Regulatory Classification
+    differentia:
+      - >-
+        场所监管分类关系，是将某一交易场所关联到其监管场所类别（受监管市场、多边交易设施、有组织交易设施或可比类别）的功能性关系，用于将监管分类建模为带时间与证据的事实而非硬编码全局超类树。时间有效性由 VenueOperation
+        承载。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
     candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team

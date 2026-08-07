@@ -1,29 +1,63 @@
-# fin-market-rules â€?Competency Questions
+# fin-market-rules — Competency Questions
+# Module: fin-market-rules | Version: 1.1.0
 
 cqs:
-  - id: "CQ-MR1"
-    question: "Given a venue and an instrument class at a specific point in time (three-axis as-of), what is the applicable settlement cycle?"
-    scope: "rule applicability temporal query"
-    expectedResult: "returns the active SettlementConvention with its T+N value and effective interval"
-    negativeExample: "query before the rule's effective date or after its expiry returns 'no applicable rule'"
-    dependsOn: ["MarketRule", "RuleApplicability", "SettlementConvention", "TradingVenue"]
-    riskLevel: "high"
+  - id: CQ-MR1
+    question: >-
+      Given a venue and an instrument class at a specified three-axis as-of time, what is the applicable settlement
+      cycle rule and its business-day offset?
+    businessContext: Settlement-cycle rule selection under scoped applicability
+    scopeConstraints:
+      - RuleApplicability must match venue and instrument-class scope without implicit global fallback
+      - SettlementCycleRule must expose only settlement-cycle clauses
+      - query before effective interval or after expiry must return no applicable rule
+    expectedResult: >-
+      Active SettlementCycleRule with SettlementCycleClause business-day offset and effective interval
+    negativeExample: query before the rule's effective date or after its expiry returns no applicable rule
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      - https://axiolune.ai/ontology/finance/market-rules/RuleApplicability
+      - https://axiolune.ai/ontology/finance/market-rules/SettlementCycleRule
+      - https://axiolune.ai/ontology/finance/market-rules/SettlementCycleClause
+      - https://axiolune.ai/ontology/finance/market-structure/TradingVenue
+    riskLevel: high
     status: active
 
-  - id: "CQ-MR2"
-    question: "What is the price limit (limit up / limit down) for a given instrument class on a given venue at a specific point in time?"
-    scope: "price limit rule query"
-    expectedResult: "returns the active MarketRule with its limit percentage and effective interval"
-    negativeExample: "rule from a superseded revision not returned; rule from a different venue not returned"
-    dependsOn: ["MarketRule", "RuleApplicability", "TradingVenue"]
-    riskLevel: "high"
+  - id: CQ-MR2
+    question: >-
+      What is the price limit (limit up / limit down) for a given instrument class on a given venue at a specified
+      three-axis as-of time?
+    businessContext: Price-limit rule query with reference-price specification
+    scopeConstraints:
+      - PriceLimitClause must bind ReferencePriceSpecification for band computation
+      - superseded revision must not be returned for historical as-of before revision effective date
+      - rule from a different venue must not be returned
+    expectedResult: >-
+      Active MarketRule with PriceLimitClause bounds, reference-price method, and effective interval
+    negativeExample: rule from a superseded revision or different venue not returned
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      - https://axiolune.ai/ontology/finance/market-rules/RuleApplicability
+      - https://axiolune.ai/ontology/finance/market-rules/PriceLimitClause
+      - https://axiolune.ai/ontology/finance/market-rules/ReferencePriceSpecification
+      - https://axiolune.ai/ontology/finance/market-structure/TradingVenue
+    riskLevel: high
     status: active
 
-  - id: "CQ-MR3"
-    question: "If a market rule is revised, does a historical query return the old rule or the new one?"
-    scope: "temporal rule versioning"
-    expectedResult: "returns the rule that was active at the query's as-of time; revised rule only returned for queries after the revision's effective date"
-    negativeExample: "query before revision returns old rule, not new; query after returns new, not old"
-    dependsOn: ["MarketRule", "RuleApplicability"]
-    riskLevel: "high"
+  - id: CQ-MR3
+    question: >-
+      If a market rule is revised, does a historical query return the rule version active at the query's as-of time?
+    businessContext: Temporal rule versioning and NoFutureKnowledge guard
+    scopeConstraints:
+      - query before revision effective date returns prior rule version only
+      - query after revision returns revised rule only
+      - future-dated revision must not leak under knowledge-time guard
+    expectedResult: >-
+      Rule version whose applicability interval covers the query as-of time; revised rule only after revision effective date
+    negativeExample: query before revision returns old rule, not new; future revision rejected by NoFutureKnowledge
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/market-rules/MarketRule
+      - https://axiolune.ai/ontology/finance/market-rules/RuleApplicability
+      - https://axiolune.ai/ontology/meta/patterns/TemporalFact
+    riskLevel: high
     status: active

@@ -1,428 +1,2546 @@
-# fin-orders-execution — Terminology Cards (ISO 704)
-# M2-PLAN §3.2, §3.3: ISO 704 genus/differentia definitions for order and execution concepts
-# v1.1.0 (ADR-025): added cards for OrderIntentLifecycleEvent, MatchedTrade,
-# OrderRoute, ExecutionAllocation, AllocationLine, OrderRevision, FillSnapshot,
-# OrderLeg, ExecutionLeg; corrected LiquiditySide -> LiquidityRole (the v1.0.0
-# codelist was renamed to LiquidityRole); OrderEventStream-as-live-feed reading
-# deprecated in-note (it is a single-external-order event sequence, not a FIX
-# feed).
+# fin-orders-execution — Terminology Cards
+# Synced from module.yaml v1.1.0 — 2026-08-07
+# Each card: term (module.yaml entity key), canonicalIri, ISO 704 definition
 
 terms:
-  - term: "Order Intent"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderIntent"
-    definition: "stable trade intent issued by a client, strategy, or authorized routing process, specifying instrument, side, quantity, type, time-in-force, and price constraints, and fixed under a two-component logical key (intentIdentifierAuthority, clientIntentId) before provider acceptance"
-    genus: "trade instruction"
+  - term: acceptableVenueSet
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/acceptableVenueSet
+    definition: >-
+      relationship from a venue-neutral OrderIntent to one or more logical TradingFacility venues acceptable for its
+      execution, used as the venue-neutral alternative to a single listing or OTC context binding
+    genus: acceptable venue set
     differentia:
-      - "specifies a financial instrument to trade"
-      - "specifies side (buy or sell)"
-      - "specifies quantity and order type"
-      - "specifies time-in-force and optional price constraints"
-      - "is issued by an intentIssuer and scoped by an intentIdentifierAuthority; the account does not substitute for the issuer or authority"
-      - "may bind a single listing/OTC context, or specify an acceptableVenueSet / routingPolicy as a venue-neutral alternative"
-      - "represents business intent, not external venue order"
-    excludes:
-      - "external venue order (bridged via ExternalOrder)"
-      - "execution (the actual fill)"
-      - "order lifecycle event (the state transition)"
+      - 可接受场所集合，是从场所中立订单意图指向一个或多个可接受执行场所的逻辑交易设施的关系，作为单一挂牌或场外上下文绑定的场所中立替代。
+    excludes: []
     sources:
-      - reference: "nautilus-trader"
-        locator: "nautilus_trader/model/events/order.pyx::OrderInitialized"
-        note: "OrderInitialized event contains trader_id, strategy_id, instrument_id, side, type, quantity, time_in_force, and price parameters"
-      - reference: "lean"
-        locator: "Common/Orders/Order.cs"
-        note: "Order abstract class with Symbol, Quantity, Type, TimeInForce, Direction properties"
-      - reference: "fibo-2026Q1"
-        locator: "SEC/Securities/SecuritiesListings::ListedSecurity"
-        note: "FIBO has ListedSecurity but no explicit order intent concept; Axiolune defines for trading semantics"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Order Lifecycle Event"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent"
-    definition: "immutable external provider event bound to an exact ExternalOrder and OrderEventStream, recording the resulting canonical lifecycle state, the event kind, and the raw provider status code plus the exact applied status mapping and transition profile versions; pre-submission internal events are modeled by OrderIntentLifecycleEvent instead"
-    genus: "external state transition fact"
+    owner: axiolune-m2-team
+  - term: affectedKeyDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/affectedKeyDigest
+    definition: >-
+      kind-discriminated digest value of the strict OrderFindingSubject object, used for digesting and distinguishing
+      finding subjects by defect kind
+    genus: affected key digest
     differentia:
-      - "occurs in one exact event stream version and is bound to an exact ExternalOrder"
-      - "records the event kind (what happened) distinct from the resulting lifecycle state (what state it caused)"
-      - "carries the raw provider status code and exact applied status mapping / transition profile for auditability"
-      - "is immutable (event-sourced, append-only)"
-      - "forms the external audit trail for an order lifecycle"
-    excludes:
-      - "pre-submission internal events (Initialized/Denied/Emulated/Released without a provider order) — these are OrderIntentLifecycleEvent"
-      - "the order intent itself (OrderIntent is the subject)"
-      - "execution (the actual trade fill; linked via reportsExecution)"
-      - "current order state (derived from the event stream, not stored)"
+      - 受影响键摘要，是完整性发现主体对象的摘要值，用于按缺陷类别对发现主体进行摘要与区分。
+    excludes: []
     sources:
-      - reference: "nautilus-trader"
-        locator: "nautilus_trader/model/events/order.pyx::OrderEvent"
-        note: "Base class for 10 order event types: OrderInitialized, OrderSubmitted, OrderAccepted, OrderRejected, OrderCanceled, OrderExpired, OrderTriggered, OrderPendingUpdate, OrderPendingCancel, OrderUpdated, OrderFilled"
-      - reference: "lean"
-        locator: "Common/Orders/OrderEvent.cs"
-        note: "OrderEvent with OrderId, Status, UtcTime, FillPrice, FillQuantity, Message"
-      - reference: "fibo-2026Q1"
-        locator: "FBC/ProductsAndServices/FinancialProductsAndServices::Trade"
-        note: "FIBO Trade is closer to Execution; no explicit lifecycle event concept"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Execution"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/Execution"
-    definition: "immutable account-side fill or fill-report fact recording the real economic content of a trade from the execution-account perspective, with executed price, quantity, optional contra roles, disclosure status, and venue/timing identity; bilateral facts are asserted via a MatchedTrade only when evidence suffices"
-    genus: "trade execution fact"
+    owner: axiolune-m2-team
+  - term: AllocationLine
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/AllocationLine
+    definition: >-
+      immutable allocation target line expressing one account's share of a source execution, paired with an
+      ExecutionAllocation
+    genus: allocation target
     differentia:
-      - "records the account-side fill of an order"
-      - "includes executed price and quantity interpreted through the exact direct-unit quotation contract"
-      - "carries optional contraAccount/contraParty (absent for anonymous fills; a 'unknown' placeholder is forbidden) and a disclosureStatus"
-      - "distinguishes executedAt, providerReportedAt, observedAt, and tradeDate, plus venueTradeId/providerReportId/matchId"
-      - "references the execution venue (TradingFacility), distinct from the execution listing"
-      - "enables position derivation from the execution stream"
+      - carries a strictly positive allocationQuantity and an allocationStatus
+      - targets exactly one FinancialAccount via allocationTargetAccount
+      - the set of lines under one ExecutionAllocation partitions the source execution quantity with conservation
     excludes:
-      - "the bilateral trade itself (a MatchedTrade when bilateral evidence suffices)"
-      - "order intent (the instruction, not the fill)"
-      - "order lifecycle event (state transition, not fill)"
-      - "price observation (market data, not execution)"
+      - the source execution (referenced via the parent ExecutionAllocation)
+      - the target account's full position state (portfolio-positions)
     sources:
-      - reference: "nautilus-trader"
-        locator: "nautilus_trader/model/events/order.pyx::OrderFilled"
-        note: "OrderFilled event with last_qty, last_px, liquidity_side, venue_order_id, trade_id, commission"
-      - reference: "lean"
-        locator: "Common/Orders/OrderEvent.cs"
-        note: "OrderEvent with Status=Filled, FillPrice, FillQuantity, OrderFee"
-      - reference: "fibo-2026Q1"
-        locator: "FBC/ProductsAndServices/FinancialProductsAndServices::Trade"
-        note: "FIBO Trade is transaction between parties; Axiolune Execution is the account-side fill; the bilateral trade is a MatchedTrade"
+      - reference: iso-20022
+        locator: ISO 20022 securities_trade — AllocationLine
+        note: ISO 20022 allocation line carries account, quantity, and status
     status: accepted
-
-  - term: "External Order Status Mapping"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMapping"
-    definition: "versioned mapping from venue-specific or broker-specific raw order status codes to canonical Axiolune lifecycle states, enabling status translation without polluting canonical vocabulary"
-    genus: "status code mapping"
+  - term: allocationQuantity
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/allocationQuantity
+    definition: >-
+      strictly positive absolute Quantity allocated to one AllocationLine target account, used to partition a source
+      execution quantity with conservation
+    genus: allocation quantity
     differentia:
-      - "maps venue-specific raw status codes"
-      - "to canonical Axiolune lifecycle states"
-      - "is versioned (venue APIs change over time)"
-      - "scoped to a specific venue or broker"
-      - "prevents canonical vocabulary pollution"
-    excludes:
-      - "the canonical lifecycle state itself (OrderLifecycleState codelist)"
-      - "the order lifecycle event (the actual state transition)"
-      - "venue identifier (TradingVenue is the mapping target)"
+      - 分配数量，是分配给某一分配行目标账户的严格为正的绝对数量，用于以守恒分割源成交数量。
+    excludes: []
     sources:
-      - reference: "nautilus-trader"
-        locator: "nautilus_trader/adapters/*/execution.py"
-        note: "Each adapter (binance, betfair, etc.) maps venue status codes to OrderStatus enum"
-      - reference: "lean"
-        locator: "Brokerages/*/BrokerageAdapter.cs"
-        note: "Each brokerage adapter maps broker-specific status to Lean OrderStatus enum"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Order Side"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderSide"
-    definition: "controlled vocabulary indicating the direction of an order (buy or sell)"
-    genus: "order direction"
+    owner: axiolune-m2-team
+  - term: allocationStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/allocationStatus
+    definition: >-
+      closed allocation-status classification attribute of an ExecutionAllocation or AllocationLine, used to express the
+      state of an allocation (e.g. proposed, accepted, rejected, cancelled, corrected)
+    genus: allocation status
     differentia:
-      - "indicates buy (long direction)"
-      - "or sell (short direction)"
-    excludes:
-      - "position side (long/short/flat in portfolio context)"
-      - "quote side (bid/ask in market data context)"
+      - 分配状态，是成交分配或分配行的封闭分配状态分类属性，用于表达分配的状态（如 proposed、accepted、rejected、cancelled、corrected）。
+    excludes: []
     sources:
-      - reference: "nautilus-trader"
-        locator: "nautilus_trader/core/rust/model.rs::OrderSide"
-        note: "OrderSide enum: BUY, SELL, NO_ORDER_SIDE (sentinel)"
-      - reference: "lean"
-        locator: "Common/Orders/OrderDirection.cs"
-        note: "OrderDirection enum: Buy, Sell, Hold"
-      - reference: "fibo-2026Q1"
-        locator: "FBC/ProductsAndServices/FinancialProductsAndServices::BuySide"
-        note: "FIBO has BuySide and SellSide as classes; Axiolune uses codelist"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Order Type"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderType"
-    definition: "controlled vocabulary of order execution instructions (market, limit, stop, stop-limit)"
-    genus: "execution instruction type"
+    owner: axiolune-m2-team
+  - term: AllocationStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/AllocationStatus
+    definition: closed allocation-status classification vocabulary, used to express the state of an execution allocation
+    genus: Allocation Status
     differentia:
-      - "specifies how the order should be executed"
-      - "includes market (immediate at current price)"
-      - "includes limit (at specified price or better)"
-      - "includes stop (triggered at stop price)"
-      - "includes stop-limit (stop trigger then limit order)"
-    excludes:
-      - "time-in-force (order validity duration)"
-      - "order side (buy or sell direction)"
+      - 分配状态词表，是封闭分配状态分类词表，用于表达成交分配的状态。
+    excludes: []
     sources:
-      - reference: "nautilus-trader"
-        locator: "nautilus_trader/core/rust/model.rs::OrderType"
-        note: "OrderType enum: MARKET, LIMIT, STOP_MARKET, STOP_LIMIT, MARKET_TO_LIMIT, MARKET_IF_TOUCHED, LIMIT_IF_TOUCHED, TRAILING_STOP_MARKET, TRAILING_STOP_LIMIT"
-      - reference: "lean"
-        locator: "Common/Orders/OrderType.cs"
-        note: "OrderType enum: Market, Limit, StopMarket, StopLimit, MarketOnOpen, MarketOnClose, OptionExercise, ComboMarket, ComboLimit, ComboLegLimit"
-      - reference: "fibo-2026Q1"
-        locator: "FBC/ProductsAndServices/FinancialProductsAndServices::LimitOrder"
-        note: "FIBO has LimitOrder, MarketOrder classes; Axiolune uses codelist for first release"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Time In Force"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/TimeInForce"
-    definition: "controlled vocabulary of order validity duration (GTC, IOC, FOK, DAY)"
-    genus: "order validity duration"
+    owner: axiolune-m2-team
+  - term: allocationTargetAccount
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/allocationTargetAccount
+    definition: >-
+      relationship from an AllocationLine to the logical FinancialAccount that is the allocation target, used to express
+      post-execution allocation across multiple final accounts
+    genus: allocation target account
     differentia:
-      - "specifies how long the order remains active"
-      - "GTC (Good-Till-Cancel): active until filled or canceled"
-      - "IOC (Immediate-Or-Cancel): fill immediately or cancel unfilled portion"
-      - "FOK (Fill-Or-Kill): fill entire order immediately or cancel"
-      - "DAY: active until end of trading day"
-    excludes:
-      - "order type (execution instruction)"
-      - "order expiration timestamp (specific datetime)"
+      - 分配目标账户，是从分配行指向作为分配目标的逻辑金融账户的关系，用于表达跨多个最终账户的执行后分配。
+    excludes: []
     sources:
-      - reference: "nautilus-trader"
-        locator: "nautilus_trader/core/rust/model.rs::TimeInForce"
-        note: "TimeInForce enum: GTC, IOC, FOK, GTD, DAY, AT_THE_OPEN, AT_THE_CLOSE"
-      - reference: "lean"
-        locator: "Common/Orders/TimeInForce.cs"
-        note: "TimeInForce enum: GoodTilCanceled, Day, GoodTilDate, ImmediateOrCancel, FillOrKill"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Order Lifecycle State"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState"
-    definition: "controlled vocabulary of canonical resulting order states in the lifecycle state machine, independent of provider raw codes"
-    genus: "order state"
+    owner: axiolune-m2-team
+  - term: appliedStatusMapping
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/appliedStatusMapping
+    definition: >-
+      relationship from an OrderLifecycleEvent to the exact ExternalOrderStatusMapping version applied to translate its
+      raw provider status code into a canonical lifecycle state, used to make the state machine auditable
+    genus: applied status mapping
     differentia:
-      - "represents a canonical resulting state in the order lifecycle, stored on an immutable event"
-      - "distinct from the event kind (OrderEventKind) that caused it; an event carries both"
-      - "Initialized/Denied/Emulated/Released: pre-submission internal states (OrderIntentLifecycleEvent)"
-      - "Submitted/Accepted/Rejected/PendingNew/PendingUpdate/PendingCancel/PendingReplace: active and pending states"
-      - "PartiallyFilled/Filled: fill states auditable against the effective net executed quantity"
-      - "Canceled/Expired/Triggered/DoneForDay/Stopped/Suspended/Calculated/Restated: terminal or FIX-aligned states"
-    excludes:
-      - "venue-specific status codes (mapped via ExternalOrderStatusMapping)"
-      - "the event kind (the transition type, not the resulting state)"
+      - 所应用状态映射，是从生命周期事件指向用于将其原始供应方状态码翻译为规范生命周期状态的确切外部订单状态映射版本的关系，用于使状态机可审计。
+    excludes: []
     sources:
-      - reference: "nautilus-trader"
-        locator: "nautilus_trader/model/orders/base.pyx::OrderStatus"
-        note: "OrderStatus enum derived from event types"
-      - reference: "lean"
-        locator: "Common/Orders/OrderStatus.cs"
-        note: "OrderStatus enum: New, Submitted, PartiallyFilled, Filled, Canceled, None, Invalid, CancelPending, UpdateSubmitted"
-      - reference: "fix"
-        locator: "FIX 5.0 SP2 :: OrdStatus"
-        note: "FIX OrdStatus values (PendingNew, DoneForDay, Stopped, Suspended, Calculated, Restated, PendingReplace) align to Axiolune v1.1.0 additions"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Liquidity Role"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/LiquidityRole"
-    definition: "controlled vocabulary indicating whether an execution order was a maker (added liquidity), a taker (removed liquidity), or auction-undefined, from the execution account-order perspective"
-    genus: "liquidity classification"
+    owner: axiolune-m2-team
+  - term: appliedTransitionProfile
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/appliedTransitionProfile
+    definition: >-
+      relationship from an OrderLifecycleEvent to the exact OrderTransitionProfile version whose transition table
+      governed the event's state transition, used to make the transition auditable
+    genus: applied transition profile
     differentia:
-      - "Maker: execution account order added liquidity"
-      - "Taker: execution account order removed liquidity"
-      - "AuctionUndefined: source contract explicitly defines auction liquidity as undefined"
-      - "governed by source-contract capability (required/optional/unsupported) and delivered via LiquidityRoleDetermination"
-      - "relevant for market microstructure analysis and fee calculation"
-    excludes:
-      - "order side (buy/sell direction)"
-      - "order type (execution instruction)"
-      - "a source-level 'NO_LIQUIDITY_SIDE' sentinel (handled by the unavailable branch, not a canonical role)"
+      - 所应用流转配置，是从生命周期事件指向其状态转移所依据转移表的确切订单流转配置版本的关系，用于使转移可审计。
+    excludes: []
     sources:
-      - reference: "nautilus-trader"
-        locator: "nautilus_trader/core/rust/model.rs::LiquiditySide"
-        note: "LiquiditySide enum: MAKER, TAKER, NO_LIQUIDITY_SIDE — Axiolune models NO_LIQUIDITY_SIDE as the unavailable determination branch, not a canonical role value"
-      - reference: "lean"
-        locator: "Common/Orders/OrderEvent.cs"
-        note: "Lean does not explicitly model liquidity side in OrderEvent"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  # --- v1.1.0 (ADR-025) additions ---
-
-  - term: "Order Intent Lifecycle Event"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLifecycleEvent"
-    definition: "immutable internal lifecycle event bound to an exact OrderIntent but not to any ExternalOrder or OrderEventStream, recording pre-submission internal transitions such as intent initialization, pre-submission denial, internal emulation, and emulated-order release"
-    genus: "internal state transition fact"
+    owner: axiolune-m2-team
+  - term: averagePrice
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/averagePrice
+    definition: >-
+      volume-weighted average execution Money price recorded in a FillSnapshot, interpreted through the exact
+      direct-unit quotation contract
+    genus: average price
     differentia:
-      - "binds exactly one OrderIntent and one intentEventEmitter (the client, strategy, emulator, or authorized routing process)"
-      - "carries no provider order, event stream, providerEventId, sourceOrderKey, rawProviderStatusCode, or applied mapping/profile"
-      - "shares the OrderEventKind and OrderLifecycleState vocabularies with the external event but is limited to Initialized/Denied/Emulated/Released kinds"
-      - "is immutable (event-sourced, append-only)"
-    excludes:
-      - "external provider events (OrderLifecycleEvent bound to an ExternalOrder/OrderEventStream)"
-      - "the order intent itself"
+      - 均价，是成交快照中记录的成交量加权平均成交货币价格，通过确切的直接单位报价契约解释。
+    excludes: []
     sources:
-      - reference: "nautilus-trader"
-        locator: "nautilus_trader/model/events/order.pyx::OrderInitialized"
-        note: "OrderInitialized is a pre-submission event with no venue order id"
-      - reference: "fix"
-        locator: "FIX 5.0 SP2 :: ExecType"
-        note: "FIX separates ExecType (why the report was sent) from OrdStatus (current state); Axiolune separates the internal pre-submission event from the external provider event"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Matched Trade"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/MatchedTrade"
-    definition: "immutable bilateral trade fact that links two account-side executions (or one execution to its known counterparty) when bilateral evidence is sufficient, requiring both contra roles and a disclosure status"
-    genus: "bilateral trade fact"
+    owner: axiolune-m2-team
+  - term: cancelledQty
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/cancelledQty
+    definition: cancelled Quantity recorded in a FillSnapshot, used to express the quantity removed from the order by cancellation
+    genus: cancelled quantity
     differentia:
-      - "requires matchedContraParty and matchedContraAccount as explicit logical roles (no 'unknown' placeholder)"
-      - "optionally references a matchedContraExecution when both sides are recorded as executions"
-      - "carries a disclosureStatus and a matchId"
-      - "is absent for anonymous order-book fills or client-side reports that cannot supply bilateral facts; those remain single-sided Executions"
-    excludes:
-      - "a single-sided account fill (Execution without bilateral evidence)"
-      - "a fabricated counterparty ('unknown Party'/'unknown Account' is forbidden)"
+      - 取消数量，是成交快照中记录的取消数量，用于表达因撤销而从订单移除的数量。
+    excludes: []
     sources:
-      - reference: "fix"
-        locator: "FIX 5.0 SP2 :: ExecutionReport contra group"
-        note: "FIX contra group is optional; Axiolune requires it only on MatchedTrade when bilateral evidence suffices"
-      - reference: "fibo-2026Q1"
-        locator: "FBC/ProductsAndServices/FinancialProductsAndServices::Trade"
-        note: "FIBO Trade is a bilateral transaction; Axiolune MatchedTrade is the bilateral sibling of an account-side Execution"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Order Route"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderRoute"
-    definition: "immutable routing fact that connects a parent OrderIntent (or parent route) to a child ExternalOrder or child intent via a destination, routed quantity, route time, and route status/reason, expressing venue-neutral, SOR, best-execution, and broker-decides-venue delegation"
-    genus: "routing fact"
+    owner: axiolune-m2-team
+  - term: canonicalLifecycleState
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/canonicalLifecycleState
+    definition: >-
+      exactly one canonical target state selected by a status mapping, used for normalizing a provider raw code into a
+      canonical state
+    genus: canonical lifecycle state
     differentia:
-      - "links a parent OrderIntent to a child ExternalOrder or child OrderIntent for further routing"
-      - "carries routedQuantity, routeTime, routeStatus, and optional routeReason"
-      - "the actual venue lands on the route / external-order / execution, not the parent intent"
-      - "distinct from OrderIntentLineage (intent split/aggregation provenance) — a route is a delegation, not a conservation-bound transformation"
-    excludes:
-      - "OrderIntentLineage (split/aggregation with quantity conservation)"
-      - "the external order itself (the child is referenced, not duplicated)"
+      - 规范生命周期状态，是状态映射所选定的唯一规范目标状态，用于把供应方原始码归一化为规范状态。
+    excludes: []
     sources:
-      - reference: "fix"
-        locator: "FIX 5.0 SP2 :: Routing instructions / SOR"
-        note: "FIX supports smart-order-routing and broker-decides-venue; Axiolune models the routing fact as an immutable link"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Execution Allocation"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/ExecutionAllocation"
-    definition: "immutable allocation fact that distributes one source Execution across one or more AllocationLine target accounts with quantity conservation, modeling post-execution allocation, average-price allocation, and bunched-order back-allocation"
-    genus: "allocation fact"
+    owner: axiolune-m2-team
+  - term: clientIntentId
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/clientIntentId
+    definition: >-
+      authority-scoped stable string identifier of a client trade intent, used for providing the logical identity
+      primary key of an OrderIntent
+    genus: client intent identifier
     differentia:
-      - "references exactly one source Execution and one or more AllocationLines"
-      - "conserves quantity: the sum of AllocationLine quantities equals the source executionQuantity"
-      - "carries an allocationStatus (proposed/accepted/rejected/cancelled/corrected)"
-      - "detailed allocation and clearing semantics remain in post-trade-operations via a stable cross-module reference to the source Execution"
-    excludes:
-      - "the execution itself (the source is referenced, not duplicated)"
-      - "clearing and settlement detail (post-trade-operations)"
+      - 客户意图标识，是在授权作用域内标识某客户交易意图的稳定字符串属性，用于为订单意图提供逻辑身份主键。
+    excludes: []
     sources:
-      - reference: "iso-20022"
-        locator: "ISO 20022 securities_trade — allocation"
-        note: "ISO 20022 lists allocation under securities trade; Axiolune models the stable scaffold, detail deferred to post-trade-operations"
-      - reference: "cftc"
-        locator: "CFTC 17 CFR 1.35 — bunched order back-allocation"
-        note: "CFTC defines bunched-order back-allocation with business/regulatory semantics"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Allocation Line"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/AllocationLine"
-    definition: "immutable allocation target line expressing one account's share of a source execution, paired with an ExecutionAllocation"
-    genus: "allocation target"
+    owner: axiolune-m2-team
+  - term: cumQty
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/cumQty
+    definition: >-
+      cumulative filled Quantity recorded in a FillSnapshot, used to audit Filled and PartiallyFilled states against the
+      effective net quantity
+    genus: cumulative quantity
     differentia:
-      - "carries a strictly positive allocationQuantity and an allocationStatus"
-      - "targets exactly one FinancialAccount via allocationTargetAccount"
-      - "the set of lines under one ExecutionAllocation partitions the source execution quantity with conservation"
-    excludes:
-      - "the source execution (referenced via the parent ExecutionAllocation)"
-      - "the target account's full position state (portfolio-positions)"
+      - 累计数量，是成交快照中记录的累计成交数量，用于按有效净成交量审计 Filled 与 PartiallyFilled 状态。
+    excludes: []
     sources:
-      - reference: "iso-20022"
-        locator: "ISO 20022 securities_trade — AllocationLine"
-        note: "ISO 20022 allocation line carries account, quantity, and status"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Order Revision"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderRevision"
-    definition: "immutable cancel/replace chain fact that links a revision request to its previous and root order, expressing the FIX ClOrdID/OrigClOrdID-style order chain with replace, cancel, cancel-replace, rejected, replaced terms, and a priority-preserved flag"
-    genus: "order chain fact"
+    owner: axiolune-m2-team
+  - term: disclosureStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/disclosureStatus
+    definition: >-
+      closed disclosure classification attribute of an Execution or MatchedTrade, used to express whether the
+      counterparty is disclosed, anonymous, or partially disclosed
+    genus: disclosure status
     differentia:
-      - "carries a revisionRequestId (the new request id) and a revisionKind (replace/cancel/cancelReplace)"
-      - "optionally links a previousOrder and a rootOrder exact ExternalOrder version"
-      - "carries replacedTerms (present only for replace/cancelReplace) and priorityPreserved"
-      - "does not update a single fixed order id in place — the chain is an immutable set of links"
-    excludes:
-      - "a single mutable order id (the chain uses distinct request ids)"
-      - "the lifecycle event stream (OrderRevision is the instruction chain, not a status event)"
+      - 披露状态，是成交或已匹配成交的封闭披露分类属性，用于表达对手方是已披露、匿名还是部分披露。
+    excludes: []
     sources:
-      - reference: "fix"
-        locator: "FIX 5.0 SP2 :: ClOrdID / OrigClOrdID order chain"
-        note: "FIX uses ClOrdID/OrigClOrdID for cancel/replace, not a single mutable order id"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Fill Snapshot"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/FillSnapshot"
-    definition: "immutable cumulative-quantity snapshot object carried by a fill-kind lifecycle event, expressing last fill quantity, cumulative filled quantity, remaining (leaves) quantity, cancelled quantity, and average price so the event-execution-cumulative-quantity-state loop is auditable without recomputation"
-    genus: "cumulative quantity snapshot"
+    owner: axiolune-m2-team
+  - term: DisclosureStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/DisclosureStatus
+    definition: >-
+      closed disclosure classification vocabulary, used to express whether an execution counterparty is disclosed,
+      anonymous, or partially disclosed
+    genus: Disclosure Status
     differentia:
-      - "carries lastQty, cumQty, leavesQty, cancelledQty, and averagePrice (all optional)"
-      - "cumQty equals the sum of executionQuantity over the stream's executions for the order up to and including the reported execution"
-      - "leavesQty = orderQuantity - cumQty - cancelledQty and is non-negative"
-      - "Filled iff leavesQty = 0; PartiallyFilled iff leavesQty > 0 and cumQty > 0"
-    excludes:
-      - "the executions themselves (the snapshot is derived-auditable, not the source of truth)"
-      - "the order state (the snapshot supports state audit, it is not the state)"
+      - 披露状态词表，是封闭披露分类词表，用于表达成交对手方是已披露、匿名还是部分披露。
+    excludes: []
     sources:
-      - reference: "fix"
-        locator: "FIX 5.0 SP2 :: ExecutionReport CumQty / LeavesQty / AvgPx"
-        note: "FIX ExecutionReport carries CumQty, LeavesQty, and AvgPx; Axiolune captures them as an immutable snapshot for audit"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Order Leg"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderLeg"
-    definition: "optional single-leg component of a multi-leg order intent, used as an extension point for multi-leg instruments (FX swap, strategies); in v1.1.0 a single-instrument order carries no OrderLeg"
-    genus: "order leg component"
+    owner: axiolune-m2-team
+  - term: eventReason
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/eventReason
+    definition: provider reason text or normalized reason identifier for an event, used for explaining the cause of the event
+    genus: event reason
     differentia:
-      - "carries an orderSide and an orderQuantity per leg"
-      - "is an extension point; full multi-leg semantics are completed via a cross-module follow-up gated on the instruments QuotationConvention (ADR-021)"
-      - "absent for single-instrument v1.1.0 orders (described directly on the OrderIntent)"
-    excludes:
-      - "the single-instrument order (no leg in v1.1.0)"
-      - "execution legs (ExecutionLeg corresponds to an OrderLeg)"
+      - 事件原因，是供应方为某事件提供的原因文本或规范化原因标识，用于解释该事件发生的缘由。
+    excludes: []
     sources:
-      - reference: "fix"
-        locator: "FIX 5.0 SP2 :: ExecutionReport legs / multi-leg"
-        note: "FIX supports multi-leg strategies; Axiolune scaffolds legs as an extension point"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Execution Leg"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/ExecutionLeg"
-    definition: "optional single-leg execution component corresponding to an OrderLeg, used as an extension point for multi-leg executions; in v1.1.0 a single-instrument execution carries no ExecutionLeg"
-    genus: "execution leg component"
+    owner: axiolune-m2-team
+  - term: executedAt
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/executedAt
+    definition: >-
+      optional inclusive UTC instant at which the trade represented by an execution actually occurred, distinct from the
+      provider-reporteded and observed timestamps
+    genus: executed at
     differentia:
-      - "carries an executionQuantity and an executionPrice per leg"
-      - "corresponds to an OrderLeg of a multi-leg order"
-      - "full semantics are completed via a cross-module follow-up gated on the instruments QuotationConvention (ADR-021)"
-      - "absent for single-instrument v1.1.0 executions (described directly on the Execution)"
-    excludes:
-      - "the single-instrument execution (no leg in v1.1.0)"
-      - "the order leg (OrderLeg is the instruction; ExecutionLeg is the fill)"
+      - 成交时刻，是成交所代表交易实际发生的可选含端 UTC 瞬时，区别于供应方上报与系统观察时间戳。
+    excludes: []
     sources:
-      - reference: "fix"
-        locator: "FIX 5.0 SP2 :: ExecutionReport legs"
-        note: "FIX ExecutionReport may carry per-leg fill data for multi-leg strategies"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
-
-  - term: "Order Event Stream"
-    canonicalIri: "https://axiolune.ai/ontology/finance/orders-execution/OrderEventStream"
-    definition: "provider event stream locked to a single ExternalOrder logical identity, carrying all lifecycle events and fill reports of that order and declaring its liquidity-role classification capability; it is a per-order event sequence, not a live FIX/WebSocket feed"
-    genus: "per-order event sequence"
+    owner: axiolune-m2-team
+  - term: Execution
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/Execution
+    definition: >-
+      An Execution is an immutable provider fill or fill-report fact that occurs in one exact event stream, used for
+      recording the real economic content of a trade through explicit execution-side and contra-side accounts, party
+      roles, instrument, quantity, price, and the matching quotation contract.
+    genus: Execution
     differentia:
-      - "locked to exactly one ExternalOrder logical identity"
-      - "carries the source contract, provider API/schema version, provider stream id, and liquidity-role capability"
-      - "is a single-external-order event sequence, not a live provider feed or session (those are a separate optional concept)"
-    excludes:
-      - "a live FIX/WebSocket feed or session (the stream is a per-order logical sequence)"
-      - "the external order itself (referenced via streamExternalOrder)"
+      - 成交，是发生在确切事件流中的不可变供应方成交或成交回报事实，用于以显式的执行方与对手方账户、当事人角色、工具、数量、价格与报价契约记录一笔买卖的真实经济内容。
+    excludes: []
     sources:
-      - reference: "nautilus-trader"
-        locator: "nautilus_trader/model/events/order.pyx::OrderEvent"
-        note: "Per-order event sequence in the event-sourced model"
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ExecutionAllocation
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/ExecutionAllocation
+    definition: >-
+      An Execution Allocation is an immutable allocation fact that distributes one source Execution across one or more
+      AllocationLine target accounts, used to express post-execution allocation, average-price allocation, and
+      bunched-order back-allocation with quantity conservation, while detailed allocation and clearing semantics remain
+      in post-trade-operations with a stable cross-module reference to the source Execution.
+    genus: Execution Allocation
+    differentia:
+      - >-
+        成交分配，是把单一源成交分配到一个或多个 AllocationLine 目标账户的不可变分配事实，用于以数量守恒表达执行后分配、均分配与打包订单后分配，而详细分配与清算语义保留在 post-trade-operations
+        并通过稳定的跨模块引用指向源成交。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ExecutionLeg
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/ExecutionLeg
+    definition: >-
+      optional single-leg execution component corresponding to an OrderLeg, used as an extension point for multi-leg
+      executions; in v1.1.0 a single-instrument execution carries no ExecutionLeg
+    genus: execution leg component
+    differentia:
+      - carries an executionQuantity and an executionPrice per leg
+      - corresponds to an OrderLeg of a multi-leg order
+      - full semantics are completed via a cross-module follow-up gated on the instruments QuotationConvention (ADR-021)
+      - absent for single-instrument v1.1.0 executions (described directly on the Execution)
+    excludes:
+      - the single-instrument execution (no leg in v1.1.0)
+      - the order leg (OrderLeg is the instruction; ExecutionLeg is the fill)
+    sources:
+      - reference: fix
+        locator: 'FIX 5.0 SP2 :: ExecutionReport legs'
+        note: FIX ExecutionReport may carry per-leg fill data for multi-leg strategies
+    status: accepted
+  - term: executionPrice
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/executionPrice
+    definition: >-
+      Money price attribute interpreted only through the exact direct-unit quotation contract, used for expressing the
+      trade price of the execution
+    genus: execution price
+    differentia:
+      - 成交价，是仅通过确切的直接单位报价契约来解释的货币价格属性，用于表达该笔成交的成交价格。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: executionQuantity
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/executionQuantity
+    definition: >-
+      strictly positive absolute Quantity attribute filled by an Execution, used for expressing the amount of the
+      instrument traded in that execution
+    genus: execution quantity
+    differentia:
+      - 成交数量，是某次成交所成交的严格为正的绝对数量属性，用于表达该笔成交的标的数量。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: executionQuotationConvention
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/executionQuotationConvention
+    definition: >-
+      relationship from an Execution to its quotation convention, used as the hook to be broadened from
+      DirectUnitPriceQuotationContract to the abstract QuotationConvention (ADR-021) in a cross-module follow-up; in
+      v1.1.0 it references the retained DirectUnitPriceQuotationContract
+    genus: execution quotation convention
+    differentia:
+      - >-
+        成交报价约定，是从成交指向其报价约定的关系，作为从 DirectUnitPriceQuotationContract 扩展为抽象 QuotationConvention（ADR-021）的跨模块后续钩子；在 v1.1.0
+        中引用保留的 DirectUnitPriceQuotationContract。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: executionVenue
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/executionVenue
+    definition: >-
+      relationship from an Execution to the logical TradingFacility where the execution occurred, used to distinguish
+      the actual execution venue from the execution listing
+    genus: execution venue
+    differentia:
+      - 成交场所，是从成交指向成交发生所在的逻辑交易设施的关系，用于区分实际成交场所与成交挂牌。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: expectedAfterSourceOrderKey
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/expectedAfterSourceOrderKey
+    definition: >-
+      source order key after which an acknowledgement was required, used for judging whether an acknowledgement is
+      missing
+    genus: expected after source order key
+    differentia:
+      - 期望之后源订单序键，是确认本应在其之后到达的源订单序键，用于判定应答是否缺失。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ExternalOrder
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrder
+    definition: >-
+      An External Order is a provider-scoped order that has been accepted or submitted by a provider, used for binding
+      one exact OrderIntent version to a specific provider interface and external order identifier as the order fact
+      anchor of an external system.
+    genus: External Order
+    differentia:
+      - 外部订单，是已被执行方受理或提交的、按供应方作用域标识的订单，用于把某条确切的订单意图版本绑定到具体供应方的接口与外部订单标识，作为外部系统的订单事实锚点。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: externalOrderId
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/externalOrderId
+    definition: >-
+      provider-scoped immutable string identifier of an external order, used for providing the logical identity primary
+      key of an ExternalOrder
+    genus: external order identifier
+    differentia:
+      - 外部订单标识，是供应方作用域内不可变的外部订单字符串标识，用于为外部订单提供逻辑身份主键。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: externalOrderOriginatingIntent
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/externalOrderOriginatingIntent
+    definition: >-
+      relationship from an ExternalOrder to its exact originating OrderIntent version, used for anchoring the external
+      order to its unique client trade intent
+    genus: external order originating intent
+    differentia:
+      - 外部订单源起意图，是从外部订单指向其确切的源起订单意图版本的关系，用于把外部订单锚定到其唯一的客户交易意图。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: externalOrderProvider
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/externalOrderProvider
+    definition: >-
+      relationship from an ExternalOrder to the logical provider Party, used for identifying the execution service
+      provider that accepted or holds the external order
+    genus: external order provider
+    differentia:
+      - 外部订单供应方，是从外部订单指向其逻辑供应方当事人的关系，用于标识受理或托管该外部订单的执行服务方。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ExternalOrderStatusMapping
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusMapping
+    definition: >-
+      An External Order Status Mapping is a reviewed, effective-dated mapping, used for translating one provider raw
+      status code into exactly one canonical lifecycle state, and for preventing provider values from entering the
+      canonical vocabulary.
+    genus: External Order Status Mapping
+    differentia:
+      - 外部订单状态映射，是经评审且带生效期的映射，用于把某一供应方原始状态码映射到唯一的规范生命周期状态，阻止供应方取值进入规范词表。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ExternalOrderStatusVocabulary
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/ExternalOrderStatusVocabulary
+    definition: >-
+      An External Order Status Vocabulary is a raw status-code vocabulary scoped by provider, API, and schema version,
+      used for collecting each provider's raw status-code values before they are reviewed and mapped to the canonical
+      lifecycle state vocabulary.
+    genus: External Order Status Vocabulary
+    differentia:
+      - 外部订单状态词表，是按供应方、接口与版本作用域标识的原始状态码词表，用于在评审映射到规范生命周期状态之前，收录各供应方的原始状态码取值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: Fee
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/Fee
+    definition: >-
+      A Fee is an immutable charge or rebate fact recorded for one exact Execution version, used for expressing the
+      economic or regulatory cost of a trade through a strictly positive amount together with a fee-effect direction,
+      whose direction is never carried by a signed amount.
+    genus: Execution Fee
+    differentia:
+      - 成交费用，是针对确切成交版本记录的不可变收费或返利事实，用于以严格为正的金额配合费用效应方向表达一笔成交的经济或监管费用，其方向不以符号金额承载。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: feeAmount
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/feeAmount
+    definition: >-
+      strictly positive Money magnitude attribute, used for expressing the magnitude of the fee, whose sign is never
+      overloaded with fee-effect semantics
+    genus: fee amount
+    differentia:
+      - 费用金额，是严格为正的货币金额属性，用于表达费用的数值大小，其符号不承载费用方向语义。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: feeBasis
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/feeBasis
+    definition: >-
+      optional string describing the basis on which a fee was calculated (e.g. per-share, notional, bps), used to
+      explain the fee amount
+    genus: fee basis
+    differentia:
+      - 费用依据，是描述费用计算依据（如每股、按名义、按基点）的可选字符串，用于解释费用金额。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: feeEffect
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/feeEffect
+    definition: >-
+      charge-or-rebate arithmetic direction attribute for a positive fee magnitude, used for independently determining
+      the direction in which the fee affects cost or proceeds
+    genus: fee effect
+    differentia:
+      - 费用效应，是为正费用金额指定收费或返利方向的算术方向属性，用于独立决定费用对成本或收益的影响方向。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: FeeEffect
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/FeeEffect
+    definition: >-
+      Closed arithmetic direction vocabulary of a positive Fee magnitude, used for canonically expressing whether a fee
+      is a charge or a rebate.
+    genus: Fee Effect
+    differentia:
+      - 费用效应词表，是正费用金额的封闭算术方向词表，用于规范表达费用是收费还是返利。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: feeId
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/feeId
+    definition: >-
+      source-scoped immutable string identifier of one fee fact, used for providing the logical identity primary key of
+      a fee fact
+    genus: fee identifier
+    differentia:
+      - 费用标识，是来源作用域内标识某条费用事实的不可变字符串，用于为费用事实提供逻辑身份主键。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: feeKind
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/feeKind
+    definition: >-
+      closed classification member identifying the economic or regulatory kind of an execution Fee, used for
+      distinguishing commission, exchange fee, clearing fee, and other fee natures
+    genus: fee kind
+    differentia:
+      - 费用类别，是标识成交费用经济或监管类别的封闭分类成员，用于区分佣金、交易所费、清算费等费用性质。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: FeeKind
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/FeeKind
+    definition: >-
+      Closed classification of commissions, exchange fees, clearing fees, regulatory fees, taxes, and residual fees
+      attached to an Execution, used for canonically expressing the economic or regulatory nature of a fee.
+    genus: Fee Kind
+    differentia:
+      - 费用类别词表，是对成交所附佣金、交易所费、清算费、监管费、税费及残余费用的封闭分类，用于规范表达费用的经济或监管性质。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: feePayee
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/feePayee
+    definition: >-
+      relationship from a Fee to the logical Party that receives the fee, used to fix the fee effect relative to an
+      explicit payee or assessor
+    genus: fee payee
+    differentia:
+      - 费用收取方，是从费用指向收取该费用的逻辑参与方的关系，用于将费用效应相对于明确收取方或评估方固定。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: feePayer
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/feePayer
+    definition: >-
+      relationship from a Fee to the logical Party that pays the fee, used to fix the fee effect relative to an explicit
+      payer
+    genus: fee payer
+    differentia:
+      - 费用支付方，是从费用指向支付该费用的逻辑参与方的关系，用于将费用效应相对于明确支付方固定。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: feeTaxJurisdiction
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/feeTaxJurisdiction
+    definition: optional logical Jurisdiction under whose tax authority a fee falls, used for tax-jurisdiction-scoped fees
+    genus: fee tax jurisdiction
+    differentia:
+      - 费用税务辖区，是费用所属税务辖区的可选逻辑辖区，用于按税务辖区划分的费用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: fieldAbsenceProbeDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/fieldAbsenceProbeDigest
+    definition: >-
+      SHA-256 digest value of the completed field-absence probe record, used for verifying the content integrity of the
+      probe record
+    genus: field absence probe digest
+    differentia:
+      - 字段缺失探针摘要，是已完成的字段缺失探针记录的摘要值，用于验证探针记录的内容完整性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: fieldAbsenceProbeRef
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/fieldAbsenceProbeRef
+    definition: >-
+      immutable URI reference to the completed source-record field-absence probe, used for locating the probe record
+      that proves the absence of a field
+    genus: field absence probe reference
+    differentia:
+      - 字段缺失探针引用，是指向已完成的来源记录字段缺失探针的不可变引用，用于定位证明某字段缺失的探针记录。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: FillSnapshot
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/FillSnapshot
+    definition: >-
+      immutable cumulative-quantity snapshot object carried by a fill-kind lifecycle event, expressing last fill
+      quantity, cumulative filled quantity, remaining (leaves) quantity, cancelled quantity, and average price so the
+      event-execution-cumulative-quantity-state loop is auditable without recomputation
+    genus: cumulative quantity snapshot
+    differentia:
+      - carries lastQty, cumQty, leavesQty, cancelledQty, and averagePrice (all optional)
+      - >-
+        cumQty equals the sum of executionQuantity over the stream's executions for the order up to and including the
+        reported execution
+      - leavesQty = orderQuantity - cumQty - cancelledQty and is non-negative
+      - Filled iff leavesQty = 0; PartiallyFilled iff leavesQty > 0 and cumQty > 0
+    excludes:
+      - the executions themselves (the snapshot is derived-auditable, not the source of truth)
+      - the order state (the snapshot supports state audit, it is not the state)
+    sources:
+      - reference: fix
+        locator: 'FIX 5.0 SP2 :: ExecutionReport CumQty / LeavesQty / AvgPx'
+        note: >-
+          FIX ExecutionReport carries CumQty, LeavesQty, and AvgPx; Axiolune captures them as an immutable snapshot for
+          audit
+    status: accepted
+  - term: findingProviderEventId
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/findingProviderEventId
+    definition: >-
+      provider event identifier in a duplicateConflict finding subject, used for indicating which event identifier is in
+      conflict
+    genus: finding provider event identifier
+    differentia:
+      - 发现供应方事件标识，是重复冲突发现主体中的供应方事件标识，用于指明发生冲突的事件标识。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: implementationDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/implementationDigest
+    definition: >-
+      SHA-256 digest value over the canonical executable implementation bytes, used for locking the implementation
+      content of the transition evaluator
+    genus: implementation digest
+    differentia:
+      - 实现摘要，是规范可执行实现字节的摘要值，用于锁定流转评估器的实现内容。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: inputContractDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/inputContractDigest
+    definition: SHA-256 digest value of the evaluator input contract, used for locking the input contract of the evaluator
+    genus: input contract digest
+    differentia:
+      - 输入契约摘要，是评估器输入契约的摘要值，用于锁定评估器的输入约定。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: intentAccount
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/intentAccount
+    definition: >-
+      relationship from an OrderIntent to its logical FinancialAccount, used for identifying the account principal of
+      the trade at the intent level
+    genus: intent account
+    differentia:
+      - 意图账户，是从订单意图指向其逻辑金融账户的关系，用于在意图层面标识该交易所属的账户主体。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: intentIdentifierAuthority
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/intentIdentifierAuthority
+    definition: >-
+      relationship from an OrderIntent to the logical IdentifierAuthority that scopes its clientIntentId, used to
+      establish the two-component logical key (authority, clientIntentId) so that two different authorities using the
+      same clientIntentId remain distinct
+    genus: intent identifier authority
+    differentia:
+      - 意图标识权威，是从订单意图指向限定其 clientIntentId 的逻辑标识权威的关系，用于建立两分量逻辑键（权威，clientIntentId），使两个不同权威使用相同 clientIntentId 仍可区分。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: intentInstrument
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/intentInstrument
+    definition: >-
+      relationship from an OrderIntent to its logical FinancialInstrument, used for identifying the instrument to be
+      bought or sold by the trade intent
+    genus: intent instrument
+    differentia:
+      - 意图工具，是从订单意图指向其逻辑金融工具的关系，用于标识该交易意图所欲买卖的工具标的。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: intentIssuer
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/intentIssuer
+    definition: >-
+      relationship from an OrderIntent to the logical Party that issued the intent, used to identify the client,
+      strategy, or authorized routing process that originated the trade intent independently of the account
+    genus: intent issuer
+    differentia:
+      - 意图发起方，是从订单意图指向发出该意图的逻辑参与方的关系，用于独立于账户标识发起该交易意图的客户、策略或授权路由过程。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: intentListing
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/intentListing
+    definition: >-
+      relationship from an OrderIntent to its optional exact listed trading context, used for binding the listed trading
+      context of the intent when trading on an exchange
+    genus: intent listing
+    differentia:
+      - 意图挂牌，是从订单意图指向其可选的确切场内交易挂牌的关系，用于在挂牌交易时绑定该意图的挂牌交易上下文。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: intentOtcContext
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/intentOtcContext
+    definition: >-
+      relationship from an OrderIntent to its optional exact OTC trading context, used for binding the OTC trading
+      context of the intent when trading over the counter
+    genus: intent OTC context
+    differentia:
+      - 意图场外上下文，是从订单意图指向其可选的确切场外交易上下文的关系，用于在场外交易时绑定该意图的场外交易上下文。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: lastQty
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/lastQty
+    definition: >-
+      strictly positive absolute Quantity filled by the last execution recorded in a FillSnapshot, used to express the
+      incremental fill quantity of the event
+    genus: last quantity
+    differentia:
+      - 本次数量，是成交快照中记录的最后一次成交的严格为正的绝对数量，用于表达该事件的增量成交数量。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: leavesQty
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/leavesQty
+    definition: remaining (open) Quantity recorded in a FillSnapshot, used to express the quantity still eligible for filling
+    genus: leaves quantity
+    differentia:
+      - 剩余数量，是成交快照中记录的剩余（未成交）数量，用于表达仍可成交的数量。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: lifecycleState
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/lifecycleState
+    definition: >-
+      resulting canonical lifecycle state attribute stored on an immutable event, used for expressing the canonical
+      state of an order after an event has occurred
+    genus: lifecycle state
+    differentia:
+      - 生命周期状态，是记录在不可变事件上的结果规范生命周期状态属性，用于表达事件发生后订单所处的规范状态。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: limitPrice
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/limitPrice
+    definition: >-
+      Money price limit required only when the executable profile of the order type demands one, used for constraining
+      the executable price of a limit-type order
+    genus: limit price
+    differentia:
+      - 限价，是仅当订单类型的执行画像需要时所要求的货币价格限值，用于约束限价类订单的可成交价格。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: liquidityDeterminationResult
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/liquidityDeterminationResult
+    definition: >-
+      classified-or-unavailable branch discriminator attribute, used for expressing whether the determination yields a
+      role or declares unavailability
+    genus: liquidity determination result
+    differentia:
+      - 流动性判定结果，是区分已分类与不可用分支的判定属性，用于表达判定是给出角色还是声明不可用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: LiquidityDeterminationResult
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityDeterminationResult
+    definition: >-
+      Closed mutually exclusive branch discriminator vocabulary for liquidity evidence, used for canonically expressing
+      whether a determination is classified or unavailable.
+    genus: Liquidity Determination Result
+    differentia:
+      - 流动性判定结果词表，是流动性证据的封闭互斥分支判别词表，用于规范表达判定是已分类还是不可用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: liquidityMappingId
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/liquidityMappingId
+    definition: >-
+      stable string identifier of a source liquidity-role mapping, used for providing the logical identity primary key
+      of a liquidity mapping
+    genus: liquidity mapping identifier
+    differentia:
+      - 流动性映射标识，是来源流动性角色映射的稳定字符串标识，用于为流动性映射提供逻辑身份主键。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: liquidityPerspective
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/liquidityPerspective
+    definition: >-
+      fixed execution-account-order perspective attribute of a liquidity determination, used for specifying the
+      perspective on which the determination result is based
+    genus: liquidity perspective
+    differentia:
+      - 流动性视角，是流动性判定的固定执行账户订单视角属性，用于明确判定结果所基于的视角。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: LiquidityPerspective
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityPerspective
+    definition: >-
+      Closed perspective vocabulary used for canonical liquidity determinations, used for specifying the execution
+      account-order perspective on which the determination is based.
+    genus: Liquidity Perspective
+    differentia:
+      - 流动性视角词表，是用于规范流动性判定的封闭视角词表，用于明确判定所基于的执行账户订单视角。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: liquidityRole
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/liquidityRole
+    definition: >-
+      maker, taker, or contract-defined auction-undefined result attribute, used for expressing the role of the
+      execution order in providing liquidity
+    genus: liquidity role
+    differentia:
+      - 流动性角色，是表明执行订单作为 maker、taker 或拍卖未定义的结果属性，用于表达该成交在提供流动性方面的角色。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: LiquidityRole
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRole
+    definition: >-
+      Closed account-order liquidity role vocabulary, used for canonically expressing whether an execution order is a
+      maker, a taker, or auction-undefined.
+    genus: Liquidity Role
+    differentia:
+      - 流动性角色词表，是账户订单视角的封闭流动性角色词表，用于规范表达成交订单是 maker、taker 还是拍卖未定义。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: liquidityRoleCapability
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/liquidityRoleCapability
+    definition: >-
+      closed source-contract capability attribute governing liquidity classification, used for declaring whether an
+      event stream requires, optionally supports, or does not support liquidity role classification
+    genus: liquidity role capability
+    differentia:
+      - 流动性角色能力，是约束流动性分类的来源契约能力属性，用于声明某事件流对流动性角色分类是必需、可选还是不支持。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: LiquidityRoleCapability
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleCapability
+    definition: >-
+      Closed source-contract capability vocabulary for liquidity role evidence, used for canonically declaring the
+      degree of support an event stream provides for liquidity classification.
+    genus: Liquidity Role Capability
+    differentia:
+      - 流动性角色能力词表，是流动性角色证据的封闭来源契约能力词表，用于规范声明事件流对流动性分类的支持程度。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: LiquidityRoleDetermination
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleDetermination
+    definition: >-
+      A Liquidity Role Determination is a source-capability-governed liquidity-role fact for one exact Execution, used
+      for delivering, from the execution account-order perspective, either a classified liquidity role supported by
+      exact raw-field and mapping evidence, or an unavailable conclusion supported by exact contract or field-absence
+      evidence.
+    genus: Liquidity Role Determination
+    differentia:
+      - 流动性角色判定，是受来源能力约束、针对确切成交的流动性角色判定事实，用于从执行账户订单视角给出已分类的流动性角色或基于确切契约与字段缺失证据的不可用结论。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: LiquidityRoleMapping
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityRoleMapping
+    definition: >-
+      A Liquidity Role Mapping is a versioned source-contract mapping, used for converting a provider-declared raw field
+      and perspective into the canonical liquidity role from the execution account-order perspective, and for recording
+      any reviewed contra-perspective inversion.
+    genus: Liquidity Role Mapping
+    differentia:
+      - 流动性角色映射，是版本化的来源契约映射，用于把供应方声明的原始字段与视角转换为执行账户订单视角的规范流动性角色，并可记录评审后的对手视角反转。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: liquidityUnavailableReason
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/liquidityUnavailableReason
+    definition: >-
+      contractUnsupported or providerNotSpecified evidence branch reason attribute, used for explaining why a liquidity
+      role cannot be classified
+    genus: liquidity unavailable reason
+    differentia:
+      - 流动性不可用原因，是支持契约不支持或供应方未指定证据分支的原因属性，用于解释为何无法分类流动性角色。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: LiquidityUnavailableReason
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/LiquidityUnavailableReason
+    definition: >-
+      Closed reason vocabulary supporting an unavailable liquidity determination, used for canonically expressing the
+      two reasons, contract-unsupported and provider-not-specified.
+    genus: Liquidity Unavailable Reason
+    differentia:
+      - 流动性不可用原因词表，是支持流动性判定不可用的封闭原因词表，用于规范表达契约不支持或供应方未指定两类原因。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: mappingDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/mappingDigest
+    definition: >-
+      SHA-256 digest value of the canonical raw-value mapping table, used for verifying the content integrity of the
+      mapping table
+    genus: mapping digest
+    differentia:
+      - 映射摘要，是规范原始取值映射表的摘要值，用于验证映射表的内容完整性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: MatchedTrade
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/MatchedTrade
+    definition: >-
+      A Matched Trade is an immutable bilateral trade fact that links two account-side executions (or one execution to
+      its known counterparty) when bilateral evidence is sufficient, used to record the real two-sided economic trade
+      with both contra roles required and a disclosure status. It is absent for anonymous order-book fills or
+      client-side reports that cannot supply bilateral facts; those remain as single-sided Executions.
+    genus: Matched Trade
+    differentia:
+      - >-
+        已匹配成交，是当双边证据充分时将两个账户侧成交（或一个成交与其已知对手方）联系起来的不可变双边成交事实，用于以双方对手角色均必需并带披露状态记录真实双边经济成交。对于无法提供双边事实的匿名订单簿成交或客户侧报告，该对象缺席，仍为单边成交。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: matchId
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/matchId
+    definition: >-
+      optional match identifier string for the matched trade, distinct from the venue trade identifier and the provider
+      report identifier
+    genus: match identifier
+    differentia:
+      - 匹配标识，是已匹配成交的可选匹配标识字符串，区别于场所成交标识与供应方报告标识。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: missingKeyFrom
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/missingKeyFrom
+    definition: inclusive start of a sequence-gap half-open interval, used for bounding the lower end of the missing key interval
+    genus: missing key from
+    differentia:
+      - 缺失键起点，是序号缺口半开区间的包含性起点，用于界定缺失序号区间的下界。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: missingKeyTo
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/missingKeyTo
+    definition: exclusive end of a sequence-gap half-open interval, used for bounding the upper end of the missing key interval
+    genus: missing key to
+    differentia:
+      - 缺失键终点，是序号缺口半开区间的排他性终点，用于界定缺失序号区间的上界。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: observedSourceOrderKey
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/observedSourceOrderKey
+    definition: observed source order key in an outOfOrder finding subject, used for recording the actual arrival order of events
+    genus: observed source order key
+    differentia:
+      - 观察到的源订单序键，是乱序发现主体中所观察到的源订单序键，用于记录实际到达事件的发生次序。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: orderCapacity
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/orderCapacity
+    definition: >-
+      closed capacity classification attribute, used to express agency, principal, and riskless-principal capacity
+      separate from the order side and position effect
+    genus: order capacity
+    differentia:
+      - 订单能力，是封闭能力分类属性，用于表达独立于订单方向与头寸效应的 agency、principal、riskless-principal 能力。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: OrderCapacity
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/OrderCapacity
+    definition: >-
+      closed capacity classification vocabulary, used to express agency, principal, and riskless-principal capacity
+      separate from order side and position effect
+    genus: Order Capacity
+    differentia:
+      - 订单能力词表，是封闭能力分类词表，用于表达独立于订单方向与头寸效应的 agency、principal、riskless-principal 能力。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: OrderEventIntegrityFinding
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventIntegrityFinding
+    definition: >-
+      An Order Event Integrity Finding is a typed finding fact for an event-stream defect, used for recording each kind
+      of integrity problem occurring in the event stream by defect kind, and for fixing the subject and evidence set for
+      each defect kind.
+    genus: Order Event Integrity Finding
+    differentia:
+      - 订单事件完整性发现，是针对事件流缺陷的类型化发现事实，用于按缺陷类别记录事件流中发生的各类完整性问题，并为每类缺陷固化其主体与证据集合。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: orderEventKind
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/orderEventKind
+    definition: >-
+      immutable event-log kind attribute distinct from the resulting state, used for expressing the type of the event
+      itself rather than the state it causes
+    genus: order event kind
+    differentia:
+      - 订单事件类别，是与结果状态相区别的不可变事件日志类别，用于表达事件本身的类型而非其所导致的状态。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: OrderEventKind
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventKind
+    definition: >-
+      Immutable event-kind vocabulary distinct from the resulting lifecycle state, used for canonically expressing the
+      type of the event itself in the event log.
+    genus: Order Event Kind
+    differentia:
+      - 订单事件类别词表，是与结果生命周期状态相区别的不可变事件类别词表，用于规范表达事件日志中事件本身的类型。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: OrderEventStream
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/OrderEventStream
+    definition: >-
+      provider event stream locked to a single ExternalOrder logical identity, carrying all lifecycle events and fill
+      reports of that order and declaring its liquidity-role classification capability; it is a per-order event
+      sequence, not a live FIX/WebSocket feed
+    genus: per-order event sequence
+    differentia:
+      - locked to exactly one ExternalOrder logical identity
+      - carries the source contract, provider API/schema version, provider stream id, and liquidity-role capability
+      - >-
+        is a single-external-order event sequence, not a live provider feed or session (those are a separate optional
+        concept)
+    excludes:
+      - a live FIX/WebSocket feed or session (the stream is a per-order logical sequence)
+      - the external order itself (referenced via streamExternalOrder)
+    sources:
+      - reference: nautilus-trader
+        locator: nautilus_trader/model/events/order.pyx::OrderEvent
+        note: Per-order event sequence in the event-sourced model
     status: accepted
     deprecationNote: >-
-      The name "OrderEventStream" can be misread as a live FIX/WebSocket feed; it is
-      defined as a single-external-order event sequence. A rename to
-      ExternalOrderEventSequence was considered (ADR-025 D8/Round-15 P1-8) but
-      deferred to preserve IRI stability; the definition and this card clarify the
-      per-order-sequence semantics. A live provider feed/session remains a
-      separate optional concept.
+      The name "OrderEventStream" can be misread as a live FIX/WebSocket feed; it is defined as a single-external-order
+      event sequence. A rename to ExternalOrderEventSequence was considered (ADR-025 D8/Round-15 P1-8) but deferred to
+      preserve IRI stability; the definition and this card clarify the per-order-sequence semantics. A live provider
+      feed/session remains a separate optional concept.
+  - term: orderIntegrityKind
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/orderIntegrityKind
+    definition: >-
+      closed kind attribute of order event stream defect, used for distinguishing different defect types such as
+      duplicate conflict and sequence gap
+    genus: order integrity kind
+    differentia:
+      - 订单完整性类别，是订单事件流缺陷的封闭类别属性，用于区分重复冲突、序号缺口等不同缺陷类型。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: OrderIntegrityKind
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntegrityKind
+    definition: >-
+      Closed kind-discriminated order event integrity finding vocabulary, used for canonically expressing defect types
+      such as duplicate conflict, sequence gap, out-of-order, late fill, missing acknowledgement, and transition
+      violation.
+    genus: Order Integrity Kind
+    differentia:
+      - 订单完整性类别词表，是按类别区分的订单事件完整性发现的封闭词表，用于规范表达重复冲突、序号缺口、乱序、迟到成交、缺失应答与流转违规等缺陷类型。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: OrderIntent
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntent
+    definition: >-
+      stable trade intent issued by a client, strategy, or authorized routing process, specifying instrument, side,
+      quantity, type, time-in-force, and price constraints, and fixed under a two-component logical key
+      (intentIdentifierAuthority, clientIntentId) before provider acceptance
+    genus: trade instruction
+    differentia:
+      - specifies a financial instrument to trade
+      - specifies side (buy or sell)
+      - specifies quantity and order type
+      - specifies time-in-force and optional price constraints
+      - >-
+        is issued by an intentIssuer and scoped by an intentIdentifierAuthority; the account does not substitute for the
+        issuer or authority
+      - >-
+        may bind a single listing/OTC context, or specify an acceptableVenueSet / routingPolicy as a venue-neutral
+        alternative
+      - represents business intent, not external venue order
+    excludes:
+      - external venue order (bridged via ExternalOrder)
+      - execution (the actual fill)
+      - order lifecycle event (the state transition)
+    sources:
+      - reference: nautilus-trader
+        locator: nautilus_trader/model/events/order.pyx::OrderInitialized
+        note: >-
+          OrderInitialized event contains trader_id, strategy_id, instrument_id, side, type, quantity, time_in_force,
+          and price parameters
+      - reference: lean
+        locator: Common/Orders/Order.cs
+        note: Order abstract class with Symbol, Quantity, Type, TimeInForce, Direction properties
+      - reference: fibo-2026Q1
+        locator: SEC/Securities/SecuritiesListings::ListedSecurity
+        note: FIBO has ListedSecurity but no explicit order intent concept; Axiolune defines for trading semantics
+    status: accepted
+  - term: OrderIntentLifecycleEvent
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLifecycleEvent
+    definition: >-
+      An Order Intent Lifecycle Event is an immutable internal lifecycle event bound to an exact OrderIntent version but
+      not to any ExternalOrder or OrderEventStream, used to record pre-submission internal transitions such as intent
+      initialization, pre-submission denial, internal emulation, and emulated-order release before a provider order
+      exists. It shares the OrderEventKind and OrderLifecycleState vocabularies with the external OrderLifecycleEvent
+      but does not carry provider event identifiers, source order keys, raw provider status codes, or applied provider
+      mappings.
+    genus: Order Intent Lifecycle Event
+    differentia:
+      - >-
+        订单意图生命周期事件，是绑定到确切订单意图版本但不绑定任何外部订单或事件流的不可变内部生命周期事件，用于记录提交前内部转移，如意图初始化、提交前拒绝、内部模拟与模拟订单释放（此时尚无供应方订单）。它与外部
+        OrderLifecycleEvent 共享 OrderEventKind 与 OrderLifecycleState 词表，但不携带供应方事件标识、源订单序键、原始供应方状态码或所应用的供应方映射。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: OrderIntentLineage
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/OrderIntentLineage
+    definition: >-
+      An Order Intent Lineage is an immutable, source-evidenced routing transformation fact, used for connecting an
+      exact set of source intent versions to an exact set of result intent versions to express the domain provenance of
+      a split or aggregation, without representing any external side effect such as order submission.
+    genus: Order Intent Lineage
+    differentia:
+      - 订单意图谱系，是不可变且有来源证据的路由变换事实，用于把确切的源意图版本集合连接到确切的结果意图版本集合，表达拆分或聚合的领域溯源关系，而不代表报送等外部副作用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: OrderLeg
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/OrderLeg
+    definition: >-
+      optional single-leg component of a multi-leg order intent, used as an extension point for multi-leg instruments
+      (FX swap, strategies); in v1.1.0 a single-instrument order carries no OrderLeg
+    genus: order leg component
+    differentia:
+      - carries an orderSide and an orderQuantity per leg
+      - >-
+        is an extension point; full multi-leg semantics are completed via a cross-module follow-up gated on the
+        instruments QuotationConvention (ADR-021)
+      - absent for single-instrument v1.1.0 orders (described directly on the OrderIntent)
+    excludes:
+      - the single-instrument order (no leg in v1.1.0)
+      - execution legs (ExecutionLeg corresponds to an OrderLeg)
+    sources:
+      - reference: fix
+        locator: 'FIX 5.0 SP2 :: ExecutionReport legs / multi-leg'
+        note: FIX supports multi-leg strategies; Axiolune scaffolds legs as an extension point
+    status: accepted
+  - term: OrderLifecycleEvent
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleEvent
+    definition: >-
+      An External Order Lifecycle Event is an immutable provider event that occurs in one exact event stream version and
+      is bound to an exact ExternalOrder, used for determining its identity and occurrence order from the provider event
+      identifier and source order key, recording the resulting canonical lifecycle state, and tracing the raw provider
+      status code and the exact applied status mapping and transition profile versions. Pre-submission internal
+      lifecycle events (Initialized, Denied, Emulated, Released) that have no provider order or stream are modeled by
+      OrderIntentLifecycleEvent, not by this external event type.
+    genus: External Order Lifecycle Event
+    differentia:
+      - >-
+        外部订单生命周期事件，是发生在确切事件流版本中并绑定到确切外部订单的不可变供应方事件，用于以供应方事件标识与源订单序键确定其身份与发生次序，记录经规范化的结果生命周期状态，并追溯原始供应方状态码与所应用的精确状态映射与流转配置版本。无供应方订单或事件流的提交前内部生命周期事件（Initialized、Denied、Emulated、Released）由
+        OrderIntentLifecycleEvent 而非本外部事件类型建模。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: OrderLifecycleState
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/OrderLifecycleState
+    definition: >-
+      Canonical resulting order state vocabulary independent of provider raw codes, used for unifying the canonical
+      state of an order across its lifecycle.
+    genus: Order Lifecycle State
+    differentia:
+      - 订单生命周期状态词表，是独立于供应方原始码的规范订单结果状态词表，用于统一表达订单在其生命周期中的规范状态。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: orderLineageKeyDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/orderLineageKeyDigest
+    definition: >-
+      SHA-256 digest computed over the lineage kind and the two exact endpoint-set digests under domain separation by
+      the axiolune-order-intent-lineage-key-v1 contract, used for providing the unique logical key of a lineage fact.
+    genus: order lineage key digest
+    differentia:
+      - 谱系键摘要，是对谱系类别与两个端点集摘要经域名隔离后计算的摘要值，用于为谱系事实提供唯一逻辑键。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: orderLineageKind
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/orderLineageKind
+    definition: >-
+      split-or-aggregation branch attribute selected by an immutable OrderIntentLineage fact, used for distinguishing
+      the two routing types of a lineage transformation
+    genus: order lineage kind
+    differentia:
+      - 谱系类别，是不可变意图谱系事实所选定的拆分或聚合分支属性，用于区分谱系变换的两种路由类型。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: OrderLineageKind
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/OrderLineageKind
+    definition: >-
+      Closed classification of immutable order-intent routing transformations, used for distinguishing the two lineage
+      transformation types, split and aggregation.
+    genus: Order Lineage Kind
+    differentia:
+      - 订单谱系类别词表，是不可变订单意图路由变换的封闭分类，用于区分拆分与聚合两类谱系变换。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: orderQuantity
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/orderQuantity
+    definition: >-
+      strictly positive absolute Quantity attribute requested by an OrderIntent, used for expressing the amount of the
+      instrument the intent wishes to trade
+    genus: order quantity
+    differentia:
+      - 订单数量，是订单意图所请求的严格为正的绝对数量属性，用于表达该意图欲成交的标的数量。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: OrderRevision
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/OrderRevision
+    definition: >-
+      An Order Revision is an immutable cancel/replace chain fact that links a revision request to its previous and root
+      order, used to express the FIX ClOrdID/OrigClOrdID-style order chain with replace, cancel, cancel-replace, reject,
+      replaced terms, and a priority-preserved flag, rather than a single fixed order identifier updated in place.
+    genus: Order Revision
+    differentia:
+      - 订单修订，是把修订请求链接到其前序与根订单的不可撤改单链事实，用于以 FIX ClOrdID/OrigClOrdID 风格订单链表达替换、撤销、撤改、拒绝、被替换条款与优先级保留标记，而非以单个固定订单标识原地更新。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: OrderRoute
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/OrderRoute
+    definition: >-
+      An Order Route is an immutable routing fact that connects a parent OrderIntent (or parent route) to a child
+      ExternalOrder or child intent via a destination, routed quantity, route time, and route status/reason, used to
+      express venue-neutral, smart-order-router, best-execution, multi-child, and broker-decides-venue delegation
+      without forcing the parent intent to bind a single listing or OTC context before provider acceptance.
+    genus: Order Route
+    differentia:
+      - >-
+        订单路由，是把父订单意图（或父路由）经目的地、路由数量、路由时间与路由状态/原因连接到子外部订单或子意图的不可变路由事实，用于表达场所中立、智能订单路由、最佳执行、多子单与经纪商决定场所的委托，而无需在供应方接受前强制父意图绑定单一挂牌或场外上下文。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: orderSide
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/orderSide
+    definition: >-
+      independent buy-or-sell direction attribute of an intent or execution, used for expressing whether the trade
+      increases or decreases position exposure
+    genus: order side
+    differentia:
+      - 订单方向，是意图或成交中独立的买卖方向属性，用于表达该笔交易增加或减少头寸的方向语义。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: OrderSide
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/OrderSide
+    definition: >-
+      Closed semantic direction vocabulary without implementation sentinel members, used for canonically expressing the
+      buy-or-sell direction of an order.
+    genus: Order Side
+    differentia:
+      - 订单方向词表，是不含实现哨兵成员的封闭语义方向词表，用于规范表达订单的买卖方向。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: OrderTransitionProfile
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/OrderTransitionProfile
+    definition: >-
+      An Order Transition Profile is a versioned provider lifecycle-transition evaluator, used for fixing the canonical
+      event ordering, legal state transitions, and expiry and trigger rules, and for locking the evidence digests of its
+      implementation and runtime environment.
+    genus: Order Transition Profile
+    differentia:
+      - 订单流转配置，是按供应方版本化的生命周期流转评估器，用于固化规范事件次序、合法状态转移、到期与触发规则，并锁定其实现与运行环境的证据摘要。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: orderType
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/orderType
+    definition: >-
+      reviewed execution instruction kind attribute of an OrderIntent, used for distinguishing order types such as
+      market, limit, and stop by their price and trigger semantics
+    genus: order type
+    differentia:
+      - 订单类型，是订单意图经评审的执行指令类别属性，用于按价格与触发语义区分市价、限价、止损等订单类型。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: OrderType
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/OrderType
+    definition: >-
+      Closed classification of executable order instructions by their price and trigger semantics, used for canonically
+      expressing order types such as market, limit, and stop.
+    genus: Order Type
+    differentia:
+      - 订单类型词表，是按价格与触发语义对可执行订单指令的封闭分类，用于规范表达市价、限价、止损等订单类型。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: orderValidUntil
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/orderValidUntil
+    definition: >-
+      exclusive expiry instant required when the validity instruction has an explicit end, used for limiting the last
+      moment at which the order remains valid
+    genus: order valid until
+    differentia:
+      - 订单有效期截止，是当有效期指令含明确结束时所要求的排他性到期时刻，用于限定订单有效的最后时点。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: outputContractDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/outputContractDigest
+    definition: SHA-256 digest value of the evaluator output contract, used for locking the output contract of the evaluator
+    genus: output contract digest
+    differentia:
+      - 输出契约摘要，是评估器输出契约的摘要值，用于锁定评估器的输出约定。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: perspectiveInversion
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/perspectiveInversion
+    definition: >-
+      boolean attribute indicating whether a reviewed mapping inverts a contra-perspective source value, used for
+      handling liquidity values that originate from the counterparty side
+    genus: perspective inversion
+    differentia:
+      - 视角反转，是表明评审映射是否反转对手视角来源取值的布尔属性，用于处理来自对手方的流动性取值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: positionEffect
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/positionEffect
+    definition: >-
+      closed position-effect classification attribute separate from order side, used to express open, close, roll, and
+      similar position effects
+    genus: position effect
+    differentia:
+      - 头寸效应，是与订单方向相区别的封闭头寸效应分类属性，用于表达开仓、平仓、滚动等头寸效应。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: PositionEffect
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/PositionEffect
+    definition: >-
+      closed position-effect classification vocabulary separate from order side, used to express open, close, and roll
+      position effects
+    genus: Position Effect
+    differentia:
+      - 头寸效应词表，是与订单方向相区别的封闭头寸效应分类词表，用于表达开仓、平仓、滚动头寸效应。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: priorityPreserved
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/priorityPreserved
+    definition: >-
+      boolean attribute indicating whether a replace or cancel-replace revision preserves the original order priority in
+      the book
+    genus: priority preserved
+    differentia:
+      - 优先级保留，是表明替换或撤改修订是否保留原订单在簿中的优先级的布尔属性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: providerApiIdentifier
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/providerApiIdentifier
+    definition: >-
+      canonical string identifier of the provider API or protocol surface, used for distinguishing different execution
+      service interfaces
+    genus: provider API identifier
+    differentia:
+      - 供应方接口标识，是标识供应方接口或协议面的规范字符串属性，用于区分不同的执行服务接口。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: providerEventId
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/providerEventId
+    definition: >-
+      immutable event identifier string unique within one OrderEventStream, used for providing the provider-side event
+      primary key of a lifecycle event
+    genus: provider event identifier
+    differentia:
+      - 供应方事件标识，是在一条订单事件流内唯一的事件标识字符串，用于为生命周期事件提供供应方侧的事件主键。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: providerExecutionId
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/providerExecutionId
+    definition: >-
+      immutable trade or execution identifier string unique within one OrderEventStream, used for providing the
+      provider-side execution primary key of an execution fact
+    genus: provider execution identifier
+    differentia:
+      - 供应方成交标识，是在一条订单事件流内唯一的成交或执行标识字符串，用于为成交事实提供供应方侧的执行主键。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: providerReportedAt
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/providerReportedAt
+    definition: >-
+      optional inclusive UTC instant at which the provider reported the execution, distinct from the actual execution
+      and system observation timestamps
+    genus: provider reported at
+    differentia:
+      - 供应方上报时刻，是供应方上报成交的可选含端 UTC 瞬时，区别于实际成交与系统观察时间戳。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: providerReportId
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/providerReportId
+    definition: >-
+      optional provider report identifier string for the execution report, distinct from the venue trade identifier and
+      the match identifier
+    genus: provider report identifier
+    differentia:
+      - 供应方报告标识，是成交回报的可选供应方报告标识字符串，区别于场所成交标识与匹配标识。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: providerSchemaVersion
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/providerSchemaVersion
+    definition: >-
+      immutable provider-declared string version of the API or protocol, used for fixing the provider version on which a
+      fact relies
+    genus: provider schema version
+    differentia:
+      - 供应方版本号，是供应方声明的不可变接口或协议版本字符串，用于固定记录所依据的供应方版本。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: providerStreamId
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/providerStreamId
+    definition: >-
+      provider-scoped string identifier of one order event stream, used for providing the provider-side stream
+      identifier of an event stream
+    genus: provider stream identifier
+    differentia:
+      - 供应方流标识，是供应方作用域内标识某条订单事件流的字符串属性，用于为事件流提供供应方侧的流标识。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: rawFieldLocator
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/rawFieldLocator
+    definition: >-
+      canonical source-schema field locator string for a liquidity value, used for locating the field in the source
+      record that carries the liquidity value
+    genus: raw field locator
+    differentia:
+      - 原始字段定位符，是流动性数值的来源结构字段规范定位符，用于在来源记录中定位承载流动性取值的字段。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: rawLexicalValue
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/rawLexicalValue
+    definition: >-
+      exact source lexical value used by a classified liquidity mapping, used for recording the raw field value on which
+      the mapping was based
+    genus: raw lexical value
+    differentia:
+      - 原始词法取值，是已分类流动性映射所用的确切来源词法取值，用于记录映射所依据的原始字段取值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: rawPerspective
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/rawPerspective
+    definition: >-
+      source-contract perspective from which a raw liquidity value is expressed, used for identifying which side
+      perspective the value is given from
+    genus: raw perspective
+    differentia:
+      - 原始视角，是原始流动性取值所表达的来源契约视角，用于标识该取值是从哪一方视角给出的。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: rawProviderStatusCode
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/rawProviderStatusCode
+    definition: >-
+      exact provider lexical status code carried by an external lifecycle event before canonical mapping, used to make
+      the applied status mapping auditable on the event itself
+    genus: raw provider status code
+    differentia:
+      - 原始供应方状态码，是外部生命周期事件在规范映射前携带的确切供应方原始状态码，用于使所应用状态映射在事件本身可审计。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: rawStatusCode
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/rawStatusCode
+    definition: >-
+      exact provider lexical status code string before canonical mapping, used for recording the provider raw value that
+      is mapped to a canonical state
+    genus: raw status code
+    differentia:
+      - 原始状态码，是映射前的确切供应方原始状态码字符串，用于记录被映射到规范状态的供应方原始取值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: relatedVersionSetDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/relatedVersionSetDigest
+    definition: >-
+      digest value of the sorted unique exact versions cited by an integrity finding, used for verifying the integrity
+      and consistency of the version set involved in the finding
+    genus: related version set digest
+    differentia:
+      - 关联版本集摘要，是完整性发现所引用的排序去重确切版本集合的摘要值，用于验证发现所涉版本集合的完整性与一致性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: replacedTerms
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/replacedTerms
+    definition: optional string describing the terms that replace the previous order terms in a replace or cancel-replace revision
+    genus: replaced terms
+    differentia:
+      - 替换条款，是描述在替换或撤改修订中替换前序订单条款的可选字符串。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reportsExecution
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/reportsExecution
+    definition: >-
+      relationship from a fill-kind OrderLifecycleEvent to the exact Execution version it records, used to close the
+      event—execution—cumulative-quantity—state loop
+    genus: reports execution
+    differentia:
+      - 报告成交，是从成交类生命周期事件指向其所记录的确切成交版本的关系，用于闭合事件—成交—累计数量—状态闭环。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: requiredPredecessorSourceOrderKey
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/requiredPredecessorSourceOrderKey
+    definition: >-
+      predecessor key required before an outOfOrder event, used for judging whether the event violates the order
+      constraint
+    genus: required predecessor source order key
+    differentia:
+      - 所需前驱源订单序键，是乱序事件之前所必需的前驱序键，用于判定事件是否违反了次序约束。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: resultIntentCount
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/resultIntentCount
+    definition: >-
+      exact number of result OrderIntent versions in the lineage output closure, used for verifying the closure of the
+      lineage endpoints together with the set digest
+    genus: result intent count
+    differentia:
+      - 结果意图数量，是谱系输出闭包中结果订单意图版本的精确数量，用于与集合摘要共同验证谱系端点的封闭性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: resultIntentVersionSetDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/resultIntentVersionSetDigest
+    definition: >-
+      section-5.8 framed IRI-set digest over the sorted unique exact result OrderIntent versions, used for verifying the
+      integrity and consistency of the lineage result endpoint set
+    genus: result intent version-set digest
+    differentia:
+      - 结果意图版本集摘要，是对排序去重后的确切结果意图版本集合的摘要值，用于验证谱系结果端点集合的完整性与一致性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reviewDecisionDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/reviewDecisionDigest
+    definition: >-
+      SHA-256 digest value of the canonical mapping review record, used for verifying the content integrity of the
+      review decision record
+    genus: review decision digest
+    differentia:
+      - 评审决策摘要，是规范映射评审记录的摘要值，用于验证评审决策记录的内容完整性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: reviewDecisionRef
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/reviewDecisionRef
+    definition: >-
+      immutable URI reference to the human-reviewed semantic mapping decision, used for locating the review record of
+      that mapping decision
+    genus: review decision reference
+    differentia:
+      - 评审决策引用，是指向经人工评审的语义映射决策的不可变引用，用于定位该映射决策的评审记录。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: revisionKind
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/revisionKind
+    definition: >-
+      closed classification attribute of an OrderRevision, used to distinguish replace, cancel, and cancel-replace
+      revision kinds
+    genus: revision kind
+    differentia:
+      - 修订类别，是订单修订的封闭分类属性，用于区分 replace、cancel、cancel-replace 修订类别。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RevisionKind
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/RevisionKind
+    definition: >-
+      closed classification vocabulary of order revision kinds, used to distinguish replace, cancel, and cancel-replace
+      revisions in an order chain
+    genus: Revision Kind
+    differentia:
+      - 修订类别词表，是订单修订类别的封闭分类词表，用于区分订单链中的 replace、cancel、cancel-replace 修订。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: revisionRequestId
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/revisionRequestId
+    definition: >-
+      immutable string identifier of a cancel/replace revision request, used to provide the logical identity primary key
+      of an OrderRevision
+    genus: revision request identifier
+    differentia:
+      - 修订请求标识，是撤改修订请求的不可变字符串标识，用于为订单修订提供逻辑身份主键。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: routedQuantity
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/routedQuantity
+    definition: >-
+      strictly positive absolute Quantity routed by an OrderRoute, used to express the quantity delegated to a child
+      order or destination
+    genus: routed quantity
+    differentia:
+      - 路由数量，是某订单路由路由的严格为正的绝对数量，用于表达委托给子单或目的地的数量。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: routeReason
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/routeReason
+    definition: >-
+      optional reason text or normalized identifier explaining why a route was made or changed, used to explain routing
+      decisions
+    genus: route reason
+    differentia:
+      - 路由原因，是解释路由为何发生或变更的可选原因文本或规范化标识，用于解释路由决策。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: routeStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/routeStatus
+    definition: >-
+      closed route-status classification attribute of an OrderRoute, used to express the state of a route (e.g. routed,
+      accepted, rejected, cancelled)
+    genus: route status
+    differentia:
+      - 路由状态，是某订单路由的封闭路由状态分类属性，用于表达路由的状态（如 routed、accepted、rejected、cancelled）。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: RouteStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/RouteStatus
+    definition: closed route-status classification vocabulary, used to express the state of an order route
+    genus: Route Status
+    differentia:
+      - 路由状态词表，是封闭路由状态分类词表，用于表达订单路由的状态。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: routeTime
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/routeTime
+    definition: inclusive UTC instant at which an OrderRoute was made, used to order routes within a parent intent
+    genus: route time
+    differentia:
+      - 路由时刻，是某订单路由发生的含端 UTC 瞬时，用于在父意图内排列路由次序。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: routingPolicy
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/routingPolicy
+    definition: >-
+      optional string describing the routing policy governing a venue-neutral OrderIntent (e.g. best-execution, SOR),
+      used when no single listing or OTC context is bound
+    genus: routing policy
+    differentia:
+      - 路由策略，是描述管辖场所中立订单意图路由策略（如最佳执行、SOR）的可选字符串，在未绑定单一挂牌或场外上下文时使用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: runtimeDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/runtimeDigest
+    definition: >-
+      SHA-256 digest value of the evaluator runtime environment, used for locking the content of the evaluator runtime
+      environment
+    genus: runtime digest
+    differentia:
+      - 运行时摘要，是评估器运行时环境的摘要值，用于锁定评估器运行环境的内容。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: shortSaleIndicator
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/shortSaleIndicator
+    definition: >-
+      closed short-sale indicator classification attribute, used to express long, short, and short-exempt markers
+      required by short-sale regulation (e.g. SEC Regulation SHO)
+    genus: short sale indicator
+    differentia:
+      - 卖空标记，是封闭卖空标记分类属性，用于表达卖空监管（如 SEC Regulation SHO）所要求的 long、short、short-exempt 标记。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ShortSaleIndicator
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/ShortSaleIndicator
+    definition: >-
+      closed short-sale indicator classification vocabulary, used to express long, short, and short-exempt markers
+      required by short-sale regulation
+    genus: Short Sale Indicator
+    differentia:
+      - 卖空标记词表，是封闭卖空标记分类词表，用于表达卖空监管所要求的 long、short、short-exempt 标记。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceContractDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/sourceContractDigest
+    definition: >-
+      SHA-256 digest value over the canonical source contract bytes, used for verifying the content integrity of the
+      referenced contract
+    genus: source contract digest
+    differentia:
+      - 来源契约摘要，是来源契约规范字节的摘要值，用于验证所引用契约的内容完整性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceContractRef
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/sourceContractRef
+    definition: >-
+      immutable URI reference to the source schema, mapping, and capability contract, used for locating the source
+      contract on which a fact was generated
+    genus: source contract reference
+    differentia:
+      - 来源契约引用，是指向来源结构、映射与能力契约的不可变引用，用于定位生成某事实所依据的来源契约。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceIntentCount
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/sourceIntentCount
+    definition: >-
+      exact number of source OrderIntent versions in the lineage input closure, used for verifying the closure of the
+      lineage endpoints together with the set digest
+    genus: source intent count
+    differentia:
+      - 源意图数量，是谱系输入闭包中源订单意图版本的精确数量，用于与集合摘要共同验证谱系端点的封闭性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceIntentVersionSetDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/sourceIntentVersionSetDigest
+    definition: >-
+      section-5.8 framed IRI-set digest over the sorted unique exact source OrderIntent versions, used for verifying the
+      integrity and consistency of the lineage source endpoint set
+    genus: source intent version-set digest
+    differentia:
+      - 源意图版本集摘要，是对排序去重后的确切源意图版本集合的摘要值，用于验证谱系源端点集合的完整性与一致性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceOrderKey
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/sourceOrderKey
+    definition: >-
+      non-negative normalized provider ordering key unique within one event stream, used for determining the occurrence
+      order of events within that stream
+    genus: source order key
+    differentia:
+      - 源订单序键，是在一条事件流内唯一的非负规范化供应方排序键，用于确定事件在该流中的发生次序。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceRecordDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/sourceRecordDigest
+    definition: >-
+      SHA-256 digest value of the exact canonical provider record bytes, used for verifying the content integrity of the
+      evaluated record
+    genus: source record digest
+    differentia:
+      - 来源记录摘要，是确切的规范供应方记录字节的摘要值，用于验证所评估记录的内容完整性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: sourceRecordRef
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/sourceRecordRef
+    definition: >-
+      immutable URI reference to the exact provider record evaluated, used for locating the original record that was
+      determined
+    genus: source record reference
+    differentia:
+      - 来源记录引用，是指向所评估的确切供应方记录的不可变引用，用于定位被判定的原始记录。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: statusMappingVersion
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/statusMappingVersion
+    definition: >-
+      immutable semantic version string of one provider status mapping, used for fixing the version of a mapping
+      decision
+    genus: status mapping version
+    differentia:
+      - 状态映射版本，是某条供应方状态映射的不可变语义版本字符串，用于固定该映射决策的版本。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: statusVocabularyId
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/statusVocabularyId
+    definition: >-
+      provider-scoped stable string identifier of an external status vocabulary, used for providing the logical identity
+      primary key of a status vocabulary
+    genus: status vocabulary identifier
+    differentia:
+      - 状态词表标识，是供应方作用域内标识某外部状态词表的稳定字符串属性，用于为状态词表提供逻辑身份主键。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: statusVocabularyProvider
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/statusVocabularyProvider
+    definition: >-
+      relationship from an external status vocabulary to its logical publishing Party, used for identifying the provider
+      that publishes the raw status-code vocabulary
+    genus: status vocabulary provider
+    differentia:
+      - 状态词表供应方，是从外部状态词表指向其逻辑发布当事人的关系，用于标识发布该原始状态码词表的供应方。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: streamExternalOrder
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/streamExternalOrder
+    definition: >-
+      relationship from an OrderEventStream to its one ExternalOrder logical identity, used for locking the event stream
+      to the single external order it carries
+    genus: stream external order
+    differentia:
+      - 事件流外部订单，是从订单事件流指向其唯一外部订单逻辑身份的关系，用于把事件流锁定到其承载的那一笔外部订单。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: streamProvider
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/streamProvider
+    definition: >-
+      relationship from an OrderEventStream to its logical provider Party, used for identifying the execution service
+      provider that supplies the event stream data
+    genus: stream provider
+    differentia:
+      - 事件流供应方，是从订单事件流指向其逻辑供应方当事人的关系，用于标识提供该事件流数据的执行服务方。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: timeInForce
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/timeInForce
+    definition: >-
+      reviewed validity duration instruction attribute of an OrderIntent, used for expressing how long the order remains
+      effective in the market
+    genus: time in force
+    differentia:
+      - 有效期指令，是订单意图经评审的有效期时长属性，用于表达订单在市场中保持有效的持续时间。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: TimeInForce
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/TimeInForce
+    definition: >-
+      Closed vocabulary of order validity duration instructions, used for canonically expressing how long an order
+      remains effective in the market.
+    genus: Time In Force
+    differentia:
+      - 有效期词表，是订单有效期时长指令的封闭词表，用于规范表达订单在市场中保持有效的持续时间。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: toolLockDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/toolLockDigest
+    definition: >-
+      SHA-256 digest value of the exact evaluator tool lock bytes, used for verifying the content integrity of the tool
+      lock record
+    genus: tool lock digest
+    differentia:
+      - 工具锁摘要，是确切评估器工具锁字节的摘要值，用于验证工具锁记录的内容完整性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: toolLockRef
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/toolLockRef
+    definition: >-
+      immutable URI reference to the exact evaluator tool lock, used for locating the tool lock record of the evaluation
+      tool in use
+    genus: tool lock reference
+    differentia:
+      - 工具锁引用，是指向确切评估器工具锁的不可变引用，用于定位所用的评估工具锁定记录。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: tradeDate
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/tradeDate
+    definition: >-
+      optional business trade date to which an execution belongs, used for trade-date attribution that may differ from
+      the execution and observation dates
+    genus: trade date
+    differentia:
+      - 交易日，是成交所属的可选营业交易日，用于可能区别于成交与观察日期的交易日归属。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: transitionProfileId
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/transitionProfileId
+    definition: >-
+      stable string identifier of a provider lifecycle transition profile, used for providing the logical identity
+      primary key of a transition profile
+    genus: transition profile identifier
+    differentia:
+      - 流转配置标识，是供应方生命周期流转配置的稳定字符串标识，用于为流转配置提供逻辑身份主键。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: transitionProfileProvider
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/transitionProfileProvider
+    definition: >-
+      relationship from a transition profile to the logical provider whose lifecycle it evaluates, used for identifying
+      the provider whose lifecycle the profile evaluates
+    genus: transition profile provider
+    differentia:
+      - 流转配置供应方，是从订单流转配置指向其逻辑供应方当事人的关系，用于标识该配置所评估其生命周期的供应方。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: transitionTable
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/transitionTable
+    definition: >-
+      declarative fromState × eventKind → toState + condition transition table carried by an OrderTransitionProfile,
+      used to make the profile reviewable without executing the digest-locked evaluator
+    genus: transition table
+    differentia:
+      - 转移表，是订单流转配置携带的声明式 fromState × eventKind → toState + condition 转移表，用于使配置可评审而无需执行摘要锁定的评估器。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: triggerPrice
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/triggerPrice
+    definition: >-
+      Money trigger required only when the executable profile of the order type demands one, used for setting the
+      activation price condition of a conditional order
+    genus: trigger price
+    differentia:
+      - 触发价，是仅当订单类型的执行画像需要时所要求的货币触发价，用于在条件订单中设定激活价格条件。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: triggerPriceBasis
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/triggerPriceBasis
+    definition: >-
+      Reviewed internal semantic basis attribute used to observe and evaluate an order trigger, present only when a
+      trigger price is in use, used for specifying which market quote serves as the trigger evaluation basis.
+    genus: trigger price basis
+    differentia:
+      - 触发价基准，是用于观察与评估订单触发的评审内部语义基准，仅当触发价存在时使用，用于明确以何种行情作为触发判定依据。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: TriggerPriceBasis
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/TriggerPriceBasis
+    definition: >-
+      Closed classification of the market observation basis evaluated by a conditional order trigger, used for
+      canonically expressing which market quote serves as the trigger evaluation basis.
+    genus: Trigger Price Basis
+    differentia:
+      - 触发价基准词表，是条件订单触发所评估的市场观察基准的封闭分类，用于规范表达以何种行情作为触发判定依据。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: venueTradeId
+    canonicalIri: https://axiolune.ai/ontology/finance/orders-execution/venueTradeId
+    definition: >-
+      optional venue-side trade identifier string assigned by the execution venue, distinct from the provider execution
+      identifier and the match identifier
+    genus: venue trade identifier
+    differentia:
+      - 场所成交标识，是成交场所分配的可选场所侧成交标识字符串，区别于供应方成交标识与匹配标识。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v1.1.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team

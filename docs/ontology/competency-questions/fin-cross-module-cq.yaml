@@ -1,0 +1,55 @@
+# fin-cross-module — Slice A cross-module competency questions
+# Scope: foundation → instruments → market-data → portfolio-positions linkage
+# Reference: slice-a-traceability.md; legacy runner tests/m2/competency-queries/cq-s1-s5.yaml
+# Note: CQ-S3 / CQ-S4 live in fin-portfolio-positions-cq.yaml (ADR-029)
+
+cqs:
+  - id: CQ-S1
+    question: >-
+      Does the synthetic ISIN and internal identifier resolve to one instrument and issuer at a specified three-axis
+      as-of time?
+    businessContext: Cross-module identity resolution for Slice A replay
+    scopeConstraints:
+      - ISIN assignment must bind to exactly one FinancialInstrument
+      - issuer resolution must align with instrument registration
+    expectedResult: instrument IRI, ISIN value, and issuer name for the resolved instrument
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/foundation/FinancialIdentifierAssignment
+      - https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
+      - https://axiolune.ai/ontology/finance/instruments/Issuer
+    riskLevel: high
+    status: active
+
+  - id: CQ-S2
+    question: >-
+      Which synthetic last price observation is point-in-time eligible under all three temporal axes for a given
+      instrument and market context?
+    businessContext: Cross-module market-data availability guard for Slice A
+    scopeConstraints:
+      - must enforce validFrom / knowledgeFrom / availableFrom per ADR-012
+      - observation with availableFrom after asOfAvailable must not be returned
+    expectedResult: eligible PriceObservation IRI, price value, and price kind
+    dependsOnElements:
+      - https://axiolune.ai/ontology/finance/market-data/PriceObservation
+      - https://axiolune.ai/ontology/meta/patterns/TemporalFact
+    riskLevel: high
+    status: active
+    note: canonical v0.3 alias of CQ-MD1 for Slice A staging graph
+
+  - id: CQ-S5
+    question: >-
+      Does the fixed Slice A staging graph replay to an identical canonical RDF dataset under the locked cross-module
+      toolchain?
+    businessContext: Semantic replay integrity across mapping materialization
+    scopeConstraints:
+      - RDFC-1.0 canonicalization with named-graph scope only
+      - replay fixture must reorder statements and relabel blank nodes without changing semantics
+    expectedResult: identical outputDatasetDigest and per-member outputGraphDigest between original and replay inputs
+    dependsOnElements:
+      - https://axiolune.ai/ontology/meta/data-binding/MaterializationRun
+      - https://axiolune.ai/ontology/meta/data-binding/SemanticMappingDefinition
+    riskLevel: high
+    status: active
+    stableSourceTreeCandidate:
+      entrypoint: scripts/domain/run-s5-stable-source-chain.cjs
+      entrypointDigest: sha256:18074ef79f0a3e9dd5918484c8ca447015a668597db3d7c25a63c5ae4c1fd8f8

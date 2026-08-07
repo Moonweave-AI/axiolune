@@ -1,104 +1,157 @@
 # fin-foundation — Terminology Cards
-# Each card: term, IRI, ISO 704 definition, excludes, source (M2-PLAN §3.3)
-# Source provenance: FIBO .rdf files (extracted verbatim), ISO standards (referenced)
+# Synced from module.yaml v2.0.0 — 2026-08-07
+# Each card: term (module.yaml entity key), canonicalIri, ISO 704 definition
 
 cards:
-  - term: LegalEntity
-    canonicalIri: https://axiolune.ai/ontology/finance/foundation/LegalEntity
+  - term: accountIdentifierScheme
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/accountIdentifierScheme
     definition: >-
-      organization that is legally or financially responsible for the performance of financial transactions and is
-      capable of accruing liability on its own part
-    genus: organization
+      direct logical reference from a financial account to exactly one account identifier scheme identity, used for
+      forming the scheme side of an account's identity
+    genus: Account Identifier Scheme
     differentia:
-      - legally or financially responsible for performance of financial transactions
-      - capable of accruing liability on its own part
-      - excludes natural persons but includes governments and supranational entities
-    excludes:
-      - natural persons acting in individual capacity
-      - informal groups without legal personality
+      - 账户标识方案，是金融账户指向唯一账户标识方案身份的直接逻辑引用，用于构成账户的方案侧身份。
+    excludes: []
     sources:
-      - reference: fibo-local-evidence
-        locator: FIBO BE/LegalEntities/LEIEntities — ContractuallyCapableEntity; Commons/Organizations/LegalEntity
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
     candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
-  - term: Party
-    canonicalIri: https://axiolune.ai/ontology/finance/foundation/Party
-    definition: autonomous agent that can participate in legal or financial relationships
-    genus: autonomous agent
+  - term: accountIdentifierValue
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/accountIdentifierValue
+    definition: >-
+      direct logical reference from a financial account to exactly one local identifier value identity, used for forming
+      the value side of an account's identity
+    genus: Account Identifier Value
     differentia:
-      - can participate in legal or financial relationships
-      - may be a natural person or a legal entity
-    excludes:
-      - non-autonomous resources (e.g. instruments, currencies)
+      - 账户标识值，是金融账户指向唯一本地标识值身份的直接逻辑引用，用于构成账户的取值侧身份。
+    excludes: []
     sources:
-      - reference: fibo-local-evidence
-        locator: FIBO FND/Parties/Parties — Party; Commons/PartiesAndSituations/Party
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
     candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
-  - term: ISIN
-    canonicalIri: https://axiolune.ai/ontology/finance/foundation/ISIN
+  - term: accountType
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/accountType
     definition: >-
-      12-character alphanumeric code that identifies a security as specified by ISO 6166, consisting of a 2-character
-      ISO 3166-1 country code, a 9-character national securities identifying number, and a Luhn check digit
-    genus: identifier
+      reviewed account-type member required on a financial account version, used for characterizing the holding
+      capability category that an account represents
+    genus: Account Type
     differentia:
-      - 12-character alphanumeric
-      - conforms to ISO 6166
-      - comprises country code + NSIN + check digit
-    excludes:
-      - CUSIP (a type of NSIN, not itself an ISIN)
-      - SEDOL
-      - ticker symbol
+      - 账户类型，是金融账户版本上必备的受审账户类型成员，用于刻画账户所代表的持仓能力类别。
+    excludes: []
     sources:
-      - reference: iso-6166
-        locator: ISO 6166:2021 §1
-      - reference: fibo-local-evidence
-        locator: FIBO SEC/Securities/SecuritiesIdentification/InternationalSecuritiesIdentificationNumber
-    candidateM3Type: IdentifierTypeDefinition
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
-  - term: LEI
-    canonicalIri: https://axiolune.ai/ontology/finance/foundation/LEI
+  - term: AccountType
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/AccountType
     definition: >-
-      20-character alphanumeric code that uniquely identifies a legal entity as defined in ISO 17442, consisting of a
-      4-character LOU prefix, 12-character entity-specific identifier, and 2 check digits
-    genus: identifier
+      controlled vocabulary that classifies the asset-holding capability represented by a financial account, used for
+      distinguishing different kinds of holding accounts
+    genus: Account Type
     differentia:
-      - 20-character alphanumeric
-      - conforms to ISO 17442
-      - identifies a legal entity (not a natural person)
-    excludes:
-      - ISIN (identifies securities, not entities)
-      - tax identification numbers
+      - 账户类型，是对金融账户所代表的持仓能力进行封闭分类的受控词表，用于区分不同种类的持仓账户。
+    excludes: []
     sources:
-      - reference: iso-17442
-        locator: ISO 17442:2020
-      - reference: fibo-local-evidence
-        locator: FIBO BE/LegalEntities/LEIEntities/LegalEntityIdentifier
-    candidateM3Type: IdentifierTypeDefinition
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
-  - term: MIC
-    canonicalIri: https://axiolune.ai/ontology/finance/foundation/MIC
+  - term: assignmentId
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/assignmentId
     definition: >-
-      market identifier code that uniquely identifies an exchange, trading platform, or market as specified by ISO
-      10383, comprising a 4-character alphanumeric operating-level code or a 4+4 character segment-level code
-    genus: identifier
+      non-empty identifier scoped to the assigning authority, used for distinguishing the different identifier
+      assignments made by that authority
+    genus: Assignment Identifier
     differentia:
-      - 4-character operating-level or 4+4 segment-level code
-      - conforms to ISO 10383
-      - identifies a market or trading venue
-    excludes:
-      - venue-specific internal codes
-      - broker identifiers
+      - 赋值标识符，是在赋值机构范围内作用的非空标识符，用于区分该机构作出的不同标识赋值。
+    excludes: []
     sources:
-      - reference: iso-10383
-        locator: ISO 10383:2012
-      - reference: fibo-local-evidence
-        locator: FIBO FBC/FunctionalEntities/Markets/MarketIdentifier
-    candidateM3Type: IdentifierTypeDefinition
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: assignmentVersionSetDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/assignmentVersionSetDigest
+    definition: >-
+      framed digest of the sorted assignment-version set that forms an identifier assignment conflict, used for uniquely
+      identifying a conflict
+    genus: Assignment Version Set Digest
+    differentia:
+      - 赋值版本集摘要，是构成标识赋值冲突的已排序赋值版本集合的框架化摘要，用于唯一标识一个冲突。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: AuthorityRoleAssignment
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/AuthorityRoleAssignment
+    definition: >-
+      temporal fact that assigns one organization a reviewed authority role under a given scheme release, with a
+      validity interval and evidence, used for expressing real-world governance divisions such as registration
+      authority, maintenance agency, and assigning authority
+    genus: Authority Role Assignment
+    differentia:
+      - 权威角色任命，是将一个组织在某一方案版次下赋予受审权威角色的时态事实，带有效期与证据，用于表达注册机构、维护机构、赋值机构等现实治理分工。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: authorityRoleKind
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/authorityRoleKind
+    definition: >-
+      reviewed authority role member required on an authority role assignment version, used for characterizing the type
+      of governance responsibility an authority bears under a scheme release
+    genus: Authority Role Kind
+    differentia:
+      - 权威角色类别，是权威角色任命版本上必备的受审角色成员，用于刻画机构在方案版次下的治理职责类型。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: BusinessCalendar
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/BusinessCalendar
+    definition: >-
+      thin calendar interface that defines a sequence of business days for a jurisdiction, intended to be specialized by
+      domain modules such as market-structure's TradingCalendar
+    genus: Business Calendar
+    differentia:
+      - 业务日历，是定义某一管辖权下工作日序列的薄日历接口，旨在由领域模块（如 market-structure 的 TradingCalendar）特化实现。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: canonicalLexicalForm
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/canonicalLexicalForm
+    definition: >-
+      the normalized string representation of an identifier value, used as the lexical component of the identifier
+      identity key
+    genus: Canonical Lexical Form
+    differentia:
+      - 规范词法形式，是标识值的规范化字符串表示，用作标识符身份键的词法分量。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
   - term: Currency
@@ -120,6 +173,724 @@ cards:
     candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
+  - term: CurrencyUsage
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/CurrencyUsage
+    definition: >-
+      temporal fact asserting that one currency identity is used within one jurisdiction, used for recording the lawful
+      usage of a currency within a jurisdictional territory
+    genus: Currency Usage
+    differentia:
+      - 货币使用，是断言某一货币逻辑身份在某一管辖权内使用的时态事实，用于记录币种在司法地域范围内的合法使用关系。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: FinancialAccount
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/FinancialAccount
+    definition: >-
+      account that identifies a governed cash, securities-custody, or multi-asset holding capability, used for precisely
+      representing the identity of a holding party through a scheme-bound identifier
+    genus: Financial Account
+    differentia:
+      - 金融账户，是标识受治理现金、证券托管或多资产持仓能力的账户，用于以方案绑定的标识精确刻画一个持仓主体的同一性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: FinancialAccountPartyRole
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/FinancialAccountPartyRole
+    definition: >-
+      temporal fact that assigns one reviewed account role to a party for a financial account, serving as the sole
+      stored truth of the relationship between an account and a party
+    genus: Financial Account Party Role
+    differentia:
+      - 金融账户参与方角色，是为某一参与方在某一金融账户上赋予一个受审账户角色的时态事实，是账户与参与方关系的唯一存储真相。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: financialAccountPartyRoleKind
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/financialAccountPartyRoleKind
+    definition: >-
+      reviewed role member required on a financial account party role version, used for characterizing the type of
+      relationship a party bears with respect to an account
+    genus: Financial Account Party Role Kind
+    differentia:
+      - 金融账户参与方角色类别，是金融账户参与方角色版本上必备的受审角色成员，用于刻画参与方相对账户的关系类型。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: FinancialAccountPartyRoleKind
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/FinancialAccountPartyRoleKind
+    definition: >-
+      controlled vocabulary that classifies the role a party plays with respect to a financial account, used for
+      characterizing the various kinds of relationships between a party and an account
+    genus: Financial Account Party Role Kind
+    differentia:
+      - 金融账户参与方角色类别，是对参与方相对金融账户所任角色进行封闭分类的受控词表，用于刻画参与方与账户的各类关系。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: FinancialIdentifierAssignment
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/FinancialIdentifierAssignment
+    definition: >-
+      authority-scoped temporal fact that assigns one governed identifier value version to exactly one subject version,
+      used for recording who issued which identifier to whom under which scheme
+    genus: Financial Identifier Assignment
+    differentia:
+      - 金融标识赋值，是将一个受治理标识值版本赋给唯一主体版本的授权范围时态事实，用于记录谁在何种方案下向谁发放了哪个标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: hasLegalName
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/hasLegalName
+    definition: >-
+      relation from a legal entity to its registered legal name, used for carrying the formal designation of an entity
+      in a legal context
+    genus: Has Legal Name
+    differentia:
+      - 法律名称，是从法律实体指向其注册法律名称的关系，用于承载实体在法律语境下的正式称谓。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: IdentifiableSubject
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/IdentifiableSubject
+    definition: >-
+      common base class for domain subjects that can be assigned a governed identifier, used for providing a unified
+      identity foundation for everything in the finance domain that has identity
+    genus: Identifiable Subject
+    differentia:
+      - 可标识主体，是可被赋予受治理标识符的领域主体共同基类，用于为金融领域一切有同一性的事物提供统一的标识基础。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: IdentifierAssignmentConflict
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/IdentifierAssignmentConflict
+    definition: >-
+      explicit conflict fact emitted when assignments under a globally unique scheme overlap across different subjects,
+      used for forbidding silent resolution and preserving evidence of the conflict
+    genus: Identifier Assignment Conflict
+    differentia:
+      - 标识赋值冲突，是当全局唯一方案的赋值跨不同主体重叠时显式生成的冲突事实，用于禁止静默裁决并留存冲突证据。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: IdentifierAuthority
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/IdentifierAuthority
+    definition: >-
+      organization authorized to maintain a scheme or issue identifier assignments under it, used for defining who is
+      entitled to issue and manage identifiers within a given scheme
+    genus: Identifier Authority
+    differentia:
+      - 标识符授权机构，是经授权维护标识方案或在方案下签发标识赋值的组织，用于界定谁有权在某一方案下发放与管理标识符。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: identifierAuthorityRole
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/identifierAuthorityRole
+    definition: >-
+      reviewed role held by an authority in an identifier scheme authorization, used for clarifying the type of
+      responsibility that authority bears under a scheme
+    genus: Identifier Authority Role
+    differentia:
+      - 标识授权机构角色，是授权机构在标识方案授权中所持的受审角色，用于明确其在方案下的职责类型。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: IdentifierAuthorityRole
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/IdentifierAuthorityRole
+    definition: >-
+      controlled vocabulary that classifies the role an authority plays in an identifier scheme authorization, used for
+      clarifying the responsibilities of an authority
+    genus: Identifier Authority Role
+    differentia:
+      - 标识授权机构角色，是对授权机构在标识方案授权中所任角色进行封闭分类的受控词表，用于明确机构职责。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: IdentifierNamespace
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/IdentifierNamespace
+    definition: >-
+      governed naming scope that disambiguates authority-scoped identifier values sharing the same lexical form, used as
+      the third dimension of the identity key for non-global schemes
+    genus: Identifier Namespace
+    differentia:
+      - 标识符命名空间，是消歧共享同一词法形式的授权范围标识值的受治理命名作用域，用作非全局方案身份键的第三维度。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: IdentifierScheme
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/IdentifierScheme
+    definition: >-
+      versioned specification that governs the syntax, compatibility, uniqueness, and evidence of identifiers, used for
+      providing a verifiable and traceable rule framework for a class of identifiers
+    genus: Identifier Scheme
+    differentia:
+      - 标识方案，是治理标识符语法、兼容性、唯一性与证据的版本化规范，用于为一类标识符提供可验证、可追溯的规则框架。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: IdentifierSchemeAuthorization
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/IdentifierSchemeAuthorization
+    definition: >-
+      temporal authorization fact that empowers an identifier authority to act in one reviewed role under a given scheme
+      version, whose validity interval must cover every identifier assignment or account identity use that depends on it
+    genus: Identifier Scheme Authorization
+    differentia:
+      - 标识方案授权，是赋予标识授权机构在某一方案版本下担任受审角色的时态授权事实，其有效期须覆盖依赖它的标识赋值或账户身份使用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: identifierSchemeKind
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/identifierSchemeKind
+    definition: >-
+      reviewed compatibility kind of an identifier scheme version, used for distinguishing the identifier value subtype
+      and legal subject range that a scheme corresponds to
+    genus: Identifier Scheme Kind
+    differentia:
+      - 标识方案类别，是标识方案版本的受审兼容性类别，用于区分方案所对应的标识值子类型与合法主体范围。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: IdentifierSchemeKind
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/IdentifierSchemeKind
+    definition: >-
+      closed compatibility discriminator that determines the identifier value subtype and legal identified subject range
+      of a scheme, used for classifying different kinds of identifier schemes
+    genus: Identifier Scheme Kind
+    differentia:
+      - 标识方案类别，是确定标识方案值子类型与合法标识主体范围的封闭兼容性判别器，用于分类不同种类的标识方案。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: identifierSchemeMaintainer
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/identifierSchemeMaintainer
+    definition: >-
+      direct logical reference from an identifier scheme version to the identifier authority responsible for maintaining
+      that scheme, used for establishing the maintenance accountability of a scheme
+    genus: Identifier Scheme Maintainer
+    differentia:
+      - 标识方案维护方，是从标识方案版本指向负责维护该方案的标识授权机构的直接逻辑引用，用于确立方案的维护责任归属。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: IdentifierSchemeRelease
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/IdentifierSchemeRelease
+    definition: >-
+      versioned set of rules (syntax, compatibility, validator profile) for a stable identifier scheme, used for
+      separating the stable scheme identity from its evolving rule versions
+    genus: Identifier Scheme Release
+    differentia:
+      - 标识方案版次，是稳定标识方案的版本化规则集合（语法、兼容性、校验器配置），用于分离稳定方案身份与其演化的规则版本。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: identifierSchemeReleaseSourceEvidenceRef
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/identifierSchemeReleaseSourceEvidenceRef
+    definition: >-
+      the absolute IRI of the immutable source-evidence record governing a scheme release, used for providing a
+      traceable credential for the release
+    genus: Identifier Scheme Release Source Evidence Reference
+    differentia:
+      - 标识方案版次源证据引用，是治理该方案版次的不可变源证据记录的绝对地址，用于为版次提供可追溯凭据。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: identifierSchemeReleaseValidatorRef
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/identifierSchemeReleaseValidatorRef
+    definition: >-
+      the absolute IRI of the release-locked validator executable contract, used for locating the lexical and
+      algorithmic validation rules of a specific scheme release
+    genus: Identifier Scheme Release Validator Reference
+    differentia:
+      - 标识方案版次校验器引用，是版次锁定的校验器可执行契约的绝对地址，用于定位特定方案版次的词法与算法校验规则。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: identifierSchemeReleaseVersion
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/identifierSchemeReleaseVersion
+    definition: >-
+      non-empty version identifier assigned by the scheme maintainer to a specific release, used for identifying a
+      governed release of a scheme
+    genus: Identifier Scheme Release Version
+    differentia:
+      - 标识方案版次版本，是方案维护者分配给特定版次的非空版本标识符，用于标识方案的一个受治理版次。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: identifierSchemeSourceEvidenceRef
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/identifierSchemeSourceEvidenceRef
+    definition: >-
+      the absolute IRI of the immutable source-evidence record governing a scheme version, used for providing a
+      traceable credential for the scheme version
+    genus: Identifier Scheme Source Evidence Reference
+    differentia:
+      - 标识方案源证据引用，是治理该方案版本的不可变源证据记录的绝对地址，用于为方案版本提供可追溯凭据。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: identifierSchemeValidatorRef
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/identifierSchemeValidatorRef
+    definition: >-
+      the absolute IRI of the scheme-locked validator executable contract, used for locating the lexical and algorithmic
+      validation rules of a scheme
+    genus: Identifier Scheme Validator Reference
+    differentia:
+      - 标识方案校验器引用，是方案锁定的校验器可执行契约的绝对地址，用于定位该方案的词法与算法校验规则。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: identifierSchemeVersion
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/identifierSchemeVersion
+    definition: >-
+      non-empty version identifier assigned by the scheme maintainer, used for identifying a governed version of a
+      scheme
+    genus: Identifier Scheme Version
+    differentia:
+      - 标识方案版本，是方案维护者分配的非空版本标识符，用于标识方案的一个受治理版本。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: identifierUniquenessScope
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/identifierUniquenessScope
+    definition: >-
+      reviewed uniqueness scope category of an identifier scheme version, used for defining within which population
+      canonical identifier values must be unique
+    genus: Identifier Uniqueness Scope
+    differentia:
+      - 标识唯一性范围，是标识方案版本的受审唯一性范围类别，用于界定规范标识值在何种群体内必须唯一。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: IdentifierUniquenessScope
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/IdentifierUniquenessScope
+    definition: >-
+      controlled vocabulary that classifies the population within which canonical identifier values must be unique, used
+      for defining the uniqueness boundary of identifier values
+    genus: Identifier Uniqueness Scope
+    differentia:
+      - 标识唯一性范围，是对规范标识值须在其中唯一的群体进行封闭分类的受控词表，用于界定标识值的唯一性边界。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: IdentifierValue
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/IdentifierValue
+    definition: >-
+      canonical identifier value bound to a specific identifier scheme, whose logical identity is determined jointly by
+      the scheme identity and the canonical lexical form
+    genus: Identifier Value
+    differentia:
+      - 标识值，是绑定到特定标识方案的规范标识符取值，其逻辑同一性由方案身份与规范词法形式共同确定。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: identifierValueNamespace
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/identifierValueNamespace
+    definition: >-
+      relation linking an authority-scoped identifier value to its governing namespace, used as the third dimension of
+      the identity key for non-global schemes
+    genus: Identifier Value Namespace
+    differentia:
+      - 标识值命名空间，是将授权范围标识值关联到其治理命名空间的关系，用作非全局方案身份键的第三维度。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: identifierValueScheme
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/identifierValueScheme
+    definition: >-
+      relation that links an identifier value to exactly one identifier scheme identity, used for indicating which
+      scheme governs an identifier value
+    genus: Identifier Value Scheme
+    differentia:
+      - 标识值方案，是将标识值关联到唯一标识方案身份的关系，用于说明一个标识值受哪个方案治理。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ISIN
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/ISIN
+    definition: >-
+      twelve-character alphanumeric identifier defined by ISO 6166 that consists of a two-character country prefix, a
+      nine-character basic number, and a check digit, used for uniquely identifying securities worldwide
+    genus: International Securities Identification Number
+    differentia:
+      - 国际证券识别码，是依ISO 6166定义的十二位字母数字标识符，由两位国家前缀、九位基本号码与校验位构成，用于全球唯一识别证券。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: isinLexicalValue
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/isinLexicalValue
+    definition: >-
+      canonical lexical value validated by the referenced ISIN identifier type definition, used for carrying the
+      canonical string of an ISIN
+    genus: ISIN Lexical Value
+    differentia:
+      - ISIN词法值，是由所引用ISIN标识类型定义校验的规范词法取值，用于承载ISIN的规范字符串。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ISINValue
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/ISINValue
+    definition: >-
+      versioned identifier value governed by the ISO 6166 scheme that carries one canonical ISIN lexical value, used for
+      uniquely identifying securities worldwide
+    genus: ISIN Value
+    differentia:
+      - ISIN值，是受ISO 6166方案治理的版本化标识值，承载一个规范ISIN词法取值，用于在全球范围内唯一识别证券。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: iso4217AlphaCode
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/iso4217AlphaCode
+    definition: >-
+      code of exactly three uppercase ASCII letters asserted by an ISO 4217 registry entry version, used for identifying
+      a currency
+    genus: ISO 4217 Alphabetic Code
+    differentia:
+      - ISO 4217字母代码，是由一个ISO 4217注册条目断言的恰好三位大写字母代码，用于标识币种。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: iso4217EntryCurrency
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/iso4217EntryCurrency
+    definition: >-
+      direct logical reference from a registry entry to the currency represented by that entry, used for linking
+      currency registry information to a currency identity
+    genus: ISO 4217 Entry Currency
+    differentia:
+      - ISO 4217条目货币，是从注册条目指向该条目所代表货币的直接逻辑引用，用于将币种注册信息与货币身份关联。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: iso4217EntryKind
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/iso4217EntryKind
+    definition: >-
+      reviewed entry-kind member that classifies an ISO 4217 registry entry as currency, fund, precious metal, or
+      special item, used for distinguishing what an entry denotes
+    genus: ISO 4217 Entry Kind
+    differentia:
+      - ISO 4217条目类别，是将ISO 4217注册条目分类为货币、基金、贵金属或特殊项目的受审条目类别成员，用于区分条目所指。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ISO4217EntryKind
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/ISO4217EntryKind
+    definition: >-
+      controlled vocabulary that classifies what an ISO 4217 registry entry denotes, used for distinguishing currencies,
+      funds, precious metals, and special items
+    genus: ISO 4217 Entry Kind
+    differentia:
+      - ISO 4217条目类别，是对ISO 4217注册条目所指进行封闭分类的受控词表，用于区分货币、基金、贵金属与特殊项目。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: iso4217EntryStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/iso4217EntryStatus
+    definition: >-
+      reviewed lifecycle status of an ISO 4217 registry entry version, used for indicating the stage of an entry within
+      a registry snapshot
+    genus: ISO 4217 Entry Status
+    differentia:
+      - ISO 4217条目状态，是一个ISO 4217注册条目版本的受审生命周期状态，用于表明条目在注册快照中的所处阶段。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ISO4217EntryStatus
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/ISO4217EntryStatus
+    definition: controlled vocabulary that classifies the lifecycle stage of an ISO 4217 registry entry within a locked snapshot
+    genus: ISO 4217 Entry Status
+    differentia:
+      - ISO 4217条目状态，是对ISO 4217注册条目在锁定快照中生命周期阶段进行封闭分类的受控词表。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ISO4217ListCategory
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/ISO4217ListCategory
+    definition: >-
+      controlled vocabulary that classifies which SIX-maintained ISO 4217 list a registry publication belongs to, used
+      for distinguishing current, fund, and historical lists
+    genus: ISO 4217 List Category
+    differentia:
+      - ISO 4217清单类别，是对注册发布物所属SIX维护的ISO 4217清单进行封闭分类的受控词表，用于区分当前、基金与历史清单。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: iso4217MinorUnit
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/iso4217MinorUnit
+    definition: >-
+      non-negative decimal exponent for the currency minor unit in a locked ISO 4217 registry assertion, used for
+      determining the decimal precision of a currency
+    genus: ISO 4217 Minor Unit
+    differentia:
+      - ISO 4217最小单位，是锁定ISO 4217注册断言中货币最小单位的非负十进制指数，用于确定币种的小数精度。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: iso4217NumericCode
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/iso4217NumericCode
+    definition: >-
+      code of exactly three ASCII digits, including leading zeroes, asserted by an ISO 4217 registry entry version, used
+      for identifying a currency
+    genus: ISO 4217 Numeric Code
+    differentia:
+      - ISO 4217数字代码，是由一个ISO 4217注册条目断言的恰好三位数字代码，含前导零，用于标识币种。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: iso4217PublicationListCategory
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/iso4217PublicationListCategory
+    definition: >-
+      reviewed list-category member that classifies an ISO 4217 publication as current currency & funds, fund codes, or
+      historical, used for distinguishing which SIX-maintained list a publication belongs to
+    genus: ISO 4217 Publication List Category
+    differentia:
+      - ISO 4217发布清单类别，是将ISO 4217发布物分类为当前货币与基金、基金代码或历史的受审清单类别成员，用于区分发布物属于SIX维护的哪个清单。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: iso4217PublicationSourceRef
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/iso4217PublicationSourceRef
+    definition: >-
+      the absolute IRI of the locked publication artifact supporting a registry publication, used for providing a
+      traceable credential for the publication
+    genus: ISO 4217 Publication Source Reference
+    differentia:
+      - ISO 4217发布来源引用，是支持该注册发布物的锁定发布工件的绝对地址，用于为发布物提供可追溯凭据。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: iso4217RegistryAuthority
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/iso4217RegistryAuthority
+    definition: >-
+      direct logical reference from a registry entry to the identifier authority that owns the registry assertion, used
+      for establishing the registry accountability of an entry
+    genus: ISO 4217 Registry Authority
+    differentia:
+      - ISO 4217注册机构，是从注册条目指向拥有该注册断言的标识授权机构的直接逻辑引用，用于确立条目的注册责任归属。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ISO4217RegistryEntry
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/ISO4217RegistryEntry
+    definition: >-
+      immutable version of an ISO 4217 registry assertion for one registry authority and alphabetic code, used for
+      carrying the numeric code, minor unit, and the currency represented by the entry
+    genus: ISO 4217 Registry Entry
+    differentia:
+      - ISO 4217注册条目，是关于一个注册机构与字母代码的ISO 4217注册断言的不可变版本，用于承载币种数字代码、最小单位及所代表的货币。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: ISO4217RegistryPublication
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/ISO4217RegistryPublication
+    definition: >-
+      immutable versioned snapshot of an ISO 4217 registry list (current currency & funds, fund codes, or historical),
+      used for distinguishing which list an entry belongs to and when it was published
+    genus: ISO 4217 Registry Publication
+    differentia:
+      - ISO 4217注册发布物，是一个ISO 4217注册清单（当前货币与基金、基金代码或历史清单）的不可变版本化快照，用于区分条目所属清单及其发布时间。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: iso4217RegistrySourceRef
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/iso4217RegistrySourceRef
+    definition: >-
+      the absolute IRI of the locked registry artifact and locator record supporting an entry version, used for
+      providing a traceable credential for the entry
+    genus: ISO 4217 Registry Source Reference
+    differentia:
+      - ISO 4217注册来源引用，是支持该注册条目版本的锁定注册工件与定位记录的绝对地址，用于为条目提供可追溯凭据。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
   - term: Jurisdiction
     canonicalIri: https://axiolune.ai/ontology/finance/foundation/Jurisdiction
     definition: >-
@@ -137,23 +908,202 @@ cards:
     candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
-  - term: FinancialIdentifierAssignment
-    canonicalIri: https://axiolune.ai/ontology/finance/foundation/FinancialIdentifierAssignment
+  - term: LegalEntity
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/LegalEntity
     definition: >-
-      association binding an identifier value of a declared identifier type to a party or instrument under an issuing
-      authority and effective interval
-    genus: association
+      organization that is legally or financially responsible for the performance of financial transactions and is
+      capable of accruing liability on its own part
+    genus: organization
     differentia:
-      - binds an identifier value to a party or instrument
-      - tracks an issuing authority and effective interval
-      - is a temporal/provenanced fact, not a bare string property
+      - legally or financially responsible for performance of financial transactions
+      - capable of accruing liability on its own part
+      - excludes natural persons but includes governments and supranational entities
     excludes:
-      - the identifier type itself (ISIN/LEI/MIC)
-      - a bare string attribute
+      - natural persons acting in individual capacity
+      - informal groups without legal personality
     sources:
-      - reference: axiolune-m2-plan
-        locator: M2-PLAN §5.2 fin-foundation core concept
-    candidateM3Type: AssociationTypeDefinition
+      - reference: fibo-local-evidence
+        locator: FIBO BE/LegalEntities/LEIEntities — ContractuallyCapableEntity; Commons/Organizations/LegalEntity
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
-
+  - term: LEI
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/LEI
+    definition: >-
+      twenty-character uppercase alphanumeric identifier defined by ISO 17442 that consists of an issuer prefix, an
+      entity-specific section, and check digits, used for uniquely identifying legal entities worldwide
+    genus: Legal Entity Identifier
+    differentia:
+      - 法律实体标识符，是依ISO 17442定义的二十位大写字母数字标识符，由发行机构前缀、实体段与校验位构成，用于全球唯一识别法律实体。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: leiLexicalValue
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/leiLexicalValue
+    definition: >-
+      canonical lexical value validated by the referenced LEI identifier type definition, used for carrying the
+      canonical string of an LEI
+    genus: LEI Lexical Value
+    differentia:
+      - LEI词法值，是由所引用LEI标识类型定义校验的规范词法取值，用于承载LEI的规范字符串。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: LEIValue
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/LEIValue
+    definition: >-
+      versioned identifier value governed by ISO 17442 and the GLEIF LEI system that carries one canonical LEI lexical
+      value, used for uniquely identifying legal entities
+    genus: LEI Value
+    differentia:
+      - LEI值，是受ISO 17442与GLEIF LEI体系治理的版本化标识值，承载一个规范LEI词法取值，用于唯一识别法律实体。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: LocalIdentifier
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/LocalIdentifier
+    definition: >-
+      Authority-scoped Local Identifier, is a non-empty canonical identifier lexical form whose meaning and stronger
+      syntax are determined only by its locked identifier scheme and authorized assigning authority
+    genus: Authority-scoped Local Identifier
+    differentia:
+      - 授权范围本地标识符，是其含义与更强语法仅由所属锁定标识方案与授权赋值机构确定的非空规范标识词法形式。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: localIdentifierLexicalValue
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/localIdentifierLexicalValue
+    definition: >-
+      non-empty canonical local identifier lexical value interpreted only together with its identifier scheme, used for
+      carrying the string of a local identifier
+    genus: Local Identifier Lexical Value
+    differentia:
+      - 本地标识词法值，是仅与其标识方案一起解释的非空规范本地标识符词法取值，用于承载本地标识的字符串。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: LocalIdentifierValue
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/LocalIdentifierValue
+    definition: >-
+      authority-scoped identifier value whose lexical form has no meaning independently of its identifier scheme, used
+      for identifying subjects within a specific authority scope
+    genus: Local Identifier Value
+    differentia:
+      - 本地标识值，是其词法形式脱离所属标识方案即无意义的授权范围标识值，用于在特定机构范围内标识主体。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: MIC
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/MIC
+    definition: >-
+      four-character uppercase alphanumeric code allocated under ISO 10383, used for uniquely identifying an exchange,
+      trading platform, market, or trade-reporting facility
+    genus: Market Identifier Code
+    differentia:
+      - 市场识别码，是依ISO 10383分配的四位大写字母数字代码，用于唯一识别交易所、交易平台、市场或交易报告设施。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: micLexicalValue
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/micLexicalValue
+    definition: >-
+      canonical lexical value validated by the referenced MIC identifier type definition, used for carrying the
+      canonical string of a MIC
+    genus: MIC Lexical Value
+    differentia:
+      - MIC词法值，是由所引用MIC标识类型定义校验的规范词法取值，用于承载MIC的规范字符串。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: MICValue
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/MICValue
+    definition: >-
+      versioned identifier value governed by the ISO 10383 scheme that carries one canonical four-character MIC lexical
+      value, used for uniquely identifying markets and trading venues
+    genus: MIC Value
+    differentia:
+      - MIC值，是受ISO 10383方案治理的版本化标识值，承载一个规范四字符MIC词法取值，用于唯一识别市场与交易场所。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: Party
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/Party
+    definition: autonomous agent that can participate in legal or financial relationships
+    genus: autonomous agent
+    differentia:
+      - can participate in legal or financial relationships
+      - may be a natural person or a legal entity
+    excludes:
+      - non-autonomous resources (e.g. instruments, currencies)
+    sources:
+      - reference: fibo-local-evidence
+        locator: FIBO FND/Parties/Parties — Party; Commons/PartiesAndSituations/Party
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: registryEntryPublication
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/registryEntryPublication
+    definition: >-
+      relation linking an ISO 4217 registry entry to the publication snapshot it belongs to, used for distinguishing
+      which list (current, fund, historical) an entry comes from
+    genus: Registry Entry Publication
+    differentia:
+      - 注册条目发布物，是将ISO 4217注册条目关联到其所属发布快照的关系，用于区分条目来自哪个清单（当前、基金、历史）。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: schemeHasRelease
+    canonicalIri: https://axiolune.ai/ontology/finance/foundation/schemeHasRelease
+    definition: >-
+      relation linking a stable identifier scheme to one of its versioned releases, used for separating scheme identity
+      from rule versioning
+    genus: Scheme Has Release
+    differentia:
+      - 方案拥有版次，是将稳定标识方案关联到其某一版本化版次的关系，用于分离方案身份与规则版本化。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team

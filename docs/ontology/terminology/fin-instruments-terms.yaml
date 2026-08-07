@@ -1,12 +1,141 @@
 # fin-instruments — Terminology Cards
+# Synced from module.yaml v2.0.0 — 2026-08-07
+# Each card: term (module.yaml entity key), canonicalIri, ISO 704 definition
 
 cards:
+  - term: CFICategory
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/CFICategory
+    definition: >-
+      controlled vocabulary of ISO 10962 asset-level categories, used for classifying the top-level asset class of a
+      financial instrument in an instrument classification assertion
+    genus: CFI Category
+    differentia:
+      - CFI类别，是ISO 10962资产层类别的受控词表，用于在工具分类断言中分类金融工具的顶层资产类别。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: classificationCategory
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/classificationCategory
+    definition: >-
+      reviewed asset-level category member required on an instrument classification assertion, used for characterizing
+      the top-level asset class of the classified instrument
+    genus: Classification Category
+    differentia:
+      - 分类类别，是工具分类断言上必备的受审资产层类别成员，用于刻画被分类工具的顶层资产类别。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: classificationCode
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/classificationCode
+    definition: >-
+      non-empty code string assigned under a classification scheme (e.g., a 6-character CFI code per ISO 10962), used
+      for carrying the classification value of an instrument
+    genus: Classification Code
+    differentia:
+      - 分类码，是在分类方案下分配的非空代码字符串（如依ISO 10962的六字符CFI代码），用于承载工具的分类取值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: classificationEffectiveFrom
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/classificationEffectiveFrom
+    definition: >-
+      the inclusive date from which an instrument classification assertion comes into force, used to mark the start of
+      the classification's valid interval
+    genus: Classification Effective From
+    differentia:
+      - 分类生效起始日，是工具分类断言开始生效的含起始日期，用于标记分类有效区间的起点。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: classificationEffectiveTo
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/classificationEffectiveTo
+    definition: >-
+      the optional exclusive date at which an instrument classification assertion ceases to be in force, used to mark
+      the end of the classification's valid interval
+    genus: Classification Effective To
+    differentia:
+      - 分类生效截止日，是工具分类断言失效的可选不含截止日期，用于标记分类有效区间的终点。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: contractMultiplier
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/contractMultiplier
+    definition: >-
+      dimensionless multiplier constrained to decimal one by the direct-unit quotation profile, used to ensure scale
+      consistency of unit-price quotations.
+    genus: Contract Multiplier
+    differentia:
+      - 合约乘数，是直接单位报价轮廓约束为十进制一的无量纲乘数，用于确保单位报价的标度一致性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: DirectUnitPriceQuotationContract
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
+    definition: >-
+      versioned quotation application class expressing a quotation contract that prices a single controlled quantity
+      unit directly in a given quote currency, as a subtype of the abstract QuotationConvention
+    genus: quotation convention
+    differentia:
+      - prices one denominator quantity unit directly in quote currency
+      - contract multiplier is constrained to one
+      - is a subtype of QuotationConvention
+    excludes:
+      - >-
+        yield, par, clean/dirty, accrued, inverse, notional-scaled, and index-point quotations (future
+        QuotationConvention subtypes)
+    sources:
+      - reference: axiolune-m2-plan
+        locator: M2-PLAN §5.2 fin-instruments quotation contract
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: EquitySecurity
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/EquitySecurity
+    definition: >-
+      security representing an ownership interest in an issuing entity or a pool of assets, which may or may not confer
+      voting or dividend rights depending on the share class
+    genus: security
+    differentia:
+      - represents an ownership interest
+      - rights (voting, dividend, liquidation) vary by share class
+    excludes:
+      - debt instruments (represent claims, not ownership)
+      - derivatives (derive from underlying, not direct ownership)
+    sources:
+      - reference: fibo-local-evidence
+        locator: FIBO FBC/FinancialInstruments/FinancialInstruments/EquityInstrument; SEC/Equities/EquityInstruments/Share
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
   - term: FinancialInstrument
     canonicalIri: https://axiolune.ai/ontology/finance/instruments/FinancialInstrument
     definition: >-
-      stable economic or legal instrument identity representing a financial contract
-      that can be issued, quoted, listed, traded, or valued, independent of any
-      particular listing
+      stable economic or legal instrument identity representing a financial contract that can be issued, quoted, listed,
+      traded, or valued, independent of any particular listing
     genus: instrument identity
     differentia:
       - represents a stable financial contract identity
@@ -22,48 +151,43 @@ cards:
     candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
-  - term: Security
-    canonicalIri: https://axiolune.ai/ontology/finance/instruments/Security
+  - term: InstrumentClassificationAssertion
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/InstrumentClassificationAssertion
     definition: >-
-      financial instrument that is a security in the legal or regulatory sense,
-      including private placements, OTC, unlisted, and suspended securities
-    genus: financial instrument
+      temporal fact asserting that a financial instrument is classified under a classification scheme (e.g. CFI) at a
+      specific code, with a scheme release, an authority or source, and a valid-time interval, used for recording the
+      classification of an instrument independently of its persistent identity
+    genus: Instrument Classification Assertion
     differentia:
-      - is a security in the legal or regulatory sense
-      - may or may not be admitted to trading on an exchange
-    excludes:
-      - non-security contracts (e.g., internal agreements)
+      - 工具分类断言，是断言某一金融工具在特定分类方案（如 CFI）下被归为某一代码的时态事实，带方案版次、权威来源与有效区间，用于独立于持久身份记录工具的分类。
+    excludes: []
     sources:
-      - reference: fibo-local-evidence
-        locator: FIBO FBC/FinancialInstruments/FinancialInstruments/Security
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
     candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
-  - term: EquitySecurity
-    canonicalIri: https://axiolune.ai/ontology/finance/instruments/EquitySecurity
+  - term: InstrumentIssuance
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/InstrumentIssuance
     definition: >-
-      security representing an ownership interest in an issuing entity or a pool of
-      assets, which may or may not confer voting or dividend rights depending on the
-      share class
-    genus: security
+      temporal issuance fact that links one exact Security version to its exact issuer LegalEntity version and
+      optionally to its exact originating SecurityOffering version, used to record the issuance relationship by which a
+      security is brought into existence.
+    genus: Instrument Issuance
     differentia:
-      - represents an ownership interest
-      - rights (voting, dividend, liquidation) vary by share class
-    excludes:
-      - debt instruments (represent claims, not ownership)
-      - derivatives (derive from underlying, not direct ownership)
+      - 工具发行，是关联某一确切证券版本与其确切发行人法律实体版本的时态发行事实，可选关联其起源要约版本，用于记录证券被创设出来的发行关系。
+    excludes: []
     sources:
-      - reference: fibo-local-evidence
-        locator: FIBO FBC/FinancialInstruments/FinancialInstruments/EquityInstrument; SEC/Equities/EquityInstruments/Share
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
     candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
   - term: InstrumentListing
     canonicalIri: https://axiolune.ai/ontology/finance/instruments/InstrumentListing
     definition: >-
-      versioned object recording the admission of a financial instrument to trading on
-      a specific trading facility, under a venue-listing identifier scheme and value,
-      with a business validity interval
+      versioned object recording the admission of a financial instrument to trading on a specific trading facility,
+      under a venue-listing identifier scheme and value, with a business validity interval
     genus: listing record
     differentia:
       - admits an instrument to a specific trading facility
@@ -80,63 +204,382 @@ cards:
     candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
-  - term: InstrumentIssuance
-    canonicalIri: https://axiolune.ai/ontology/finance/instruments/InstrumentIssuance
-    definition: >-
-      temporal association fact that links an exact Security version to its exact
-      issuer LegalEntity version, recording the historical issuance by which a security
-      is brought into existence
-    genus: association fact
-    differentia:
-      - links a Security to its issuer LegalEntity
-      - is a temporal, provenanced fact, not a bare attribute
-      - optionally links to an originating SecurityOffering
-    excludes:
-      - the issuer entity itself (owned by fin-foundation as LegalEntity)
-      - a listing (admission to trading, not creation)
-    sources:
-      - reference: axiolune-m2-plan
-        locator: M2-PLAN §5.2 fin-instruments core concept
-    candidateM3Type: AssociationTypeDefinition
-    status: accepted
-    owner: axiolune-m2-team
-  - term: DirectUnitPriceQuotationContract
-    canonicalIri: https://axiolune.ai/ontology/finance/instruments/DirectUnitPriceQuotationContract
-    definition: >-
-      versioned quotation application class expressing a quotation contract that prices
-      a single controlled quantity unit directly in a given quote currency, as a
-      subtype of the abstract QuotationConvention
-    genus: quotation convention
-    differentia:
-      - prices one denominator quantity unit directly in quote currency
-      - contract multiplier is constrained to one
-      - is a subtype of QuotationConvention
-    excludes:
-      - yield, par, clean/dirty, accrued, inverse, notional-scaled, and index-point
-        quotations (future QuotationConvention subtypes)
-    sources:
-      - reference: axiolune-m2-plan
-        locator: M2-PLAN §5.2 fin-instruments quotation contract
-    candidateM3Type: ObjectTypeDefinition
-    status: accepted
-    owner: axiolune-m2-team
   - term: isAdmittedToTradingOn
     canonicalIri: https://axiolune.ai/ontology/finance/instruments/isAdmittedToTradingOn
     definition: >-
-      derived convenience relation from a FinancialInstrument to a TradingFacility,
-      holding when the instrument has at least one point-in-time-eligible active
-      listing at the given as-of time; not stored as an independent truth
-    genus: derived relation
+      derived convenience relation from a FinancialInstrument to a TradingFacility, holding when the instrument has at
+      least one point-in-time-eligible active listing at the given as-of time, used for indicating admission to trading
+      rather than actual tradeability
+    genus: Is Admitted To Trading On
     differentia:
-      - derived from active, PIT-eligible InstrumentListings
-      - indicates admission to trading, not actual tradeability
-      - never stored as an independent truth
-    excludes:
-      - actual tradeability (depends on segment, trading-status, calendar, market rules)
-      - a stored relation (this is always derived)
+      - 准入交易场所关系，是由金融工具到交易场所的派生便利关系，当工具在给定时间点至少有一个合格有效上市时成立，用于表示准入交易而非实际可交易性。
+    excludes: []
     sources:
-      - reference: axiolune-m2-plan
-        locator: M2-PLAN §5.2 fin-instruments derived relations
-    candidateM3Type: RelationTypeDefinition
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: issuanceId
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/issuanceId
+    definition: >-
+      non-empty source-scoped identifier for one logical InstrumentIssuance, used to uniquely denote a single instrument
+      issuance within source data.
+    genus: Issuance Identifier
+    differentia:
+      - 发行标识，是某一逻辑工具发行在来源数据作用域内的非空标识，用于在来源数据中唯一指认一次工具发行。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: isTradedOn
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/isTradedOn
+    definition: >-
+      derived convenience relation from a FinancialInstrument to a TradingFacility, used to derive where the instrument
+      can be traded based on point-in-time-eligible active listings, and is never stored as an independent truth.
+    genus: Is Traded On
+    differentia:
+      - 交易场所派生关系，是由金融工具到交易场所的派生便利关系，用于基于时点合格的有效上市推导工具可在何处交易，不作为独立事实存储。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: listedInstrument
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/listedInstrument
+    definition: >-
+      relation that links an InstrumentListing version to the exact FinancialInstrument version admitted by that
+      listing, used to specify which financial instrument the listing admits.
+    genus: Listed Instrument
+    differentia:
+      - 上市工具，是关联工具上市版本与其所接纳的确切金融工具版本的关系，用于指明该上市接纳的是哪一金融工具。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: listingBusinessFrom
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/listingBusinessFrom
+    definition: >-
+      the inclusive business date from which an InstrumentListing comes into force, used to mark the business day on
+      which a listing enters its valid state.
+    genus: Listing Business From
+    differentia:
+      - 上市生效起始日，是工具上市开始生效的含起始业务日期，用于标记某一上市从哪一业务日起进入有效状态。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: listingBusinessTo
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/listingBusinessTo
+    definition: >-
+      the optional exclusive business date at which an InstrumentListing ceases to be in force, used to mark the
+      business day on which a listing leaves its valid state.
+    genus: Listing Business To
+    differentia:
+      - 上市生效截止日，是工具上市失效的可选不含截止业务日期，用于标记某一上市于哪一业务日不再处于有效状态。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: listingFacility
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/listingFacility
+    definition: >-
+      relation that links an InstrumentListing version to the exact TradingFacility version at which it is listed, used
+      to record the trading facility to which the listing belongs.
+    genus: Listing Facility
+    differentia:
+      - 上市场所，是关联工具上市版本与其挂牌的确切交易场所版本的关系，用于记录该上市所属的交易设施。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: listingIdentifierScheme
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/listingIdentifierScheme
+    definition: >-
+      direct identity slot relating an InstrumentListing to exactly one venue-listing IdentifierScheme logical identity,
+      used to determine which identifier scheme the listing adopts.
+    genus: Listing Identifier Scheme
+    differentia:
+      - 上市标识方案，是关联工具上市与其唯一场所上市标识方案逻辑身份的直接身份槽，用于确定该上市采用何种标识体系。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: listingIdentifierValue
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/listingIdentifierValue
+    definition: >-
+      direct identity slot relating an InstrumentListing to exactly one LocalIdentifierValue logical identity governed
+      by its listing scheme, used to determine the specific value the listing carries under that scheme.
+    genus: Listing Identifier Value
+    differentia:
+      - 上市标识取值，是关联工具上市与其受上市方案管辖的本地标识取值逻辑身份的直接身份槽，用于确定上市在该方案下的具体取值。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: listingQuoteCurrency
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/listingQuoteCurrency
+    definition: >-
+      the sole stored relation from an InstrumentListing version to the Currency logical identity in which that listing
+      is quoted, used to record the currency in which the listing is priced.
+    genus: Listing Quote Currency
+    differentia:
+      - 上市计价货币，是工具上市版本到其计价货币逻辑身份的唯一存储关系，用于记录该上市以何种货币计价。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: normalizationContractDigest
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/normalizationContractDigest
+    definition: >-
+      lowercase SHA-256 digest authenticating the exact bytes of the quotation normalization contract, used to verify
+      the integrity of the referenced normalization contract.
+    genus: Normalization Contract Digest
+    differentia:
+      - 规范化合约摘要，是认证确切报价规范化合约字节的 SHA-256 小写摘要，用于校验所引用规范化合约的完整性。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: normalizationContractRef
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/normalizationContractRef
+    definition: >-
+      the absolute IRI of the immutable normalization contract used to materialize quotation semantics, used to anchor
+      the normalization definition on which the quotation rests.
+    genus: Normalization Contract Reference
+    differentia:
+      - 规范化合约引用，是用于实体化报价语义的不可变规范化合约的绝对 IRI，用于锚定报价所依据的规范化定义。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: offeredSecurity
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/offeredSecurity
+    definition: >-
+      relation that links a SecurityOffering version to the exact Security version it offers, used to specify which
+      Security version the offering is directed at.
+    genus: Offered Security
+    differentia:
+      - 所约证券，是关联证券要约版本与其所约确切证券版本的关系，用于指明该要约具体针对哪一证券版本。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: offeringId
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/offeringId
+    definition: >-
+      non-empty source-scoped identifier for one logical SecurityOffering, used to uniquely denote a single security
+      offering within source data.
+    genus: Offering Identifier
+    differentia:
+      - 要约标识，是某一逻辑证券要约在来源数据作用域内的非空标识，用于在来源数据中唯一指认一个证券要约。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: originatingOffering
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/originatingOffering
+    definition: >-
+      relation that links an InstrumentListing version to its optional exact originating SecurityOffering version, used
+      to trace which offering the listing originates from.
+    genus: Originating Offering
+    differentia:
+      - 起源要约，是关联工具上市版本与其可选的确切起源证券要约版本的关系，用于追溯该上市来自哪一要约。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: QuotationConvention
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/QuotationConvention
+    definition: >-
+      abstract quotation expression profile that governs how a price is quoted for a financial instrument, intended as
+      the common parent of all quotation profiles so that future types such as yield, par, and notional-scaled
+      quotations can be added without breaking downstream references
+    genus: Quotation Convention
+    differentia:
+      - 报价约定，是治理金融工具价格如何报出的抽象报价表达轮廓，旨在作为所有报价方式的共同父类型，使未来收益率、面值、名义缩放等报价方式可扩展而不破坏下游引用。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: quotationDenominatorUnit
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/quotationDenominatorUnit
+    definition: >-
+      controlled unit IRI denoting the single Quantity unit against which the direct price is quoted, used to determine
+      the unit of measurement in which the price is expressed.
+    genus: Quotation Denominator Unit
+    differentia:
+      - 报价分母单位，是表示直接报价所针对的唯一数量单位的受控单位 IRI，用于确定价格以何种计量单位计报。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: quotationInstrument
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/quotationInstrument
+    definition: >-
+      relation that links a DirectUnitPriceQuotationContract to its FinancialInstrument logical identity, used to
+      specify which financial instrument the quotation is directed at.
+    genus: Quotation Instrument
+    differentia:
+      - 报价工具，是关联直接单位报价合约与其金融工具逻辑身份的关系，用于指明该报价针对哪一金融工具。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: quotationKind
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/quotationKind
+    definition: >-
+      closed-set quotation application classification value required on a direct unit-price contract, used to constrain
+      the quotation method of that contract.
+    genus: Quotation Kind
+    differentia:
+      - 报价类型，是直接单位报价合约上所要求的封闭式报价应用分类取值，用于限定该合约的报价方式。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: QuotationKind
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/QuotationKind
+    definition: >-
+      closed controlled vocabulary admitting only direct unit price, used to provide a classification scheme of
+      quotation methods for direct unit-price quotation contracts.
+    genus: Quotation Kind
+    differentia:
+      - 报价类型表，是仅允许直接单位报价的封闭式受控词汇，用于为直接单位报价合约提供报价方式的分类体系。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: quotationListingContext
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/quotationListingContext
+    definition: >-
+      relation that links a quotation contract to its optional exact InstrumentListing context version, used to situate
+      the quotation within a specific listing scene.
+    genus: Quotation Listing Context
+    differentia:
+      - 报价上市语境，是关联报价合约与其可选的确切工具上市语境版本的关系，用于将报价置于特定上市场景。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: quotationOTCContext
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/quotationOTCContext
+    definition: >-
+      relation that links a quotation contract to its optional exact OTCTradingContext version, used to situate the
+      quotation within a specific over-the-counter scene.
+    genus: Quotation OTC Context
+    differentia:
+      - 报价场外语境，是关联报价合约与其可选的确切场外交易语境版本的关系，用于将报价置于特定场外场景。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: quotationQuoteCurrency
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/quotationQuoteCurrency
+    definition: >-
+      relation that links a quotation contract to its exact quote Currency logical identity, used to record the currency
+      in which the quotation is priced.
+    genus: Quotation Quote Currency
+    differentia:
+      - 报价计价货币，是关联报价合约与其确切计价货币逻辑身份的关系，用于记录该报价以何种货币计价。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: Security
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/Security
+    definition: >-
+      financial instrument that is a security in the legal or regulatory sense, including private placements, OTC,
+      unlisted, and suspended securities
+    genus: financial instrument
+    differentia:
+      - is a security in the legal or regulatory sense
+      - may or may not be admitted to trading on an exchange
+    excludes:
+      - non-security contracts (e.g., internal agreements)
+    sources:
+      - reference: fibo-local-evidence
+        locator: FIBO FBC/FinancialInstruments/FinancialInstruments/Security
+    candidateM3Type: ObjectTypeDefinition
+    status: accepted
+    owner: axiolune-m2-team
+  - term: SecurityOffering
+    canonicalIri: https://axiolune.ai/ontology/finance/instruments/SecurityOffering
+    definition: >-
+      temporal offering record class directed at one exact Security version, used to record the fact of an issuance
+      offering, and kept distinct from formal issuance and venue listing.
+    genus: Security Offering
+    differentia:
+      - 证券要约，是针对某一确切证券版本的时态要约记录类，用于记录发行要约事实，且与正式发行和场所上市相互区分。
+    excludes: []
+    sources:
+      - reference: module-yaml
+        locator: ontology/domain/finance (v2.0.0)
+    candidateM3Type: ObjectTypeDefinition
     status: accepted
     owner: axiolune-m2-team
