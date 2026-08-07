@@ -10,6 +10,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const yaml = require('js-yaml');
 const { spawnSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..', '..');
@@ -135,6 +136,15 @@ const FINANCE_MODULES = [
     ],
   },
 ];
+
+for (const mod of FINANCE_MODULES) {
+  const yamlPath = path.join(FINANCE_DIR, mod.dir, 'module.yaml');
+  if (!fs.existsSync(yamlPath)) continue;
+  const doc = yaml.load(fs.readFileSync(yamlPath, 'utf8'));
+  if (doc?.module?.version) mod.version = doc.module.version;
+  if (doc?.module?.label) mod.label = doc.module.label;
+  if (doc?.module?.moduleIri) mod.iri = doc.module.moduleIri;
+}
 
 function runNode(scriptRel, args) {
   const script = path.join(ROOT, scriptRel);

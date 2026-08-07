@@ -1275,6 +1275,8 @@ function build() {
         relationUses: stats.relationUses,
         constraintBindings: stats.constraintBindings,
         targetEdges: edgeArr.filter(e => e.type === 'targets').length,
+        m3LayerModules: 4,
+        m2FinanceModules: 10,
         stats
       },
       orphanAttributes: projection.orphanAttributes,

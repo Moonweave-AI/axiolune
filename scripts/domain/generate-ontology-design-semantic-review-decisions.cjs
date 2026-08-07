@@ -273,7 +273,7 @@ const FIBO_ASSESSMENTS = Object.freeze([
     candidateMeaning: 'FIBO Settlement is a contract lifecycle event finalizing a transaction; it is distinct from SettlementConvention and SettlementTerms.',
     coverage: 'M2 SettlementInstruction is an instruction/obligation record with legs, status, allocation and reconciliation semantics, not the lifecycle event itself.',
     gaps: ['No equivalence/subclass relation is justified between SettlementInstruction and FIBO Settlement.'],
-    landing: [{ action: 'Keep the semantic distinction explicit in the term card/no-alignment register if FIBO settlement is cited.', kind: 'term', status: 'required-if-used', target: 'docs/ontology/terminology/fin-post-trade-terms.yaml#SettlementInstruction' }],
+    landing: [{ action: 'Keep the semantic distinction explicit in the term card/no-alignment register if FIBO settlement is cited.', kind: 'term', status: 'required-if-used', target: 'docs/ontology/terminology/fin-post-trade-operations-terms.yaml#SettlementInstruction' }],
     outcome: 'candidate-reviewed-no-equivalence',
     noAlignmentDecisionId: 'post-trade-settlement-instruction-fibo-settlement',
     path: 'FBC/FinancialInstruments/Settlement.rdf',

@@ -97,4 +97,4 @@ The module's core design — Price/Quote/Trade/Bar/FX/QualityFinding as separate
 - [ECB FX Reference Rates](https://www.ecb.europa.eu/) — non-tradable reference values
 - [W3C PROV-O](https://www.w3.org/TR/prov-o/) — activity-input-output derivation chain
 - [IFRS 13](https://www.ifrs.org/) — fair value as measurement fact, not recent close
-- [M3 ADR-011](../ontology/meta/data-binding-meta-model.yaml) — SemanticMappingDefinition single truth source
+- [M3 Layer 4 data binding](../../../ontology/meta/data-binding-meta-model.yaml) — SemanticMappingDefinition single truth source
