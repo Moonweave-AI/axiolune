@@ -22,14 +22,15 @@ Do **not** fabricate validation results. Prefer `node scripts/domain/test-all-do
 |------|------|
 | What to read / cite | `docs/CANONICAL-INDEX.md` |
 | Honest M2 progress | `docs/domain/decisions/PROGRESS-REPORT.md` |
-| Current review verdict | `docs/domain/decisions/M2-REVIEW-ROUND-12.md` |
+| Current review verdict | `docs/domain/decisions/M2-REVIEW-ROUND-12.md` (v1.0.0 baseline) + Rounds 13–19 architecture wave |
 | v1.0.0 completion + M1 handoff | `docs/domain/decisions/ADR-017-m2-v1-completion-and-m1-handoff.md` |
 | Post-trade CQ matrix | `docs/domain/decisions/ADR-018-post-trade-cq-coverage-matrix.md` |
+| Architecture ADRs (v1.1.0/v2.0.0) | `docs/domain/decisions/ADR-020-*.md` … `ADR-033-*.md` |
 | M1 handoff entry | `docs/domain/handoffs/M2-V1.0.0-M1-HANDOFF.md` |
 | Module alignments | `docs/ontology/alignments/` |
 | Traceability matrices | `docs/ontology/traceability/` |
 | v0.2.0 revocation | `docs/domain/decisions/ADR-015-revoke-v0.2.0-approval.md` |
-| Exotic CA defer (P2) | `docs/domain/decisions/ADR-016-defer-exotic-corporate-actions.md` |
+| Exotic CA defer (P2) | `docs/domain/decisions/ADR-019-defer-exotic-corporate-actions.md` |
 | M2 conformance contract | `docs/domain/planning/RFC-001-m2-conformance-profile-and-domain-contract.md` |
 
 **Do not cite** `docs/domain/decisions/superseded/` or `releases/superseded/` as completion or approval evidence.
@@ -46,8 +47,12 @@ node scripts/meta/test-all.js
 
 ```
 node scripts/domain/test-all-domain.js
-node scripts/domain/run-all-cq-probes.cjs   # CQ honesty probes (120+ probes; 0 pending as of v1.0.0)
+node scripts/domain/run-all-cq-probes.cjs   # CQ honesty probes (199 pass / 105 CQs as of 2026-08-07)
 node scripts/domain/run-pyshacl-smoke.cjs   # optional pySHACL smoke evidence JSON
+node scripts/domain/audit-sidecar-sync.cjs  # sidecar/registry sync audit
+node scripts/domain/merge-module-envelope.cjs <module> --write  # Phase B envelope merge
+node scripts/domain/check-module-envelopes.cjs  # Phase B stale merge check
+node scripts/domain/sync-terminology-sidecars.cjs --write  # regenerate terminology from module.yaml
 ```
 
 Optional SHACL runtime smoke (not semantic acceptance): see `docs/domain/infrastructure/SHACL-RUNTIME-NOTES.md`.
@@ -113,9 +118,9 @@ node scripts/domain/test-all-domain.js
 - `reference/` splits into `ontology-design-reference/` (FIBO, BIAN, FinRegOnt) and `project-reference/` (nautilus_trader, Lean, qlib, rqalpha, vnpy, lumibot, …).
 - `fibo-ontology/` is the complete local FIBO mirror from `reference/ontology-design-reference/fibo` (~295 RDF modules as `{Name}.module.yaml` plus verbatim RDF); regenerate with `python scripts/fibo/import-fibo-ontology.py`.
 - `fibo-visualization/` is the FIBO-only graph explorer (`fibo-visualization/generate.cjs`); distinct from repo-root `visualization/` (M3+M2 Axiolune ontology).
-- `protege/` is the Protege-ready OWL/Turtle export of M3+M2; regenerate with `node scripts/protege/sync-protege-project.cjs`; open `00-entry/axiolune-all.owl.ttl`; Protege 5.x loads `catalog-v001.xml` from the opened file's directory (no Preferences → Catalogs menu).
+- `protege/` is the Protege-ready OWL/Turtle export of M3+M2; regenerate with `node scripts/protege/sync-protege-project.cjs` (reads versions from module.yaml); open `00-entry/axiolune-all.owl.ttl`; Protege 5.x loads `catalog-v001.xml` from the opened file's directory (no Preferences → Catalogs menu).
 - `docs/ontology/references/references.bibliography.yaml` maps authorities to `reference/` local paths; paywalled sources note `unavailable-paywalled` in terminology cards — no SHA digest locks.
-- Canonical M2 progress: [docs/domain/decisions/PROGRESS-REPORT.md](docs/domain/decisions/PROGRESS-REPORT.md) — **approved** v1.0.0 per [M2-REVIEW-ROUND-12.md](docs/domain/decisions/M2-REVIEW-ROUND-12.md). Do not cite superseded Round-9/v0.2 digest narratives or Round-11 alone as final sign-off.
-- Active finance modules: 10 under `ontology/domain/finance/` (excluding `registry`); all **`status: approved`** at v1.0.0 in module-registry.yaml.
+- Canonical M2 progress: [docs/domain/decisions/PROGRESS-REPORT.md](docs/domain/decisions/PROGRESS-REPORT.md) — **approved** v1.0.0 baseline per [M2-REVIEW-ROUND-12.md](docs/domain/decisions/M2-REVIEW-ROUND-12.md); v1.1.0/v2.0.0 architecture revisions per ADR-020–033 and Rounds 13–19. Do not cite superseded Round-9/v0.2 digest narratives or Round-11 alone as final sign-off.
+- Active finance modules: 10 under `ontology/domain/finance/` (excluding `registry`); all **`status: approved`** — 3 at v2.0.0 (foundation, instruments, market-data) + 7 at v1.1.0 per `module-registry.yaml`.
 - The former FIBO adapter `ext-fibo-release-local` is archived under `ontology/domain/archive/` (not an active module); keep `imports: []` / no full-ontology FIBO import (FinRegOnt lesson).
 - pySHACL smoke evidence (`docs/domain/infrastructure/shacl-smoke-evidence.json`) is separate from domain SHACL shapes Adopt; structural negative fixtures may still be SHACL-execution pending.

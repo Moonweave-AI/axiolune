@@ -95,6 +95,12 @@ if (!run('node', ['scripts/domain/run-owl-consistency-cq.cjs'])) { console.error
 console.log('\n--- 10. Comprehensive CQ probes ---');
 if (!run('node', ['scripts/domain/run-all-cq-probes.cjs'])) { console.error('FAIL: run-all-cq-probes'); failed++; }
 
+console.log('\n--- 11. Sidecar sync audit ---');
+if (!run('node', ['scripts/domain/audit-sidecar-sync.cjs', '--strict'])) { console.error('FAIL: audit-sidecar-sync'); failed++; }
+
+console.log('\n--- 12. Module envelope merge freshness (Phase B) ---');
+if (!run('node', ['scripts/domain/check-module-envelopes.cjs'])) { console.error('FAIL: check-module-envelopes'); failed++; }
+
 console.log('\n=== Summary ===');
 if (failed === 0) { console.log('test-all-domain PASS'); process.exit(0); }
 console.log(`test-all-domain FAIL (${failed} failure group(s))`);
